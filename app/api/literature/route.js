@@ -10,9 +10,46 @@ export async function POST(req) {
   } catch {
     return Response.json({ error: "Bad request" }, { status: 400 });
   }
-  const { messages, title = "", author = "", text = "", explain = "ru", level = "A2", name = "" } = body || {};
-  if (!Array.isArray(messages) || !messages.length || typeof text !== "string" || !text.trim()) return Response.json({ error: "Bad request" }, { status: 400 });
+  const { mode, messages, title = "", author = "", text = "", explain = "ru", level = "A2", name = "" } = body || {};
+  if (typeof text !== "string" || !text.trim()) return Response.json({ error: "Bad request" }, { status: 400 });
+  if (mode !== "quiz" && (!Array.isArray(messages) || !messages.length)) return Response.json({ error: "Bad request" }, { status: 400 });
   const lang = LANG_NAMES[explain] || LANG_NAMES.ru;
+
+  if (mode === "quiz") {
+    const schema = {
+      type: "OBJECT",
+      properties: {
+        questions: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              q: { type: "STRING", description: "Сұрақ (қазақша)" },
+              options: { type: "ARRAY", items: { type: "STRING" }, description: "4 жауап нұсқасы (қазақша)" },
+              answer: { type: "INTEGER", description: "Дұрыс жауаптың нөмірі 0-3" },
+              why: { type: "STRING", description: "Қысқа түсіндірме (түсіндіру тілінде)" },
+            },
+            required: ["q", "options", "answer", "why"],
+          },
+        },
+      },
+      required: ["questions"],
+    };
+    const prompt = `Мына мәтін бойынша дәл 5 сұрақтан тұратын тест жаса. Шығарма: «${String(title).slice(0, 80)}», автор: ${String(author).slice(0, 80)}. Деңгей: ${String(level).slice(0, 6)}.
+Мәтін:
+"""${text.slice(0, 2500)}"""
+Ережелер: сұрақтар тек осы мәтіннен тікелей жауап табылатындай болсын; әр сұрақта 4 нұсқа, біреуі ғана дұрыс; дұрыс жауап орны әр сұрақта әртүрлі болсын; сұрақ пен нұсқалар қазақша, қысқа және қарапайым; why — ${lang}.`;
+    try {
+      const out = await callGemini([{ role: "user", parts: [{ text: prompt }] }], { schema, temperature: 0.5, fast: false, thinking: "low", maxTokens: 1800 });
+      const d = JSON.parse(out);
+      const qs = (d.questions || []).filter((x) => x?.q && Array.isArray(x.options) && x.options.length === 4 && x.answer >= 0 && x.answer <= 3).slice(0, 5);
+      if (qs.length < 3) throw new GeminiError("Test could not be built", 502);
+      return Response.json({ questions: qs });
+    } catch (e) {
+      const status = e instanceof GeminiError ? e.status : 500;
+      return Response.json({ error: e.message || "AI error" }, { status });
+    }
+  }
 
   const system = `Сен — Qyran, қазақ әдебиетін үйретуші мейірімді мұғалімсің. Оқушы (${String(name).slice(0, 40) || "дос"}, деңгейі ${String(level).slice(0, 6)}) мына мәтінді оқып болды.
 Шығарма: «${String(title).slice(0, 80)}», автор: ${String(author).slice(0, 80)}.
@@ -20,10 +57,9 @@ export async function POST(req) {
 """${text.slice(0, 2500)}"""
 
 Тапсырма:
-- Оқушы «оқып бітірдім» десе, мәтін бойынша үш қарапайым сұрақ қой, бірақ БІР-БІРЛЕП: алдымен тек бірінші сұрақты қой.
-- Оқушы жауап берсе: дұрыс/дұрыс емес екенін айт, мәтінге сүйеніп қысқаша түсіндір, қазақша қатесі болса ақырын түзет, содан кейін келесі сұрақты қой. Үшінші жауаптан кейін қысқа қорытынды мен мақтау айт.
-- Оқушы өзі сұрақ қойса, мәтінге және шығарма/автор туралы белгілі шындыққа сүйеніп жауап бер. Сенімсіз болсаң — ашық айт, ештеңе ойдан шығарма.
-- Сұрақтар мен мысалдар қазақша болсын, түсіндірме ${lang} болсын. Жауап қысқа (150 сөзден аспасын), **жуан** және «- » тізімді қолдануға болады. Эмодзиді аз қолдан.`;
+- Оқушы мәтін, шығарма не автор туралы сұраса, мәтінге және белгілі шындыққа сүйеніп жауап бер. Сенімсіз болсаң — ашық айт, ештеңе ойдан шығарма.
+- Қазақша жазса, қатесін ақырын түзет.
+- Мысалдар қазақша болсын, түсіндірме ${lang} болсын. Жауап қысқа (150 сөзден аспасын), **жуан** және «- » тізімді қолдануға болады. Эмодзиді аз қолдан.`;
 
   const contents = messages
     .slice(-14)

@@ -3,6 +3,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
+import Quiz from "../../components/Quiz";
+import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
+import { shuffle } from "../../../lib/words";
 import { WORKS } from "../../../lib/literature";
 import { tx } from "../../../lib/tx";
 import { L } from "../../../lib/i18n";
@@ -18,6 +21,11 @@ export default function Literature() {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [quiz, setQuiz] = useState(null); // null | "loading" | {qs} | "error"
+  const [qres, setQres] = useState(null);
+  const [loadingTts, setLoadingTts] = useState(false);
+  const [chatOn, setChatOn] = useState(false);
+  const audioRef = useRef(null);
   const run = useRef(0);
   const timer = useRef(null);
   const listRef = useRef(null);
@@ -29,6 +37,7 @@ export default function Literature() {
     run.current++;
     clearTimeout(timer.current);
     window.speechSynthesis?.cancel();
+    audioRef.current?.pause();
     setPlaying(false);
   };
   useEffect(() => stop, []);
@@ -43,40 +52,78 @@ export default function Literature() {
     setMsgs([]);
     setErr("");
     setNoVoice(false);
+    setQuiz(null);
+    setQres(null);
+    setChatOn(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function play() {
+  async function play() {
     if (playing) return stop();
     const my = ++run.current;
-    const s = window.speechSynthesis;
-    const voice = s?.getVoices().find((v) => /^kk/i.test(v.lang));
-    setNoVoice(!voice);
+    const voice = await getKkVoice();
+    if (run.current !== my) return;
+    setNoVoice(false);
     setPlaying(true);
     let i = cur >= sentences.length - 1 ? 0 : Math.max(0, cur + 1);
-    const step = () => {
-      if (run.current !== my) return;
-      if (i >= sentences.length) {
-        setPlaying(false);
-        return;
-      }
-      setCur(i);
-      const sentence = sentences[i];
-      const next = () => {
-        i++;
-        step();
-      };
-      if (voice) {
-        const u = new SpeechSynthesisUtterance(sentence);
+
+    if (voice) {
+      const s = window.speechSynthesis;
+      const step = () => {
+        if (run.current !== my) return;
+        if (i >= sentences.length) return setPlaying(false);
+        setCur(i);
+        const u = new SpeechSynthesisUtterance(sentences[i]);
         u.voice = voice;
         u.lang = voice.lang;
         u.rate = 0.85;
+        const next = () => {
+          i++;
+          step();
+        };
         u.onend = next;
         u.onerror = next;
         s.speak(u);
-      } else timer.current = setTimeout(next, Math.max(1800, sentence.length * 70));
-    };
-    step();
+      };
+      return step();
+    }
+
+    // Құрылғыда қазақша дауыс жоқ: серверден дыбыс аламыз (Gemini TTS)
+    try {
+      setLoadingTts(true);
+      const url = await fetchTtsUrl(work.text);
+      setLoadingTts(false);
+      if (run.current !== my) return;
+      const a = new Audio(url);
+      audioRef.current = a;
+      const total = work.text.length;
+      const ends = [];
+      let acc = 0;
+      sentences.forEach((sn) => {
+        acc += sn.length + 1;
+        ends.push(acc / total);
+      });
+      a.ontimeupdate = () => {
+        const k = a.currentTime / (a.duration || 1);
+        setCur(Math.max(0, ends.findIndex((e) => k <= e)));
+      };
+      a.onended = () => setPlaying(false);
+      a.onerror = () => setPlaying(false);
+      await a.play();
+    } catch {
+      setLoadingTts(false);
+      setNoVoice(true);
+      // Дауыс жоқ: жолдарды көзбен бірге жандырамыз
+      const step = () => {
+        if (run.current !== my) return;
+        if (i >= sentences.length) return setPlaying(false);
+        setCur(i);
+        const ms = Math.max(1800, sentences[i].length * 70);
+        i++;
+        timer.current = setTimeout(step, ms);
+      };
+      step();
+    }
   }
 
   async function ask(t) {
@@ -102,13 +149,37 @@ export default function Literature() {
       setBusy(false);
     }
   }
-  function finish() {
+  async function finish() {
     stop();
     if (!lit[work.id]) {
       update((s) => ({ ...s, lit: { ...(s.lit || {}), [work.id]: Date.now() } }));
       award(20, 8);
     }
-    ask(x.litFirst);
+    setQuiz("loading");
+    setQres(null);
+    try {
+      const r = await fetch("/api/literature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "quiz", title: work.work, author: work.author, text: work.text, explain, level: state.cefr || work.lvl }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+      setQuiz({
+        qs: d.questions.map((q) => ({
+          prompt: q.q,
+          options: shuffle(q.options.map((o, k) => ({ key: String(k), label: o }))),
+          answer: String(q.answer),
+        })),
+      });
+    } catch (e) {
+      setErr(e.message || "Error");
+      setQuiz("error");
+    }
+  }
+  function quizDone(right, total) {
+    setQres({ right, total });
+    award(right * 4, right >= 4 ? 5 : 0, right >= 4 ? `🏆 ${right}/${total}` : undefined);
   }
 
   if (!work)
@@ -165,19 +236,45 @@ export default function Literature() {
         {noVoice && <p className="muted small">{x.litNoVoice}</p>}
         <div className="reader-actions">
           <button className="btn blue" onClick={play}>
-            <Icon name={playing ? "stop" : "volume"} size={18} /> {playing ? x.litPause : x.litRead}
+            <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : x.litRead}
           </button>
-          <button className="btn gold" disabled={busy || msgs.length > 0} onClick={finish}>
+          <button className="btn gold" disabled={quiz === "loading"} onClick={finish}>
             <Icon name="check" size={18} /> {lit[work.id] ? x.litDoneMark : x.litDone}
           </button>
         </div>
       </section>
 
-      {msgs.length > 0 && (
+      {quiz && (
+        <section className="card lit-quiz rise">
+          <h3>🏆 {x.litTest}</h3>
+          {quiz === "loading" && <p className="muted">{x.litTestLoading}</p>}
+          {quiz === "error" && (
+            <>
+              {err && <p className="alert">{err}</p>}
+              <button className="btn gold" onClick={finish}><Icon name="refresh" size={16} /> {x.spTryAgain}</button>
+            </>
+          )}
+          {quiz?.qs && <Quiz key={quiz.qs[0].prompt} questions={quiz.qs} onDone={quizDone} pass={4} />}
+          {qres && (
+            <div className="alert ok rise">
+              {x.litTestScore(qres.right, qres.total)}
+              <button className="btn ghost small" onClick={finish}><Icon name="refresh" size={15} /> {x.spTryAgain}</button>
+            </div>
+          )}
+        </section>
+      )}
+
+      {!chatOn && (
+        <button className="btn ghost" onClick={() => setChatOn(true)}>
+          <Icon name="chat" size={18} /> {x.litAskBtn}
+        </button>
+      )}
+      {chatOn && (
         <section className="card lit-chat rise">
           <h3>{x.litChatTitle}</h3>
+          {msgs.length === 0 && <p className="muted small">{x.litAsk}</p>}
           <div className="lit-list" ref={listRef}>
-            {msgs.slice(1).map((m, i) => (
+            {msgs.map((m, i) => (
               <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"}`}>
                 {m.role !== "user" && <span className="msg-av"><Qyran size={32} /></span>}
                 <div className="msg-b">{m.text}</div>

@@ -6,6 +6,7 @@ import Icon from "../../components/Icon";
 import { PHRASES, SP_PASS, SP_LEVELS } from "../../../lib/phrases";
 import { tx } from "../../../lib/tx";
 import { toWav } from "../../../lib/audio";
+import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
 
 const MAX_MS = 15000;
 
@@ -33,17 +34,23 @@ export default function Speaking() {
     window.speechSynthesis?.cancel();
   }, []);
 
-  function listen() {
-    const s = window.speechSynthesis;
-    if (!s) return setErr(x.spNoVoice);
-    const u = new SpeechSynthesisUtterance(cur.kk);
-    const v = s.getVoices().find((v) => /^kk/i.test(v.lang));
-    if (!v) return setErr(x.spNoVoice);
-    u.voice = v;
-    u.lang = v.lang;
-    u.rate = 0.85;
-    s.cancel();
-    s.speak(u);
+  async function listen() {
+    setErr("");
+    const voice = await getKkVoice();
+    if (voice) {
+      const u = new SpeechSynthesisUtterance(cur.kk);
+      u.voice = voice;
+      u.lang = voice.lang;
+      u.rate = 0.85;
+      window.speechSynthesis.cancel();
+      return window.speechSynthesis.speak(u);
+    }
+    try {
+      const url = await fetchTtsUrl(cur.kk);
+      new Audio(url).play();
+    } catch {
+      setErr(x.spNoVoice);
+    }
   }
 
   async function start() {

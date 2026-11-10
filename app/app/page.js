@@ -1,5 +1,6 @@
 "use client";
 import { tx } from "../../lib/tx";
+import { PROVERBS, TRADITIONS } from "../../lib/culture";
 import Link from "next/link";
 import { useMemo } from "react";
 import { DAILY_GOAL, dayKey, localDayIndex, useApp } from "../components/Store";
@@ -47,6 +48,10 @@ function Ring({ value, max }) {
 
 export default function Home() {
   const { t, lang, explain, state, saveWord, award, update } = useApp();
+  const x0 = tx(lang);
+  const dayN = Math.floor(Date.now() / 86400000);
+  const PROV = PROVERBS[dayN % PROVERBS.length];
+  const TRAD = TRADITIONS[dayN % TRADITIONS.length];
   const today = dayKey();
   const todayXp = state.today?.date === today ? state.today.xp : 0;
   const stampCount = Object.keys(state.stamps || {}).length;
@@ -167,6 +172,22 @@ export default function Home() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="culture">
+        <article className="card proverb">
+          <span className="badge">{x0.proverb}</span>
+          <blockquote>{PROV.kk}</blockquote>
+          <p className="muted">{lang === "kk" ? (explain === "ru" ? PROV.ru : PROV.en) : lang === "ru" ? PROV.ru : PROV.en}</p>
+        </article>
+        <article className="card tradition">
+          <span className="trad-e">{TRAD.e}</span>
+          <div>
+            <span className="badge">{x0.tradition}</span>
+            <h4>{L(TRAD.t, lang)}</h4>
+            <p>{L(TRAD.d, lang)}</p>
+          </div>
+        </article>
       </div>
 
       <h3 className="sec-title">{t.quick}</h3>

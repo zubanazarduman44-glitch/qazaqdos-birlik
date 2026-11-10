@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useApp } from "./Store";
 import Icon from "./Icon";
 import Qyran from "./Qyran";
+import Shanyrak from "./Shanyrak";
 import WordTap from "./WordTap";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
 
@@ -47,7 +48,7 @@ export function Logo({ small }) {
   return (
     <Link href="/" className={`logo ${small ? "sm" : ""}`} aria-label="TILIM">
       <span className="logo-mark">
-        <Qyran size={small ? 30 : 38} />
+        <Shanyrak size={small ? 32 : 40} />
       </span>
       <span className="logo-word">
         TIL<b>IM</b>
