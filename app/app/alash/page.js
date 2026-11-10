@@ -4,15 +4,62 @@ import { useApp } from "../../components/Store";
 import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 
-// Қарапайым форматтау: **жуан** және жаңа жол (HTML енгізілмейді)
+// Қауіпсіз форматтау (HTML енгізілмейді): **жуан**, *көлбеу*, `код`, ### тақырып, тізімдер, кесте
+function inline(str) {
+  return str.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*\s][^*]*\*)/g).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <b key={i}>{part.slice(2, -2)}</b>;
+    if (part.startsWith("`") && part.endsWith("`") && part.length > 2) return <code key={i}>{part.slice(1, -1)}</code>;
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2) return <i key={i}>{part.slice(1, -1)}</i>;
+    return <span key={i}>{part}</span>;
+  });
+}
+const cells = (row) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+const isSep = (row) => /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(row) && row.includes("-");
+
 function Rich({ text }) {
-  return text.split("\n").map((line, i) => (
-    <p key={i}>
-      {line.split(/(\*\*[^*]+\*\*)/g).map((part, j) =>
-        part.startsWith("**") && part.endsWith("**") ? <b key={j}>{part.slice(2, -2)}</b> : <span key={j}>{part.replace(/^\s*[-*]\s+/, "• ")}</span>
-      )}
-    </p>
-  ));
+  const lines = String(text).replace(/\r/g, "").split("\n");
+  const out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) {
+      i++;
+    } else if (line.trim().startsWith("|") && i + 1 < lines.length && isSep(lines[i + 1])) {
+      const head = cells(line);
+      const rows = [];
+      i += 2;
+      while (i < lines.length && lines[i].trim().startsWith("|")) rows.push(cells(lines[i++]));
+      out.push(
+        <div className="tbl" key={out.length}>
+          <table>
+            <thead>
+              <tr>{head.map((c, k) => <th key={k}>{inline(c)}</th>)}</tr>
+            </thead>
+            <tbody>
+              {rows.map((r, k) => (
+                <tr key={k}>{r.map((c, m) => <td key={m}>{inline(c)}</td>)}</tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    } else if (/^\s{0,3}#{1,4}\s+/.test(line)) {
+      out.push(<h4 key={out.length}>{inline(line.replace(/^\s*#{1,4}\s+/, ""))}</h4>);
+      i++;
+    } else if (/^\s*[-*•]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\s*[-*•]\s+/.test(lines[i])) items.push(lines[i++].replace(/^\s*[-*•]\s+/, ""));
+      out.push(<ul key={out.length}>{items.map((it, k) => <li key={k}>{inline(it)}</li>)}</ul>);
+    } else if (/^\s*\d+[.)]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) items.push(lines[i++].replace(/^\s*\d+[.)]\s+/, ""));
+      out.push(<ol key={out.length}>{items.map((it, k) => <li key={k}>{inline(it)}</li>)}</ol>);
+    } else {
+      out.push(<p key={out.length}>{inline(line)}</p>);
+      i++;
+    }
+  }
+  return out;
 }
 
 export default function Chat() {
@@ -39,7 +86,7 @@ export default function Chat() {
       const r = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-16), explain, name: state.profile.name, level: `level ${lvl.level}` }),
+        body: JSON.stringify({ messages: next.slice(-20), explain, name: state.profile.name, level: `level ${lvl.level}` }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);

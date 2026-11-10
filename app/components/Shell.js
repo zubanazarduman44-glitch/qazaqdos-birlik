@@ -123,7 +123,7 @@ export default function Shell({ children }) {
           ))}
         </nav>
         <div className="side-foot">
-          <Link href="/app/profile" className={`me ${active("/app/profile") ? "on" : ""}`}>
+          <Link href="/app/profile" className={`side-me ${active("/app/profile") ? "on" : ""}`}>
             <span className="me-av">{state.profile.avatar}</span>
             <span className="me-txt">
               <b>{state.profile.name || t.guest}</b>

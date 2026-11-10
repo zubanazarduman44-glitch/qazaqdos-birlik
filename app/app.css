@@ -27,8 +27,8 @@
 .side-link.on { background: var(--btn-blue); color: #fff; box-shadow: 0 10px 22px -12px rgba(18, 114, 198, 0.9); }
 .side-link.on .ic { color: #fff; }
 .side-foot { margin-top: auto; display: grid; gap: 10px; }
-.me { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 16px; background: var(--paper-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
-.me.on { box-shadow: inset 0 0 0 2px var(--brand); }
+.side-me { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 16px; background: var(--paper-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.side-me.on { box-shadow: inset 0 0 0 2px var(--brand); }
 .me-av { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; font-size: 22px; background: var(--paper-solid); flex: none; }
 .me-txt { display: grid; min-width: 0; }
 .me-txt b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -620,7 +620,7 @@
 .logo-word b { color: var(--brand); font-weight: 800; }
 
 /* Ұсақ шыны беттер */
-.icon-btn, .seg, .pill, .me, .me-av, .av, .opt, .qopt, .word-chip, .msg-b, .msg-av, .changes li, .wod-e, .site-e, .tl-dot, .search, .vex, .wr-text, .prof-av, .flip-f {
+.icon-btn, .seg, .pill, .side-me, .me-av, .av, .opt, .qopt, .word-chip, .msg-b, .msg-av, .changes li, .wod-e, .site-e, .tl-dot, .search, .vex, .wr-text, .prof-av, .flip-f {
   -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s);
 }
 .icon-btn, .seg, .pill { background: var(--paper); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
@@ -652,8 +652,8 @@
 .side-link { border-radius: 16px; }
 .side-link:hover { background: var(--paper); }
 .side-link.on { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 14px 26px -14px rgba(40, 90, 230, 0.85); }
-.me { background: var(--paper); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
-.me.on { box-shadow: inset 0 0 0 2px var(--brand), inset 0 1px 0 var(--edge); }
+.side-me { background: var(--paper); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
+.side-me.on { box-shadow: inset 0 0 0 2px var(--brand), inset 0 1px 0 var(--edge); }
 .me-av { background: var(--paper-solid); }
 
 /* Жоғарғы жолақ — шыны таблетка */
@@ -752,3 +752,16 @@
   :root { --paper: rgba(255, 255, 255, 0.82); --paper-solid: rgba(255, 255, 255, 0.9); --sheen-a: rgba(255, 255, 255, 0.9); --sheen-b: rgba(255, 255, 255, 0.78); }
   :root[data-theme="dark"] { --paper: rgba(20, 26, 64, 0.92); --paper-solid: rgba(28, 36, 84, 0.94); --sheen-a: rgba(24, 30, 72, 0.94); --sheen-b: rgba(18, 24, 60, 0.94); }
 }
+
+/* ═════ Чат: ұзын жауаптар (тақырып, тізім, кесте) ═════ */
+.msg { max-width: 94%; }
+.msg-b { min-width: 0; overflow-wrap: anywhere; }
+.msg-b h4 { font-family: var(--head); font-size: 15px; margin: 12px 0 6px; }
+.msg-b h4:first-child { margin-top: 0; }
+.msg-b ul, .msg-b ol { margin: 6px 0 8px; padding-left: 22px; display: grid; gap: 4px; }
+.msg-b code { padding: 1px 6px; border-radius: 6px; background: var(--paper-2); box-shadow: inset 0 0 0 1px var(--line); font-size: 0.92em; }
+.msg-b .tbl { margin: 8px 0; overflow-x: auto; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--rim); }
+.msg-b table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.msg-b th, .msg-b td { padding: 8px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+.msg-b th { background: var(--paper-2); font-weight: 800; white-space: nowrap; }
+.msg-b tr:last-child td { border-bottom: 0; }
