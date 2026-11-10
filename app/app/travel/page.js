@@ -188,36 +188,8 @@ function Travel() {
         </div>
       </header>
 
-      <section className="card map-card">
-        <div className="map-tools">
-          <div className="search">
-            <Icon name="search" size={18} />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.searchRegion} aria-label={t.searchRegion} />
-            {matches.length > 0 && (
-              <div className="search-pop">
-                {matches.map((r) => (
-                  <button
-                    key={r.id}
-                    onClick={() => {
-                      pick(r.id);
-                      setQ("");
-                    }}
-                  >
-                    {r.e} {L(r.name, lang)}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="map-legend">
-            <span>
-              <i className="lg-done" /> {t.visited}
-            </span>
-            <span>
-              <i className="lg-todo" /> {t.notVisited}
-            </span>
-          </div>
-        </div>
+      <section className="card map-card map-split">
+        <div className="map-main">
         <div className="kzmap-wrap sky" onMouseLeave={() => setHov(null)}>
           <div className="sky-stars" aria-hidden />
           <div className="map-sun" aria-hidden />
@@ -291,7 +263,54 @@ function Travel() {
           )}
           <div className="sky-hint">{x.tapHint}</div>
         </div>
-        <p className="muted small map-note">{t.mapNote} © OpenStreetMap</p>
+        </div>
+        <aside className="map-side">
+          <div className="side-prog">
+            <div className="ring" style={{ "--p": `${Math.round((count / REGIONS.length) * 100)}%` }}><b>{count}</b><small>/ {REGIONS.length}</small></div>
+            <div><h3>{t.stamps(count, REGIONS.length)}</h3><div className="map-legend"><span><i className="lg-done" /> {t.visited}</span><span><i className="lg-todo" /> {t.notVisited}</span></div></div>
+          </div>
+        <div className="map-tools">
+          <div className="search">
+            <Icon name="search" size={18} />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.searchRegion} aria-label={t.searchRegion} />
+            {matches.length > 0 && (
+              <div className="search-pop">
+                {matches.map((r) => (
+                  <button
+                    key={r.id}
+                    onClick={() => {
+                      pick(r.id);
+                      setQ("");
+                    }}
+                  >
+                    {r.e} {L(r.name, lang)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="map-legend">
+            <span>
+              <i className="lg-done" /> {t.visited}
+            </span>
+            <span>
+              <i className="lg-todo" /> {t.notVisited}
+            </span>
+          </div>
+        </div>
+          <ul className="reg-list">
+            {order.map((r) => (
+              <li key={r.id}>
+                <button className={`${sel === r.id ? "on" : ""} ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} onMouseEnter={() => setHov(r.id)} onMouseLeave={() => setHov(null)}>
+                  <span className="rl-e">{stamps[r.id] ? "🛂" : r.e}</span>
+                  <span className="rl-t"><b>{L(r.name, lang)}</b><small>{L(r.center, lang)}</small></span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className="muted small map-note">{t.mapNote} © OpenStreetMap</p>
+        </aside>
+        
       </section>
 
       <div ref={panelRef} className="region-anchor" />

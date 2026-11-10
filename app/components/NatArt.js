@@ -4,7 +4,7 @@ import { L } from "../../lib/i18n";
 
 const GOLD = "#e8a400", RED = "#b8322a", TEAL = "#0a7f99", WOOD = "#8a5326", DARK = "#4a2c12", CREAM = "#fff3d4";
 
-function Dombyra() {
+export function Dombyra() {
   return (
     <g>
       <path d="M100 150 C60 150 50 112 78 96 C60 82 78 62 100 70 C122 62 140 82 122 96 C150 112 140 150 100 150Z" fill={WOOD} stroke={DARK} strokeWidth="3" />

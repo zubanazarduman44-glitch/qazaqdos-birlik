@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { useApp } from "../../components/Store";
+import DressUp from "../../components/Dress";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import { ITEMS, CATS } from "../../../lib/shop";
@@ -50,11 +51,7 @@ export default function Shop() {
         <section className="card shop-stage">
           <h3>{x.shYou}</h3>
           <div className="dress">
-            <Qyran mood="cheer" size={210} />
-            {wearing("head") && <span className="dr dr-head pop" key={wearing("head").id}>{wearing("head").e}</span>}
-            {wearing("body") && <span className="dr dr-body pop" key={wearing("body").id}>{wearing("body").e}</span>}
-            {wearing("foot") && <span className="dr dr-foot pop" key={wearing("foot").id}>{wearing("foot").e}</span>}
-            {wearing("acc") && <span className="dr dr-acc pop" key={wearing("acc").id}>{wearing("acc").e}</span>}
+            <DressUp skin={state.profile?.skin || "eagle"} wear={shop.wear || {}} size={230} mood="idle" />
           </div>
           <ul className="dress-list">
             {Object.keys(CATS).map((c) => (
