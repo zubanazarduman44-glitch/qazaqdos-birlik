@@ -14,7 +14,7 @@ const pick = (v, lang) => (typeof v === "string" ? v : v[lang] || v.en || v.ru |
 function Level() {
   const { lang, state, update, award } = useApp();
   const router = useRouter();
-  const x = useMemo(() => tx(lang), [lang]);
+  const x = tx(lang);
   const [phase, setPhase] = useState("intro");
   const [i, setI] = useState(0);
   const [order, setOrder] = useState([]);

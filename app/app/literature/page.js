@@ -13,7 +13,7 @@ import { L } from "../../../lib/i18n";
 
 export default function Literature() {
   const { lang, explain, state, update, award } = useApp();
-  const x = useMemo(() => tx(lang), [lang]);
+  const x = tx(lang);
   const [id, setId] = useState(null);
   const [cur, setCur] = useState(-1);
   const [playing, setPlaying] = useState(false);
@@ -146,23 +146,43 @@ export default function Literature() {
     }
   }
 
-  async function translate() {
-    if (trans) return setTrans(null);
+  // Мәтінді ашқанда аударма фонда әзірленеді: батырманы басқанда лезде шығады
+  const ready = useRef({});
+  useEffect(() => {
+    if (!work || explain === "kk") return;
     const key = `qd_lt_${work.id}_${explain}`;
     try {
       const hit = localStorage.getItem(key);
-      if (hit) return setTrans(hit);
+      if (hit) {
+        ready.current[key] = hit;
+        return;
+      }
     } catch {}
+    if (ready.current[key]) return;
+    ready.current[key] = fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) })
+      .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (!ok || !d.text) throw new Error("err");
+        ready.current[key] = d.text;
+        try {
+          localStorage.setItem(key, d.text);
+        } catch {}
+        return d.text;
+      })
+      .catch(() => {
+        delete ready.current[key];
+        return null;
+      });
+  }, [id, explain]);
+  async function translate() {
+    if (trans) return setTrans(null);
+    const key = `qd_lt_${work.id}_${explain}`;
+    let v = ready.current[key];
+    if (typeof v === "string") return setTrans(v);
     setTrans("loading");
-    try {
-      const r = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.text) throw new Error(d.error || "err");
-      setTrans(d.text);
-      try {
-        localStorage.setItem(key, d.text);
-      } catch {}
-    } catch {
+    v = await (v || fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) }).then((r) => r.json()).then((d) => d.text).catch(() => null));
+    if (v) setTrans(v);
+    else {
       setTrans(null);
       setErr("Translate error");
     }

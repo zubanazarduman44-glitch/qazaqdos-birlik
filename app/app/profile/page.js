@@ -1,4 +1,7 @@
 "use client";
+import { ANIMALS } from "../../components/Animals";
+import { tx } from "../../../lib/tx";
+import { L } from "../../../lib/i18n";
 import Link from "next/link";
 import { useState } from "react";
 import { useApp } from "../../components/Store";
@@ -10,7 +13,7 @@ import { REGIONS } from "../../../lib/regions";
 import { SITES } from "../../../lib/history";
 
 export default function Profile() {
-  const { t, state, setProfile, user, logout, resetAll, lvl } = useApp();
+  const { t, lang, state, setProfile, user, logout, resetAll, lvl } = useApp();
   const [name, setName] = useState(state.profile.name);
   const wins = Object.values(state.games || {}).reduce((a, g) => a + (g.wins || 0), 0);
 
@@ -73,6 +76,18 @@ export default function Profile() {
           <span>{t.uiLang}</span>
           <div>
             <LangSeg />
+          </div>
+        </div>
+        <div className="field">
+          <span>{tx(lang).chPick}</span>
+          <p className="muted small">{tx(lang).chNote}</p>
+          <div className="skin-grid">
+            {ANIMALS.map((a) => (
+              <button key={a.id} className={`skin ${(state.profile.skin || "eagle") === a.id ? "on" : ""}`} onClick={() => setProfile({ skin: a.id })} title={L(a.name, lang)}>
+                <Qyran skin={a.id} mood="idle" size={64} />
+                <b>{L(a.name, lang)}</b>
+              </button>
+            ))}
           </div>
         </div>
         <div className="field">

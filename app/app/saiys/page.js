@@ -47,7 +47,7 @@ const left = (ms) => {
 
 export default function Saiys() {
   const { lang, explain, user, state, update, award, toast } = useApp();
-  const x = useMemo(() => tx(lang), [lang]);
+  const x = tx(lang);
   const [tab, setTab] = useState("week");
   const [rows, setRows] = useState(null);
   const [last, setLast] = useState([]);

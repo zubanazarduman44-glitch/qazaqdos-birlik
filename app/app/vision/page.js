@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
+import { tx } from "../../../lib/tx";
+import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
 
 // Суретті кішірейтеміз (640 px, JPEG) — жылдам жіберу үшін
 function shrink(src, max = 640) {
@@ -22,7 +24,7 @@ function shrink(src, max = 640) {
 }
 
 export default function Vision() {
-  const { t, explain, state, update, award, saveWord } = useApp();
+  const { t, lang, explain, state, update, award, saveWord } = useApp();
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const fileRef = useRef(null);
@@ -98,111 +100,112 @@ export default function Vision() {
     award(5, 3);
   }
 
+  const x = tx(lang);
+  async function say(w) {
+    const v = await getKkVoice();
+    if (v) {
+      const u = new SpeechSynthesisUtterance(w);
+      u.voice = v;
+      u.lang = v.lang;
+      u.rate = 0.85;
+      window.speechSynthesis.cancel();
+      return window.speechSynthesis.speak(u);
+    }
+    try {
+      new Audio(await fetchTtsUrl(w)).play();
+    } catch {}
+  }
+
   return (
-    <div className="vision">
+    <div className="vision v2">
       <header className="page-head">
         <div>
           <span className="kicker">AI · Vision</span>
-          <h1>{t.visionTitle}</h1>
-          <p>{t.visionSub}</p>
+          <h1>{x.vTitle}</h1>
+          <p>{x.vHint}</p>
         </div>
+        <span className="chip gold">📦 {state.vision?.length || 0}</span>
       </header>
 
-      <div className="grid g2 vision-grid">
-        <section className="card cam">
-          <div className="viewfinder">
-            {cam ? (
-              <video ref={videoRef} playsInline muted />
-            ) : shot ? (
-              <img src={shot} alt="" />
-            ) : (
-              <div className="vf-empty">
+      <div className="v2-grid">
+        <section className="scanner">
+          <div className={`v2-frame ${busy ? "busy" : ""} ${res?.found ? "ok" : ""}`}>
+            {cam ? <video ref={videoRef} playsInline muted /> : shot ? <img src={shot} alt="" /> : (
+              <div className="v2-empty">
                 <Qyran mood="wow" size={110} />
+                <p>{x.vHint}</p>
               </div>
             )}
-            <span className="vf-c tl" />
-            <span className="vf-c tr" />
-            <span className="vf-c bl" />
-            <span className="vf-c br" />
-            {busy && (
-              <div className="vf-scan">
-                <span className="vf-beam" />
-                <b>{t.analyzing}</b>
-              </div>
-            )}
+            <i className="c tl" /><i className="c tr" /><i className="c bl" /><i className="c br" />
+            <span className="v2-grid-lines" />
+            {busy && <span className="v2-beam" />}
+            {busy && <b className="v2-status">{t.analyzing}</b>}
+            {res?.found && !busy && <span className="v2-tag pop">{res.emoji} {res.kk}</span>}
           </div>
-          <div className="cam-btns">
+          <div className="v2-bar">
+            <button className="v2-side" onClick={() => fileRef.current?.click()} disabled={busy} aria-label={x.vGallery}>
+              <Icon name="upload" size={22} />
+              <small>{x.vGallery}</small>
+            </button>
             {cam ? (
-              <button className="btn gold big" onClick={snap}>
-                <Icon name="camera" size={20} /> {t.snap}
-              </button>
+              <button className="v2-shutter" onClick={snap} aria-label={x.vShot}><i /></button>
             ) : (
-              <button className="btn blue big" onClick={startCam} disabled={busy}>
-                <Icon name="camera" size={20} /> {t.cameraOn}
-              </button>
+              <button className="v2-shutter idle" onClick={startCam} disabled={busy} aria-label={x.vCamera}><Icon name="camera" size={28} /></button>
             )}
-            <button className="btn ghost big" onClick={() => fileRef.current?.click()} disabled={busy}>
-              <Icon name="upload" size={20} /> {t.upload}
+            <button className="v2-side" onClick={() => (cam ? stopCam() : (setShot(null), setRes(null), startCam()))} disabled={busy} aria-label={x.vRetake}>
+              <Icon name="refresh" size={22} />
+              <small>{cam ? "✕" : x.vRetake}</small>
             </button>
             <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => onFile(e.target.files?.[0])} />
           </div>
-          <p className="muted small privacy">
-            <Icon name="lock" size={14} /> {t.privacy}
-          </p>
+          <p className="muted small privacy"><Icon name="lock" size={14} /> {t.privacy}</p>
         </section>
 
-        <section className="card vres">
+        <section className="v2-res">
           {err && <p className="alert">{err}</p>}
-          {res ? (
-            res.found ? (
-              <div className="vword pop">
-                <span className="vword-e">{res.emoji}</span>
-                <h2>{res.kk}</h2>
-                {res.translit && <span className="muted">[{res.translit}]</span>}
-                <span className="vword-tr">{res.translation}</span>
-                {res.category && <span className="chip">{res.category}</span>}
-                <div className="vex">
-                  <span className="badge">{t.example}</span>
-                  <b>{res.example_kk}</b>
-                  <span className="muted">{res.example_tr}</span>
+          {res?.found ? (
+            <div className="v2-card pop">
+              <span className="badge">{x.vResultTitle}</span>
+              <div className="v2-word">
+                <span className="v2-e">{res.emoji}</span>
+                <div>
+                  <h2>{res.kk}</h2>
+                  {res.translit && <span className="muted">[{res.translit}]</span>}
                 </div>
-                {res.tip && (
-                  <div className="fact">
-                    <Qyran mood="idle" size={44} />
-                    <p>{res.tip}</p>
-                  </div>
-                )}
-                <button className="btn gold" onClick={keep} disabled={inCol}>
-                  <Icon name={inCol ? "check" : "plus"} size={18} /> {inCol ? t.saved : t.saveWord}
-                </button>
+                <button className="v2-say" onClick={() => say(res.kk)} aria-label="listen"><Icon name="volume" size={20} /></button>
               </div>
-            ) : (
-              <div className="vword">
-                <Qyran mood="support" size={100} />
-                <p>{res.translation}</p>
+              <div className="v2-tr">{res.translation}</div>
+              <div className="v2-ex">
+                <small>{t.example}</small>
+                <b>{res.example_kk}</b>
+                <span className="muted">{res.example_tr}</span>
               </div>
-            )
+              {res.tip && <p className="v2-tip">💡 {res.tip}</p>}
+              <button className="btn gold big" onClick={keep} disabled={inCol}>
+                <Icon name={inCol ? "check" : "plus"} size={18} /> {inCol ? t.saved : t.saveWord}
+              </button>
+            </div>
+          ) : res ? (
+            <div className="v2-card"><Qyran mood="support" size={90} /><p>{res.translation}</p></div>
           ) : (
-            <div className="vword muted">
-              <Qyran mood={busy ? "think" : "idle"} size={100} />
-              <p>{busy ? t.analyzing : t.visionSub}</p>
+            <div className="v2-card idle">
+              <Qyran mood={busy ? "think" : "idle"} size={90} />
+              <p>{busy ? t.analyzing : x.vHint}</p>
             </div>
           )}
         </section>
       </div>
 
       <section className="collection">
-        <h2>
-          📦 {t.collection} <span className="muted small">{t.found(state.vision?.length || 0)}</span>
-        </h2>
+        <h2>📦 {t.collection} <span className="muted small">{t.found(state.vision?.length || 0)}</span></h2>
         {state.vision?.length ? (
-          <div className="col-grid">
+          <div className="v2-col">
             {state.vision.map((v) => (
-              <div key={v.kk} className="card tight col-item" title={v.ex}>
+              <button key={v.kk} className="v2-chip" onClick={() => say(v.kk)} title={v.ex}>
                 <span>{v.e}</span>
                 <b>{v.kk}</b>
-                <small className="muted">{v.tr}</small>
-              </div>
+                <small>{v.tr}</small>
+              </button>
             ))}
           </div>
         ) : (

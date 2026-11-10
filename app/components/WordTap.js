@@ -40,7 +40,7 @@ function wordAt(x, y) {
 
 export default function WordTap() {
   const { lang, saveWord, state, explain } = useApp();
-  const x = useMemo(() => tx(lang), [lang]);
+  const x = tx(lang);
   const [pop, setPop] = useState(null); // {w, box, data, loading, err}
   const popRef = useRef(null);
   const seq = useRef(0);

@@ -12,7 +12,7 @@ const MAX_MS = 15000;
 
 export default function Speaking() {
   const { lang, explain, state, update, award } = useApp();
-  const x = useMemo(() => tx(lang), [lang]);
+  const x = tx(lang);
   const sp = state.speaking || { level: null, best: {}, log: [] };
   const [lv, setLv] = useState("A1");
   const [idx, setIdx] = useState(0);

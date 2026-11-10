@@ -9,7 +9,7 @@ import { L } from "../../../lib/i18n";
 
 export default function Shop() {
   const { lang, state, update, toast } = useApp();
-  const x = useMemo(() => tx(lang), [lang]);
+  const x = tx(lang);
   const [cat, setCat] = useState("all");
   const shop = state.shop || { owned: [], wear: {} };
   const coins = state.coins || 0;

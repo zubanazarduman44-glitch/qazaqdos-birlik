@@ -3,15 +3,18 @@ import { setWordTr } from "../../lib/words";
 import { allKkWords } from "../../lib/dict";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { T, UI_LANGS } from "../../lib/i18n";
+import { flatten, apply } from "../../lib/uitr";
+import { tx, setTxOverride } from "../../lib/tx";
 import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut, upsertWeekly } from "../../lib/auth";
 import { weekKey } from "../../lib/week";
+import { setSkin } from "../../lib/skin";
 import Qyran from "./Qyran";
 
 const KEY = "qd_state_v1";
 export const DAILY_GOAL = 50;
 
 export const EMPTY = {
-  profile: { name: "", avatar: "🌱", goal: "travel", explain: "ru", ui: "kk", theme: null, onboarded: false },
+  profile: { name: "", avatar: "🌱", skin: "eagle", goal: "travel", explain: "ru", ui: "kk", theme: null, onboarded: false },
   xp: 0,
   coins: 0,
   streak: 0,
@@ -105,7 +108,9 @@ export function AppProvider({ children }) {
     const local = readLocal();
     if (local) setState(local);
     setReady(true);
-    consumeRedirect();
+    const rd = consumeRedirect();
+    // Google/пошта сілтемесі кейде басты бетке (/) қайтарады: кіру сәтті болса, қолданбаға өтеміз
+    if (rd.got && !window.location.pathname.startsWith("/app")) window.location.replace("/app");
     (async () => {
       try {
         const s = await getSession();
@@ -151,8 +156,10 @@ export function AppProvider({ children }) {
       if (th) localStorage.setItem("qd_theme", th);
       else localStorage.removeItem("qd_theme");
     } catch {}
+    setSkin(state.profile.skin || "eagle");
     document.documentElement.lang = state.profile.ui || "kk";
-  }, [state.profile.theme, state.profile.ui]);
+    document.documentElement.dir = state.profile.ui === "ar" ? "rtl" : "ltr";
+  }, [state.profile.theme, state.profile.ui, state.profile.skin]);
 
   const update = useCallback((fn) => {
     setState((s) => ({ ...fn(s), updatedAt: Date.now() }));
@@ -192,7 +199,7 @@ export function AppProvider({ children }) {
           updatedAt: Date.now(),
         };
       });
-      const tt = T[state.profile.ui] || T.kk;
+      const tt = T[state.profile.ui] || T.en;
       toast(msg || tt.reward(xp, coins));
     },
     [toast, state.profile.ui]
@@ -203,7 +210,7 @@ export function AppProvider({ children }) {
     (p) =>
       update((s) => {
         const profile = { ...s.profile, ...p };
-        if (p.explain && UI_LANGS.includes(p.explain)) profile.ui = p.explain;
+        if (p.explain) profile.ui = p.explain;
         return { ...s, profile };
       }),
     [update]
@@ -271,7 +278,58 @@ export function AppProvider({ children }) {
     return () => clearTimeout(id);
   }, [user, state.weekly, state.profile.name, state.profile.avatar]);
 
+  // Басқа тілдер (қытай, араб…): интерфейсті ЖИ бір рет аударып, құрылғыда сақтаймыз
   const lang = state.profile.ui || "kk";
+  const [uiMap, setUiMap] = useState({});
+  useEffect(() => {
+    if (UI_LANGS.includes(lang)) {
+      setUiMap({});
+      setTxOverride(null, null);
+      return;
+    }
+    let dead = false;
+    const key = `qd_ui2_${lang}`;
+    let have = {};
+    try {
+      have = JSON.parse(localStorage.getItem(key) || "{}");
+    } catch {}
+    const en = { ...Object.fromEntries(Object.entries(flatten(T.en)).map(([k, v]) => ["T." + k, v])), ...Object.fromEntries(Object.entries(flatten(tx("en"))).map(([k, v]) => ["X." + k, v])) };
+    const push = (m) => {
+      setUiMap(m);
+      const xm = {};
+      for (const [k, v] of Object.entries(m)) if (k.startsWith("X.")) xm[k.slice(2)] = v;
+      setTxOverride(lang, xm);
+    };
+    push(have);
+    const miss = Object.keys(en).filter((k) => !have[k]);
+    (async () => {
+      const chunks = [];
+      for (let i = 0; i < miss.length; i += 70) chunks.push(miss.slice(i, i + 70));
+      await Promise.all(
+        chunks.map(async (keys) => {
+          try {
+            const r = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ui: keys.map((k) => en[k]), to: lang }) });
+            const d = await r.json();
+            if (!r.ok || !d.items || dead) return;
+            keys.forEach((k, i) => (have[k] = d.items[i]));
+            try {
+              localStorage.setItem(key, JSON.stringify(have));
+            } catch {}
+            push({ ...have });
+          } catch {}
+        })
+      );
+    })();
+    return () => {
+      dead = true;
+    };
+  }, [lang]);
+  const tMemo = useMemo(() => {
+    if (T[lang]) return T[lang];
+    const m = {};
+    for (const [k, v] of Object.entries(uiMap)) if (k.startsWith("T.")) m[k.slice(2)] = v;
+    return apply(T.en, m);
+  }, [lang, uiMap]);
   const value = useMemo(
     () => ({
       state,
@@ -280,7 +338,7 @@ export function AppProvider({ children }) {
       authReady,
       lang,
       explain: state.profile.explain || "ru",
-      t: T[lang] || T.kk,
+      t: tMemo,
       update,
       award,
       toast,
@@ -290,7 +348,7 @@ export function AppProvider({ children }) {
       resetAll,
       lvl: levelOf(state.xp || 0),
     }),
-    [state, wtrVer, ready, user, authReady, lang, update, award, toast, setProfile, saveWord, logout, resetAll]
+    [state, wtrVer, uiMap, tMemo, ready, user, authReady, lang, update, award, toast, setProfile, saveWord, logout, resetAll]
   );
 
   return (

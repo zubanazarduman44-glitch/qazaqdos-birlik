@@ -1,6 +1,8 @@
 // Qyran — TILIM кейіпкері: алтын қыран (бүркіт), бүйірден қараған, бұтақта отыр.
 // mood: idle | happy | think | wow | support | cheer | sleep
 import { useId } from "react";
+import { useSkin } from "../../lib/skin";
+import { AnimalArt } from "./Animals";
 
 const INK = "#2a1708";
 const WING_DOWN = "M96 92 C126 100 134 140 114 176 C104 194 86 204 64 207 C73 188 70 160 72 134 C74 112 84 96 96 92Z";
@@ -24,9 +26,39 @@ function Eye({ mood }) {
   );
 }
 
-export default function Qyran({ mood = "idle", size = 160, className = "", title = "Qyran" }) {
+export default function Qyran({ mood = "idle", size = 160, className = "", title = "Qyran", skin: skinProp }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const cur = useSkin();
+  const skin = skinProp || cur;
   const B = `qyB${uid}`, W = `qyW${uid}`, G = `qyG${uid}`, H = `qyH${uid}`, C = `qyC${uid}`;
+  if (skin !== "eagle") {
+    return (
+      <svg className={`qyran bk-${mood} ${className}`} viewBox="0 0 200 230" width={size} height={(size * 230) / 200} role="img" aria-label={title}>
+        <ellipse className="bk-shadow" cx="100" cy="226" rx="56" ry="5" fill="#2a1708" opacity=".16" />
+        <g className="bk-float">
+          <AnimalArt id={skin} mood={mood} uid={uid} />
+        </g>
+        {mood === "think" && (
+          <g className="bk-fx">
+            <circle cx="170" cy="30" r="4.5" fill="#fff" stroke="#e0b56a" strokeWidth="2" />
+            <circle cx="180" cy="14" r="9" fill="#fff" stroke="#e0b56a" strokeWidth="2" />
+            <text x="180" y="19" textAnchor="middle" fontSize="13" fontWeight="800" fill="#a8601b">?</text>
+          </g>
+        )}
+        {(mood === "wow" || mood === "cheer") && (
+          <g className="bk-fx bk-sparkle" fill="#ffc83d">
+            <path d="M24 70 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" />
+            <path d="M172 24 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" />
+          </g>
+        )}
+        {mood === "sleep" && (
+          <g className="bk-fx bk-zzz" fill="#a8601b" fontWeight="800">
+            <text x="150" y="36" fontSize="18">z</text><text x="164" y="20" fontSize="14">z</text>
+          </g>
+        )}
+      </svg>
+    );
+  }
   const up = mood === "happy" || mood === "cheer";
   const open = mood === "happy" || mood === "cheer" || mood === "wow";
   const browY = mood === "support" ? 3 : mood === "wow" ? -4 : 0;
