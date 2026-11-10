@@ -220,15 +220,16 @@ function Travel() {
         </div>
         <div className="kzmap-wrap sky" onMouseLeave={() => setHov(null)}>
           <div className="sky-stars" aria-hidden />
+          <div className="map-sun" aria-hidden />
           <svg className="kzmap" viewBox={KZ_VIEW} role="img" aria-label={t.travelTitle}>
             <defs>
               <linearGradient id="stampG" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stopColor="#ffe48a" />
-                <stop offset="1" stopColor="#f2b100" />
+                <stop offset="1" stopColor="#e39b00" />
               </linearGradient>
               <linearGradient id="selG" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#7ff0ff" />
-                <stop offset="1" stopColor="#2f7bff" />
+                <stop offset="0" stopColor="#4fd3e4" />
+                <stop offset="1" stopColor="#0a7f99" />
               </linearGradient>
               <filter id="glowF" x="-30%" y="-30%" width="160%" height="160%">
                 <feGaussianBlur stdDeviation="3" result="b" />
@@ -264,15 +265,15 @@ function Travel() {
                 const c = ctr(r);
                 if (!c) return null;
                 return (
-                  <g key={r.id} transform={`translate(${c[0]} ${c[1]})`} className={`reg-pin ${stamps[r.id] ? "got" : ""}`}>
+                  <g key={r.id} transform={`translate(${c[0]} ${c[1]})`} className={`reg-pin ${stamps[r.id] ? "got" : ""} ${hov === r.id ? "hot" : ""}`}>
                     {r.city ? <circle r="6" className="city-dot" /> : <circle r="3.4" className="star" style={{ animationDelay: `${(r.id.length % 7) * 0.4}s` }} />}
-                    {!r.city && <text className="reg-e" textAnchor="middle" dy="-8">{stamps[r.id] ? "🛂" : r.e}</text>}
+                    {!r.city && <text className="reg-e" textAnchor="middle" dy="-8" style={{ animationDelay: `${(r.id.length % 9) * 0.35}s` }}>{stamps[r.id] ? "🛂" : r.e}</text>}
                   </g>
                 );
               })}
               {routeD && <path d={routeD} className="journey" filter="url(#glowF)" />}
               {trail && <path key={trail.k} className="flight" d={`M${trail.from[0]} ${trail.from[1]} Q${(trail.from[0] + trail.to[0]) / 2} ${(trail.from[1] + trail.to[1]) / 2 - 60} ${trail.to[0]} ${trail.to[1]}`} />}
-              <g className="eagle" style={{ transform: `translate(${eagleAt[0]}px, ${eagleAt[1]}px)` }}>
+              <g className={`eagle ${trail ? "flying" : ""}`} style={{ transform: `translate(${eagleAt[0]}px, ${eagleAt[1]}px)` }}>
                 <circle className="eagle-ring" r="16" />
                 <g className="eagle-fly">
                   <g transform="translate(-26 -52) scale(0.26)">
