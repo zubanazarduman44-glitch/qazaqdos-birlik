@@ -91,17 +91,17 @@ function Ear({ x, flip, kind, p }) {
   const tf = `translate(${x} 0) scale(${s} 1)`;
   switch (kind) {
     case "point": // қасқыр, түлкі, мысық
-      return <g transform={tf}><path d="M-34 70 L-46 20 L-8 54Z" fill={p.m} /><path d="M-32 64 L-40 32 L-16 54Z" fill={p.d} opacity=".85" /></g>;
+      return <g transform={tf}><g className="an-ear"><path d="M-34 70 L-46 20 L-8 54Z" fill={p.m} /><path d="M-32 64 L-40 32 L-16 54Z" fill={p.d} opacity=".85" /></g></g>;
     case "round": // аю, жолбарыс, барыс, тиін
-      return <g transform={tf}><circle cx="-38" cy="64" r="17" fill={p.m} /><circle cx="-38" cy="64" r="9" fill={p.l} /></g>;
+      return <g transform={tf}><g className="an-ear"><circle cx="-38" cy="64" r="17" fill={p.m} /><circle cx="-38" cy="64" r="9" fill={p.l} /><circle cx="-42" cy="58" r="3.4" fill="#fff" opacity=".35" /></g></g>;
     case "long": // қоян
-      return <g transform={tf}><ellipse cx="-22" cy="38" rx="13" ry="40" fill={p.m} /><ellipse cx="-22" cy="40" rx="6.5" ry="30" fill={p.d} opacity=".75" /></g>;
+      return <g transform={tf}><g className="an-ear long"><ellipse cx="-22" cy="38" rx="13" ry="40" fill={p.m} /><ellipse cx="-22" cy="40" rx="6.5" ry="30" fill={p.d} opacity=".75" /></g></g>;
     case "horse": // жылқы, марал, ақбөкен
-      return <g transform={tf}><path d="M-34 66 L-48 24 L-14 54Z" fill={p.m} /><path d="M-33 62 L-42 34 L-20 54Z" fill={p.d} opacity=".6" /></g>;
+      return <g transform={tf}><g className="an-ear"><path d="M-34 66 L-48 24 L-14 54Z" fill={p.m} /><path d="M-33 62 L-42 34 L-20 54Z" fill={p.d} opacity=".6" /></g></g>;
     case "side": // қой
-      return <g transform={tf}><ellipse cx="-56" cy="96" rx="20" ry="9" fill={p.m} transform="rotate(20 -56 96)" /></g>;
+      return <g transform={tf}><g className="an-ear side"><ellipse cx="-56" cy="96" rx="20" ry="9" fill={p.m} transform="rotate(20 -56 96)" /></g></g>;
     case "tuft": // жапалақ
-      return <g transform={tf}><path d="M-30 62 L-46 24 L-12 52Z" fill={p.m} /></g>;
+      return <g transform={tf}><g className="an-ear"><path d="M-30 62 L-46 24 L-12 52Z" fill={p.m} /></g></g>;
     default:
       return null;
   }
@@ -122,13 +122,18 @@ export function AnimalArt({ id, mood = "idle", uid }) {
           <stop offset="0" stopColor={p.m} />
           <stop offset="1" stopColor={p.m} stopOpacity=".86" />
         </radialGradient>
+        <linearGradient id={`${gm}s`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity=".28" />
+          <stop offset=".55" stopColor="#fff" stopOpacity="0" />
+          <stop offset="1" stopColor={p.d} stopOpacity=".3" />
+        </linearGradient>
       </defs>
 
       {/* Артқы бөліктер */}
-      {id === "fox" && <g><path d="M140 200 C190 190 200 130 170 120 C176 150 160 172 138 176Z" fill={p.m} /><path d="M170 120 C196 140 190 176 176 188 C186 160 178 140 170 120Z" fill="#fff" /></g>}
-      {id === "squirrel" && <path d="M142 200 C206 200 204 110 164 84 C186 126 168 162 138 172Z" fill={p.m} stroke={p.d} strokeWidth="2" opacity=".95" />}
-      {id === "leopard" && <path d="M138 206 C190 214 204 168 176 150 C184 178 164 192 138 192Z" fill={p.m} stroke={p.d} strokeWidth="2" />}
-      {id === "camel" && <g fill={p.m}><ellipse cx="70" cy="140" rx="24" ry="30" /><ellipse cx="130" cy="140" rx="24" ry="30" /></g>}
+      {id === "fox" && <g className="an-tail"><path d="M140 200 C190 190 200 130 170 120 C176 150 160 172 138 176Z" fill={p.m} /><path d="M170 120 C196 140 190 176 176 188 C186 160 178 140 170 120Z" fill="#fff" /></g>}
+      {id === "squirrel" && <path className="an-tail" d="M142 200 C206 200 204 110 164 84 C186 126 168 162 138 172Z" fill={p.m} stroke={p.d} strokeWidth="2" opacity=".95" />}
+      {id === "leopard" && <path className="an-tail" d="M138 206 C190 214 204 168 176 150 C184 178 164 192 138 192Z" fill={p.m} stroke={p.d} strokeWidth="2" />}
+      {id === "camel" && <g className="an-body"><path d="M44 178 C36 140 52 112 74 124 C84 136 82 160 78 178Z" fill={p.m} stroke={p.d} strokeWidth="2" /><path d="M156 178 C164 140 148 112 126 124 C116 136 118 160 122 178Z" fill={p.m} stroke={p.d} strokeWidth="2" /></g>}
       {id === "deer" && (
         <g stroke="#6b3f1d" strokeWidth="5" fill="none" strokeLinecap="round">
           <path d="M70 56 L52 22 M62 40 L44 40 M54 26 L42 14" />
@@ -150,12 +155,15 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       {id === "sheep" && (<><Ear x={100} kind="side" p={{ ...p, m: p.m }} /><Ear x={100} flip kind="side" p={{ ...p, m: p.m }} /></>)}
 
       {/* Дене */}
+      <g className="an-body">
       <ellipse cx="100" cy="176" rx="50" ry="50" fill={id === "sheep" ? p.l : `url(#${gm})`} />
+      <ellipse cx="100" cy="176" rx="50" ry="50" fill={`url(#${gm}s)`} />
       <ellipse cx="100" cy="188" rx="30" ry="32" fill={id === "sheep" ? "#fff" : p.l} opacity={id === "sheep" ? 0.6 : 0.95} />
       {id === "sheep" && <g fill={p.l}>{[[62, 168, 16], [138, 170, 16], [78, 204, 15], [124, 206, 15]].map(([cx, cy, r], i) => <circle key={i} cx={cx} cy={cy} r={r} />)}</g>}
       {id === "leopard" && <g fill={p.d} opacity=".7">{[[70, 160], [130, 164], [84, 200], [118, 196], [100, 150]].map(([cx, cy], i) => <circle key={i} cx={cx} cy={cy} r="5" />)}</g>}
       {id === "tiger" && <g stroke={p.d} strokeWidth="5" strokeLinecap="round" fill="none"><path d="M54 160 Q62 164 66 176 M146 160 Q138 164 134 176 M58 192 Q66 192 70 202 M142 192 Q134 192 130 202" /></g>}
 
+      </g>
       {/* Аяқ */}
       <ellipse cx="76" cy="224" rx="19" ry="8" fill={id === "sheep" ? p.d : p.m} stroke={p.d} strokeWidth="1.5" />
       <ellipse cx="124" cy="224" rx="19" ry="8" fill={id === "sheep" ? p.d : p.m} stroke={p.d} strokeWidth="1.5" />
@@ -169,7 +177,10 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       </g>
 
       {/* Бас */}
+      <g className="an-head">
       <ellipse cx="100" cy="100" rx="55" ry="49" fill={headFill === p.m ? `url(#${gm})` : headFill} />
+      <ellipse cx="100" cy="100" rx="55" ry="49" fill={`url(#${gm}s)`} />
+      <ellipse cx="78" cy="68" rx="16" ry="7" fill="#fff" opacity=".32" transform="rotate(-24 78 68)" />
       {id === "fox" && <><path d="M48 104 Q62 134 100 140 Q74 112 52 96Z" fill="#fff" /><path d="M152 104 Q138 134 100 140 Q126 112 148 96Z" fill="#fff" /></>}
       {id === "wolf" && <><path d="M46 100 Q60 132 100 140 Q70 110 50 90Z" fill={p.l} opacity=".9" /><path d="M154 100 Q140 132 100 140 Q130 110 150 90Z" fill={p.l} opacity=".9" /></>}
       {id === "tiger" && <g stroke={p.d} strokeWidth="5" strokeLinecap="round" fill="none"><path d="M100 54 V70 M86 58 L90 72 M114 58 L110 72 M48 96 H62 M50 112 L64 108 M152 96 H138 M150 112 L136 108" /></g>}
@@ -180,6 +191,8 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       {id === "owl" && <><ellipse cx="100" cy="100" rx="46" ry="42" fill={p.l} opacity=".85" /><path d="M100 118 L90 134 L110 134Z" fill="#f0a000" stroke="#c07a00" strokeWidth="1.5" strokeLinejoin="round" /></>}
       {id === "rabbit" && <><ellipse cx="100" cy="116" rx="30" ry="24" fill={p.l} /></>}
 
+      {id === "horse" && <path d="M100 48 C84 50 74 62 72 80 C86 70 94 72 100 80 C106 72 114 70 128 80 C126 62 116 50 100 48Z" fill={p.d} />}
+      {id === "camel" && <path d="M80 56 C86 46 114 46 120 56 C112 60 108 66 100 64 C92 66 88 60 80 56Z" fill={p.d} opacity=".7" />}
       {/* Тұмсық */}
       {id !== "owl" && id !== "sheep" && <ellipse cx="100" cy={id === "horse" || id === "saiga" ? 122 : 118} rx={snout[0]} ry={snout[1]} fill={p.l} />}
       {id === "sheep" && <ellipse cx="100" cy="122" rx="24" ry="18" fill="#52453e" />}
@@ -194,6 +207,8 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       <ellipse cx="62" cy="110" rx="8" ry="5" fill="#ff8fb0" opacity=".45" />
       <ellipse cx="138" cy="110" rx="8" ry="5" fill="#ff8fb0" opacity=".45" />
       {id !== "owl" && <Mouth mood={mood} y={id === "horse" || id === "saiga" ? 132 : 123} />}
+      </g>
+      {(mood === "happy" || mood === "cheer") && <g className="an-spark" fill="#ffd35a"><path d="M30 60l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" /><path d="M172 44l2.4 5.6 5.6 2.4-5.6 2.4-2.4 5.6-2.4-5.6-5.6-2.4 5.6-2.4z" /></g>}
     </g>
   );
 }

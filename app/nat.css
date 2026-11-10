@@ -86,3 +86,28 @@ h1, h2, h3 { color: #14263f; }
 /* Vision: сурет орнына камера белгісі */
 .v2-ico { font-size: 54px; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35)); }
 .demo-note { color: #7a4b00; }
+
+/* ═════ Кейіпкер анимациясы: тыныс алу, бас изеу, құлақ/құйрық қозғалысы ═════ */
+.qyran .an-body, .qyran .an-head, .qyran .an-ear, .qyran .an-tail, .qyran .an-spark { transform-box: fill-box; }
+.qyran .an-body { transform-origin: 50% 100%; animation: anBreathe 3.6s ease-in-out infinite; }
+.qyran .an-head { transform-origin: 50% 92%; animation: anHead 5.2s ease-in-out infinite; }
+.qyran .an-ear { transform-origin: 50% 92%; animation: anEar 4.4s ease-in-out infinite; }
+.qyran .an-ear.long { animation-name: anEarLong; animation-duration: 3.8s; }
+.qyran .an-ear.side { transform-origin: 85% 50%; animation-name: anEarSide; animation-duration: 3.2s; }
+.qyran .an-tail { transform-origin: 0% 100%; animation: anTail 2.6s ease-in-out infinite; }
+.qyran .an-spark { transform-origin: 50% 50%; animation: anSpark 1.2s ease-in-out infinite; }
+@keyframes anBreathe { 50% { transform: scale(1.025, 1.04); } }
+@keyframes anHead { 0%, 100% { transform: rotate(0) translateY(0); } 30% { transform: rotate(2.2deg) translateY(-1.5px); } 65% { transform: rotate(-2deg) translateY(0.5px); } }
+@keyframes anEar { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-9deg); } 86% { transform: rotate(5deg); } 93% { transform: rotate(-3deg); } }
+@keyframes anEarLong { 0%, 55%, 100% { transform: rotate(0); } 70% { transform: rotate(8deg); } 85% { transform: rotate(-5deg); } }
+@keyframes anEarSide { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(7deg); } }
+@keyframes anTail { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(9deg); } }
+@keyframes anSpark { 50% { opacity: 0.2; transform: scale(0.6) rotate(25deg); } }
+.bk-happy .an-head, .bk-cheer .an-head { animation: anHappy 0.7s ease-in-out infinite; }
+.bk-think .an-head { animation: anThink 3s ease-in-out infinite; }
+.bk-sleep .an-head { animation: anSleep 4.5s ease-in-out infinite; }
+.bk-cheer .an-tail, .bk-happy .an-tail { animation-duration: 0.6s; }
+@keyframes anHappy { 50% { transform: rotate(-4deg) translateY(-4px); } }
+@keyframes anThink { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(-9deg); } }
+@keyframes anSleep { 50% { transform: rotate(5deg) translateY(3px); } }
+@media (prefers-reduced-motion: reduce) { .qyran .an-body, .qyran .an-head, .qyran .an-ear, .qyran .an-tail, .qyran .an-spark { animation: none !important; } }
