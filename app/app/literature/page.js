@@ -110,17 +110,34 @@ export default function Literature() {
       a.onended = () => setPlaying(false);
       a.onerror = () => setPlaying(false);
       await a.play();
-    } catch {
+    } catch (e) {
       setLoadingTts(false);
       setNoVoice(true);
-      // Дауыс жоқ: жолдарды көзбен бірге жандырамыз
+      setErr(String(e?.message || "").slice(0, 200));
+      // Қазақша дауыс жоқ: орыс (немесе кез келген) дауысымен оқимыз — кирилл әріптері ұқсас оқылады
+      const sy = window.speechSynthesis;
+      const alt = sy?.getVoices().find((v) => /^ru/i.test(v.lang)) || sy?.getVoices().find((v) => /^(tr|uz|ky)/i.test(v.lang)) || sy?.getVoices()[0];
       const step = () => {
         if (run.current !== my) return;
         if (i >= sentences.length) return setPlaying(false);
         setCur(i);
-        const ms = Math.max(1800, sentences[i].length * 70);
-        i++;
-        timer.current = setTimeout(step, ms);
+        if (alt) {
+          const u = new SpeechSynthesisUtterance(sentences[i]);
+          u.voice = alt;
+          u.lang = alt.lang;
+          u.rate = 0.85;
+          const nx = () => {
+            i++;
+            step();
+          };
+          u.onend = nx;
+          u.onerror = nx;
+          sy.speak(u);
+        } else {
+          const ms = Math.max(1800, sentences[i].length * 70);
+          i++;
+          timer.current = setTimeout(step, ms);
+        }
       };
       step();
     }
@@ -233,7 +250,7 @@ export default function Literature() {
         </p>
         <p className="muted small">💡 {L(work.gist, explain === "ru" ? "ru" : "en")}</p>
         <p className="muted small">{x.litNote}</p>
-        {noVoice && <p className="muted small">{x.litNoVoice}</p>}
+        {noVoice && <p className="muted small">{x.litNoVoice}{err ? ` (${err})` : ""}</p>}
         <div className="reader-actions">
           <button className="btn blue" onClick={play}>
             <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : x.litRead}
