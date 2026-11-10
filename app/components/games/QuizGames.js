@@ -114,7 +114,7 @@ export function Arkan({ game }) {
   const [topic, setTopic] = useState("all");
   const [phase, setPhase] = useState("ready");
   const [v, setV] = useState(0);
-  const [time, setTime] = useState(90);
+  const [time, setTime] = useState(30);
   const [q, setQ] = useState(null);
   const [picked, setPicked] = useState(null);
   const [right, setRight] = useState(0);
@@ -126,7 +126,7 @@ export function Arkan({ game }) {
   function start() {
     reset();
     setV(0);
-    setTime(90);
+    setTime(30);
     setRight(0);
     setQ(nextQ());
     setPicked(null);

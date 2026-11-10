@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
+import { toWav } from "../../../lib/audio";
 
 // Қауіпсіз форматтау (HTML енгізілмейді): **жуан**, *көлбеу*, `код`, ### тақырып, тізімдер, кесте
 function inline(str) {
@@ -67,6 +68,8 @@ export default function Chat() {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [rec, setRec] = useState(null); // null | "rec" | "busy"
+  const recRef = useRef(null);
   const listRef = useRef(null);
   const msgs = state.chat || [];
 
@@ -97,6 +100,41 @@ export default function Chat() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function mic() {
+    if (rec === "rec") return recRef.current?.stop();
+    if (rec) return;
+    setErr("");
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") return setErr("Mic not supported");
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      return setErr("Mic denied");
+    }
+    const chunks = [];
+    const r = new MediaRecorder(stream);
+    recRef.current = r;
+    r.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+    r.onstop = async () => {
+      stream.getTracks().forEach((x) => x.stop());
+      setRec("busy");
+      try {
+        const audio = await toWav(new Blob(chunks, { type: r.mimeType || "audio/webm" }));
+        const res = await fetch("/api/transcribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ audio }) });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(d.error || `HTTP ${res.status}`);
+        if (d.text) send(d.text);
+      } catch (e) {
+        setErr(e.message || t.errGeneric);
+      } finally {
+        setRec(null);
+      }
+    };
+    r.start();
+    setRec("rec");
+    setTimeout(() => r.state === "recording" && r.stop(), 20000);
   }
 
   return (
@@ -178,6 +216,9 @@ export default function Chat() {
             placeholder={t.chatPh}
             maxLength={1500}
           />
+          <button type="button" className={`btn ghost mic-mini ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic">
+            <Icon name={rec === "rec" ? "stop" : "mic"} size={18} />
+          </button>
           <button className="btn blue" disabled={busy || !text.trim()} aria-label={t.send}>
             <Icon name="send" size={18} />
           </button>

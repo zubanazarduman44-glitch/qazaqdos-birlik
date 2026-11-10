@@ -926,3 +926,4 @@
 .lv-banner b { flex: 1; }
 @media (max-width: 640px) { .sky-hint { display: none; } }
 :root[data-theme="dark"] .sky .reg { fill: hsla(calc(196 + var(--tone) * 0.7), 72%, calc(36% + var(--tone) * 0.12%), 0.85); }
+.mic-mini.on { background: linear-gradient(135deg, #ff6b6b, #d6264a); color: #fff; animation: nodePulse 1.4s infinite; }
