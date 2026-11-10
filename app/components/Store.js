@@ -30,6 +30,7 @@ export const EMPTY = {
   weekly: null,
   saiys: { claimed: {} },
   shop: { owned: [], wear: {} },
+  sozdik: { days: {}, learned: {}, done: {} },
   lit: {},
   speaking: { level: null, best: {}, log: [] },
   updatedAt: 0,

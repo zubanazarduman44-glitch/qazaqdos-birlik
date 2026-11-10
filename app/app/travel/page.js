@@ -1,5 +1,6 @@
 "use client";
 import LangPicker from "../../components/LangPicker";
+import RegionAtlas from "../../components/RegionAtlas";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
@@ -328,6 +329,7 @@ function Travel() {
             {stamps[region.id] && <span className="stamp-mark pop">🛂 {t.visited}</span>}
           </div>
 
+          <RegionAtlas region={region} lang={lang} />
           <RegionBrief region={region} lang={lang} explain={explain} />
           <div className="region-body">
             <div className="region-info">

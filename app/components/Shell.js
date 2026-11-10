@@ -17,6 +17,7 @@ export const NAV = [
   { href: "/app/qyran", key: "chat", icon: "chat" },
   { href: "/app/vision", key: "vision", icon: "camera" },
   { href: "/app/tuzel", key: "tuzel", icon: "pen" },
+  { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
   { href: "/app/level", key: "level", icon: "chart" },
   { href: "/app/saiys", key: "saiys", icon: "trophy" },
   { href: "/app/literature", key: "lit", icon: "book" },
