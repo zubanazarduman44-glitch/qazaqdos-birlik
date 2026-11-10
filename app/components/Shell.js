@@ -100,7 +100,7 @@ export default function Shell({ children }) {
   useEffect(() => {
     if (ready && authReady && !state.profile.onboarded) router.replace("/onboarding");
   }, [ready, authReady, state.profile.onboarded, router]);
-  useEffect(() => setMore(false), [path]);
+  useEffect(() => { setMore(false); try { window.speechSynthesis?.cancel(); } catch {} }, [path]);
 
   const active = (href) => (href === "/app" ? path === "/app" : path?.startsWith(href));
   const label = (k) => t.navLong[k] || t.nav[k];

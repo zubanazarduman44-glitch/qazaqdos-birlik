@@ -295,3 +295,52 @@ h1, h2, h3 { color: #14263f; }
 .map-side .reg-list { grid-column: 2; grid-row: 1 / span 2; max-height: 190px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 .map-side .map-note { grid-column: 1 / -1; margin: 0; }
 @media (max-width: 760px) { .map-side { grid-template-columns: minmax(0, 1fr); } .map-side .reg-list, .map-side .side-prog, .map-side .map-tools { grid-column: 1; grid-row: auto; } }
+
+/* ═════ Vision рамкасы: қазақы өрнек, көк түссіз ═════ */
+.v2-frame { background: radial-gradient(120% 100% at 30% 0%, #6a3a1a, #34190a); box-shadow: inset 0 0 0 3px #ffd35a, inset 0 0 0 5px #7a3a12, inset 0 0 0 8px rgba(255, 243, 212, 0.25), var(--shadow-lg); }
+.v2-frame::before, .v2-frame::after { content: ""; position: absolute; left: 10px; right: 10px; height: 20px; z-index: 3; pointer-events: none; background: var(--oyu-band) repeat-x center / auto 20px; border-radius: 4px; }
+.v2-frame::before { top: 10px; } .v2-frame::after { bottom: 10px; }
+.v2-empty { background: var(--oyu-tile) center / 96px 96px, transparent; color: #fff3d4; }
+.v2-empty { background-blend-mode: soft-light; }
+.v2-grid-lines { opacity: 0.18; background-image: linear-gradient(rgba(255, 211, 90, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 211, 90, 0.5) 1px, transparent 1px); }
+.v2-frame .c { border-color: #ffd35a; filter: drop-shadow(0 0 8px rgba(255, 190, 40, 0.8)); z-index: 4; }
+.v2-frame .tl { left: 28px; top: 36px; } .v2-frame .tr { right: 28px; top: 36px; } .v2-frame .bl { left: 28px; bottom: 36px; } .v2-frame .br { right: 28px; bottom: 36px; }
+.v2-frame.busy .c { border-color: #ff9f1c; } .v2-frame.ok .c { border-color: #b8ec7a; }
+.v2-beam { background: linear-gradient(180deg, transparent, rgba(255, 211, 90, 0.6), transparent); }
+.v2-status { background: rgba(58, 25, 8, 0.78); z-index: 4; } .v2-tag { z-index: 4; }
+.v2-shutter { border-color: #b8322a; } .v2-shutter.idle { background: var(--btn-gold); color: #4a2b00; border-color: #b8322a; }
+.v2-say { background: var(--btn-gold); color: #4a2b00; }
+
+/* Деңгей: қалай жұмыс істейді */
+.lv-how { margin-top: 16px; padding: 22px; display: grid; gap: 14px; }
+.lv-how h2 { font-family: var(--head); margin: 0; text-align: center; }
+.lv-how ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.lv-how li { display: flex; gap: 12px; align-items: flex-start; }
+.lv-how li b { flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: #b8322a; color: #fff3d4; box-shadow: 0 0 0 3px #ffd35a; }
+.lv-how li div { display: grid; gap: 2px; } .lv-how li span { color: var(--muted, #6b5636); font-size: 14px; }
+.lv-art { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: flex-end; padding-top: 10px; border-top: 2px dashed #e8a400; }
+.lv-intro { background-image: var(--oyu-tile); background-size: 96px 96px; background-blend-mode: soft-light; }
+
+/* Тарих картасы */
+.hist-map { padding: 14px; display: grid; gap: 12px; }
+.hm-eras { display: flex; flex-wrap: wrap; gap: 8px; }
+.hm-eras .chip { cursor: pointer; border: 0; font: inherit; font-weight: 700; }
+.kzmap-wrap.sky.hist .reg { cursor: default; }
+.kzmap-wrap.sky.hist .reg.hs { stroke: #ffd35a; stroke-width: 2; }
+.silk-road { fill: none; stroke: #b8322a; stroke-width: 3; stroke-dasharray: 2 9; stroke-linecap: round; animation: silkMove 1.6s linear infinite; filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.6)); }
+@keyframes silkMove { to { stroke-dashoffset: -22; } }
+.hm-site { cursor: pointer; transition: opacity 0.3s; }
+.hm-site.dim { opacity: 0.28; filter: grayscale(0.6); }
+.hm-site .kz-lm-art { transition: transform 0.25s; transform-box: fill-box; transform-origin: 50% 100%; }
+.hm-site:hover .kz-lm-art, .hm-site.sel .kz-lm-art { transform: scale(1.12); }
+.hm-site.sel .kz-lm-name { fill: #b8322a; }
+.hm-halo { fill: rgba(255, 243, 190, 0.85); stroke: #e8a400; stroke-width: 2; animation: haloPulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes haloPulse { 50% { transform: scale(1.12); fill: rgba(255, 230, 120, 0.95); } }
+.hm-treasure { filter: drop-shadow(0 3px 3px rgba(60, 30, 5, 0.4)); }
+.hm-year { font-size: 10px; font-weight: 800; fill: #7a3a12; paint-order: stroke; stroke: #fff7e2; stroke-width: 3px; }
+.hm-treasures { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.hm-treasures button { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 8px 12px; border-radius: 14px; border: 0; cursor: pointer; font: inherit; background: #fff7e2; box-shadow: inset 0 0 0 1.5px #e8a400; }
+.hm-treasures button.on { background: linear-gradient(90deg, #ffd35a, #fff7e2); }
+.hm-treasures small { display: block; color: #7a5a30; }
+.site-treasure { margin: 4px 0 0; font-weight: 700; color: #b8322a; }
+.art-e svg { filter: drop-shadow(0 6px 6px rgba(60, 30, 5, 0.4)); }

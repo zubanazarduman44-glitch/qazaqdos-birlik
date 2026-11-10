@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
+import { NatArt } from "../../components/NatArt";
 import Icon from "../../components/Icon";
 import { QUESTIONS, LEVELS, grade } from "../../../lib/levelTest";
 import { tx } from "../../../lib/tx";
@@ -70,6 +71,15 @@ function Level() {
               {x.lvlSkip}
             </Link>
           </div>
+        </section>
+        <section className="card lv-how rise">
+          <h2>{x.lvlHow}</h2>
+          <ol>
+            {x.lvlSteps?.map(([h, d], n) => (
+              <li key={n}><b>{n + 1}</b><div><strong>{h}</strong><span>{d}</span></div></li>
+            ))}
+          </ol>
+          <div className="lv-art"><NatArt name="dombyra" size={90} /><NatArt name="yurt" size={90} /><NatArt name="taqiya" size={80} /><NatArt name="bowl" size={80} /><NatArt name="kamshy" size={90} /></div>
         </section>
       </div>
     );

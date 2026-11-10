@@ -45,6 +45,7 @@ export default function WordTap() {
   const popRef = useRef(null);
   const seq = useRef(0);
 
+  const sayRef = useRef(null);
   useEffect(() => {
     function onClick(e) {
       if (popRef.current?.contains(e.target)) return;
@@ -55,14 +56,14 @@ export default function WordTap() {
       const id = ++seq.current;
       const key = hit.w.toLowerCase();
       const local = lookupLocal(hit.w) || cache.get(key);
-      if (local) return setPop({ w: hit.w, box: hit.box, data: local });
+      if (local) { setPop({ w: hit.w, box: hit.box, data: local }); sayRef.current?.(local.kk || hit.w); return; }
       setPop({ w: hit.w, box: hit.box, loading: true });
       fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ word: hit.w, context: hit.ctx }) })
         .then(async (r) => {
           const d = await r.json().catch(() => ({}));
           if (!r.ok) throw new Error(d.error || "err");
           cache.set(key, d);
-          if (id === seq.current) setPop({ w: hit.w, box: hit.box, data: d });
+          if (id === seq.current) { setPop({ w: hit.w, box: hit.box, data: d }); sayRef.current?.(d.kk || hit.w); }
         })
         .catch(() => id === seq.current && setPop({ w: hit.w, box: hit.box, err: true }));
     }
@@ -80,6 +81,7 @@ export default function WordTap() {
     };
   }, []);
 
+  sayRef.current = say;
   async function say(word) {
     const v = await getKkVoice();
     if (v) {

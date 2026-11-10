@@ -164,7 +164,7 @@ export default function Sozdik() {
               <div className="sz-cards">
                 {words.map((w) => (
                   <DayCard key={w.kk} w={w} lang={lang} explain={explain} flipped={!!flip[w.kk]} known={!!sz.learned?.[w.kk]}
-                    onFlip={() => { setFlip((f) => ({ ...f, [w.kk]: !f[w.kk] })); if (!flip[w.kk]) sayKk(w.kk); }} onKnow={() => mark(w)} />
+                    onFlip={() => { setFlip((f) => ({ ...f, [w.kk]: !f[w.kk] })); }} onKnow={() => mark(w)} />
                 ))}
               </div>
               {known === 10 && words.length === 10 && <p className="alert ok">🎉 {x.szDone}</p>}
