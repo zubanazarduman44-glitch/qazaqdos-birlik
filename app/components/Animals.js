@@ -36,6 +36,7 @@ const PAL = {
 };
 const INK = "#1d1612";
 
+const kind2 = (p) => Object.keys(PAL).find((k) => PAL[k] === p);
 function Eyes({ mood, kind, p }) {
   const ex = [78, 122];
   if (kind === "owl") {
@@ -60,17 +61,22 @@ function Eyes({ mood, kind, p }) {
   }
   if (mood === "sleep") return <g stroke={INK} strokeWidth="4" fill="none" strokeLinecap="round">{ex.map((x) => <path key={x} d={`M${x - 8} 96 Q${x} 102 ${x + 8} 96`} />)}</g>;
   if (mood === "happy" || mood === "cheer") return <g stroke={INK} strokeWidth="4.2" fill="none" strokeLinecap="round">{ex.map((x) => <path key={x} d={`M${x - 8} 98 Q${x} 87 ${x + 8} 98`} />)}</g>;
-  const r = mood === "wow" ? 10 : 8.5;
+  const r = mood === "wow" ? 9.6 : 8;
   const lx = mood === "think" ? -2 : 0;
   const ly = mood === "think" ? -3 : 0;
+  const iris = { wolf: "#d9a21c", fox: "#c98a12", leopard: "#7fb6c9", cat: "#7fb04a", tiger: "#d9a21c", bear: "#6b4423", horse: "#4a2c12" }[kind2(p)] || "#6b4423";
   return (
     <g className="bk-eyes" style={{ transformOrigin: "100px 94px" }}>
       {mood === "support" && <g stroke={INK} strokeWidth="3" strokeLinecap="round" fill="none"><path d="M68 80 Q78 74 88 80" transform="rotate(-8 78 80)" /><path d="M112 80 Q122 74 132 80" transform="rotate(8 122 80)" /></g>}
       {ex.map((x) => (
         <g key={x}>
-          <ellipse cx={x + lx} cy={94 + ly} rx={r} ry={r + 1.5} fill={INK} />
-          <circle cx={x + lx + 3} cy={90 + ly} r="3" fill="#fff" />
-          <circle cx={x + lx - 2} cy={98 + ly} r="1.4" fill="#fff" opacity=".7" />
+          <ellipse cx={x} cy="94" rx={r + 2.4} ry={r + 1.4} fill="#fffaf0" />
+          <ellipse cx={x + lx} cy={94 + ly} rx={r - 0.6} ry={r} fill={iris} />
+          <ellipse cx={x + lx} cy={94 + ly} rx={r - 0.6} ry={r} fill="none" stroke={INK} strokeWidth="1.6" opacity=".55" />
+          <ellipse cx={x + lx} cy={95 + ly} rx={r * 0.46} ry={r * 0.72} fill="#0d0805" />
+          <circle cx={x + lx + 2.8} cy={90 + ly} r="2.6" fill="#fff" />
+          <circle cx={x + lx - 2.6} cy={99 + ly} r="1.2" fill="#fff" opacity=".7" />
+          <path d={`M${x - r - 2.6} 92 Q${x} ${84 - (mood === "wow" ? 4 : 0)} ${x + r + 2.6} 92`} stroke={INK} strokeWidth="2.6" fill="none" strokeLinecap="round" />
         </g>
       ))}
     </g>
@@ -158,6 +164,8 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       <g className="an-body">
       <ellipse cx="100" cy="176" rx="50" ry="50" fill={id === "sheep" ? p.l : `url(#${gm})`} />
       <ellipse cx="100" cy="176" rx="50" ry="50" fill={`url(#${gm}s)`} />
+      <ellipse cx="100" cy="176" rx="50" ry="50" fill="none" stroke={p.d} strokeWidth="1.6" opacity=".4" />
+      {id !== "sheep" && <g stroke={p.d} strokeWidth="1.4" strokeLinecap="round" opacity=".25" fill="none"><path d="M62 150 l5 7 M58 168 l7 4 M138 150 l-5 7 M142 168 l-7 4 M70 196 l6 4 M130 196 l-6 4 M84 142 l3 6 M116 142 l-3 6" /></g>}
       <ellipse cx="100" cy="188" rx="30" ry="32" fill={id === "sheep" ? "#fff" : p.l} opacity={id === "sheep" ? 0.6 : 0.95} />
       {id === "sheep" && <g fill={p.l}>{[[62, 168, 16], [138, 170, 16], [78, 204, 15], [124, 206, 15]].map(([cx, cy, r], i) => <circle key={i} cx={cx} cy={cy} r={r} />)}</g>}
       {id === "leopard" && <g fill={p.d} opacity=".7">{[[70, 160], [130, 164], [84, 200], [118, 196], [100, 150]].map(([cx, cy], i) => <circle key={i} cx={cx} cy={cy} r="5" />)}</g>}
@@ -180,7 +188,9 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       <g className="an-head">
       <ellipse cx="100" cy="100" rx="55" ry="49" fill={headFill === p.m ? `url(#${gm})` : headFill} />
       <ellipse cx="100" cy="100" rx="55" ry="49" fill={`url(#${gm}s)`} />
-      <ellipse cx="78" cy="68" rx="16" ry="7" fill="#fff" opacity=".32" transform="rotate(-24 78 68)" />
+      <ellipse cx="78" cy="68" rx="16" ry="7" fill="#fff" opacity=".22" transform="rotate(-24 78 68)" />
+      <ellipse cx="100" cy="100" rx="55" ry="49" fill="none" stroke={p.d} strokeWidth="1.6" opacity=".4" />
+      {id !== "owl" && <g stroke={p.d} strokeWidth="1.4" strokeLinecap="round" opacity=".28" fill="none"><path d="M60 78 l6 5 M54 90 l7 3 M140 78 l-6 5 M146 90 l-7 3 M72 62 l5 6 M128 62 l-5 6 M100 56 v7 M88 58 l2 7 M112 58 l-2 7" /></g>}
       {id === "fox" && <><path d="M48 104 Q62 134 100 140 Q74 112 52 96Z" fill="#fff" /><path d="M152 104 Q138 134 100 140 Q126 112 148 96Z" fill="#fff" /></>}
       {id === "wolf" && <><path d="M46 100 Q60 132 100 140 Q70 110 50 90Z" fill={p.l} opacity=".9" /><path d="M154 100 Q140 132 100 140 Q130 110 150 90Z" fill={p.l} opacity=".9" /></>}
       {id === "tiger" && <g stroke={p.d} strokeWidth="5" strokeLinecap="round" fill="none"><path d="M100 54 V70 M86 58 L90 72 M114 58 L110 72 M48 96 H62 M50 112 L64 108 M152 96 H138 M150 112 L136 108" /></g>}
@@ -204,8 +214,6 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       {id === "camel" && <g stroke={INK} strokeWidth="2.4" strokeLinecap="round"><path d="M70 86 L64 80 M74 84 L72 77 M130 86 L136 80 M126 84 L128 77" /></g>}
 
       <Eyes mood={mood} kind={id === "owl" ? "owl" : "std"} p={p} />
-      <ellipse cx="62" cy="110" rx="8" ry="5" fill="#ff8fb0" opacity=".45" />
-      <ellipse cx="138" cy="110" rx="8" ry="5" fill="#ff8fb0" opacity=".45" />
       {id !== "owl" && <Mouth mood={mood} y={id === "horse" || id === "saiga" ? 132 : 123} />}
       </g>
       {(mood === "happy" || mood === "cheer") && <g className="an-spark" fill="#ffd35a"><path d="M30 60l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" /><path d="M172 44l2.4 5.6 5.6 2.4-5.6 2.4-2.4 5.6-2.4-5.6-5.6-2.4 5.6-2.4z" /></g>}
