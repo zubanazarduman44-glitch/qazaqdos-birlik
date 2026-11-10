@@ -18,6 +18,8 @@ export const NAV = [
   { href: "/app/writing", key: "writing", icon: "pen" },
   { href: "/app/speaking", key: "speaking", icon: "mic" },
   { href: "/app/level", key: "level", icon: "chart" },
+  { href: "/app/literature", key: "lit", icon: "book" },
+  { href: "/app/shop", key: "shop", icon: "bag" },
 ];
 const MOBILE = ["home", "travel", "games", "chat"];
 

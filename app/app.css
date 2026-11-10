@@ -927,3 +927,43 @@
 @media (max-width: 640px) { .sky-hint { display: none; } }
 :root[data-theme="dark"] .sky .reg { fill: hsla(calc(196 + var(--tone) * 0.7), 72%, calc(36% + var(--tone) * 0.12%), 0.85); }
 .mic-mini.on { background: linear-gradient(135deg, #ff6b6b, #d6264a); color: #fff; animation: nodePulse 1.4s infinite; }
+
+/* ═════ Duken ═════ */
+.shop-grid { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+.shop-stage { padding: 18px; display: grid; gap: 10px; justify-items: center; position: sticky; top: 90px; }
+.shop-stage h3 { margin: 0; font-family: var(--head); font-size: 15px; justify-self: start; }
+.dress { position: relative; width: 220px; height: 240px; display: grid; place-items: center; }
+.dr { position: absolute; font-size: 40px; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.3)); }
+.dr-head { top: -6px; left: 50%; transform: translateX(-50%) rotate(-6deg); font-size: 52px; }
+.dr-body { bottom: 36px; left: 50%; transform: translateX(-50%); font-size: 54px; }
+.dr-foot { bottom: -4px; left: 50%; transform: translateX(-50%); font-size: 36px; }
+.dr-acc { right: 0; bottom: 60px; font-size: 40px; }
+.dress-list { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 6px; }
+.dress-list li { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; } .dress-list li span { color: var(--muted); font-weight: 700; }
+.shop-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip.tab { border: 0; cursor: pointer; font: inherit; font-weight: 800; color: var(--ink); } .chip.tab.on { background: var(--btn-blue); color: #fff; }
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+.item { padding: 16px; display: grid; gap: 6px; animation: lvIn 0.45s var(--ease) both; }
+.item.on { box-shadow: inset 0 0 0 2px var(--gold), var(--shadow); }
+.item-e { font-size: 46px; line-height: 1; } .item h4 { margin: 0; font-family: var(--head); font-size: 15px; } .item p { margin: 0; font-size: 13.5px; color: var(--muted); min-height: 54px; }
+.item-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; } .price { font-weight: 800; }
+@media (max-width: 860px) { .shop-grid { grid-template-columns: 1fr; } .shop-stage { position: static; } }
+
+/* ═════ Adebiet ═════ */
+.literature { display: grid; gap: 14px; max-width: 980px; margin: 0 auto; }
+.works { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.work { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px; text-align: left; border: 0; cursor: pointer; font: inherit; color: var(--ink); animation: lvIn 0.45s var(--ease) both; transition: transform 0.25s var(--ease); }
+.work:hover { transform: translateY(-3px); }
+.work-e { font-size: 40px; flex: none; } .work-e.big { font-size: 60px; }
+.work-b { display: grid; gap: 2px; } .work-b b { font-family: var(--head); font-size: 15px; } .work-b small { color: var(--muted); font-weight: 700; } .work-b em { font-style: normal; font-size: 12px; font-weight: 800; color: var(--brand-ink); }
+.work.read { box-shadow: inset 0 0 0 2px var(--ok); } .work-ok { position: absolute; right: 12px; top: 10px; color: var(--ok); font-weight: 800; }
+.reader { padding: 24px; display: grid; gap: 14px; }
+.reader-head { display: flex; align-items: center; gap: 16px; } .reader-head > div { flex: 1; } .reader-head h2 { margin: 6px 0 2px; font-family: var(--head); }
+.reader-text { font-size: clamp(17px, 2.4vw, 20px); line-height: 1.85; margin: 0; }
+.snt { border-radius: 8px; padding: 2px 0; transition: background 0.3s, color 0.3s; }
+.snt.past { color: var(--muted); }
+.snt.now { background: linear-gradient(90deg, rgba(255, 210, 90, 0.55), rgba(255, 210, 90, 0.2)); box-shadow: 0 0 0 4px rgba(255, 210, 90, 0.25); color: var(--ink); }
+.reader-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.lit-chat { padding: 18px; display: grid; gap: 10px; } .lit-chat h3 { margin: 0; font-family: var(--head); font-size: 15px; }
+.lit-list { display: grid; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 4px; }
+.lit-chat .composer { display: flex; gap: 8px; } .lit-chat .composer .input { flex: 1; min-width: 0; }

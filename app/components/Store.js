@@ -21,6 +21,8 @@ export const EMPTY = {
   vision: [],
   chat: [],
   cefr: null,
+  shop: { owned: [], wear: {} },
+  lit: {},
   speaking: { level: null, best: {}, log: [] },
   updatedAt: 0,
 };
