@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef } from "react";
 import { useApp } from "../Store";
-import Birlik from "../Birlik";
+import Alash from "../Alash";
 import Icon from "../Icon";
 import { L } from "../../../lib/i18n";
 import { TOPICS, makeQuestion, wordsByTopic } from "../../../lib/words";
@@ -94,7 +94,7 @@ export default function Frame({ game, children, result, onRestart }) {
       </header>
       {result ? (
         <section className="card game-result pop">
-          <Birlik mood={result.win ? "cheer" : result.draw ? "idle" : "support"} size={140} />
+          <Alash mood={result.win ? "cheer" : result.draw ? "idle" : "support"} size={140} />
           <h2>{result.win ? t.youWin : result.draw ? t.draw : t.youLose}</h2>
           {result.text && <p className="muted">{result.text}</p>}
           <span className="chip gold">{result.win ? t.reward(20, 10) : t.reward(5, 1)}</span>

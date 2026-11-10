@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useApp } from "../../components/Store";
-import Birlik from "../../components/Birlik";
+import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 import { LangSeg } from "../../components/Shell";
 import { AVATARS, EXPLAIN_LANGS } from "../../../lib/i18n";
@@ -31,7 +31,7 @@ export default function Profile() {
             <i style={{ width: `${lvl.pct}%` }} />
           </div>
         </div>
-        <Birlik mood="happy" size={90} />
+        <Alash mood="happy" size={90} />
       </section>
 
       <div className="grid g4">

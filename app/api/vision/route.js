@@ -1,4 +1,4 @@
-// Бірлік Vision: суреттегі затты тауып, қазақша атауын үйретеді. Сурет сақталмайды.
+// Alash Vision: суреттегі затты тауып, қазақша атауын үйретеді. Сурет сақталмайды.
 import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
 
 export const maxDuration = 60;
@@ -32,7 +32,7 @@ export async function POST(req) {
   if (!base64 || base64.length > 6_000_000) return Response.json({ error: "Image too large" }, { status: 413 });
   const lang = LANG_NAMES[explain] || LANG_NAMES.ru;
 
-  const prompt = `Сен — Бірлік, қазақ тілін үйретуші дос. Суреттің ортасындағы негізгі затты анықта.
+  const prompt = `Сен — Alash, қазақ тілін үйретуші дос. Суреттің ортасындағы негізгі затты анықта.
 Түсіндіру тілі: ${lang}. Қазақша сөздер мен сөйлемдер — кириллицамен, грамматикасы дұрыс, бастауыш деңгейге түсінікті болсын.
 Егер суретте адамның беті, құжат немесе жеке ақпарат болса — оны сипаттама, found=false қой.
 Зат анық көрінбесе found=false қойып, translation өрісіне қысқаша «затты жақынырақ түсір» деген кеңес жаз.`;

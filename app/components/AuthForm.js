@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "./Store";
-import Birlik from "./Birlik";
+import Alash from "./Alash";
 import Icon from "./Icon";
 import { LangSeg, Logo } from "./Shell";
 import { getAuthConfig, resetPassword, signIn, signInWithGoogle, signUp } from "../../lib/auth";
@@ -76,7 +76,7 @@ export default function AuthForm({ mode }) {
       </header>
       <div className="auth-box">
         <div className="auth-side">
-          <Birlik mood={reg ? "cheer" : "happy"} size={190} />
+          <Alash mood={reg ? "cheer" : "happy"} size={190} />
           <div className="bubble">{t.heroBubble}</div>
         </div>
         <form className="card auth-card rise" onSubmit={submit}>

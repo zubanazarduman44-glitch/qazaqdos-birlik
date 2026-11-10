@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
-import Birlik from "../../components/Birlik";
+import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 import Quiz from "../../components/Quiz";
 import { REGIONS } from "../../../lib/regions";
@@ -167,9 +167,9 @@ function Travel() {
               );
             })}
             {region && KZ_CENTERS[region.map] && (
-              <g transform={`translate(${KZ_CENTERS[region.map][0]} ${KZ_CENTERS[region.map][1] - 22})`} pointerEvents="none" className="map-birlik">
+              <g transform={`translate(${KZ_CENTERS[region.map][0]} ${KZ_CENTERS[region.map][1] - 22})`} pointerEvents="none" className="map-alash">
                 <g transform="translate(-22 -50) scale(0.22)">
-                  <Birlik mood="happy" size={200} />
+                  <Alash mood="happy" size={200} />
                 </g>
               </g>
             )}
@@ -204,7 +204,7 @@ function Travel() {
                 ))}
               </div>
               <div className="fact">
-                <Birlik mood="wow" size={56} />
+                <Alash mood="wow" size={56} />
                 <p>
                   <b>{t.fact}: </b>
                   {L(region.fact, lang)}
@@ -263,7 +263,7 @@ function Travel() {
         </section>
       ) : (
         <section className="card pick-hint">
-          <Birlik mood="think" size={90} />
+          <Alash mood="think" size={90} />
           <p>{t.travelSub}</p>
         </section>
       )}

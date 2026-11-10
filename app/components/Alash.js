@@ -1,4 +1,4 @@
-// Бірлік — QazaqDos кейіпкері. Аспан-көк, басында алтын шаңырақ, кеудесінде қошқар мүйіз өрнегі.
+// Alash — TILIM кейіпкері. Аспан-көк, басында алтын шаңырақ, кеудесінде қошқар мүйіз өрнегі.
 // mood: idle | happy | think | wow | support | cheer | sleep
 import { useId } from "react";
 
@@ -55,14 +55,14 @@ function Eyes({ mood }) {
   );
 }
 
-export default function Birlik({ mood = "idle", size = 160, className = "", title = "Бірлік" }) {
+export default function Alash({ mood = "idle", size = 160, className = "", title = "Alash" }) {
   // Әр кейіпкерге бөлек градиент id (жасырын SVG-дегі анықтамаға сілтеме жасалмауы үшін)
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const B = `bkB${uid}`, G = `bkG${uid}`, Y = `bkY${uid}`;
   const armsUp = mood === "happy" || mood === "cheer";
   return (
     <svg
-      className={`birlik bk-${mood} ${className}`}
+      className={`alash bk-${mood} ${className}`}
       viewBox="0 0 200 230"
       width={size}
       height={(size * 230) / 200}

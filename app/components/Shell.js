@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "./Store";
 import Icon from "./Icon";
-import Birlik from "./Birlik";
+import Alash from "./Alash";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
 
 export const NAV = [
@@ -12,7 +12,7 @@ export const NAV = [
   { href: "/app/travel", key: "travel", icon: "map" },
   { href: "/app/history", key: "history", icon: "scroll" },
   { href: "/app/games", key: "games", icon: "target" },
-  { href: "/app/birlik", key: "chat", icon: "chat" },
+  { href: "/app/alash", key: "chat", icon: "chat" },
   { href: "/app/vision", key: "vision", icon: "camera" },
   { href: "/app/writing", key: "writing", icon: "pen" },
 ];
@@ -40,12 +40,12 @@ export function Orn({ className = "" }) {
 
 export function Logo({ small }) {
   return (
-    <Link href="/" className={`logo ${small ? "sm" : ""}`} aria-label="QazaqDos">
+    <Link href="/" className={`logo ${small ? "sm" : ""}`} aria-label="TILIM">
       <span className="logo-mark">
-        <Birlik size={small ? 30 : 38} />
+        <Alash size={small ? 30 : 38} />
       </span>
       <span className="logo-word">
-        Qazaq<b>Dos</b>
+        TIL<b>IM</b>
       </span>
     </Link>
   );

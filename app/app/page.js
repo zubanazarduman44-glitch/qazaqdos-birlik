@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { DAILY_GOAL, dayKey, localDayIndex, useApp } from "../components/Store";
-import Birlik from "../components/Birlik";
+import Alash from "../components/Alash";
 import Icon from "../components/Icon";
 import { REGIONS } from "../../lib/regions";
 import { WORDS, tr } from "../../lib/words";
@@ -52,7 +52,7 @@ export default function Home() {
   const next = REGIONS.find((r) => !state.stamps?.[r.id]);
   const dayIdx = localDayIndex();
   const word = WORDS[dayIdx % WORDS.length];
-  const tip = t.birlikTip[dayIdx % t.birlikTip.length];
+  const tip = t.alashTip[dayIdx % t.alashTip.length];
   const savedToday = state.vocab?.some((v) => v.kk === word.kk);
   const mood = todayXp >= DAILY_GOAL ? "cheer" : todayXp > 0 ? "happy" : "idle";
 
@@ -60,7 +60,7 @@ export default function Home() {
     () => [
       { href: "/app/history", e: "🏺", t: t.nav.history },
       { href: "/app/games", e: "🎯", t: t.nav.games },
-      { href: "/app/birlik", e: "💬", t: t.navLong.chat },
+      { href: "/app/alash", e: "💬", t: t.navLong.chat },
       { href: "/app/vision", e: "📷", t: t.navLong.vision },
       { href: "/app/writing", e: "✍️", t: t.navLong.writing },
     ],
@@ -76,7 +76,7 @@ export default function Home() {
           <div className="bubble hh-bubble">{tip}</div>
         </div>
         <div className="hh-art">
-          <Birlik mood={mood} size={150} />
+          <Alash mood={mood} size={150} />
         </div>
         <div className="hh-goal">
           <Ring value={todayXp} max={DAILY_GOAL} />

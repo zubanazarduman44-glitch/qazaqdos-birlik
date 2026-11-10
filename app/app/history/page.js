@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useApp } from "../../components/Store";
-import Birlik from "../../components/Birlik";
+import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 import Quiz from "../../components/Quiz";
 import { SITES } from "../../../lib/history";
@@ -93,7 +93,7 @@ export default function History() {
         </div>
         <div className="site-body">
           <div className="story">
-            <Birlik mood="idle" size={70} />
+            <Alash mood="idle" size={70} />
             <p>{L(site.story, lang)}</p>
           </div>
           <div className="site-words">

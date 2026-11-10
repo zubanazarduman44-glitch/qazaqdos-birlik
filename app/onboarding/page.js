@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "../components/Store";
-import Birlik from "../components/Birlik";
+import Alash from "../components/Alash";
 import Icon from "../components/Icon";
 import { LangSeg, Logo } from "../components/Shell";
 import { AVATARS, EXPLAIN_LANGS } from "../../lib/i18n";
@@ -35,7 +35,7 @@ export default function Onboarding() {
       </header>
       <div className="ob card rise">
         <div className="ob-top">
-          <Birlik mood={step === 1 ? "happy" : "wow"} size={96} />
+          <Alash mood={step === 1 ? "happy" : "wow"} size={96} />
           <div>
             <span className="badge">{step} / 2</span>
             <h1>{step === 1 ? t.ob1 : t.ob2}</h1>

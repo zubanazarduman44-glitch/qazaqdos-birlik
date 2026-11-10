@@ -3,10 +3,10 @@ import "./app.css";
 import { AppProvider } from "./components/Store";
 
 export const metadata = {
-  title: "QazaqDos — қазақ тілін Бірлікпен бірге үйрен",
+  title: "TILIM — қазақ тілін Alash-пен бірге үйрен",
   description:
-    "QazaqDos: Қазақстанды аралап, ұлттық ойындар ойнап, Бірлік атты виртуалды доспен сөйлесе отырып қазақ тілін үйрен. Учите казахский язык в путешествии и в игре.",
-  applicationName: "QazaqDos",
+    "TILIM: Қазақстанды аралап, ұлттық ойындар ойнап, Alash атты виртуалды доспен сөйлесе отырып қазақ тілін үйрен. Учите казахский язык в путешествии и в игре.",
+  applicationName: "TILIM",
   icons: { icon: "/icon.svg" },
 };
 

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useApp } from "../../components/Store";
-import Birlik from "../../components/Birlik";
+import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 import { GAMES } from "../../../lib/games";
 import { L } from "../../../lib/i18n";
@@ -16,7 +16,7 @@ export default function Games() {
           <h1>{t.gamesTitle}</h1>
           <p>{t.gamesSub}</p>
         </div>
-        <Birlik mood="cheer" size={100} />
+        <Alash mood="cheer" size={100} />
       </header>
       <div className="grid g3">
         {GAMES.map((g, i) => {

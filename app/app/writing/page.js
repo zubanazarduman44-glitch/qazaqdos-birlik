@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useApp } from "../../components/Store";
-import Birlik from "../../components/Birlik";
+import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
@@ -58,7 +58,7 @@ export default function Writing() {
         <div className="wr-actions">
           <span className="muted small">{text.length} / 2000</span>
           <button className="btn gold big" onClick={check} disabled={busy || !text.trim()}>
-            {busy ? <Birlik mood="think" size={28} /> : <Icon name="sparkle" size={18} />} {t.improve}
+            {busy ? <Alash mood="think" size={28} /> : <Icon name="sparkle" size={18} />} {t.improve}
           </button>
         </div>
         {err && <p className="alert">{err}</p>}
@@ -67,7 +67,7 @@ export default function Writing() {
       {res && (
         <section className="card wr-out rise">
           <div className="wr-score">
-            <Birlik mood={score >= 85 ? "cheer" : score >= 60 ? "happy" : "support"} size={90} />
+            <Alash mood={score >= 85 ? "cheer" : score >= 60 ? "happy" : "support"} size={90} />
             <div>
               <b className="wr-num">{score}</b>
               <span className="muted">/100</span>
@@ -104,7 +104,7 @@ export default function Writing() {
           )}
           {res.tip && (
             <div className="fact">
-              <Birlik mood="idle" size={44} />
+              <Alash mood="idle" size={44} />
               <p>
                 <b>{t.tip}: </b>
                 {res.tip}

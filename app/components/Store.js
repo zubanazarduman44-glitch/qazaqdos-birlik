@@ -2,7 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { T } from "../../lib/i18n";
 import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut } from "../../lib/auth";
-import Birlik from "./Birlik";
+import Alash from "./Alash";
 
 const KEY = "qd_state_v1";
 export const DAILY_GOAL = 50;
@@ -230,7 +230,7 @@ export function AppProvider({ children }) {
       <div className="toasts" aria-live="polite">
         {toasts.map((x) => (
           <div key={x.id} className="toast pop">
-            <Birlik mood={x.mood} size={44} />
+            <Alash mood={x.mood} size={44} />
             <span>{x.msg}</span>
           </div>
         ))}

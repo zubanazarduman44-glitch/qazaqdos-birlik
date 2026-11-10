@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useApp } from "./Store";
-import Birlik from "./Birlik";
+import Alash from "./Alash";
 import Icon from "./Icon";
 
 // Жалпы тест: questions = [{ prompt, options: [{key,label,e}], answer }]
@@ -32,7 +32,7 @@ export default function Quiz({ questions, onDone, pass = Math.ceil(questions.len
     const ok = right >= pass;
     return (
       <div className="quiz-done pop">
-        <Birlik mood={ok ? "cheer" : "support"} size={110} />
+        <Alash mood={ok ? "cheer" : "support"} size={110} />
         <h3>{t.score(right, questions.length)}</h3>
       </div>
     );

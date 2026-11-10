@@ -1,4 +1,4 @@
-// Бірлікпен чат: қазақ тілін үйретуші виртуалды дос
+// Alash-пен чат: қазақ тілін үйретуші виртуалды дос
 import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
 
 export const maxDuration = 60;
@@ -7,7 +7,7 @@ const MAX_LEN = 1500;
 
 function system(explain, name, level) {
   const lang = LANG_NAMES[explain] || LANG_NAMES.ru;
-  return `Сен — Бірлік, QazaqDos сайтының виртуалды досы: аспан-көк, басында алтын шаңырағы бар мейірімді кейіпкер.
+  return `Сен — Alash, TILIM сайтының виртуалды досы: аспан-көк, басында алтын шаңырағы бар мейірімді кейіпкер.
 Міндетің — пайдаланушыға қазақ тілін үйрету. Пайдаланушының аты: ${name || "дос"}. Деңгейі: ${level || "бастауыш"}.
 
 Ережелер:

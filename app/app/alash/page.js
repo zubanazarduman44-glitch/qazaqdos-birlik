@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
-import Birlik from "../../components/Birlik";
+import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 
 // Қарапайым форматтау: **жуан** және жаңа жол (HTML енгізілмейді)
@@ -56,7 +56,7 @@ export default function Chat() {
     <div className="chat-page">
       <section className="card chat">
         <header className="chat-head">
-          <Birlik mood={busy ? "think" : "happy"} size={58} />
+          <Alash mood={busy ? "think" : "happy"} size={58} />
           <div>
             <h1>{t.chatTitle}</h1>
             <p className="muted small">{t.chatSub}</p>
@@ -71,7 +71,7 @@ export default function Chat() {
         <div className="chat-list" ref={listRef}>
           <div className="msg bot">
             <span className="msg-av">
-              <Birlik size={34} />
+              <Alash size={34} />
             </span>
             <div className="msg-b">{t.chatHi}</div>
           </div>
@@ -79,7 +79,7 @@ export default function Chat() {
             <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"} rise`}>
               {m.role !== "user" && (
                 <span className="msg-av">
-                  <Birlik size={34} />
+                  <Alash size={34} />
                 </span>
               )}
               <div className="msg-b">{m.role === "user" ? m.text : <Rich text={m.text} />}</div>
@@ -88,7 +88,7 @@ export default function Chat() {
           {busy && (
             <div className="msg bot">
               <span className="msg-av">
-                <Birlik mood="think" size={34} />
+                <Alash mood="think" size={34} />
               </span>
               <div className="msg-b typing">
                 <i />

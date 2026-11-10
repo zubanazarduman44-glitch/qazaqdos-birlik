@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
-import Birlik from "../../components/Birlik";
+import Alash from "../../components/Alash";
 import Icon from "../../components/Icon";
 
 // Суретті кішірейтеміз (1024 px, JPEG) — жылдам жіберу үшін
@@ -117,7 +117,7 @@ export default function Vision() {
               <img src={shot} alt="" />
             ) : (
               <div className="vf-empty">
-                <Birlik mood="wow" size={110} />
+                <Alash mood="wow" size={110} />
               </div>
             )}
             <span className="vf-c tl" />
@@ -168,7 +168,7 @@ export default function Vision() {
                 </div>
                 {res.tip && (
                   <div className="fact">
-                    <Birlik mood="idle" size={44} />
+                    <Alash mood="idle" size={44} />
                     <p>{res.tip}</p>
                   </div>
                 )}
@@ -178,13 +178,13 @@ export default function Vision() {
               </div>
             ) : (
               <div className="vword">
-                <Birlik mood="support" size={100} />
+                <Alash mood="support" size={100} />
                 <p>{res.translation}</p>
               </div>
             )
           ) : (
             <div className="vword muted">
-              <Birlik mood={busy ? "think" : "idle"} size={100} />
+              <Alash mood={busy ? "think" : "idle"} size={100} />
               <p>{busy ? t.analyzing : t.visionSub}</p>
             </div>
           )}

@@ -123,7 +123,7 @@
 .hero-photo { position: absolute; inset: 0 0 40px 30px; border-radius: 34px; overflow: hidden; box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.6), var(--shadow-lg); }
 .hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hero-photo-fade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(10, 40, 80, 0.35)); }
-.hero-birlik { position: absolute; left: -10px; bottom: -6px; filter: drop-shadow(0 20px 30px rgba(10, 60, 120, 0.35)); }
+.hero-alash { position: absolute; left: -10px; bottom: -6px; filter: drop-shadow(0 20px 30px rgba(10, 60, 120, 0.35)); }
 .hero-bubble { position: absolute; left: 200px; bottom: 150px; max-width: 250px; }
 .float-chip {
   position: absolute; padding: 9px 14px; border-radius: 999px; background: var(--paper-solid); font-weight: 800; font-size: 14px;
@@ -162,7 +162,7 @@
   .hero-art { min-height: 380px; }
   .hero-photo { inset: 0 0 30px 0; }
   .hero-bubble { left: 150px; bottom: 120px; max-width: 200px; font-size: 14px; }
-  .hero-birlik svg { width: 170px; height: auto; }
+  .hero-alash svg { width: 170px; height: auto; }
 }
 @media (max-width: 560px) {
   .hide-xs { display: none; }
@@ -171,7 +171,7 @@
   .float-chip { font-size: 12.5px; padding: 7px 11px; }
   .float-chip.c2 { top: 70px; }
   .hero-bubble { left: 120px; bottom: 100px; max-width: 180px; padding: 10px 12px; font-size: 13px; }
-  .hero-birlik svg { width: 140px; }
+  .hero-alash svg { width: 140px; }
   .l-cta { flex-direction: column; text-align: center; }
   .logo-word { font-size: 18px; }
 }
@@ -304,7 +304,7 @@
 .reg.city { stroke-width: 1; }
 .city-dot { fill: #fff; stroke: var(--gold); stroke-width: 3; }
 .reg-e { font-size: 18px; }
-.map-birlik { animation: bkFloat 2.6s ease-in-out infinite; }
+.map-alash { animation: bkFloat 2.6s ease-in-out infinite; }
 .map-note { margin: 8px 4px 0; }
 .region-anchor { scroll-margin-top: 80px; }
 .region { padding: 0; overflow: hidden; }
@@ -608,3 +608,147 @@
 .acc p { margin: 0; display: flex; align-items: center; gap: 6px; }
 .danger-btn { color: var(--bad); }
 @media (max-width: 560px) { .prof-top > svg { display: none; } }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TILIM · шыны қабаты: жоғарыдағы стильдерді «қырауланған шыны» түріне келтіреді
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Логотип */
+.logo-mark { background: linear-gradient(155deg, var(--sheen-a), var(--sheen-b)); box-shadow: inset 0 1px 0 var(--edge), inset 0 0 0 1px var(--rim), var(--shadow); -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s); }
+.logo-word { font-weight: 800; letter-spacing: 0.08em; }
+.logo-word b { color: var(--brand); font-weight: 800; }
+
+/* Ұсақ шыны беттер */
+.icon-btn, .seg, .pill, .me, .me-av, .av, .opt, .qopt, .word-chip, .msg-b, .msg-av, .changes li, .wod-e, .site-e, .tl-dot, .search, .vex, .wr-text, .prof-av, .flip-f {
+  -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s);
+}
+.icon-btn, .seg, .pill { background: var(--paper); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
+.icon-btn:hover { box-shadow: inset 0 0 0 1.5px var(--brand), inset 0 1px 0 var(--edge); }
+.seg button.on { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+.pill-bar { background: var(--line); }
+
+/* Ортақ шыны жиек (бүйір мәзір, жоғарғы жолақ, төменгі мәзір) */
+.side::after, .topbar::after, .bottom-nav::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.12) 38%, rgba(255, 255, 255, 0.04) 62%, rgba(255, 255, 255, 0.55));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0.9;
+}
+:root[data-theme="dark"] .side::after, :root[data-theme="dark"] .topbar::after, :root[data-theme="dark"] .bottom-nav::after { opacity: 0.45; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .side::after, :root:not([data-theme="light"]) .topbar::after, :root:not([data-theme="light"]) .bottom-nav::after { opacity: 0.45; }
+}
+
+/* Бүйір мәзір — қалқып тұрған шыны панель */
+.shell { grid-template-columns: 276px minmax(0, 1fr); }
+.side {
+  top: 14px; height: calc(100vh - 28px); margin: 14px 0 14px 14px; border-radius: 30px; padding: 20px 14px;
+  background: linear-gradient(155deg, var(--sheen-a), var(--sheen-b));
+  box-shadow: inset 0 1px 0 var(--edge), var(--shadow);
+}
+.side-link { border-radius: 16px; }
+.side-link:hover { background: var(--paper); }
+.side-link.on { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 14px 26px -14px rgba(40, 90, 230, 0.85); }
+.me { background: var(--paper); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
+.me.on { box-shadow: inset 0 0 0 2px var(--brand), inset 0 1px 0 var(--edge); }
+.me-av { background: var(--paper-solid); }
+
+/* Жоғарғы жолақ — шыны таблетка */
+.topbar {
+  top: 14px; margin: 14px clamp(16px, 3vw, 36px) 6px; padding: 8px 12px 8px 14px; border-radius: 24px;
+  background: linear-gradient(155deg, var(--sheen-a), var(--sheen-b));
+  box-shadow: inset 0 1px 0 var(--edge), var(--shadow);
+}
+.main { padding-top: 10px; }
+.demo-note { background: rgba(255, 176, 32, 0.24); color: #7a4700; box-shadow: inset 0 0 0 1px rgba(255, 190, 70, 0.5); }
+:root[data-theme="dark"] .demo-note { color: var(--gold); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .demo-note { color: var(--gold); } }
+
+/* Хабарлама және ашылмалы тізім — оқылуы үшін тығызырақ шыны */
+.toast, .search-pop { background: var(--paper-strong); box-shadow: inset 0 1px 0 var(--edge), 0 0 0 1px var(--rim), var(--shadow-lg); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+.float-chip { background: var(--paper-strong); box-shadow: inset 0 1px 0 var(--edge), 0 0 0 1px var(--rim), var(--shadow); -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s); }
+
+/* Тақырыптағы белгі: бас әріпсіз */
+.kicker { text-transform: none; letter-spacing: 0; font-size: 14px; }
+.kicker::before { background: var(--btn-gold); width: 22px; height: 3px; }
+
+/* Таңдау, тест, сөз карточкалары: шыны */
+.opt, .av, .word-chip, .changes li { background: var(--paper-solid); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
+.opt.on { box-shadow: inset 0 0 0 2px var(--brand), inset 0 1px 0 var(--edge), 0 14px 26px -16px rgba(10, 159, 180, 0.8); }
+.av.on { box-shadow: inset 0 0 0 2.5px var(--gold), inset 0 1px 0 var(--edge); background: rgba(255, 176, 32, 0.2); }
+.qopt { background: var(--paper-solid); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge), 0 10px 20px -16px rgba(6, 80, 110, 0.6); }
+.qopt:not(:disabled):hover { box-shadow: inset 0 0 0 2px var(--brand), inset 0 1px 0 var(--edge), 0 14px 24px -16px rgba(10, 159, 180, 0.7); transform: translateY(-2px); }
+.qopt.ok { box-shadow: inset 0 0 0 2px var(--ok), inset 0 1px 0 var(--edge); }
+.qopt.bad { box-shadow: inset 0 0 0 2px var(--bad), inset 0 1px 0 var(--edge); }
+.flip-f { box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge), 0 10px 20px -16px rgba(6, 80, 110, 0.6); background: var(--paper-solid); }
+.search { background: var(--paper-solid); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
+.msg-b { background: var(--paper-solid); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
+.msg.me .msg-b { background: var(--btn-blue); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+.typing i { background: var(--brand); }
+.chat-head, .composer { box-shadow: none; }
+.chat-head { border-bottom: 1px solid var(--line); }
+.composer { border-top: 1px solid var(--line); }
+
+/* Түсті жуулар: аква + өрік */
+.home-hero { background: linear-gradient(135deg, rgba(25, 211, 197, 0.26), rgba(255, 179, 107, 0.26)), linear-gradient(155deg, var(--sheen-a), var(--sheen-b)); }
+.l-cta { background: linear-gradient(135deg, rgba(25, 211, 197, 0.28), rgba(255, 179, 107, 0.3)), linear-gradient(155deg, var(--sheen-a), var(--sheen-b)); }
+.feat-e, .next-emoji { background: linear-gradient(135deg, rgba(25, 211, 197, 0.3), rgba(255, 179, 107, 0.32)); box-shadow: inset 0 1px 0 var(--edge), inset 0 0 0 1px var(--rim); }
+.site-head { background: linear-gradient(135deg, rgba(255, 179, 107, 0.3), rgba(25, 211, 197, 0.24)); }
+.viewfinder { background: linear-gradient(135deg, rgba(25, 211, 197, 0.28), rgba(255, 179, 107, 0.26)); box-shadow: inset 0 0 0 1px var(--rim); }
+.fact { background: rgba(255, 176, 32, 0.16); box-shadow: inset 0 0 0 1px rgba(255, 190, 70, 0.35); }
+.track { background: linear-gradient(180deg, rgba(134, 201, 96, 0.28), rgba(214, 180, 110, 0.28)), linear-gradient(155deg, var(--sheen-a), var(--sheen-b)); }
+.asyk-field { background: linear-gradient(180deg, transparent, rgba(214, 180, 110, 0.28)), linear-gradient(155deg, var(--sheen-a), var(--sheen-b)); }
+.step-n { color: var(--brand); }
+.wod .badge { justify-self: start; }
+
+/* Лендинг: шаңырақ диск, шыны жақтау */
+.hl { color: var(--brand-ink); font-weight: 500; }
+.hero-art::before {
+  content: ""; position: absolute; width: 112%; aspect-ratio: 1; left: -6%; top: -9%; border-radius: 50%; pointer-events: none;
+  background:
+    repeating-conic-gradient(from 8deg, rgba(255, 255, 255, 0.6) 0 0.8deg, transparent 0.8deg 15deg),
+    radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 60%, rgba(255, 255, 255, 0.06) 61% 100%);
+  -webkit-mask: radial-gradient(circle, transparent 0 15%, #000 16% 68%, transparent 70%);
+  mask: radial-gradient(circle, transparent 0 15%, #000 16% 68%, transparent 70%);
+}
+:root[data-theme="dark"] .hero-art::before { opacity: 0.55; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero-art::before { opacity: 0.55; } }
+.hero-photo { border-radius: 36px; box-shadow: 0 0 0 9px rgba(255, 255, 255, 0.28), 0 0 0 10px var(--rim), var(--shadow-lg); }
+:root[data-theme="dark"] .hero-photo { box-shadow: 0 0 0 9px rgba(255, 255, 255, 0.07), 0 0 0 10px var(--rim), var(--shadow-lg); }
+.strip-card { border-radius: 26px; box-shadow: 0 0 0 1px var(--rim), var(--shadow); }
+.faq summary::after { color: var(--brand); }
+
+/* Карта */
+.kzmap-wrap { background: linear-gradient(155deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.12)); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); border-radius: 22px; }
+.reg { fill: hsl(176, 52%, calc(74% + var(--tone) * 0.12%)); stroke: rgba(255, 255, 255, 0.95); }
+.reg:hover, .reg:focus-visible { fill: #86ece1; filter: drop-shadow(0 4px 10px rgba(6, 110, 120, 0.4)); }
+.lg-todo { background: #a8ebe4; }
+:root[data-theme="dark"] .kzmap-wrap { background: linear-gradient(155deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)); }
+:root[data-theme="dark"] .reg { fill: hsl(222, 42%, calc(28% + var(--tone) * 0.1%)); stroke: rgba(160, 180, 255, 0.4); }
+:root[data-theme="dark"] .reg:hover, :root[data-theme="dark"] .reg:focus-visible { fill: #3a8f9c; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .kzmap-wrap { background: linear-gradient(155deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)); }
+  :root:not([data-theme="light"]) .reg { fill: hsl(222, 42%, calc(28% + var(--tone) * 0.1%)); stroke: rgba(160, 180, 255, 0.4); }
+  :root:not([data-theme="light"]) .reg:hover, :root:not([data-theme="light"]) .reg:focus-visible { fill: #3a8f9c; }
+}
+
+/* Төменгі мәзір және телефон */
+.bottom-nav { box-shadow: inset 0 1px 0 var(--edge), var(--shadow-lg); border-radius: 26px; }
+@media (max-width: 960px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .topbar { top: 10px; margin: 10px 12px 2px; padding: 8px 12px; border-radius: 20px; }
+  .sheet-wrap { background: rgba(5, 20, 40, 0.28); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .sheet { -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+}
+@media (max-width: 900px) {
+  .hero-art::before { width: 108%; left: -4%; top: -6%; }
+}
+
+/* Backdrop-filter қолдамайтын браузер: шыныны тығызырақ етеміз */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --paper: rgba(255, 255, 255, 0.82); --paper-solid: rgba(255, 255, 255, 0.9); --sheen-a: rgba(255, 255, 255, 0.9); --sheen-b: rgba(255, 255, 255, 0.78); }
+  :root[data-theme="dark"] { --paper: rgba(20, 26, 64, 0.92); --paper-solid: rgba(28, 36, 84, 0.94); --sheen-a: rgba(24, 30, 72, 0.94); --sheen-b: rgba(18, 24, 60, 0.94); }
+}
