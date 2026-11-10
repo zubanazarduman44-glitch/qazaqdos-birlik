@@ -1,4 +1,4 @@
-// Qyran — TILIM кейіпкері: алтын қыран (бүркіт), бүйірден қараған, бұтақта отыр.
+// Aqyl — TILIM кейіпкері: алтын қыран (бүркіт), бүйірден қараған, бұтақта отыр.
 // mood: idle | happy | think | wow | support | cheer | sleep
 import { useId } from "react";
 import { useSkin } from "../../lib/skin";
@@ -26,7 +26,7 @@ function Eye({ mood }) {
   );
 }
 
-export default function Qyran({ mood = "idle", size = 160, className = "", title = "Qyran", skin: skinProp }) {
+export default function Qyran({ mood = "idle", size = 160, className = "", title = "Aqyl", skin: skinProp }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const cur = useSkin();
   const skin = skinProp || cur;

@@ -1,4 +1,4 @@
-// Qyran Vision: суреттегі затты тауып, қазақша атауын үйретеді. Сурет сақталмайды.
+// Aqyl Vision: суреттегі затты тауып, қазақша атауын үйретеді. Сурет сақталмайды.
 import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
 
 export const maxDuration = 60;

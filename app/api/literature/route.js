@@ -1,4 +1,4 @@
-// Әдебиет: Qyran мәтінді оқығаннан кейін сол мәтін бойынша сұрақ қояды және жауап береді
+// Әдебиет: Aqyl мәтінді оқығаннан кейін сол мәтін бойынша сұрақ қояды және жауап береді
 import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
 
 export const maxDuration = 60;
@@ -51,7 +51,7 @@ export async function POST(req) {
     }
   }
 
-  const system = `Сен — Qyran, қазақ әдебиетін үйретуші мейірімді мұғалімсің. Оқушы (${String(name).slice(0, 40) || "дос"}, деңгейі ${String(level).slice(0, 6)}) мына мәтінді оқып болды.
+  const system = `Сен — Aqyl, қазақ әдебиетін үйретуші мейірімді мұғалімсің. Оқушы (${String(name).slice(0, 40) || "дос"}, деңгейі ${String(level).slice(0, 6)}) мына мәтінді оқып болды.
 Шығарма: «${String(title).slice(0, 80)}», автор: ${String(author).slice(0, 80)}.
 Мәтін:
 """${text.slice(0, 2500)}"""

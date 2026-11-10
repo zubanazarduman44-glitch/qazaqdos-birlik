@@ -1,14 +1,14 @@
-// Qyran-мен чат: қазақ тілін үйретуші виртуалды дос
+// Aqyl-мен чат: қазақ тілін үйретуші виртуалды дос
 import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
 
 export const maxDuration = 60;
 const MAX_MESSAGES = 20;
 const MAX_LEN_USER = 2000;
-const MAX_LEN_BOT = 6000; // Qyran-тың ұзын жауаптары кесілмесін
+const MAX_LEN_BOT = 6000; // Aqyl-тың ұзын жауаптары кесілмесін
 
 function system(explain, name, level) {
   const lang = LANG_NAMES[explain] || LANG_NAMES.ru;
-  return `Сен — Qyran, TILIM сайтының виртуалды досы және қазақ тілінің мейірімді мұғалімі: алтын қыран кейпіндегі кейіпкер.
+  return `Сен — Aqyl, TILIM сайтының виртуалды досы және қазақ тілінің мейірімді мұғалімі: алтын қыран кейпіндегі кейіпкер.
 Пайдаланушының аты: ${name || "дос"}. Деңгейі: ${level || "бастауыш"}.
 
 Тіл:

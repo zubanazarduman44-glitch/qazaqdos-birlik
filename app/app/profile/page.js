@@ -104,20 +104,6 @@ export default function Profile() {
             ))}
           </div>
         </div>
-        <div className="field">
-          <span>{t.theme}</span>
-          <div className="seg">
-            {[
-              [null, "Auto"],
-              ["light", t.light],
-              ["dark", t.dark],
-            ].map(([v, l]) => (
-              <button key={l} className={state.profile.theme === v ? "on" : ""} onClick={() => setProfile({ theme: v })}>
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
       </section>
 
       <section className="card">

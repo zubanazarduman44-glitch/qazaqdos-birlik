@@ -149,17 +149,12 @@ export function AppProvider({ children }) {
 
   // Тақырып және тіл
   useEffect(() => {
-    const th = state.profile.theme;
-    if (th) document.documentElement.dataset.theme = th;
-    else delete document.documentElement.dataset.theme;
-    try {
-      if (th) localStorage.setItem("qd_theme", th);
-      else localStorage.removeItem("qd_theme");
-    } catch {}
+    document.documentElement.dataset.theme = "light";
+    try { localStorage.removeItem("qd_theme"); } catch {}
     setSkin(state.profile.skin || "eagle");
     document.documentElement.lang = state.profile.ui || "kk";
     document.documentElement.dir = state.profile.ui === "ar" ? "rtl" : "ltr";
-  }, [state.profile.theme, state.profile.ui, state.profile.skin]);
+  }, [state.profile.ui, state.profile.skin]);
 
   const update = useCallback((fn) => {
     setState((s) => ({ ...fn(s), updatedAt: Date.now() }));

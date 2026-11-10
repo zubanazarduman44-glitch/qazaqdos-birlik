@@ -142,7 +142,7 @@ export default function Landing() {
 
       <footer className="l-foot">
         <Orn />
-        <p className="muted small">© {new Date().getFullYear()} TILIM · Qyran</p>
+        <p className="muted small">© {new Date().getFullYear()} TILIM · Aqyl</p>
       </footer>
     </div>
   );

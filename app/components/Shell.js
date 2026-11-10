@@ -57,18 +57,6 @@ export function Logo({ small }) {
   );
 }
 
-function ThemeBtn() {
-  const { state, setProfile, t } = useApp();
-  const dark =
-    state.profile.theme === "dark" ||
-    (!state.profile.theme && typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
-  return (
-    <button className="icon-btn" aria-label={t.theme} title={t.theme} onClick={() => setProfile({ theme: dark ? "light" : "dark" })}>
-      <Icon name={dark ? "sun" : "moon"} size={19} />
-    </button>
-  );
-}
-
 export function LangSeg() {
   const { state, setProfile } = useApp();
   return (
@@ -138,7 +126,6 @@ export default function Shell({ children }) {
           </Link>
           <div className="side-tools">
             <LangSeg />
-            <ThemeBtn />
           </div>
         </div>
       </aside>
@@ -187,7 +174,6 @@ export default function Shell({ children }) {
             </Link>
             <div className="sheet-tools">
               <LangSeg />
-              <ThemeBtn />
             </div>
           </div>
         </div>

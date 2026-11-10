@@ -45,7 +45,7 @@ export async function POST(req) {
     if (!lang || !items.length) return Response.json({ error: "Bad request" }, { status: 400 });
     const schema = { type: "OBJECT", properties: { items: { type: "ARRAY", items: { type: "STRING" } } }, required: ["items"] };
     try {
-      const out = await callGemini([{ role: "user", parts: [{ text: `Translate these user-interface strings of a Kazakh-learning app from English into ${lang}. Return the same number of items in the same order. Keep emojis, punctuation and numbers. Do NOT translate Kazakh words, the app name TILIM, the mascot name Qyran, or section names Tuzel, Saiys, Duken, Adebiet, Dengei, Aitylym, Jazu.\n${JSON.stringify(items)}` }] }], { schema, temperature: 0, fast: true, thinking: "minimal", maxTokens: 6000 });
+      const out = await callGemini([{ role: "user", parts: [{ text: `Translate these user-interface strings of a Kazakh-learning app from English into ${lang}. Return the same number of items in the same order. Keep emojis, punctuation and numbers. Do NOT translate Kazakh words, the app name TILIM, the mascot name Aqyl, or section names Tuzel, Saiys, Duken, Adebiet, Dengei, Aitylym, Jazu.\n${JSON.stringify(items)}` }] }], { schema, temperature: 0, fast: true, thinking: "minimal", maxTokens: 6000 });
       const arr = JSON.parse(out).items || [];
       return Response.json({ items: arr.length === items.length ? arr : null });
     } catch (e) {
