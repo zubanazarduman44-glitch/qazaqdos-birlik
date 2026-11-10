@@ -68,7 +68,7 @@ export default function Home() {
       { href: "/app/games", e: "🎯", t: t.nav.games },
       { href: "/app/qyran", e: "💬", t: t.navLong.chat },
       { href: "/app/vision", e: "📷", t: t.navLong.vision },
-      { href: "/app/writing", e: "✍️", t: t.navLong.writing },
+      { href: "/app/tuzel", e: "✍️", t: t.navLong.tuzel },
     ],
     [t]
   );

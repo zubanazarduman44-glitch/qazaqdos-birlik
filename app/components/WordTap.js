@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./Store";
 import { lookupLocal } from "../../lib/dict";
 import { tx } from "../../lib/tx";
+import { getKkVoice, fetchTtsUrl } from "../../lib/speak";
 
 const WORD = /[\p{L}\p{M}][\p{L}\p{M}'’-]*/u;
 const SKIP = "button,a,input,textarea,select,label,summary,[data-notap],svg,.wt-pop,.toasts,nav,.msg-input,.composer";
@@ -79,6 +80,21 @@ export default function WordTap() {
     };
   }, []);
 
+  async function say(word) {
+    const v = await getKkVoice();
+    if (v) {
+      const u = new SpeechSynthesisUtterance(word);
+      u.voice = v;
+      u.lang = v.lang;
+      u.rate = 0.85;
+      window.speechSynthesis.cancel();
+      return window.speechSynthesis.speak(u);
+    }
+    try {
+      new Audio(await fetchTtsUrl(word)).play();
+    } catch {}
+  }
+
   if (!pop) return null;
   const W = 250;
   const left = Math.max(10, Math.min(window.innerWidth - W - 10, pop.box.left + pop.box.width / 2 - W / 2));
@@ -103,9 +119,12 @@ export default function WordTap() {
             <div><dt>{x.tapEn}</dt><dd>{d.en}</dd></div>
           </dl>
           {d.form && <p className="wt-form">{d.form}</p>}
+          <div className="wt-row">
+            <button className="btn small ghost" onClick={() => say(d.kk)}>🔊 {x.listen}</button>
           <button className={`btn small ${saved ? "ghost" : "gold"}`} disabled={saved} onClick={() => saveWord({ kk: d.kk, tr, e: d.e || "💬", src: "tap" })}>
             {saved ? `✓ ${x.tapSaved}` : `+ ${x.tapSave}`}
           </button>
+          </div>
         </>
       )}
     </div>

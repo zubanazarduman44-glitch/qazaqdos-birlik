@@ -22,5 +22,9 @@ export function GET() {
   if (!url || !key || isSecret(key)) {
     return Response.json({ url: null, key: null });
   }
-  return Response.json({ url: url.replace(/\/$/, ""), key });
+  let origin = url.trim();
+  try {
+    origin = new URL(origin.startsWith("http") ? origin : `https://${origin}`).origin; // /rest/v1/ сияқты артық жолды қиып тастаймыз
+  } catch {}
+  return Response.json({ url: origin, key });
 }

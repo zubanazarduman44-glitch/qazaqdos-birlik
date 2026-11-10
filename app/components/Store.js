@@ -1,7 +1,10 @@
 "use client";
+import { setWordTr } from "../../lib/words";
+import { allKkWords } from "../../lib/dict";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { T, UI_LANGS } from "../../lib/i18n";
-import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut } from "../../lib/auth";
+import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut, upsertWeekly } from "../../lib/auth";
+import { weekKey } from "../../lib/week";
 import Qyran from "./Qyran";
 
 const KEY = "qd_state_v1";
@@ -21,6 +24,8 @@ export const EMPTY = {
   vision: [],
   chat: [],
   cefr: null,
+  weekly: null,
+  saiys: { claimed: {} },
   shop: { owned: [], wear: {} },
   lit: {},
   speaking: { level: null, best: {}, log: [] },
@@ -179,6 +184,11 @@ export function AppProvider({ children }) {
           streak,
           lastDay: today,
           today: { date: today, xp: t + xp },
+          weekly: (() => {
+            const wk = weekKey();
+            const w = s.weekly?.week === wk ? s.weekly : { week: wk, tasks: 0, xp: 0 };
+            return { week: wk, tasks: w.tasks + 1, xp: w.xp + xp };
+          })(),
           updatedAt: Date.now(),
         };
       });
@@ -215,6 +225,52 @@ export function AppProvider({ children }) {
     setState({ ...EMPTY, profile: { ...state.profile }, updatedAt: Date.now() });
   }, [state.profile]);
 
+  // Басқа тілге ауысқанда сөздердің аудармасын ЖИ арқылы бір рет алып, құрылғыда сақтаймыз
+  const [wtrVer, setWtrVer] = useState(0);
+  const exp = state.profile.explain || "ru";
+  useEffect(() => {
+    if (["ru", "en", "kk"].includes(exp)) return;
+    let dead = false;
+    const key = `qd_wtr_${exp}`;
+    let have = {};
+    try {
+      have = JSON.parse(localStorage.getItem(key) || "{}");
+    } catch {}
+    setWordTr(exp, have);
+    setWtrVer((v) => v + 1);
+    const missing = allKkWords().filter((w) => !have[w]);
+    (async () => {
+      for (let i = 0; i < missing.length && !dead; i += 80) {
+        try {
+          const r = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ words: missing.slice(i, i + 80), to: exp }) });
+          const d = await r.json();
+          if (!r.ok || !d.map) break;
+          have = { ...have, ...d.map };
+          try {
+            localStorage.setItem(key, JSON.stringify(have));
+          } catch {}
+          setWordTr(exp, d.map);
+          if (!dead) setWtrVer((v) => v + 1);
+        } catch {
+          break;
+        }
+      }
+    })();
+    return () => {
+      dead = true;
+    };
+  }, [exp]);
+
+  // Апталық рейтинг: орындалған тапсырма санын бұлтқа жібереміз (аздап кідіріспен)
+  useEffect(() => {
+    if (!user || !state.weekly) return;
+    const w = state.weekly;
+    const id = setTimeout(() => {
+      upsertWeekly({ week: w.week, user_id: user.id, name: state.profile.name || user.name || "Дос", avatar: state.profile.avatar || "🌱", tasks: w.tasks, xp: w.xp }).catch(() => {});
+    }, 6000);
+    return () => clearTimeout(id);
+  }, [user, state.weekly, state.profile.name, state.profile.avatar]);
+
   const lang = state.profile.ui || "kk";
   const value = useMemo(
     () => ({
@@ -234,7 +290,7 @@ export function AppProvider({ children }) {
       resetAll,
       lvl: levelOf(state.xp || 0),
     }),
-    [state, ready, user, authReady, lang, update, award, toast, setProfile, saveWord, logout, resetAll]
+    [state, wtrVer, ready, user, authReady, lang, update, award, toast, setProfile, saveWord, logout, resetAll]
   );
 
   return (

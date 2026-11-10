@@ -1,4 +1,5 @@
 "use client";
+import LangPicker from "../../components/LangPicker";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
@@ -9,14 +10,12 @@ import { tx } from "../../../lib/tx";
 import { REGIONS } from "../../../lib/regions";
 import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { L } from "../../../lib/i18n";
-import { shuffle } from "../../../lib/words";
+import { shuffle, tr } from "../../../lib/words";
 import { photoUrl } from "../../../lib/photo";
 
 const CITY_IDS = ["astana", "almaty-city", "shymkent"];
 
-function trW(w, lang) {
-  return lang === "en" || !["ru", "kk"].includes(lang) ? w.en : w.ru;
-}
+const trW = tr;
 
 function buildQuiz(r, t, lang, explain) {
   const centers = shuffle(REGIONS.filter((x) => x.id !== r.id).map((x) => L(x.center, lang))).slice(0, 3);
@@ -37,6 +36,53 @@ function buildQuiz(r, t, lang, explain) {
     });
   }
   return qs;
+}
+
+function RegionBrief({ region, lang, explain }) {
+  const x = tx(lang);
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let dead = false;
+    const key = `qd_brief_${region.id}_${explain}`;
+    let hit = null;
+    try {
+      hit = localStorage.getItem(key);
+    } catch {}
+    if (hit) {
+      setText(hit);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setText("");
+    fetch("/api/region", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: region.name.kk, center: region.center.kk, sights: region.sights.map((s) => s.kk), explain }) })
+      .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (dead) return;
+        const t = ok && d.text ? d.text : `${L(region.name, lang)} — ${L(region.center, lang)}. ${region.sights.map((s) => L(s, lang)).join(", ")}. ${L(region.fact, lang)}`;
+        setText(t);
+        if (ok && d.text) {
+          try {
+            localStorage.setItem(key, d.text);
+          } catch {}
+        }
+      })
+      .catch(() => !dead && setText(`${L(region.name, lang)} — ${L(region.center, lang)}. ${L(region.fact, lang)}`))
+      .finally(() => !dead && setLoading(false));
+    return () => {
+      dead = true;
+    };
+  }, [region.id, explain]);
+  return (
+    <div className="brief">
+      <Qyran mood={loading ? "think" : "happy"} size={64} />
+      <div>
+        <h4>{x.brTitle}</h4>
+        <p>{loading ? x.brLoading : text}</p>
+      </div>
+    </div>
+  );
 }
 
 function Travel() {
@@ -136,7 +182,10 @@ function Travel() {
           <h1>{t.travelTitle}</h1>
           <p>{t.travelSub}</p>
         </div>
-        <span className="chip gold">🛂 {t.stamps(count, REGIONS.length)}</span>
+        <div className="head-tools">
+          <LangPicker />
+          <span className="chip gold">🛂 {t.stamps(count, REGIONS.length)}</span>
+        </div>
       </header>
 
       <section className="card map-card">
@@ -259,6 +308,7 @@ function Travel() {
             {stamps[region.id] && <span className="stamp-mark pop">🛂 {t.visited}</span>}
           </div>
 
+          <RegionBrief region={region} lang={lang} explain={explain} />
           <div className="region-body">
             <div className="region-info">
               <h3>{t.sights}</h3>

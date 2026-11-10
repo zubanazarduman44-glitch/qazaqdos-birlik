@@ -1,4 +1,5 @@
 "use client";
+import LangPicker from "../../components/LangPicker";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
@@ -8,7 +9,7 @@ import Quiz from "../../components/Quiz";
 import { SITES } from "../../../lib/history";
 import { REGIONS } from "../../../lib/regions";
 import { L } from "../../../lib/i18n";
-import { shuffle } from "../../../lib/words";
+import { shuffle, tr } from "../../../lib/words";
 import { tx } from "../../../lib/tx";
 
 function useCountUp(target, ms = 1100) {
@@ -40,7 +41,7 @@ const fmtYear = (y, lang) => {
 
 const SORTED = [...SITES].sort((a, b) => a.year - b.year);
 
-const trW = (w, lang) => (lang === "en" || !["ru", "kk"].includes(lang) ? w.en : w.ru);
+const trW = tr;
 
 function buildQuiz(site, lang, explain) {
   const answers = site.a.map((x, i) => ({ key: String(i), label: L(x, lang) }));
@@ -107,7 +108,10 @@ export default function History() {
           <h1>{t.histTitle}</h1>
           <p>{t.histSub}</p>
         </div>
-        <span className="chip gold">🏺 {t.sitesDone(count, SITES.length)}</span>
+        <div className="head-tools">
+          <LangPicker />
+          <span className="chip gold">🏺 {t.sitesDone(count, SITES.length)}</span>
+        </div>
       </header>
 
       <section className="card portal">

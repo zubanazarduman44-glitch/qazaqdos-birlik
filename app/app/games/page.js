@@ -1,4 +1,5 @@
 "use client";
+import LangPicker from "../../components/LangPicker";
 import Link from "next/link";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -16,7 +17,10 @@ export default function Games() {
           <h1>{t.gamesTitle}</h1>
           <p>{t.gamesSub}</p>
         </div>
-        <Qyran mood="cheer" size={100} />
+        <div className="head-tools">
+          <LangPicker />
+          <Qyran mood="cheer" size={90} />
+        </div>
       </header>
       <div className="grid g3">
         {GAMES.map((g, i) => {

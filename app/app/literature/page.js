@@ -1,4 +1,5 @@
 "use client";
+import LangPicker from "../../components/LangPicker";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -24,6 +25,7 @@ export default function Literature() {
   const [quiz, setQuiz] = useState(null); // null | "loading" | {qs} | "error"
   const [qres, setQres] = useState(null);
   const [loadingTts, setLoadingTts] = useState(false);
+  const [trans, setTrans] = useState(null); // null | "loading" | text
   const [chatOn, setChatOn] = useState(false);
   const audioRef = useRef(null);
   const run = useRef(0);
@@ -55,6 +57,7 @@ export default function Literature() {
     setQuiz(null);
     setQres(null);
     setChatOn(false);
+    setTrans(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -143,6 +146,28 @@ export default function Literature() {
     }
   }
 
+  async function translate() {
+    if (trans) return setTrans(null);
+    const key = `qd_lt_${work.id}_${explain}`;
+    try {
+      const hit = localStorage.getItem(key);
+      if (hit) return setTrans(hit);
+    } catch {}
+    setTrans("loading");
+    try {
+      const r = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.text) throw new Error(d.error || "err");
+      setTrans(d.text);
+      try {
+        localStorage.setItem(key, d.text);
+      } catch {}
+    } catch {
+      setTrans(null);
+      setErr("Translate error");
+    }
+  }
+
   async function ask(t) {
     const q = (t ?? text).trim();
     if (!q || busy) return;
@@ -208,7 +233,10 @@ export default function Literature() {
             <h1>{x.litTitle}</h1>
             <p>{x.litSub}</p>
           </div>
-          <span className="chip gold">📚 {Object.keys(lit).length}/{WORKS.length}</span>
+          <div className="head-tools">
+            <LangPicker />
+            <span className="chip gold">📚 {Object.keys(lit).length}/{WORKS.length}</span>
+          </div>
         </header>
         <div className="works">
           {WORKS.map((w, i) => (
@@ -248,6 +276,7 @@ export default function Literature() {
             </span>
           ))}
         </p>
+        {trans && <p className="lit-trans">{trans === "loading" ? x.tapLoading : trans}</p>}
         <p className="muted small">💡 {L(work.gist, explain === "ru" ? "ru" : "en")}</p>
         <p className="muted small">{x.litNote}</p>
         {noVoice && <p className="muted small">{x.litNoVoice}{err ? ` (${err})` : ""}</p>}
@@ -255,6 +284,11 @@ export default function Literature() {
           <button className="btn blue" onClick={play}>
             <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : x.litRead}
           </button>
+          {explain !== "kk" && (
+            <button className="btn ghost" onClick={translate}>
+              <Icon name="globe" size={18} /> {trans && trans !== "loading" ? x.litTransHide : x.litTrans}
+            </button>
+          )}
           <button className="btn gold" disabled={quiz === "loading"} onClick={finish}>
             <Icon name="check" size={18} /> {lit[work.id] ? x.litDoneMark : x.litDone}
           </button>
