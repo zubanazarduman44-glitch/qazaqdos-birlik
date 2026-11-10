@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { NatEmpty } from "../../components/NatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
@@ -64,7 +65,7 @@ function Rich({ text }) {
 }
 
 export default function Chat() {
-  const { t, state, update, explain, award, lvl } = useApp();
+  const { t, lang, state, update, explain, award, lvl } = useApp();
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -160,6 +161,7 @@ export default function Chat() {
             </span>
             <div className="msg-b">{t.chatHi}</div>
           </div>
+          {msgs.length === 0 && <div className="chat-empty"><NatEmpty art="dombyra" size={150} lang={lang} proverb /></div>}
           {msgs.map((m, i) => (
             <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"} rise`}>
               {m.role !== "user" && (

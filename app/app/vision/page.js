@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { NatArt } from "../../components/NatArt";
 import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
 import { tx } from "../../../lib/tx";
@@ -131,7 +132,7 @@ export default function Vision() {
           <div className={`v2-frame ${busy ? "busy" : ""} ${res?.found ? "ok" : ""}`}>
             {cam ? <video ref={videoRef} playsInline muted /> : shot ? <img src={shot} alt="" /> : (
               <div className="v2-empty">
-                <span className="v2-ico" aria-hidden="true">📷</span>
+                <NatArt name="kobyz" size={120} />
                 <p>{x.vHint}</p>
               </div>
             )}
@@ -188,6 +189,7 @@ export default function Vision() {
             <div className="v2-card"><p>{res.translation}</p></div>
           ) : (
             <div className="v2-card idle">
+              <NatArt name="saukele" size={110} />
               <p>{busy ? t.analyzing : x.vHint}</p>
             </div>
           )}

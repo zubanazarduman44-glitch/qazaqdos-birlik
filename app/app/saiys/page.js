@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { NatEmpty, NatArt } from "../../components/NatArt";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -94,7 +95,7 @@ export default function Saiys() {
       <div className="saiys">
         <Head x={x} />
         <section className="card s-login">
-          <Qyran mood="support" size={110} />
+          <NatArt name="yurt" size={170} />
           <p>{x.sLogin}</p>
           <Link href="/login" className="btn gold big">{x.sLoginBtn}</Link>
         </section>
@@ -128,7 +129,7 @@ export default function Saiys() {
 
           <section className="card board">
             {rows === null && <p className="muted">…</p>}
-            {rows?.length === 0 && <p className="muted">{x.sEmpty}</p>}
+            {rows?.length === 0 && <NatEmpty art="bowl" size={130} text={x.sEmpty} lang={lang} />}
             {rows?.length > 0 && (
               <>
                 <div className="podium">

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { NatEmpty } from "../../components/NatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
@@ -7,7 +8,7 @@ import Icon from "../../components/Icon";
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
 
 export default function Writing() {
-  const { t, explain, award } = useApp();
+  const { t, lang, explain, award } = useApp();
   const [text, setText] = useState("");
   const [level, setLevel] = useState("A1");
   const [busy, setBusy] = useState(false);
@@ -64,6 +65,7 @@ export default function Writing() {
         {err && <p className="alert">{err}</p>}
       </section>
 
+      {!res && !busy && <NatEmpty art="taqiya" size={130} lang={lang} proverb />}
       {res && (
         <section className="card wr-out rise">
           <div className="wr-score">

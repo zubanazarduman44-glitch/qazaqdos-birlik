@@ -1,5 +1,6 @@
 "use client";
 import LangPicker from "../../components/LangPicker";
+import { NatEmpty } from "../../components/NatArt";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -343,7 +344,7 @@ export default function Literature() {
       {chatOn && (
         <section className="card lit-chat rise">
           <h3>{x.litChatTitle}</h3>
-          {msgs.length === 0 && <p className="muted small">{x.litAsk}</p>}
+          {msgs.length === 0 && <NatEmpty art="kamshy" size={90} text={x.litAsk} lang={lang} />}
           <div className="lit-list" ref={listRef}>
             {msgs.map((m, i) => (
               <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"}`}>

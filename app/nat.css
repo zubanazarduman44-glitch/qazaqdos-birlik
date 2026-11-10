@@ -159,3 +159,14 @@ h1, h2, h3 { color: #14263f; }
 .kzmap-wrap { background: transparent; }
 @media (prefers-reduced-motion: reduce) { .map-sun, .sky .reg-e, .reg-pin.hot .reg-e, .reg-pin.got .reg-e, .eagle-fly { animation: none !important; } }
 .sky-hint { bottom: 28px; }
+
+/* ═════ Бос орындарға ұлттық бұйымдар ═════ */
+.nat-empty { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 22px 16px; color: var(--muted); }
+.nat-empty p { margin: 0; font-weight: 700; color: var(--ink); max-width: 420px; }
+.nat-empty small { max-width: 420px; font-style: italic; }
+.nat-art { filter: drop-shadow(0 8px 10px rgba(90, 50, 10, 0.25)); animation: natSway 5s ease-in-out infinite; transform-origin: 50% 90%; }
+.nat-empty:nth-of-type(2n) .nat-art { animation-delay: -2s; }
+@keyframes natSway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg) translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .nat-art { animation: none; } }
+.chat-empty { margin: auto; padding-top: 10px; opacity: 0.95; }
+.chat-list { display: flex; flex-direction: column; }
