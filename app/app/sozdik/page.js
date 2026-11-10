@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
 import { NatEmpty } from "../../components/NatArt";
-import { WORDS, tr, shuffle } from "../../../lib/words";
+import LangPicker from "../../components/LangPicker";
+import { WORDS, WTR, setWordTr, tr } from "../../../lib/words";
 import { tx } from "../../../lib/tx";
 import { sayKk } from "../../../lib/speak";
 
@@ -74,6 +75,7 @@ export default function Sozdik() {
   const [tab, setTab] = useState("day");
   const [flip, setFlip] = useState({});
   const [q, setQ] = useState("");
+  const [, bump] = useState(0);
   const today = dayKey();
   const sz = state.sozdik || { days: {}, learned: {}, done: {} };
 
@@ -92,6 +94,28 @@ export default function Sozdik() {
 
   const words = useMemo(() => (sz.days?.[today] || []).map((k) => uniq.find((w) => w.kk === k)).filter(Boolean), [sz.days, today]);
   const known = words.filter((w) => sz.learned?.[w.kk]).length;
+
+  // Таңдалған тілде аудармасы жоқ сөздерді (сақталған сөздер де) ЖИ арқылы аударамыз
+  useEffect(() => {
+    if (["ru", "en", "kk"].includes(explain)) return;
+    const key = `qd_wtr_${explain}`;
+    const need = [...new Set([...(state.vocab || []).map((v) => v.kk), ...words.map((w) => w.kk)])].filter((k) => !WTR[explain]?.[k]);
+    if (!need.length) return;
+    let dead = false;
+    (async () => {
+      for (let i = 0; i < need.length && !dead; i += 60) {
+        try {
+          const r = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ words: need.slice(i, i + 60), to: explain }) });
+          const d = await r.json();
+          if (!r.ok || !d.map) break;
+          setWordTr(explain, d.map);
+          try { localStorage.setItem(key, JSON.stringify({ ...JSON.parse(localStorage.getItem(key) || "{}"), ...d.map })); } catch {}
+          if (!dead) bump((v) => v + 1);
+        } catch { break; }
+      }
+    })();
+    return () => { dead = true; };
+  }, [explain, state.vocab?.length, words.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function mark(w) {
     update((s) => {
@@ -120,7 +144,7 @@ export default function Sozdik() {
           <h1>{x.szTitle}</h1>
           <p>{x.szSub}</p>
         </div>
-        <span className="chip gold">📚 {state.vocab?.length || 0}</span>
+        <div className="head-tools"><LangPicker /><span className="chip gold">📚 {state.vocab?.length || 0}</span></div>
       </header>
 
       <div className="sz-grid">
@@ -161,7 +185,7 @@ export default function Sozdik() {
                   {mine.map((v) => (
                     <li key={v.kk}>
                       <span className="sz-e">{v.e || "📝"}</span>
-                      <span className="sz-w"><b>{v.kk}</b><small>{explain === "ru" ? v.ru : explain === "kk" ? v.ru : v.en || v.ru}</small></span>
+                      <span className="sz-w"><b>{v.kk}</b><small>{tr(v, explain)}</small></span>
                       <button className="icon-btn" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={16} /></button>
                       <button className="icon-btn" title={x.szDel} aria-label={x.szDel} onClick={() => update((s) => ({ ...s, vocab: s.vocab.filter((z) => z.kk !== v.kk) }))}><Icon name="x" size={16} /></button>
                     </li>

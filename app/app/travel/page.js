@@ -1,5 +1,7 @@
 "use client";
 import LangPicker from "../../components/LangPicker";
+import KzSymbols from "../../components/KzSymbols";
+import { buildDecor, TERRAIN, LANDMARK, RIVERS, LAKES } from "../../../lib/kzscene";
 import RegionAtlas from "../../components/RegionAtlas";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -38,6 +40,11 @@ function buildQuiz(r, t, lang, explain) {
   }
   return qs;
 }
+
+const shortName = (r, lang) => {
+  const n = L(r.name, lang).replace(/ қаласы$|^город |^г\. | city$| city/gi, "").replace(/ облысы$/, " обл.").replace(/ область$/, " обл.").replace(/ region$/i, "");
+  return n.length > 15 ? L(r.center, lang) : n;
+};
 
 function RegionBrief({ region, lang, explain }) {
   const x = tx(lang);
@@ -157,6 +164,7 @@ function Travel() {
   const eagleAt = (region && ctr(region)) || KZ_CENTERS["Астана"] || [500, 200];
   const hovR = hov && REGIONS.find((r) => r.id === hov);
   const x = tx(lang);
+  const DECOR = useMemo(() => buildDecor(), []);
 
   const matches = q.trim()
     ? REGIONS.filter((r) => `${r.name.kk} ${r.name.ru} ${r.name.en} ${r.center.kk} ${r.center.ru} ${r.center.en}`.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 6)
@@ -194,29 +202,31 @@ function Travel() {
         <div className="kzmap-wrap sky" onMouseLeave={() => setHov(null)}>
           <div className="sky-stars" aria-hidden />
           <div className="map-sun" aria-hidden />
-          <svg className="kzmap" viewBox={KZ_VIEW} role="img" aria-label={t.travelTitle}>
+          <svg className="kzmap kz3d" viewBox={KZ_VIEW} role="img" aria-label={t.travelTitle}>
             <defs>
-              <linearGradient id="stampG" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#ffe48a" />
-                <stop offset="1" stopColor="#e39b00" />
-              </linearGradient>
-              <linearGradient id="selG" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#4fd3e4" />
-                <stop offset="1" stopColor="#0a7f99" />
-              </linearGradient>
+              <linearGradient id="tfSteppe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c4de64" /><stop offset="1" stopColor="#8fc23f" /></linearGradient>
+              <linearGradient id="tfForest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7cc04e" /><stop offset="1" stopColor="#4a9a3a" /></linearGradient>
+              <linearGradient id="tfDesert" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f4dd96" /><stop offset="1" stopColor="#e2b85f" /></linearGradient>
+              <linearGradient id="tfMountain" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a9c76a" /><stop offset="1" stopColor="#7ea653" /></linearGradient>
+              <linearGradient id="stampG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffe48a" /><stop offset="1" stopColor="#e39b00" /></linearGradient>
+              <linearGradient id="selG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#4fd3e4" /><stop offset="1" stopColor="#0a7f99" /></linearGradient>
               <filter id="glowF" x="-30%" y="-30%" width="160%" height="160%">
                 <feGaussianBlur stdDeviation="3" result="b" />
-                <feMerge>
-                  <feMergeNode in="b" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
+                <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
+              <filter id="softSh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="2.4" floodColor="#2a1708" floodOpacity=".35" /></filter>
+              <clipPath id="landClip">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} />)}</clipPath>
+              <KzSymbols />
             </defs>
+            {/* Жағалау көбігі және жартас (3D) */}
+            <g className="kz-foam" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} />)}</g>
+            <g className="kz-cliff2" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} transform="translate(0 15)" />)}</g>
+            <g className="kz-cliff1" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} transform="translate(0 7)" />)}</g>
             {order.map((r, i) => (
               <path
                 key={r.id}
                 d={KZ_PATHS[r.map]}
-                className={`reg ${stamps[r.id] ? "done" : ""} ${sel === r.id ? "sel" : ""} ${r.city ? "city" : ""}`}
+                className={`reg tf-${TERRAIN[r.map] || "steppe"} ${stamps[r.id] ? "done" : ""} ${sel === r.id ? "sel" : ""} ${r.city ? "city" : ""}`}
                 style={{ "--tone": `${(i * 37) % 100}` }}
                 onClick={() => pick(r.id)}
                 onMouseEnter={() => setHov(r.id)}
@@ -228,28 +238,37 @@ function Travel() {
               />
             ))}
             <g pointerEvents="none">
-              {links.map(([a, b]) => {
-                const on = stamps[a.id] && stamps[b.id];
-                const [x1, y1] = ctr(a);
-                const [x2, y2] = ctr(b);
-                return <line key={a.id + b.id} x1={x1} y1={y1} x2={x2} y2={y2} className={`const ${on ? "on" : ""}`} />;
-              })}
-              {REGIONS.map((r) => {
-                const c = ctr(r);
-                if (!c) return null;
-                return (
-                  <g key={r.id} transform={`translate(${c[0]} ${c[1]})`} className={`reg-pin ${stamps[r.id] ? "got" : ""} ${hov === r.id ? "hot" : ""}`}>
-                    {r.city ? <circle r="6" className="city-dot" /> : <circle r="3.4" className="star" style={{ animationDelay: `${(r.id.length % 7) * 0.4}s` }} />}
-                    {!r.city && <text className="reg-e" textAnchor="middle" dy="-8" style={{ animationDelay: `${(r.id.length % 9) * 0.35}s` }}>{stamps[r.id] ? "🛂" : r.e}</text>}
-                  </g>
-                );
+              {LAKES.map((d, i) => <path key={i} d={d} className="kz-lake" />)}
+              <g clipPath="url(#landClip)">{RIVERS.map((d, i) => (<g key={i}><path d={d} className="kz-river" /><path d={d} className="kz-river-flow" /></g>))}</g>
+              {DECOR.map((it, i) => {
+                const h = it.k === "mountain" ? it.w * 0.75 : it.k === "pine" ? it.w * 1.38 : it.k === "yurt" ? it.w * 0.82 : it.k === "dune" ? it.w * 0.37 : it.k === "camelS" ? it.w * 0.82 : it.w * 0.67;
+                return <use key={i} href={`#ks-${it.k}`} x={it.x - it.w / 2} y={it.y - h} width={it.w} height={h} />;
               })}
               {routeD && <path d={routeD} className="journey" filter="url(#glowF)" />}
               {trail && <path key={trail.k} className="flight" d={`M${trail.from[0]} ${trail.from[1]} Q${(trail.from[0] + trail.to[0]) / 2} ${(trail.from[1] + trail.to[1]) / 2 - 60} ${trail.to[0]} ${trail.to[1]}`} />}
-              <g className={`eagle ${trail ? "flying" : ""}`} style={{ transform: `translate(${eagleAt[0]}px, ${eagleAt[1]}px)` }}>
+            </g>
+            {/* Өңірлердің үлкен белгілері */}
+            {REGIONS.map((r) => {
+              const c = ctr(r);
+              if (!c) return null;
+              const sym = LANDMARK[r.id] || "yurt";
+              const W = r.city ? 52 : 62;
+              const H = sym === "baiterek" ? W * 1.2 : sym === "mountain" ? W * 0.75 : W;
+              return (
+                <g key={r.id} transform={`translate(${c[0]} ${c[1]})`} className={`kz-lm ${stamps[r.id] ? "got" : ""} ${hov === r.id ? "hot" : ""} ${sel === r.id ? "sel" : ""}`}
+                  onClick={() => pick(r.id)} onMouseEnter={() => setHov(r.id)} role="presentation">
+                  <ellipse className="kz-lm-sh" cx="0" cy="6" rx={W * 0.4} ry="5" />
+                  <g className="kz-lm-art" filter="url(#softSh)"><use href={`#ks-${sym}`} x={-W / 2} y={-H + 8} width={W} height={H} /></g>
+                  {stamps[r.id] && <g className="kz-badge" transform={`translate(${W * 0.32} ${-H * 0.55})`}><circle r="9" /><path d="M-4 0 L-1 3.4 L5 -3.4" /></g>}
+                  <text className="kz-lm-name" y="20" textAnchor="middle">{shortName(r, lang)}</text>
+                </g>
+              );
+            })}
+            <g pointerEvents="none">
+              <g className={`eagle ${trail ? "flying" : ""}`} style={{ transform: `translate(${eagleAt[0] + 40}px, ${eagleAt[1] - 6}px)` }}>
                 <circle className="eagle-ring" r="16" />
                 <g className="eagle-fly">
-                  <g transform="translate(-26 -52) scale(0.26)">
+                  <g transform="translate(-26 -86) scale(0.26)">
                     <Qyran mood="happy" size={200} />
                   </g>
                 </g>
