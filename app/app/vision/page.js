@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
-import Alash from "../../components/Alash";
+import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 
-// Суретті кішірейтеміз (1024 px, JPEG) — жылдам жіберу үшін
-function shrink(src, max = 1024) {
+// Суретті кішірейтеміз (640 px, JPEG) — жылдам жіберу үшін
+function shrink(src, max = 640) {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
@@ -14,7 +14,7 @@ function shrink(src, max = 1024) {
       c.width = Math.round(img.width * k);
       c.height = Math.round(img.height * k);
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      resolve(c.toDataURL("image/jpeg", 0.82));
+      resolve(c.toDataURL("image/jpeg", 0.7));
     };
     img.onerror = () => resolve(src);
     img.src = src;
@@ -117,7 +117,7 @@ export default function Vision() {
               <img src={shot} alt="" />
             ) : (
               <div className="vf-empty">
-                <Alash mood="wow" size={110} />
+                <Qyran mood="wow" size={110} />
               </div>
             )}
             <span className="vf-c tl" />
@@ -168,7 +168,7 @@ export default function Vision() {
                 </div>
                 {res.tip && (
                   <div className="fact">
-                    <Alash mood="idle" size={44} />
+                    <Qyran mood="idle" size={44} />
                     <p>{res.tip}</p>
                   </div>
                 )}
@@ -178,13 +178,13 @@ export default function Vision() {
               </div>
             ) : (
               <div className="vword">
-                <Alash mood="support" size={100} />
+                <Qyran mood="support" size={100} />
                 <p>{res.translation}</p>
               </div>
             )
           ) : (
             <div className="vword muted">
-              <Alash mood={busy ? "think" : "idle"} size={100} />
+              <Qyran mood={busy ? "think" : "idle"} size={100} />
               <p>{busy ? t.analyzing : t.visionSub}</p>
             </div>
           )}

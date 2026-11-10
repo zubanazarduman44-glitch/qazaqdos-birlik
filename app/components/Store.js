@@ -1,8 +1,8 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { T } from "../../lib/i18n";
+import { T, UI_LANGS } from "../../lib/i18n";
 import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut } from "../../lib/auth";
-import Alash from "./Alash";
+import Qyran from "./Qyran";
 
 const KEY = "qd_state_v1";
 export const DAILY_GOAL = 50;
@@ -20,6 +20,8 @@ export const EMPTY = {
   vocab: [],
   vision: [],
   chat: [],
+  cefr: null,
+  speaking: { level: null, best: {}, log: [] },
   updatedAt: 0,
 };
 
@@ -184,7 +186,16 @@ export function AppProvider({ children }) {
     [toast, state.profile.ui]
   );
 
-  const setProfile = useCallback((p) => update((s) => ({ ...s, profile: { ...s.profile, ...p } })), [update]);
+  // Түсіндіру тілін өзгерткенде интерфейс те сол тілге ауысады (kk/ru/en болса)
+  const setProfile = useCallback(
+    (p) =>
+      update((s) => {
+        const profile = { ...s.profile, ...p };
+        if (p.explain && UI_LANGS.includes(p.explain)) profile.ui = p.explain;
+        return { ...s, profile };
+      }),
+    [update]
+  );
 
   const saveWord = useCallback(
     (word) =>
@@ -230,7 +241,7 @@ export function AppProvider({ children }) {
       <div className="toasts" aria-live="polite">
         {toasts.map((x) => (
           <div key={x.id} className="toast pop">
-            <Alash mood={x.mood} size={44} />
+            <Qyran mood={x.mood} size={44} />
             <span>{x.msg}</span>
           </div>
         ))}

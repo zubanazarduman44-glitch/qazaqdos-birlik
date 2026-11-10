@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useApp } from "./components/Store";
-import Alash from "./components/Alash";
+import Qyran from "./components/Qyran";
 import Icon from "./components/Icon";
 import { LangSeg, Logo, Orn } from "./components/Shell";
 import { REGIONS } from "../lib/regions";
@@ -67,8 +67,8 @@ export default function Landing() {
             <img src={photoUrl("1543166987-85e4689dfe82", 1400, 1100)} alt="" />
             <span className="hero-photo-fade" />
           </div>
-          <div className="hero-alash">
-            <Alash mood="happy" size={230} />
+          <div className="hero-qyran">
+            <Qyran mood="happy" size={230} />
           </div>
           <div className="bubble hero-bubble">{t.heroBubble}</div>
           <span className="float-chip c1">🗺️ 20 · {t.nav.travel}</span>
@@ -131,7 +131,7 @@ export default function Landing() {
       </section>
 
       <section className="l-cta card">
-        <Alash mood="cheer" size={130} />
+        <Qyran mood="cheer" size={130} />
         <div>
           <h2>{t.footer}</h2>
           <Link href={startHref} className="btn gold big">
@@ -142,7 +142,7 @@ export default function Landing() {
 
       <footer className="l-foot">
         <Orn />
-        <p className="muted small">© {new Date().getFullYear()} TILIM · Alash</p>
+        <p className="muted small">© {new Date().getFullYear()} TILIM · Qyran</p>
       </footer>
     </div>
   );

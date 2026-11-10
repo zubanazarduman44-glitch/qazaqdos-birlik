@@ -2,9 +2,10 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
-import Alash from "../../components/Alash";
+import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import Quiz from "../../components/Quiz";
+import { tx } from "../../../lib/tx";
 import { REGIONS } from "../../../lib/regions";
 import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { L } from "../../../lib/i18n";
@@ -47,6 +48,9 @@ function Travel() {
   const [quiz, setQuiz] = useState(null);
   const [result, setResult] = useState(null);
   const panelRef = useRef(null);
+  const [hov, setHov] = useState(null);
+  const prevRef = useRef(null);
+  const [trail, setTrail] = useState(null);
 
   useEffect(() => {
     const id = params.get("r");
@@ -59,12 +63,53 @@ function Travel() {
   const byMap = useMemo(() => Object.fromEntries(REGIONS.map((r) => [r.map, r])), []);
 
   function pick(id, scroll = true) {
+    const from = prevRef.current ? KZ_CENTERS[REGIONS.find((r) => r.id === prevRef.current)?.map] : null;
+    const to = KZ_CENTERS[REGIONS.find((r) => r.id === id)?.map];
+    if (from && to) setTrail({ from, to, k: Date.now() });
+    prevRef.current = id;
     setSel(id);
     setFlipped({});
     setQuiz(null);
     setResult(null);
     if (scroll) setTimeout(() => panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
   }
+
+  const ctr = (r) => KZ_CENTERS[r.map];
+  const [VW, VH] = KZ_VIEW.split(" ").slice(2).map(Number);
+  // Жұлдыз картасы: әр өңір ең жақын екі көршісімен жіппен байланысады
+  const links = useMemo(() => {
+    const pts = REGIONS.filter((r) => KZ_CENTERS[r.map]);
+    const seen = new Set();
+    const out = [];
+    for (const a of pts) {
+      const [ax, ay] = KZ_CENTERS[a.map];
+      pts
+        .filter((b) => b !== a)
+        .map((b) => ({ b, d: Math.hypot(KZ_CENTERS[b.map][0] - ax, KZ_CENTERS[b.map][1] - ay) }))
+        .sort((m, n) => m.d - n.d)
+        .slice(0, 2)
+        .forEach(({ b }) => {
+          const k = [a.id, b.id].sort().join("|");
+          if (!seen.has(k)) {
+            seen.add(k);
+            out.push([a, b]);
+          }
+        });
+    }
+    return out;
+  }, []);
+  // Саяхат жолың: мөр басқан өңірлер реті бойынша алтын сызық
+  const route = REGIONS.filter((r) => stamps[r.id] && ctr(r)).sort((a, b) => stamps[a.id] - stamps[b.id]).map(ctr);
+  const routeD = route.reduce((d, p, i) => {
+    if (!i) return `M${p[0]} ${p[1]}`;
+    const q = route[i - 1];
+    const mx = (p[0] + q[0]) / 2;
+    const my = (p[1] + q[1]) / 2 - Math.hypot(p[0] - q[0], p[1] - q[1]) * 0.18;
+    return `${d} Q${mx} ${my} ${p[0]} ${p[1]}`;
+  }, "");
+  const eagleAt = (region && ctr(region)) || KZ_CENTERS["Астана"] || [500, 200];
+  const hovR = hov && REGIONS.find((r) => r.id === hov);
+  const x = tx(lang);
 
   const matches = q.trim()
     ? REGIONS.filter((r) => `${r.name.kk} ${r.name.ru} ${r.name.en} ${r.center.kk} ${r.center.ru} ${r.center.en}`.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 6)
@@ -124,7 +169,8 @@ function Travel() {
             </span>
           </div>
         </div>
-        <div className="kzmap-wrap">
+        <div className="kzmap-wrap sky" onMouseLeave={() => setHov(null)}>
+          <div className="sky-stars" aria-hidden />
           <svg className="kzmap" viewBox={KZ_VIEW} role="img" aria-label={t.travelTitle}>
             <defs>
               <linearGradient id="stampG" x1="0" y1="0" x2="1" y2="1">
@@ -132,9 +178,16 @@ function Travel() {
                 <stop offset="1" stopColor="#f2b100" />
               </linearGradient>
               <linearGradient id="selG" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#5cc8ff" />
-                <stop offset="1" stopColor="#1272c6" />
+                <stop offset="0" stopColor="#7ff0ff" />
+                <stop offset="1" stopColor="#2f7bff" />
               </linearGradient>
+              <filter id="glowF" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="3" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
             {order.map((r, i) => (
               <path
@@ -143,37 +196,50 @@ function Travel() {
                 className={`reg ${stamps[r.id] ? "done" : ""} ${sel === r.id ? "sel" : ""} ${r.city ? "city" : ""}`}
                 style={{ "--tone": `${(i * 37) % 100}` }}
                 onClick={() => pick(r.id)}
+                onMouseEnter={() => setHov(r.id)}
+                onFocus={() => setHov(r.id)}
                 tabIndex={0}
                 role="button"
                 aria-label={`${L(r.name, lang)}: ${stamps[r.id] ? t.visited : t.notVisited}`}
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && pick(r.id)}
-              >
-                <title>{L(r.name, lang)}</title>
-              </path>
+              />
             ))}
-            {REGIONS.map((r) => {
-              const c = KZ_CENTERS[r.map];
-              if (!c) return null;
-              return (
-                <g key={r.id} className="reg-pin" transform={`translate(${c[0]} ${c[1]})`} pointerEvents="none">
-                  {r.city ? (
-                    <circle r="6" className="city-dot" />
-                  ) : (
-                    <text className="reg-e" textAnchor="middle" dy="6">
-                      {stamps[r.id] ? "🛂" : r.e}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-            {region && KZ_CENTERS[region.map] && (
-              <g transform={`translate(${KZ_CENTERS[region.map][0]} ${KZ_CENTERS[region.map][1] - 22})`} pointerEvents="none" className="map-alash">
-                <g transform="translate(-22 -50) scale(0.22)">
-                  <Alash mood="happy" size={200} />
+            <g pointerEvents="none">
+              {links.map(([a, b]) => {
+                const on = stamps[a.id] && stamps[b.id];
+                const [x1, y1] = ctr(a);
+                const [x2, y2] = ctr(b);
+                return <line key={a.id + b.id} x1={x1} y1={y1} x2={x2} y2={y2} className={`const ${on ? "on" : ""}`} />;
+              })}
+              {REGIONS.map((r) => {
+                const c = ctr(r);
+                if (!c) return null;
+                return (
+                  <g key={r.id} transform={`translate(${c[0]} ${c[1]})`} className={`reg-pin ${stamps[r.id] ? "got" : ""}`}>
+                    {r.city ? <circle r="6" className="city-dot" /> : <circle r="3.4" className="star" style={{ animationDelay: `${(r.id.length % 7) * 0.4}s` }} />}
+                    {!r.city && <text className="reg-e" textAnchor="middle" dy="-8">{stamps[r.id] ? "🛂" : r.e}</text>}
+                  </g>
+                );
+              })}
+              {routeD && <path d={routeD} className="journey" filter="url(#glowF)" />}
+              {trail && <path key={trail.k} className="flight" d={`M${trail.from[0]} ${trail.from[1]} Q${(trail.from[0] + trail.to[0]) / 2} ${(trail.from[1] + trail.to[1]) / 2 - 60} ${trail.to[0]} ${trail.to[1]}`} />}
+              <g className="eagle" style={{ transform: `translate(${eagleAt[0]}px, ${eagleAt[1]}px)` }}>
+                <circle className="eagle-ring" r="16" />
+                <g className="eagle-fly">
+                  <g transform="translate(-26 -52) scale(0.26)">
+                    <Qyran mood="happy" size={200} />
+                  </g>
                 </g>
               </g>
-            )}
+            </g>
           </svg>
+          {hovR && ctr(hovR) && (
+            <div className="map-chip" style={{ left: `${(ctr(hovR)[0] / VW) * 100}%`, top: `${(ctr(hovR)[1] / VH) * 100}%` }}>
+              <b>{hovR.e} {L(hovR.name, lang)}</b>
+              <span>{L(hovR.center, lang)}{stamps[hovR.id] ? " · 🛂" : ""}</span>
+            </div>
+          )}
+          <div className="sky-hint">{x.tapHint}</div>
         </div>
         <p className="muted small map-note">{t.mapNote} © OpenStreetMap</p>
       </section>
@@ -204,7 +270,7 @@ function Travel() {
                 ))}
               </div>
               <div className="fact">
-                <Alash mood="wow" size={56} />
+                <Qyran mood="wow" size={56} />
                 <p>
                   <b>{t.fact}: </b>
                   {L(region.fact, lang)}
@@ -263,7 +329,7 @@ function Travel() {
         </section>
       ) : (
         <section className="card pick-hint">
-          <Alash mood="think" size={90} />
+          <Qyran mood="think" size={90} />
           <p>{t.travelSub}</p>
         </section>
       )}

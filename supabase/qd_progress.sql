@@ -1,4 +1,4 @@
--- TILIM · Alash: пайдаланушы прогресі (XP, тиын, мөрлер, сөз қоры...)
+-- TILIM · Qyran: пайдаланушы прогресі (XP, тиын, мөрлер, сөз қоры...)
 create table if not exists public.qd_progress (
   user_id uuid primary key references auth.users (id) on delete cascade,
   display_name text,

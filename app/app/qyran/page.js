@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
-import Alash from "../../components/Alash";
+import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 
 // Қауіпсіз форматтау (HTML енгізілмейді): **жуан**, *көлбеу*, `код`, ### тақырып, тізімдер, кесте
@@ -86,7 +86,7 @@ export default function Chat() {
       const r = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-20), explain, name: state.profile.name, level: `level ${lvl.level}` }),
+        body: JSON.stringify({ messages: next.slice(-20), explain, name: state.profile.name, level: state.cefr ? `${state.cefr} (CEFR)` : `level ${lvl.level}` }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
@@ -103,7 +103,7 @@ export default function Chat() {
     <div className="chat-page">
       <section className="card chat">
         <header className="chat-head">
-          <Alash mood={busy ? "think" : "happy"} size={58} />
+          <Qyran mood={busy ? "think" : "happy"} size={58} />
           <div>
             <h1>{t.chatTitle}</h1>
             <p className="muted small">{t.chatSub}</p>
@@ -118,7 +118,7 @@ export default function Chat() {
         <div className="chat-list" ref={listRef}>
           <div className="msg bot">
             <span className="msg-av">
-              <Alash size={34} />
+              <Qyran size={34} />
             </span>
             <div className="msg-b">{t.chatHi}</div>
           </div>
@@ -126,7 +126,7 @@ export default function Chat() {
             <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"} rise`}>
               {m.role !== "user" && (
                 <span className="msg-av">
-                  <Alash size={34} />
+                  <Qyran size={34} />
                 </span>
               )}
               <div className="msg-b">{m.role === "user" ? m.text : <Rich text={m.text} />}</div>
@@ -135,7 +135,7 @@ export default function Chat() {
           {busy && (
             <div className="msg bot">
               <span className="msg-av">
-                <Alash mood="think" size={34} />
+                <Qyran mood="think" size={34} />
               </span>
               <div className="msg-b typing">
                 <i />

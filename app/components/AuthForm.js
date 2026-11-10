@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "./Store";
-import Alash from "./Alash";
+import Qyran from "./Qyran";
 import Icon from "./Icon";
 import { LangSeg, Logo } from "./Shell";
 import { getAuthConfig, resetPassword, signIn, signInWithGoogle, signUp } from "../../lib/auth";
@@ -76,7 +76,7 @@ export default function AuthForm({ mode }) {
       </header>
       <div className="auth-box">
         <div className="auth-side">
-          <Alash mood={reg ? "cheer" : "happy"} size={190} />
+          <Qyran mood={reg ? "cheer" : "happy"} size={190} />
           <div className="bubble">{t.heroBubble}</div>
         </div>
         <form className="card auth-card rise" onSubmit={submit}>

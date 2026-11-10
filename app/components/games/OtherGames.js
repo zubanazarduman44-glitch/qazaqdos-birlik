@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useApp } from "../Store";
-import Alash from "../Alash";
+import Qyran from "../Qyran";
 import Icon from "../Icon";
 import Frame, { TopicPicker, useFinish, useQuestions } from "./Frame";
 import { shuffle, tr, wordsByTopic } from "../../../lib/words";
@@ -328,7 +328,7 @@ export function Togyz({ game }) {
             <div className="turn-ind">
               {g.turn === 0 ? (
                 <>
-                  <Alash mood="think" size={54} /> {t.yourTurn}
+                  <Qyran mood="think" size={54} /> {t.yourTurn}
                 </>
               ) : (
                 <>

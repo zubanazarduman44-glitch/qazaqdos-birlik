@@ -4,7 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "./Store";
 import Icon from "./Icon";
-import Alash from "./Alash";
+import Qyran from "./Qyran";
+import WordTap from "./WordTap";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
 
 export const NAV = [
@@ -12,9 +13,11 @@ export const NAV = [
   { href: "/app/travel", key: "travel", icon: "map" },
   { href: "/app/history", key: "history", icon: "scroll" },
   { href: "/app/games", key: "games", icon: "target" },
-  { href: "/app/alash", key: "chat", icon: "chat" },
+  { href: "/app/qyran", key: "chat", icon: "chat" },
   { href: "/app/vision", key: "vision", icon: "camera" },
   { href: "/app/writing", key: "writing", icon: "pen" },
+  { href: "/app/speaking", key: "speaking", icon: "mic" },
+  { href: "/app/level", key: "level", icon: "chart" },
 ];
 const MOBILE = ["home", "travel", "games", "chat"];
 
@@ -42,7 +45,7 @@ export function Logo({ small }) {
   return (
     <Link href="/" className={`logo ${small ? "sm" : ""}`} aria-label="TILIM">
       <span className="logo-mark">
-        <Alash size={small ? 30 : 38} />
+        <Qyran size={small ? 30 : 38} />
       </span>
       <span className="logo-word">
         TIL<b>IM</b>
@@ -152,6 +155,7 @@ export default function Shell({ children }) {
           <Stats />
         </header>
         <main className="main">{children}</main>
+        <WordTap />
       </div>
 
       {/* Телефондағы төменгі мәзір */}

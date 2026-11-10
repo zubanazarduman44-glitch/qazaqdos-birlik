@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "../components/Store";
-import Alash from "../components/Alash";
+import Qyran from "../components/Qyran";
 import Icon from "../components/Icon";
 import { LangSeg, Logo } from "../components/Shell";
 import { AVATARS, EXPLAIN_LANGS } from "../../lib/i18n";
@@ -24,7 +24,7 @@ export default function Onboarding() {
     const first = !state.profile.onboarded;
     setProfile({ explain, name: name.trim() || "Дос", goal, avatar, onboarded: true });
     if (first) award(10, 5);
-    router.push("/app");
+    router.push(first ? "/app/level?first=1" : "/app");
   }
 
   return (
@@ -35,7 +35,7 @@ export default function Onboarding() {
       </header>
       <div className="ob card rise">
         <div className="ob-top">
-          <Alash mood={step === 1 ? "happy" : "wow"} size={96} />
+          <Qyran mood={step === 1 ? "happy" : "wow"} size={96} />
           <div>
             <span className="badge">{step} / 2</span>
             <h1>{step === 1 ? t.ob1 : t.ob2}</h1>

@@ -1,8 +1,9 @@
 "use client";
+import { tx } from "../../lib/tx";
 import Link from "next/link";
 import { useMemo } from "react";
 import { DAILY_GOAL, dayKey, localDayIndex, useApp } from "../components/Store";
-import Alash from "../components/Alash";
+import Qyran from "../components/Qyran";
 import Icon from "../components/Icon";
 import { REGIONS } from "../../lib/regions";
 import { WORDS, tr } from "../../lib/words";
@@ -52,7 +53,7 @@ export default function Home() {
   const next = REGIONS.find((r) => !state.stamps?.[r.id]);
   const dayIdx = localDayIndex();
   const word = WORDS[dayIdx % WORDS.length];
-  const tip = t.alashTip[dayIdx % t.alashTip.length];
+  const tip = t.qyranTip[dayIdx % t.qyranTip.length];
   const savedToday = state.vocab?.some((v) => v.kk === word.kk);
   const mood = todayXp >= DAILY_GOAL ? "cheer" : todayXp > 0 ? "happy" : "idle";
 
@@ -60,7 +61,7 @@ export default function Home() {
     () => [
       { href: "/app/history", e: "🏺", t: t.nav.history },
       { href: "/app/games", e: "🎯", t: t.nav.games },
-      { href: "/app/alash", e: "💬", t: t.navLong.chat },
+      { href: "/app/qyran", e: "💬", t: t.navLong.chat },
       { href: "/app/vision", e: "📷", t: t.navLong.vision },
       { href: "/app/writing", e: "✍️", t: t.navLong.writing },
     ],
@@ -76,13 +77,20 @@ export default function Home() {
           <div className="bubble hh-bubble">{tip}</div>
         </div>
         <div className="hh-art">
-          <Alash mood={mood} size={150} />
+          <Qyran mood={mood} size={150} />
         </div>
         <div className="hh-goal">
           <Ring value={todayXp} max={DAILY_GOAL} />
           <span className="muted small">{t.todayGoal}</span>
         </div>
       </section>
+      {!state.cefr && (
+        <Link href="/app/level" className="card hover lv-banner rise">
+          <Qyran mood="wow" size={56} />
+          <b>{tx(lang).lvlBanner}</b>
+          <Icon name="right" size={18} />
+        </Link>
+      )}
 
       <div className="grid g4 home-stats">
         {[

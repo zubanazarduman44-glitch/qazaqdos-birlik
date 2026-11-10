@@ -225,8 +225,8 @@ textarea.input { min-height: 120px; resize: vertical; line-height: 1.5; }
 /* Ою-өрнек жолағы */
 .orn { display: block; width: 100%; height: 18px; color: var(--gold); opacity: 0.85; }
 
-/* Alash анимациялары */
-.alash { overflow: visible; display: block; }
+/* Qyran анимациялары */
+.qyran { overflow: visible; display: block; }
 .bk-float { animation: bkFloat 3.2s ease-in-out infinite; transform-origin: 100px 200px; }
 @keyframes bkFloat { 50% { transform: translateY(-6px); } }
 .bk-shadow { animation: bkShadow 3.2s ease-in-out infinite; transform-origin: 100px 220px; }

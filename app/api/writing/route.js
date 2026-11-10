@@ -37,7 +37,7 @@ export async function POST(req) {
   if (typeof text !== "string" || !text.trim()) return Response.json({ error: "Bad request" }, { status: 400 });
   const lang = LANG_NAMES[explain] || LANG_NAMES.ru;
 
-  const prompt = `Сен — қазақ тілінің мейірімді мұғалімі Alashсің. Оқушы деңгейі: ${String(level).slice(0, 4)}.
+  const prompt = `Сен — қазақ тілінің мейірімді мұғалімі Qyranсің. Оқушы деңгейі: ${String(level).slice(0, 4)}.
 Төмендегі мәтінді тексер: емле, жалғаулар, септіктер, сөз тәртібі, үндестік заңы.
 Мағынасын өзгертпе, тек қателерді түзет. Әр өзгерісті changes тізіміне бөлек жаз. Қате жоқ болса — changes бос болсын.
 Түсіндірмелер ${lang} болсын.

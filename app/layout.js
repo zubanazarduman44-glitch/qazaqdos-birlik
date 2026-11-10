@@ -3,9 +3,9 @@ import "./app.css";
 import { AppProvider } from "./components/Store";
 
 export const metadata = {
-  title: "TILIM — қазақ тілін Alash-пен бірге үйрен",
+  title: "TILIM — қазақ тілін Qyran-мен бірге үйрен",
   description:
-    "TILIM: Қазақстанды аралап, ұлттық ойындар ойнап, Alash атты виртуалды доспен сөйлесе отырып қазақ тілін үйрен. Учите казахский язык в путешествии и в игре.",
+    "TILIM: Қазақстанды аралап, ұлттық ойындар ойнап, Qyran атты виртуалды доспен сөйлесе отырып қазақ тілін үйрен. Учите казахский язык в путешествии и в игре.",
   applicationName: "TILIM",
   icons: { icon: "/icon.svg" },
 };

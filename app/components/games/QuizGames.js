@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../Store";
-import Alash from "../Alash";
+import Qyran from "../Qyran";
 import Icon from "../Icon";
 import Frame, { Options, TopicPicker, useFinish, useQuestions } from "./Frame";
 
@@ -178,7 +178,7 @@ export function Arkan({ game }) {
             </div>
             <div className="tug-field">
               <div className="tug-team me">
-                <Alash mood={shift > 20 ? "cheer" : shift < -40 ? "support" : "happy"} size={84} />
+                <Qyran mood={shift > 20 ? "cheer" : shift < -40 ? "support" : "happy"} size={84} />
               </div>
               <div className="tug-rope">
                 <span className="tug-mark left" />
