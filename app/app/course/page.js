@@ -8,7 +8,7 @@ import { useApp } from "../../components/Store";
 import { ALL_LESSONS, LEVELS, UNITS, levelStats, lessonTitle } from "../../../lib/course";
 import { TOPICS, tr } from "../../../lib/words";
 import { wordQuiz, phraseQuiz } from "../../../lib/quizgen";
-import { sayKk } from "../../../lib/speak";
+import { sayKk, prefetchKk, stopKk } from "../../../lib/speak";
 import { L } from "../../../lib/i18n";
 
 const TXT = {
@@ -39,6 +39,9 @@ function Player({ lesson, onClose, onNext, hasNext }) {
   const [res, setRes] = useState(null);
   const qs = useMemo(() => (lesson.kind === "words" ? wordQuiz(lesson.words, explain) : phraseQuiz(lesson.phrases, explain)), [lesson.id, explain, round]); // eslint-disable-line
   const items = lesson.kind === "words" ? lesson.words : lesson.phrases;
+  const [vs, setVs] = useState({}); // дыбыс күйі: { "сөз|n": "loading" }
+  const speak = (kk, slow) => sayKk(kk, { slow, onState: (st) => setVs((m) => ({ ...m, [kk]: st === "idle" ? "" : st })) });
+  useEffect(() => { prefetchKk(items.slice(0, 3).map((x) => x.kk)); return () => stopKk(); }, [lesson.id]); // eslint-disable-line
   const trOf = (it) => (lesson.kind === "words" ? tr(it, explain) : explain === "ru" ? it.ru : it.en);
 
   function finish(right, total) {
@@ -67,7 +70,8 @@ function Player({ lesson, onClose, onNext, hasNext }) {
               <button key={it.kk} className={`crs-card ${flip[it.kk] ? "on" : ""}`} style={{ animationDelay: `${i * 0.06}s` }} onClick={() => { setFlip((f) => ({ ...f, [it.kk]: !f[it.kk] })); }}>
                 {it.e && <span className="crs-e">{it.e}</span>}
                 <b>{flip[it.kk] ? trOf(it) : it.kk}</b>
-                <i className="crs-say" role="button" aria-label="listen" onClick={(e) => { e.stopPropagation(); sayKk(it.kk); }}><Icon name="volume" size={16} /></i>
+                <i className={`crs-say ${vs[it.kk] || ""}`} role="button" aria-label="listen" onClick={(e) => { e.stopPropagation(); speak(it.kk, false); }}>{vs[it.kk] === "loading" ? "…" : <Icon name="volume" size={16} />}</i>
+                <i className="crs-say crs-slow" role="button" aria-label="slow" title="🐢" onClick={(e) => { e.stopPropagation(); speak(it.kk, true); }}>🐢</i>
               </button>
             ))}
           </div>

@@ -44,8 +44,16 @@ export async function POST(req) {
     return Response.json({ error: "Bad request" }, { status: 400 });
   }
   const text = String(body?.text || "").trim().slice(0, 1000);
+  const slow = Boolean(body?.slow);
   if (!text) return Response.json({ error: "Bad request" }, { status: 400 });
-  if (cache.has(text)) return Response.json({ audio: cache.get(text) });
+  const ckey = `${slow ? "s" : "n"}|${text}`;
+  if (cache.has(ckey)) return Response.json({ audio: cache.get(ckey) });
+  // Қысқа сөз бе, сөйлем бе — нұсқаулық соған қарай
+  const short = text.split(/\s+/).length <= 3;
+  const pace = slow ? "very slowly, syllable by syllable, then once more at a slow natural pace" : "slowly and clearly at a calm, even pace";
+  const prompt = short
+    ? `Language: Kazakh (kk-KZ). Pronounce this Kazakh word or phrase in standard Kazakh phonetics (not Russian, not Turkish), ${pace}, with correct vowel harmony and the special Kazakh sounds (ә, ө, ү, ұ, қ, ғ, ң, һ, і). Say only the text, nothing else, no introduction: ${text}`
+    : `Language: Kazakh (kk-KZ). Read this Kazakh text aloud in standard Kazakh phonetics (not Russian), ${pace}, warm and natural intonation, pausing briefly at punctuation. Read only the text: ${text}`;
 
   const models = [...new Set([...FALLBACK, ...(await ttsModels(key))])].slice(0, 5);
   let last = "";
@@ -55,7 +63,7 @@ export async function POST(req) {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `Read this aloud in Kazakh, slowly, clearly and warmly: ${text}` }] }],
+          contents: [{ parts: [{ text: prompt }] }],
           generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } },
         }),
         signal: AbortSignal.timeout(40_000),
@@ -73,7 +81,7 @@ export async function POST(req) {
       }
       const audio = wav(Buffer.from(b64, "base64")).toString("base64");
       if (cache.size > 40) cache.clear();
-      cache.set(text, audio);
+      cache.set(ckey, audio);
       return Response.json({ audio });
     } catch (e) {
       last = `${m}: ${e.message}`;
