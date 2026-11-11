@@ -106,7 +106,7 @@ export default function Shell({ children }) {
   }, [ready, authReady, state.profile.onboarded, router]);
   useEffect(() => { setMore(false); try { window.speechSynthesis?.cancel(); } catch {} }, [path]);
 
-  const showNav = (n) => n.key !== "class" || state.profile?.role === "teacher";
+  const showNav = () => true;
   const active = (href) => (href === "/app" ? path === "/app" : path?.startsWith(href));
   const label = (k) => t.navLong[k] || t.nav[k];
 
