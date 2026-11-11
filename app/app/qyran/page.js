@@ -5,6 +5,63 @@ import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import { toWav } from "../../../lib/audio";
+import { sayKk } from "../../../lib/speak";
+import { tx } from "../../../lib/tx";
+
+// Суретті кішірейтеміз (640 px, JPEG) — жылдам жіберу үшін
+function shrink(src, max = 640) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k);
+      c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL("image/jpeg", 0.7));
+    };
+    img.onerror = () => resolve(src);
+    img.src = src;
+  });
+}
+
+const VQ = {
+  kk: "Мына суреттегі зат қазақша қалай аталады?",
+  ru: "Как по-казахски называется предмет на фото?",
+  en: "What is the object in this photo called in Kazakh?",
+};
+const VL = {
+  kk: { photo: "Сурет", cam: "Суретпен сұрау", close: "Жабу", none: "Суреттен таныс зат таба алмадым. Басқа бұрыштан түсіріп көр.", gone: "Сурет сақталмайды" },
+  ru: { photo: "Фото", cam: "Спросить по фото", close: "Закрыть", none: "Не нашёл знакомый предмет на фото. Попробуйте снять с другого ракурса.", gone: "Фото не сохраняется" },
+  en: { photo: "Photo", cam: "Ask with a photo", close: "Close", none: "I couldn't find a known object in the photo. Try another angle.", gone: "Photos aren't stored" },
+};
+
+// Aqyl Vision жауабы — чаттағы сөз картасы
+function VisionCard({ v, t, saved, onSave }) {
+  return (
+    <div className="vz-card">
+      <div className="vz-top">
+        <div>
+          <b className="vz-kk" lang="kk">{v.kk}</b>
+          {v.translit && <span className="vz-tl">[{v.translit}]</span>}
+        </div>
+        <button type="button" className="vz-say" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={18} /></button>
+      </div>
+      <div className="vz-tr">{v.translation}</div>
+      {v.example_kk && (
+        <div className="vz-ex">
+          <small>{t.example}</small>
+          <b lang="kk">{v.example_kk}</b>
+          {v.example_tr && <span>{v.example_tr}</span>}
+        </div>
+      )}
+      {v.tip && <p className="vz-tip">{v.tip}</p>}
+      <button type="button" className={`vz-save ${saved ? "on" : ""}`} onClick={onSave} disabled={saved}>
+        <Icon name={saved ? "check" : "plus"} size={16} /> {saved ? t.saved : t.saveWord}
+      </button>
+    </div>
+  );
+}
 
 // Қауіпсіз форматтау (HTML енгізілмейді): **жуан**, *көлбеу*, `код`, ### тақырып, тізімдер, кесте
 function inline(str) {
@@ -65,7 +122,14 @@ function Rich({ text }) {
 }
 
 export default function Chat() {
-  const { t, lang, state, update, explain, award, lvl } = useApp();
+  const { t, lang, state, update, explain, award, lvl, saveWord } = useApp();
+  const x = tx(lang);
+  const vl = VL[lang] || VL.en;
+  const [cam, setCam] = useState(false);
+  const [imgs, setImgs] = useState({}); // id → суреттің өзі (тек осы сессияда, сақталмайды)
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const fileRef = useRef(null);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -101,6 +165,76 @@ export default function Chat() {
     } finally {
       setBusy(false);
     }
+  }
+
+  useEffect(() => () => streamRef.current?.getTracks().forEach((k) => k.stop()), []);
+  function stopCam() {
+    streamRef.current?.getTracks().forEach((k) => k.stop());
+    streamRef.current = null;
+    setCam(false);
+  }
+  async function openCam() {
+    if (busy) return;
+    setErr("");
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error("no cam");
+      const st = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 } }, audio: false });
+      streamRef.current = st;
+      setCam(true);
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = st;
+          videoRef.current.play().catch(() => {});
+        }
+      }, 30);
+    } catch {
+      // Камера жоқ не рұқсат жоқ — бірден галереядан таңдатамыз
+      fileRef.current?.click();
+    }
+  }
+  async function snap() {
+    const v = videoRef.current;
+    if (!v || !v.videoWidth) return;
+    const c = document.createElement("canvas");
+    c.width = v.videoWidth;
+    c.height = v.videoHeight;
+    c.getContext("2d").drawImage(v, 0, 0);
+    stopCam();
+    ask(await shrink(c.toDataURL("image/jpeg", 0.9)));
+  }
+  function onFile(f) {
+    if (!f) return;
+    stopCam();
+    const r = new FileReader();
+    r.onload = async () => ask(await shrink(r.result));
+    r.readAsDataURL(f);
+  }
+  async function ask(img) {
+    if (busy) return;
+    const id = Date.now();
+    setImgs((m) => ({ ...m, [id]: img }));
+    setErr("");
+    update((s) => ({ ...s, chat: [...(s.chat || []), { role: "user", kind: "photo", id, text: VQ[lang] || VQ.en }].slice(-40) }));
+    setBusy(true);
+    try {
+      const r = await fetch("/api/vision", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: img, explain }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+      const text = d.found ? `${d.kk} — ${d.translation}.${d.example_kk ? ` ${d.example_kk}` : ""}` : d.translation || vl.none;
+      const v = d.found ? { kk: d.kk, translit: d.translit, translation: d.translation, example_kk: d.example_kk, example_tr: d.example_tr, tip: d.tip } : null;
+      update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", kind: v ? "vision" : undefined, v, text }].slice(-40) }));
+      award(2, 1);
+    } catch (e) {
+      setErr(e.message || t.errGeneric);
+    } finally {
+      setBusy(false);
+    }
+  }
+  function keep(v) {
+    if (state.vision?.some((z) => z.kk === v.kk)) return;
+    update((s) => ({ ...s, vision: [{ kk: v.kk, tr: v.translation, ex: v.example_kk, at: Date.now() }, ...(s.vision || [])].slice(0, 200) }));
+    saveWord({ kk: v.kk, tr: v.translation, src: "vision" });
+    award(5, 3);
   }
 
   async function mic() {
@@ -169,7 +303,16 @@ export default function Chat() {
                   <Qyran size={34} />
                 </span>
               )}
-              <div className="msg-b">{m.role === "user" ? m.text : <Rich text={m.text} />}</div>
+              {m.kind === "photo" ? (
+                <div className="msg-b msg-photo">
+                  {imgs[m.id] ? <img src={imgs[m.id]} alt={vl.photo} /> : <span className="vz-gone"><Icon name="camera" size={18} /> {vl.gone}</span>}
+                  <span>{m.text}</span>
+                </div>
+              ) : m.kind === "vision" && m.v ? (
+                <div className="msg-b msg-vision"><VisionCard v={m.v} t={t} saved={!!state.vision?.some((z) => z.kk === m.v.kk)} onSave={() => keep(m.v)} /></div>
+              ) : (
+                <div className="msg-b">{m.role === "user" ? m.text : <Rich text={m.text} />}</div>
+              )}
             </div>
           ))}
           {busy && (
@@ -187,8 +330,25 @@ export default function Chat() {
           {err && <p className="alert">{err}</p>}
         </div>
 
-        {msgs.length === 0 && (
+        {cam && (
+          <div className="vz-sheet" role="dialog" aria-label={x.vTitle}>
+            <div className="vz-view">
+              <video ref={videoRef} playsInline muted />
+              <i className="c tl" /><i className="c tr" /><i className="c bl" /><i className="c br" />
+              <span className="vz-hint">{x.vHint}</span>
+            </div>
+            <div className="vz-bar">
+              <button type="button" className="vz-side" onClick={() => fileRef.current?.click()} aria-label={x.vGallery}><Icon name="upload" size={20} /><small>{x.vGallery}</small></button>
+              <button type="button" className="vz-shutter" onClick={snap} aria-label={x.vShot}><i /></button>
+              <button type="button" className="vz-side" onClick={stopCam} aria-label={vl.close}><Icon name="x" size={20} /><small>{vl.close}</small></button>
+            </div>
+            <p className="vz-privacy"><Icon name="lock" size={13} /> {t.privacy}</p>
+          </div>
+        )}
+
+        {msgs.length === 0 && !cam && (
           <div className="suggest">
+            <button className="chip vz-chip" onClick={openCam}><Icon name="camera" size={15} /> {vl.cam}</button>
             {t.chatSuggest.map((s) => (
               <button key={s} className="chip" onClick={() => send(s)}>
                 {s}
@@ -218,6 +378,10 @@ export default function Chat() {
             placeholder={t.chatPh}
             maxLength={1500}
           />
+          <button type="button" className={`btn ghost mic-mini ${cam ? "on" : ""}`} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-label={vl.cam} title={vl.cam}>
+            <Icon name="camera" size={18} />
+          </button>
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
           <button type="button" className={`btn ghost mic-mini ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic">
             <Icon name={rec === "rec" ? "stop" : "mic"} size={18} />
           </button>

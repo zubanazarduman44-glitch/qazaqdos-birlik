@@ -70,7 +70,6 @@ export default function Home() {
       { href: "/app/history", art: "bowl", e: "🏺", t: t.nav.history },
       { href: "/app/games", art: "kamshy", e: "🎯", t: t.nav.games },
       { href: "/app/qyran", art: "dombyra", e: "💬", t: t.navLong.chat },
-      { href: "/app/vision", art: "kobyz", e: "📷", t: t.navLong.vision },
       { href: "/app/tuzel", art: "taqiya", e: "✍️", t: t.navLong.tuzel },
     ],
     [t]

@@ -248,3 +248,44 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
   .aul-art .topic-art { width: 96px; height: 96px; border-radius: 22px; }
   .aul-n { font-size: 22px; } .stop { width: 44px; height: 44px; }
 }
+
+/* ── Aqyl чатындағы Vision ── */
+.msg-photo { display: grid; gap: 8px; padding: 6px; max-width: 260px; }
+.msg-photo img { display: block; width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; }
+.msg-photo > span { padding: 0 8px 4px; font-size: 14px; }
+.vz-gone { display: inline-flex; align-items: center; gap: 6px; padding: 10px 10px 0; font-size: 13px; opacity: 0.85; }
+.msg-vision { padding: 0; overflow: hidden; background: #FFFDF7; }
+.vz-card { display: grid; gap: 10px; padding: 14px 16px 16px; min-width: min(300px, 70vw); border-top: 4px solid #E0A526; animation: vzIn 0.45s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+.vz-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.vz-kk { display: block; font-family: var(--head); font-weight: 800; font-size: 26px; line-height: 1.1; color: #0F5E7A; }
+.vz-tl { font-size: 13px; color: #5F6470; }
+.vz-say { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #0F5E7A; color: #fff; cursor: pointer; transition: transform 0.15s, background 0.2s; }
+.vz-say:hover { background: #0A4A61; } .vz-say:active { transform: scale(0.92); }
+.vz-tr { font-size: 17px; font-weight: 600; color: #1F2430; }
+.vz-ex { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; background: #F4ECDA; }
+.vz-ex small { font-size: 12px; font-weight: 600; color: #A63A2B; }
+.vz-ex span { font-size: 14px; color: #4A5160; }
+.vz-tip { margin: 0; font-size: 14px; color: #4A5160; padding-left: 10px; border-left: 3px solid #E0A526; }
+.vz-save { justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: #E0A526; color: #1F2430; font: inherit; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
+.vz-save:active { transform: scale(0.96); } .vz-save.on { background: #E6F0EA; color: #2F6B4F; cursor: default; }
+.vz-sheet { margin: 0 12px 10px; padding: 12px; border-radius: 16px; background: #0A4A61; color: #fff; display: grid; gap: 10px; animation: vzUp 0.35s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+.vz-view { position: relative; aspect-ratio: 4 / 3; max-height: 46vh; border-radius: 12px; overflow: hidden; background: #062f3e; }
+.vz-view video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vz-view .c { position: absolute; width: 28px; height: 28px; border: 3px solid #E0A526; }
+.vz-view .tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; border-radius: 8px 0 0 0; }
+.vz-view .tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; border-radius: 0 8px 0 0; }
+.vz-view .bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; border-radius: 0 0 0 8px; }
+.vz-view .br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; border-radius: 0 0 8px 0; }
+.vz-hint { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); padding: 6px 12px; border-radius: 999px; background: rgba(6, 47, 62, 0.75); font-size: 13px; width: max-content; max-width: calc(100% - 80px); text-align: center; }
+.vz-bar { display: flex; align-items: center; justify-content: space-around; }
+.vz-side { display: grid; justify-items: center; gap: 2px; min-width: 64px; min-height: 48px; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; opacity: 0.9; }
+.vz-side small { font-size: 12px; }
+.vz-shutter { width: 68px; height: 68px; border-radius: 50%; border: 4px solid #fff; background: none; padding: 4px; cursor: pointer; }
+.vz-shutter i { display: block; width: 100%; height: 100%; border-radius: 50%; background: #E0A526; transition: transform 0.15s; }
+.vz-shutter:active i { transform: scale(0.86); }
+.vz-privacy { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
+.vz-chip { background: #0F5E7A !important; color: #fff !important; }
+.mic-mini.on { background: #0F5E7A; color: #fff; }
+@keyframes vzIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes vzUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (max-width: 520px) { .vz-kk { font-size: 22px; } .composer { gap: 6px; } .composer .btn { min-width: 46px; padding-left: 0; padding-right: 0; } }

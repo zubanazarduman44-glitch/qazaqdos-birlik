@@ -18,7 +18,6 @@ export const NAV = [
   { href: "/app/history", key: "history", icon: "globe" },
   { href: "/app/games", key: "games", icon: "target" },
   { href: "/app/qyran", key: "chat", icon: "chat" },
-  { href: "/app/vision", key: "vision", icon: "camera" },
   { href: "/app/tuzel", key: "tuzel", icon: "pen" },
   { href: "/app/course", key: "course", icon: "book" },
   { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
@@ -33,7 +32,7 @@ const MOBILE = ["home", "course", "games", "chat"];
 const GROUPS = [
   { id: "top", keys: ["home"] },
   { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn" }, keys: ["course", "sozdik", "level"] },
-  { id: "practice", name: { kk: "Жаттығу", ru: "Практика", en: "Practise" }, keys: ["games", "chat", "vision", "tuzel"] },
+  { id: "practice", name: { kk: "Жаттығу", ru: "Практика", en: "Practise" }, keys: ["games", "chat", "tuzel"] },
   { id: "explore", name: { kk: "Таным", ru: "Познание", en: "Explore" }, keys: ["travel", "history", "lit"] },
   { id: "community", name: { kk: "Қауым", ru: "Сообщество", en: "Community" }, keys: ["saiys", "class", "shop"] },
 ];
