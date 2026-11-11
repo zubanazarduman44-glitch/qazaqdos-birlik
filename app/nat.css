@@ -456,3 +456,41 @@ h1, h2, h3 { color: #14263f; }
 .lv-pick-b b { font-size: 13px; }
 .lv-pick-b.on { background: linear-gradient(#fff0a8, #ffd35a); box-shadow: inset 0 0 0 2.5px #b8322a, 0 8px 16px -8px rgba(184, 50, 42, 0.6); animation: qOk 0.4s var(--ease); }
 .sz-testhero { display: grid; justify-items: center; gap: 14px; padding: 10px; }
+
+/* Басты бет: дала көрінісі */
+.home-hero.scene { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; min-height: 280px; padding: 26px 28px; overflow: hidden; background: #bfeaf0; box-shadow: inset 0 0 0 3px #ffd35a, inset 0 0 0 5px #7a3a12, var(--shadow-lg); }
+.hs-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hs-sun { animation: hsPulse 4s ease-in-out infinite; transform-origin: 650px 70px; }
+.hs-rays { animation: hsSpin 60s linear infinite; }
+@keyframes hsSpin { to { transform: translate(650px, 70px) rotate(360deg); } }
+@keyframes hsPulse { 50% { transform: scale(1.07); } }
+.hs-cloud.c1 { animation: hsDrift 26s ease-in-out infinite alternate; } .hs-cloud.c2 { animation: hsDrift 34s ease-in-out infinite alternate-reverse; }
+@keyframes hsDrift { to { transform: translateX(70px); } }
+.hs-herd { animation: hsHerd 16s ease-in-out infinite alternate; } @keyframes hsHerd { to { transform: translateX(46px); } }
+.hs-text { position: relative; z-index: 2; background: rgba(255, 250, 238, 0.86); border-radius: 22px; padding: 16px 18px; box-shadow: 0 12px 24px -16px rgba(80, 40, 10, 0.6), inset 0 0 0 1.5px #e8c77a; max-width: 560px; }
+.hs-text p { margin: 4px 0 0; color: #6b5636; }
+.hs-who { display: flex; align-items: center; gap: 12px; } .hs-who h1 { margin: 0; font-size: clamp(22px, 3vw, 34px); }
+.hs-goal { position: relative; z-index: 2; background: rgba(255, 250, 238, 0.9); padding: 12px 16px; border-radius: 22px; box-shadow: inset 0 0 0 1.5px #e8c77a; }
+.hs-eagle { position: absolute; top: 16px; left: 0; z-index: 1; animation: hsFly 22s linear infinite; pointer-events: none; }
+@keyframes hsFly { 0% { transform: translate(-120px, 20px) rotate(-4deg); } 25% { transform: translate(25vw, -4px) rotate(3deg); } 50% { transform: translate(50vw, 22px) rotate(-3deg); } 75% { transform: translate(75vw, -2px) rotate(3deg); } 100% { transform: translate(105vw, 18px) rotate(-4deg); } }
+.quick-card { transition: transform 0.3s var(--ease); background: var(--oyu-tile) center / 80px 80px, linear-gradient(180deg, #fffaf0, #fbefd2); background-blend-mode: soft-light, normal; }
+.quick-card:hover { transform: translateY(-6px) rotate(-1deg); }
+.quick-e { font-size: 0; line-height: 0; } .quick-e .nat-art { animation: gcBob 3.4s ease-in-out infinite; }
+.home-stats .stat { background: linear-gradient(180deg, #fffaf0, #fbefd2); box-shadow: inset 0 0 0 1.5px #e8c77a; }
+@media (max-width: 760px) { .home-hero.scene { grid-template-columns: minmax(0, 1fr); padding: 16px; min-height: 0; } .hs-eagle { display: none; } .hs-goal { justify-self: start; } }
+@media (prefers-reduced-motion: reduce) { .hs-sun, .hs-rays, .hs-cloud, .hs-herd, .hs-eagle, .quick-e .nat-art { animation: none !important; } }
+
+/* Телефон: «Тағы» мәзірі — қазақы стиль */
+.bottom-nav .on { background: linear-gradient(#ffe48a, #ffd35a); color: #7a2a12; box-shadow: inset 0 0 0 1.5px #b8322a; }
+.bottom-nav a:active, .bottom-nav button:active { transform: scale(0.94); }
+@media (max-width: 960px) {
+  .sheet-wrap { background: rgba(74, 36, 10, 0.4); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+  .sheet { background: linear-gradient(180deg, #fffaf0, #f9e9c2); box-shadow: inset 0 0 0 2px #e8a400, inset 0 0 0 4px #7a3a12, 0 -12px 30px rgba(74, 36, 10, 0.4); border-radius: 26px; padding: 26px 14px 12px; position: absolute; overflow: hidden; }
+  .sheet::before { content: ""; position: absolute; left: 10px; right: 10px; top: 8px; height: 14px; background: var(--oyu-band) repeat-x center / auto 14px; opacity: 0.9; }
+  .sheet-link { color: #3a2410; background: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 1px rgba(232, 164, 0, 0.45); margin-top: 4px; }
+  .sheet-link svg { color: #b8322a; }
+  .sheet-link:hover, .sheet-link:active { background: #ffe9a8; }
+  .sheet-link.on { background: linear-gradient(90deg, #ffd35a, #fff0b8); box-shadow: inset 0 0 0 2px #b8322a; color: #7a2a12; }
+  .sheet-tools .seg { background: #fff3d4; box-shadow: inset 0 0 0 1.5px #e8c77a; }
+  .sheet-tools .seg .on, .sheet-tools .seg button.on { background: linear-gradient(#ffe48a, #ffd35a); color: #7a2a12; box-shadow: inset 0 0 0 1.5px #b8322a; }
+}

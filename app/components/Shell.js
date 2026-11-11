@@ -167,11 +167,11 @@ export default function Shell({ children }) {
         <div className="sheet-wrap" onClick={() => setMore(false)}>
           <div className="sheet card rise" onClick={(e) => e.stopPropagation()}>
             {NAV.filter((n) => !MOBILE.includes(n.key)).map((n) => (
-              <Link key={n.href} href={n.href} className="sheet-link">
+              <Link key={n.href} href={n.href} className={`sheet-link ${active(n.href) ? "on" : ""}`}>
                 <Icon name={n.icon} size={20} /> {label(n.key)}
               </Link>
             ))}
-            <Link href="/app/profile" className="sheet-link">
+            <Link href="/app/profile" className={`sheet-link ${active("/app/profile") ? "on" : ""}`}>
               <Icon name="user" size={20} /> {t.nav.profile}
             </Link>
             <div className="sheet-tools">

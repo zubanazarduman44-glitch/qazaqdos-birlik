@@ -6,6 +6,8 @@ import { useMemo } from "react";
 import { DAILY_GOAL, dayKey, localDayIndex, useApp } from "../components/Store";
 import Qyran from "../components/Qyran";
 import Icon from "../components/Icon";
+import Avatar from "../components/Avatar";
+import { NatArt } from "../components/NatArt";
 import { REGIONS } from "../../lib/regions";
 import { WORDS, tr } from "../../lib/words";
 import { L } from "../../lib/i18n";
@@ -64,29 +66,45 @@ export default function Home() {
 
   const quick = useMemo(
     () => [
-      { href: "/app/history", e: "🏺", t: t.nav.history },
-      { href: "/app/games", e: "🎯", t: t.nav.games },
-      { href: "/app/qyran", e: "💬", t: t.navLong.chat },
-      { href: "/app/vision", e: "📷", t: t.navLong.vision },
-      { href: "/app/tuzel", e: "✍️", t: t.navLong.tuzel },
+      { href: "/app/history", art: "bowl", e: "🏺", t: t.nav.history },
+      { href: "/app/games", art: "kamshy", e: "🎯", t: t.nav.games },
+      { href: "/app/qyran", art: "dombyra", e: "💬", t: t.navLong.chat },
+      { href: "/app/vision", art: "kobyz", e: "📷", t: t.navLong.vision },
+      { href: "/app/tuzel", art: "taqiya", e: "✍️", t: t.navLong.tuzel },
     ],
     [t]
   );
 
   return (
     <div className="home">
-      <section className="card home-hero rise">
-        <div className="hh-text">
-          <h1>{t.hello(state.profile.name || "Дос")}</h1>
-          <p className="muted">{t.helloSub}</p>
+      <section className="card home-hero scene rise">
+        <svg className="hs-bg" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="hsSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#58c8dc" /><stop offset=".6" stopColor="#bfeaf0" /><stop offset="1" stopColor="#fff0c4" /></linearGradient>
+            <linearGradient id="hsHill1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c8cf7a" /><stop offset="1" stopColor="#9fb350" /></linearGradient>
+            <linearGradient id="hsHill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a8c25a" /><stop offset="1" stopColor="#6fa33a" /></linearGradient>
+          </defs>
+          <rect width="800" height="260" fill="url(#hsSky)" />
+          <g className="hs-rays" transform="translate(650 70)">{Array.from({ length: 16 }).map((_, i) => <path key={i} d="M0 0 L-9 -150 L9 -150Z" fill="#fff6c8" opacity=".45" transform={`rotate(${i * 22.5})`} />)}</g>
+          <circle className="hs-sun" cx="650" cy="70" r="36" fill="#ffd35a" stroke="#fff3b0" strokeWidth="6" />
+          <g fill="#fff" opacity=".85"><ellipse className="hs-cloud c1" cx="150" cy="60" rx="46" ry="14" /><ellipse className="hs-cloud c1" cx="180" cy="50" rx="30" ry="12" /><ellipse className="hs-cloud c2" cx="430" cy="38" rx="40" ry="12" /><ellipse className="hs-cloud c2" cx="455" cy="30" rx="26" ry="10" /></g>
+          <path d="M0 170 L90 96 L150 140 L240 70 L330 150 L400 110 L470 160 L800 160 V260 H0Z" fill="#8fa6c4" opacity=".55" />
+          <path d="M240 70 L262 92 L246 88 L240 98 L230 88 L220 92Z" fill="#fff" opacity=".9" />
+          <path d="M0 190 C120 160 260 190 400 176 C560 160 680 190 800 172 V260 H0Z" fill="url(#hsHill1)" />
+          <path d="M0 220 C140 200 300 226 460 212 C600 200 700 222 800 210 V260 H0Z" fill="url(#hsHill2)" />
+          <g transform="translate(120 196)"><path d="M-26 0 Q0 -40 26 0Z" fill="#fff8e6" stroke="#b8822a" strokeWidth="2" /><path d="M-8 0 V-14 Q0 -22 8 0Z" fill="#7a3a12" /><path d="M-24 -6 H24" stroke="#00afca" strokeWidth="3" /><path d="M0 -38 V-48" stroke="#b8322a" strokeWidth="2" /></g>
+          <g transform="translate(205 206) scale(.7)"><path d="M-26 0 Q0 -40 26 0Z" fill="#fff8e6" stroke="#b8822a" strokeWidth="2" /><path d="M-8 0 V-14 Q0 -22 8 0Z" fill="#7a3a12" /><path d="M-24 -6 H24" stroke="#b8322a" strokeWidth="3" /></g>
+          <g className="hs-herd" fill="#6b4220">{[0, 1, 2].map((i) => <g key={i} transform={`translate(${470 + i * 34} ${214 + (i % 2) * 6})`}><ellipse rx="9" ry="5" /><circle cx="9" cy="-3" r="3.4" /><path d="M-5 4 v6 M4 4 v6" stroke="#6b4220" strokeWidth="2" /></g>)}</g>
+        </svg>
+        <div className="hs-eagle" aria-hidden="true"><Qyran mood={mood} size={96} /></div>
+        <div className="hh-text hs-text">
+          <div className="hs-who"><Avatar value={state.profile.avatar} size={54} /><h1>{t.hello(state.profile.name || "Дос")}</h1></div>
+          <p>{t.helloSub}</p>
           <div className="bubble hh-bubble">{tip}</div>
         </div>
-        <div className="hh-art">
-          <Qyran mood={mood} size={150} />
-        </div>
-        <div className="hh-goal">
+        <div className="hh-goal hs-goal">
           <Ring value={todayXp} max={DAILY_GOAL} />
-          <span className="muted small">{t.todayGoal}</span>
+          <span className="small">{t.todayGoal}</span>
         </div>
       </section>
       {!state.cefr && (
@@ -194,7 +212,7 @@ export default function Home() {
       <div className="quick">
         {quick.map((q) => (
           <Link key={q.href} href={q.href} className="card hover quick-card">
-            <span className="quick-e">{q.e}</span>
+            <span className="quick-e"><NatArt name={q.art} size={64} /></span>
             <b>{q.t}</b>
           </Link>
         ))}
