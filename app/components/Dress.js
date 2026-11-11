@@ -2,7 +2,7 @@
 // Барлығы бір координат жүйесінде (200×230): бас орталығы (100,100), дене (100,176), аяқ y≈224.
 import { useId } from "react";
 import { AnimalArt } from "./Animals";
-import { Dombyra } from "./NatArt";
+import { Dombyra, Kobyz, Kamshy } from "./NatArt";
 
 const GOLD = "#e8a400", GOLD2 = "#ffd35a", RED = "#a8231c", TEAL = "#0a7f99", EM = "#12665a", CREAM = "#fff3d4", INK = "#2a1708";
 
@@ -119,6 +119,33 @@ const HEAD = {
       ))}
     </g>
   ),
+  tumak: () => (
+    <g>
+      <path d="M54 80 C48 30 152 30 146 80 L148 122 C144 136 128 136 126 122 L124 88 C112 92 88 92 76 88 L74 122 C72 136 56 136 52 122Z" fill="#8a6a4a" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M58 76 C84 88 116 88 142 76 L142 88 C116 100 84 100 58 88Z" fill="#6a4a2c" stroke={INK} strokeWidth="1.6" />
+      <g stroke="#d9bd94" strokeWidth="2" strokeLinecap="round" opacity=".85">{[62, 76, 90, 110, 124, 138].map((x, i) => <path key={x} d={`M${x} ${50 + (i % 2) * 8} l${i % 2 ? 3 : -3} 12`} />)}</g>
+      <circle cx="100" cy="36" r="5" fill={RED} stroke={INK} strokeWidth="1.4" />
+      <Curls xs={[100]} y={82} s={0.7} />
+    </g>
+  ),
+  kalpak: () => (
+    <g>
+      <path d="M62 84 C58 46 74 20 100 12 C126 20 142 46 138 84 C122 92 78 92 62 84Z" fill="#fffaf0" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M100 12 C88 40 82 66 84 88 M100 12 C112 40 118 66 116 88" fill="none" stroke="#d9cdb4" strokeWidth="1.6" />
+      <path d="M60 70 C80 82 120 82 140 70 L141 86 C120 98 80 98 59 86Z" fill="#1e1814" stroke={INK} strokeWidth="1.6" />
+      <Curls xs={[84, 100, 116]} y={84} s={0.55} />
+    </g>
+  ),
+  oramal: () => (
+    <g>
+      <path d="M50 82 C46 34 154 34 150 82 C132 68 68 68 50 82Z" fill="#c23a4b" stroke={INK} strokeWidth="2" />
+      <path d="M50 80 C40 106 42 134 56 148 C62 128 62 106 70 88Z" fill="#c23a4b" stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M150 80 C160 106 158 134 144 148 C138 128 138 106 130 88Z" fill="#c23a4b" stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M54 76 C80 64 120 64 146 76" fill="none" stroke={GOLD2} strokeWidth="2.4" strokeLinecap="round" strokeDasharray="1 6" />
+      <g fill={GOLD2}>{[[52, 104], [50, 124], [148, 104], [150, 124], [76, 52], [124, 52], [100, 44]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2.6" />)}</g>
+      <path d="M52 144 l-10 12 14 2 z M148 144 l10 12 -14 2 z" fill="#a82a3c" stroke={INK} strokeWidth="1.2" />
+    </g>
+  ),
 };
 
 const BODY = {
@@ -156,6 +183,31 @@ const BODY = {
       <g fill={GOLD2}>{[90, 110, 80, 120, 100].map((x, i) => <path key={i} d={`M${x} ${186 + i * 6} l3 -4 3 4 -3 4z`} />)}</g>
     </g>
   ),
+  beshpent: () => (
+    <g>
+      <ellipse cx="42" cy="178" rx="14" ry="33" fill="#26407a" stroke={INK} strokeWidth="1.8" transform="rotate(10 42 178)" />
+      <ellipse cx="158" cy="178" rx="14" ry="33" fill="#26407a" stroke={INK} strokeWidth="1.8" transform="rotate(-10 158 178)" />
+      <path d="M34 202 q6 8 16 4 M166 202 q-6 8 -16 4" stroke={GOLD2} strokeWidth="4" fill="none" strokeLinecap="round" />
+      <path d="M54 146 C76 134 124 134 146 146 L156 214 C126 226 74 226 44 214Z" fill="#26407a" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M80 138 L100 150 L120 138 L124 150 L100 164 L76 150Z" fill={GOLD} stroke={INK} strokeWidth="1.2" />
+      <path d="M100 160 V222" stroke={INK} strokeWidth="1.6" />
+      <g fill={GOLD2} stroke={INK} strokeWidth="1.1">{[166, 180, 194, 208].map((y) => <circle key={y} cx="93" cy={y} r="3.4" />)}</g>
+      <Gold d="M46 212 C74 224 126 224 154 212" w={2.2} />
+      <Curls xs={[68, 132]} y={186} s={0.8} c={GOLD2} />
+    </g>
+  ),
+  ishik: () => (
+    <g>
+      <ellipse cx="40" cy="178" rx="15" ry="34" fill="#7a4a22" stroke={INK} strokeWidth="1.8" transform="rotate(10 40 178)" />
+      <ellipse cx="160" cy="178" rx="15" ry="34" fill="#7a4a22" stroke={INK} strokeWidth="1.8" transform="rotate(-10 160 178)" />
+      <path d="M26 198 q8 10 20 6 l4 10 q-14 6 -26 -2z M174 198 q-8 10 -20 6 l-4 10 q14 6 26 -2z" fill="#fffaf0" stroke={INK} strokeWidth="1.4" />
+      <path d="M52 146 C74 134 126 134 148 146 L160 216 C128 230 72 230 40 216Z" fill="#7a4a22" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
+      <g stroke="#b58250" strokeWidth="2" strokeLinecap="round" opacity=".85">{[62, 78, 94, 110, 126, 142].map((x, i) => <path key={x} d={`M${x} ${170 + (i % 2) * 10} l-2 12 M${x + 6} ${196 - (i % 2) * 8} l-2 12`} />)}</g>
+      <path d="M56 142 C76 160 124 160 144 142 L140 128 C120 136 80 136 60 128Z" fill="#fffaf0" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M40 214 C74 234 126 234 160 214 L162 226 C128 244 72 244 38 226Z" fill="#fffaf0" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
+      <circle cx="100" cy="170" r="4" fill={GOLD} stroke={INK} strokeWidth="1.2" /><circle cx="100" cy="190" r="4" fill={GOLD} stroke={INK} strokeWidth="1.2" />
+    </g>
+  ),
 };
 
 function Belt({ x1, x2, y }) {
@@ -178,14 +230,14 @@ function Necklace() {
     </g>
   );
 }
-function Boots({ eagle }) {
+function Boots({ eagle, c = "#6b3a16", band = RED }) {
   const y = eagle ? 0 : 2;
   return (
     <g>
       {[1, -1].map((f) => { const x = 66; return (
         <g key={f} transform={f === -1 ? "translate(200 0) scale(-1 1)" : ""}>
-          <path d={`M${x} ${202 + y} H${x + 26} V${224 + y} C${x + 36} ${225 + y} ${x + 38} ${236 + y} ${x + 26} ${236 + y} H${x - 2} C${x - 8} ${236 + y} ${x - 8} ${227 + y} ${x} ${224 + y}Z`} fill="#6b3a16" stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
-          <rect x={x - 1} y={200 + y} width="28" height="7" rx="2" fill={RED} stroke={INK} strokeWidth="1.2" />
+          <path d={`M${x} ${202 + y} H${x + 26} V${224 + y} C${x + 36} ${225 + y} ${x + 38} ${236 + y} ${x + 26} ${236 + y} H${x - 2} C${x - 8} ${236 + y} ${x - 8} ${227 + y} ${x} ${224 + y}Z`} fill={c} stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
+          <rect x={x - 1} y={200 + y} width="28" height="7" rx="2" fill={band} stroke={INK} strokeWidth="1.2" />
           <Curls xs={[x + 13]} y={214 + y} s={0.7} />
           <path d={`M${x - 6} ${234 + y} H${x + 32}`} stroke={INK} strokeWidth="3" strokeLinecap="round" />
         </g>
@@ -198,10 +250,39 @@ function Ring({ eagle }) {
   return <g><circle cx={x} cy={y} r="6" fill="none" stroke={GOLD} strokeWidth="3.2" /><circle cx={x} cy={y - 6} r="3.2" fill={TEAL} stroke={INK} strokeWidth="1" /></g>;
 }
 
+function Earrings({ eagle }) {
+  const xs = eagle ? [61, 139] : [46, 154];
+  const y = eagle ? 108 : 106;
+  return (
+    <g>{xs.map((x) => (
+      <g key={x}>
+        <circle cx={x} cy={y} r="3.6" fill="none" stroke={GOLD} strokeWidth="2.2" />
+        <path d={`M${x} ${y + 3} l-5 9 5 12 5 -12z`} fill={GOLD2} stroke={INK} strokeWidth="1.2" strokeLinejoin="round" />
+        <circle cx={x} cy={y + 13} r="3.4" fill={TEAL} stroke={INK} strokeWidth="1" />
+      </g>
+    ))}</g>
+  );
+}
+function Bangles({ eagle }) {
+  const pts = eagle ? [[48, 196, 10], [152, 196, 10]] : [[41, 190, 11], [159, 190, 11]];
+  return (
+    <g>{pts.map(([x, y, r], i) => (
+      <g key={i} transform={`rotate(${i ? -12 : 12} ${x} ${y})`}>
+        <ellipse cx={x} cy={y} rx={r} ry="3.8" fill="none" stroke={INK} strokeWidth="5.4" />
+        <ellipse cx={x} cy={y} rx={r} ry="3.8" fill="none" stroke={GOLD2} strokeWidth="3.4" />
+        <circle cx={x} cy={y + 3.6} r="2.2" fill="#e0574a" stroke={INK} strokeWidth=".8" />
+      </g>
+    ))}</g>
+  );
+}
+
 export default function DressUp({ skin = "eagle", wear = {}, size = 220, mood = "idle" }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const eagle = skin === "eagle";
-  const head = HEAD[{ takiya: "takiya", borik: "borik", kimeshek: "kimeshek", saukele: "saukele" }[wear.head]];
+  const head = HEAD[wear.head];
+  // Бас киім өлшемі: жануарлардың басы бүркіттікінен кеңірек — киім соған қарай үлкейеді
+  const hs = eagle ? 1 : wear.head === "kimeshek" ? 1.08 : wear.head === "saukele" || wear.head === "kalpak" ? 1.12 : 1.2;
+  const hdy = eagle ? 0 : wear.head === "kimeshek" ? 0 : -3;
   const body = BODY[wear.body];
   const beltOn = wear.acc === "beldik";
   const koi = wear.body === "koilek";
@@ -214,8 +295,14 @@ export default function DressUp({ skin = "eagle", wear = {}, size = 220, mood = 
         {beltOn && (koi ? <Belt x1={64} x2={136} y={160} /> : <Belt x1={50} x2={150} y={184} />)}
         {wear.acc === "algha" && <Necklace />}
         {wear.foot === "etik" && <Boots eagle={eagle} />}
+        {wear.foot === "masy" && <Boots eagle={eagle} c="#d4ad72" band="#e8a400" />}
+        {wear.foot === "kebis" && <Boots eagle={eagle} c="#241c18" band="#e8a400" />}
+        {wear.acc === "sirga" && <Earrings eagle={eagle} />}
+        {wear.acc === "bilezik" && <Bangles eagle={eagle} />}
         {wear.acc === "zhuzik" && <Ring eagle={eagle} />}
-        {head && head()}
+        {head && <g transform={`translate(100 ${84 + hdy}) scale(${hs}) translate(-100 -84)`}>{head()}</g>}
+        {wear.acc === "kobyz" && <g transform="translate(100 178) rotate(30) scale(.62) translate(-100 -92)"><Kobyz /></g>}
+        {wear.acc === "kamshy" && <g transform="translate(150 176) rotate(14) scale(.55) translate(-96 -92)"><Kamshy /></g>}
         {wear.acc === "dombyra" && <g transform="translate(100 178) rotate(30) scale(.66) translate(-100 -92)"><Dombyra /></g>}
       </g>
     </svg>

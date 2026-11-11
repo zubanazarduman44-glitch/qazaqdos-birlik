@@ -5,21 +5,32 @@ import { L } from "../../lib/i18n";
 const GOLD = "#e8a400", RED = "#b8322a", TEAL = "#0a7f99", WOOD = "#8a5326", DARK = "#4a2c12", CREAM = "#fff3d4";
 
 export function Dombyra() {
+  // Домбыра: алмұрт тәрізді (белі жоқ) денесі, ұзын жіңішке мойны, екі ішек, бүйірінде екі құлағы.
   return (
     <g>
-      <path d="M100 150 C60 150 50 112 78 96 C60 82 78 62 100 70 C122 62 140 82 122 96 C150 112 140 150 100 150Z" fill={WOOD} stroke={DARK} strokeWidth="3" />
-      <circle cx="100" cy="106" r="14" fill={DARK} /><circle cx="100" cy="106" r="14" fill="none" stroke={GOLD} strokeWidth="2.4" />
-      <path d="M88 130 q12 10 24 0" stroke={GOLD} strokeWidth="2.6" fill="none" strokeLinecap="round" />
-      <rect x="95" y="6" width="10" height="68" rx="4" fill={DARK} />
-      <path d="M92 6 h16 l4 14 h-24z" fill={WOOD} stroke={DARK} strokeWidth="2" />
-      <circle cx="90" cy="14" r="3.4" fill={GOLD} /><circle cx="110" cy="14" r="3.4" fill={GOLD} />
-      <path d="M97 14 V132 M103 14 V132" stroke={CREAM} strokeWidth="1.4" />
-      <path d="M92 150 h16" stroke={GOLD} strokeWidth="3" />
-      <g fill="none" stroke={GOLD} strokeWidth="2.2" strokeLinecap="round"><path d="M70 126 c4 -6 10 -4 8 2 M130 126 c-4 -6 -10 -4 -8 2" /></g>
+      {/* Мойын */}
+      <rect x="95.5" y="14" width="9" height="76" rx="3" fill="#5a3314" stroke={DARK} strokeWidth="2" />
+      {/* Бас (құлақтары бүйірінде) */}
+      <path d="M93 14 C93 4 107 4 107 14 L109 26 H91Z" fill={WOOD} stroke={DARK} strokeWidth="2" strokeLinejoin="round" />
+      <rect x="84" y="15" width="8" height="5" rx="2.4" fill={GOLD} stroke={DARK} strokeWidth="1.2" />
+      <rect x="108" y="21" width="8" height="5" rx="2.4" fill={GOLD} stroke={DARK} strokeWidth="1.2" />
+      {/* Перне */}
+      <g stroke={CREAM} strokeWidth="1.6" strokeLinecap="round" opacity=".85"><path d="M95.5 38 h9 M95.5 52 h9 M95.5 66 h9" /></g>
+      {/* Алмұрт тәрізді дене */}
+      <path d="M93 80 C80 90 56 108 56 134 C56 154 76 166 100 166 C124 166 144 154 144 134 C144 108 120 90 107 80 C104 76 96 76 93 80Z" fill={WOOD} stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+      <path d="M70 128 C70 112 82 100 96 94" fill="none" stroke="#c98a45" strokeWidth="3" strokeLinecap="round" opacity=".6" />
+      {/* Дауыс тесігі мен өрнек */}
+      <circle cx="100" cy="124" r="10" fill={DARK} /><circle cx="100" cy="124" r="10" fill="none" stroke={GOLD} strokeWidth="2.4" />
+      <path d="M72 140 q6 -8 12 0 M116 140 q6 -8 12 0" fill="none" stroke={GOLD} strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M86 152 q14 8 28 0" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" />
+      {/* Екі ішек */}
+      <path d="M98 22 V146 M102 22 V146" stroke={CREAM} strokeWidth="1.3" />
+      <rect x="88" y="142" width="24" height="5" rx="2" fill={DARK} />
+      <path d="M96 166 h8" stroke={GOLD} strokeWidth="3.4" strokeLinecap="round" />
     </g>
   );
 }
-function Kobyz() {
+export function Kobyz() {
   return (
     <g>
       <path d="M100 160 C58 162 50 116 100 92 C150 116 142 162 100 160Z" fill={WOOD} stroke={DARK} strokeWidth="3" />
@@ -87,7 +98,7 @@ function Saukele() {
     </g>
   );
 }
-function Kamshy() {
+export function Kamshy() {
   return (
     <g>
       <rect x="86" y="22" width="14" height="86" rx="6" fill={WOOD} stroke={DARK} strokeWidth="3" transform="rotate(14 93 65)" />

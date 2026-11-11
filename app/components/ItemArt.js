@@ -84,10 +84,98 @@ const ART = {
       <g fill="#e6edf2" stroke={DARK} strokeWidth="1.6">{[66, 134].map((x) => <circle key={x} cx={x} cy="56" r="4" />)}</g>
     </g>
   ),
+  tumak: (
+    <g>
+      <path d="M34 112 C30 52 70 30 100 30 C130 30 170 52 166 112 L170 150 C160 168 144 164 138 146 L132 112 C116 118 84 118 68 112 L62 146 C56 164 40 168 30 150Z" fill="#8a6a4a" stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+      <path d="M62 100 C84 110 116 110 138 100 L140 118 C118 126 82 126 60 118Z" fill="#6a4a2c" stroke={DARK} strokeWidth="2.4" />
+      <g stroke="#d9bd94" strokeWidth="2.4" strokeLinecap="round" opacity=".85">{[50, 66, 84, 102, 120, 138, 152].map((x, i) => <path key={x} d={`M${x} ${60 + (i % 2) * 10} l${i % 2 ? 4 : -4} 16`} />)}</g>
+      <circle cx="100" cy="36" r="6" fill={RED} stroke={DARK} strokeWidth="2" />
+      <Orn x={100} y={92} s={1.1} />
+    </g>
+  ),
+  kalpak: (
+    <g>
+      <path d="M52 140 C46 90 66 34 100 16 C134 34 154 90 148 140 C128 150 72 150 52 140Z" fill="#fffaf0" stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+      <path d="M100 16 C84 50 76 100 78 146 M100 16 C116 50 124 100 122 146" fill="none" stroke="#d9cdb4" strokeWidth="2" />
+      <path d="M50 120 C70 134 130 134 150 120 L152 150 C130 166 70 166 48 150Z" fill="#1e1814" stroke={DARK} strokeWidth="2.6" />
+      <Orn x={100} y={142} s={1.1} c="#ffd35a" />
+    </g>
+  ),
+  oramal: (
+    <g>
+      <path d="M100 22 C60 22 34 60 40 112 C44 150 62 172 100 178 C138 172 156 150 160 112 C166 60 140 22 100 22Z" fill="#c23a4b" stroke={DARK} strokeWidth="3" />
+      <ellipse cx="100" cy="102" rx="36" ry="44" fill="#f3c9a0" stroke={DARK} strokeWidth="2.4" />
+      <path d="M62 92 C66 42 134 42 138 92 C122 70 78 70 62 92Z" fill="#c23a4b" stroke={DARK} strokeWidth="2.4" />
+      <path d="M44 156 C70 176 130 176 156 156" fill="none" stroke={GOLD} strokeWidth="5" strokeLinecap="round" strokeDasharray="1 9" />
+      <g fill="#ffd35a">{[[56, 90], [48, 118], [150, 90], [152, 118], [70, 50], [130, 50], [100, 34]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="3.6" />)}</g>
+      <path d="M142 150 C160 150 168 170 160 188 C150 178 144 168 142 150Z" fill="#a82a3c" stroke={DARK} strokeWidth="2" />
+    </g>
+  ),
+  beshpent: (
+    <g>
+      <path d="M62 26 L86 20 L100 38 L114 20 L138 26 L168 70 L156 168 C128 180 72 180 44 168 L32 70Z" fill="#26407a" stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+      <path d="M100 38 V178" stroke={DARK} strokeWidth="2.4" />
+      <path d="M62 26 L86 20 L100 38 L114 20 L138 26" fill="none" stroke={GOLD} strokeWidth="4.4" />
+      <g fill="#ffd35a" stroke={DARK} strokeWidth="1.4">{[58, 80, 102, 124, 146].map((y) => <circle key={y} cx="92" cy={y} r="4.4" />)}</g>
+      <path d="M40 160 C72 174 128 174 160 160" fill="none" stroke={GOLD} strokeWidth="3.6" />
+      <Orn x={134} y={110} s={1.1} /><Orn x={66} y={110} s={1.1} />
+    </g>
+  ),
+  ishik: (
+    <g>
+      <path d="M58 28 L86 22 L100 42 L114 22 L142 28 L172 74 L162 176 C130 188 70 188 38 176 L28 74Z" fill="#7a4a22" stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+      <path d="M58 28 C72 50 128 50 142 28 L130 70 C116 84 84 84 70 70Z" fill="#fffaf0" stroke={DARK} strokeWidth="2.4" />
+      <g stroke="#a8743e" strokeWidth="2.4" strokeLinecap="round" opacity=".8">{[50, 70, 90, 110, 130, 150].map((x, i) => <path key={x} d={`M${x} ${110 + (i % 2) * 14} l-3 20 M${x + 8} ${150 - (i % 2) * 10} l-3 18`} />)}</g>
+      <path d="M34 170 C70 192 130 192 166 170 L162 184 C130 200 70 200 38 184Z" fill="#fffaf0" stroke={DARK} strokeWidth="2.4" />
+      <path d="M100 84 V176" stroke={DARK} strokeWidth="2.4" /><circle cx="100" cy="100" r="4.4" fill={GOLD} stroke={DARK} strokeWidth="1.2" /><circle cx="100" cy="126" r="4.4" fill={GOLD} stroke={DARK} strokeWidth="1.2" />
+    </g>
+  ),
+  masy: (
+    <g>
+      {[0, 1].map((k) => (
+        <g key={k} transform={`translate(${k * 70} 0)`}>
+          <path d="M26 54 H66 V122 C86 124 92 148 76 154 H30 C14 154 12 128 26 122Z" fill="#d4ad72" stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+          <path d="M26 66 H66" stroke={GOLD} strokeWidth="4" /><Orn x={46} y={96} s={0.9} c="#7a3a12" />
+          <path d="M16 154 H84" stroke={DARK} strokeWidth="5" strokeLinecap="round" />
+        </g>
+      ))}
+    </g>
+  ),
+  kebis: (
+    <g>
+      {[0, 1].map((k) => (
+        <g key={k} transform={`translate(${k * 70} 0)`}>
+          <path d="M22 96 H70 C72 120 94 124 94 144 C94 154 88 158 78 158 H26 C14 158 12 140 22 134Z" fill="#241c18" stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+          <path d="M26 108 H66" stroke="#e8a400" strokeWidth="3.4" /><path d="M20 160 H88" stroke="#b8322a" strokeWidth="5" strokeLinecap="round" />
+          <path d="M34 118 C38 112 52 112 56 118" fill="none" stroke="#4a3d36" strokeWidth="3" strokeLinecap="round" />
+        </g>
+      ))}
+    </g>
+  ),
+  sirga: (
+    <g>
+      {[62, 138].map((x) => (
+        <g key={x}>
+          <circle cx={x} cy="46" r="7" fill="none" stroke={GOLD} strokeWidth="4" />
+          <path d={`M${x} 56 L${x - 14} 96 L${x} 150 L${x + 14} 96Z`} fill={GOLD} stroke={DARK} strokeWidth="3" strokeLinejoin="round" />
+          <circle cx={x} cy="96" r="9" fill={TEAL} stroke={DARK} strokeWidth="2.4" /><circle cx={x - 3} cy="93" r="2.6" fill="#bff1fb" />
+          <circle cx={x} cy="150" r="5.4" fill="#e0574a" stroke={DARK} strokeWidth="2" />
+        </g>
+      ))}
+    </g>
+  ),
+  bilezik: (
+    <g>
+      <ellipse cx="100" cy="108" rx="64" ry="30" fill="none" stroke={DARK} strokeWidth="16" />
+      <ellipse cx="100" cy="108" rx="64" ry="30" fill="none" stroke="url(#ia-gold)" strokeWidth="11" />
+      <g fill={TEAL} stroke={DARK} strokeWidth="2">{[56, 100, 144].map((x, i) => <circle key={x} cx={x} cy={i === 1 ? 140 : 128 - (i === 0 ? 4 : 4)} r={i === 1 ? 9 : 6} fill={i === 1 ? "#e0574a" : TEAL} />)}</g>
+      <Orn x={100} y={82} s={1} c="#7a3a12" />
+    </g>
+  ),
 };
 
 export default function ItemArt({ id, size = 96, className = "" }) {
-  const nat = id === "takiya" ? "taqiya" : id === "saukele" ? "saukele" : id === "dombyra" ? "dombyra" : null;
+  const nat = { takiya: "taqiya", saukele: "saukele", dombyra: "dombyra", kamshy: "kamshy", kobyz: "kobyz" }[id] || null;
   if (nat) return <NatArt name={nat} size={size} className={className} />;
   return (
     <svg className={`nat-art item-art ${className}`} viewBox="0 0 200 200" width={size} height={size} aria-hidden="true">

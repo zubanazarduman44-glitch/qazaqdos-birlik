@@ -99,9 +99,12 @@ const ART = {
       <Face />
       <path d="M32 30 C32 22 40 24 50 28 C60 24 68 22 68 30 C62 28 56 30 50 34 C44 30 38 28 32 30Z" fill="#2a1708" />
       <Taqiya c="#e8a400" />
-      <g transform="rotate(-24 70 84)">
-        <path d="M70 100 C56 100 54 86 62 80 C56 74 64 66 70 70 C76 66 84 74 78 80 C86 86 84 100 70 100Z" fill="#a8672e" stroke={DARK} strokeWidth="1.6" />
-        <circle cx="70" cy="82" r="4" fill={DARK} /><rect x="68" y="42" width="4" height="30" rx="2" fill={DARK} /><path d="M69 44 V88 M71 44 V88" stroke="#fff3d4" strokeWidth=".7" />
+      <g transform="rotate(16 78 94)">
+        <rect x="76" y="44" width="4.2" height="38" rx="2" fill="#5a3314" stroke={DARK} strokeWidth="1" />
+        <path d="M75.2 44 C75.2 39 81 39 81 44 L82 49 H74.2Z" fill="#8a5326" stroke={DARK} strokeWidth="1" />
+        <path d="M76 80 C68 84 60 91 60 100 C60 107 68 111 78 111 C88 111 96 107 96 100 C96 91 88 84 80 80 C79 78.6 77 78.6 76 80Z" fill="#a8672e" stroke={DARK} strokeWidth="1.8" strokeLinejoin="round" />
+        <circle cx="78" cy="97" r="3.6" fill={DARK} /><circle cx="78" cy="97" r="3.6" fill="none" stroke="#e8a400" strokeWidth="1" />
+        <path d="M77.2 48 V102 M79 48 V102" stroke="#fff3d4" strokeWidth=".6" />
       </g>
     </>
   ),
