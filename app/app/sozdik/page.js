@@ -4,7 +4,7 @@ import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
 import { NatEmpty, NatArt } from "../../components/NatArt";
 import LangPicker from "../../components/LangPicker";
-import { WORDS, WTR, setWordTr, tr } from "../../../lib/words";
+import { WORDS, WTR, TOPICS, setWordTr, tr } from "../../../lib/words";
 import { tx } from "../../../lib/tx";
 import { sayKk } from "../../../lib/speak";
 import Quiz from "../../components/Quiz";
@@ -18,9 +18,7 @@ function mkTest(words, explain) {
     const others = shuffle(uniq.filter((z) => z.kk !== w.kk && tr(z, explain) !== tr(w, explain))).slice(0, 3);
     const opts = shuffle([w, ...others]);
     if (kind === "kk2tr") return { prompt: `${w.kk} → ?`, options: opts.map((o) => ({ key: o.kk, label: tr(o, explain) })), answer: w.kk };
-    if (kind === "tr2kk") return { prompt: `${tr(w, explain)} → ?`, options: opts.map((o) => ({ key: o.kk, label: o.kk })), answer: w.kk };
-    if (kind === "e2kk") return { prompt: `${w.e} ?`, options: opts.map((o) => ({ key: o.kk, label: o.kk })), answer: w.kk };
-    return { prompt: `${w.kk} ?`, options: opts.map((o) => ({ key: o.kk, label: o.e, e: "" })), answer: w.kk };
+    return { prompt: `${tr(w, explain)} → ?`, options: opts.map((o) => ({ key: o.kk, label: o.kk })), answer: w.kk };
   });
 }
 
@@ -63,22 +61,37 @@ function PenPaper() {
   );
 }
 
+const TOPIC_NAME = (t, lang) => TOPICS[t]?.[lang === "kk" ? "kk" : lang === "ru" ? "ru" : "en"] || "";
+const HINT = { kk: "Аудармасы", ru: "Перевод", en: "Translation" };
+const BACK = { kk: "Сөзге оралу", ru: "Назад к слову", en: "Back to word" };
+
+// Екі жақты карта: шын 3D аудару, бүкіл карта басылады, көрінбейтін жағы фокус алмайды
 function DayCard({ w, lang, explain, flipped, known, onFlip, onKnow }) {
+  const stop = (fn) => (e) => { e.stopPropagation(); fn(); };
+  function key(e) { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onFlip(); } }
   return (
-    <div className={`sz-card ${flipped ? "flip" : ""} ${known ? "known" : ""}`}>
-      <button className="sz-face sz-front" onClick={onFlip} aria-label={w.kk}>
-        <span className="sz-e">{w.e}</span>
-        <b>{w.kk}</b>
-        {known && <i className="sz-ok"><Icon name="check" size={14} /></i>}
-      </button>
-      <div className="sz-face sz-back">
-        <span className="sz-e">{w.e}</span>
-        <b>{tr(w, explain)}</b>
-        <small>{w.kk}</small>
-        <div className="sz-acts">
-          <button className="icon-btn" onClick={() => sayKk(w.kk)} aria-label="listen"><Icon name="volume" size={16} /></button>
-          <button className={`btn small ${known ? "ghost" : "gold"}`} onClick={onKnow}>{known ? "✓" : tx(lang).szKnow}</button>
-          <button className="icon-btn" onClick={onFlip} aria-label="back"><Icon name="refresh" size={16} /></button>
+    <div className={`sz-card ${flipped ? "flip" : ""} ${known ? "known" : ""}`} onClick={onFlip} onKeyDown={key}
+      role="button" tabIndex={0} aria-pressed={flipped} aria-label={flipped ? `${w.kk} — ${tr(w, explain)}` : w.kk}>
+      <div className="sz-inner">
+        <div className="sz-face sz-front" inert={flipped ? true : undefined} aria-hidden={flipped}>
+          <span className="sz-topic">{TOPIC_NAME(w.t, lang)}</span>
+          {known && <i className="sz-ok" aria-hidden="true"><Icon name="check" size={13} /></i>}
+          <b lang="kk">{w.kk}</b>
+          <span className="sz-foot">
+            <button type="button" className="sz-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={16} /></button>
+            <span className="sz-hint"><Icon name="refresh" size={13} /> {HINT[lang] || HINT.en}</span>
+          </span>
+        </div>
+        <div className="sz-face sz-back" inert={flipped ? undefined : true} aria-hidden={!flipped}>
+          <b>{tr(w, explain)}</b>
+          <small lang="kk">{w.kk}</small>
+          <span className="sz-acts">
+            <button type="button" className="sz-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={16} /></button>
+            <button type="button" className={`sz-know ${known ? "on" : ""}`} onClick={stop(onKnow)} aria-pressed={known}>
+              <Icon name="check" size={15} /> {tx(lang).szKnow}
+            </button>
+          </span>
+          <span className="sr-only">{BACK[lang] || BACK.en}</span>
         </div>
       </div>
     </div>
@@ -176,15 +189,15 @@ export default function Sozdik() {
           <h1>{x.szTitle}</h1>
           <p>{x.szSub}</p>
         </div>
-        <div className="head-tools"><LangPicker /><span className="chip gold">📚 {state.vocab?.length || 0}</span></div>
+        <div className="head-tools"><LangPicker /><span className="chip gold"><Icon name="book" size={15} /> {state.vocab?.length || 0}</span></div>
       </header>
 
       <div className="sz-grid">
         <div className="sz-main">
           <div className="shop-tabs">
-            <button className={`chip tab ${tab === "day" ? "on" : ""}`} onClick={() => setTab("day")}>🌅 {x.szDay}</button>
-            <button className={`chip tab ${tab === "test" ? "on" : ""}`} onClick={() => setTab("test")}>🎯 {T.test}</button>
-            <button className={`chip tab ${tab === "mine" ? "on" : ""}`} onClick={() => setTab("mine")}>📖 {x.szMine}</button>
+            <button className={`chip tab ${tab === "day" ? "on" : ""}`} onClick={() => setTab("day")}><Icon name="sun" size={15} /> {x.szDay}</button>
+            <button className={`chip tab ${tab === "test" ? "on" : ""}`} onClick={() => setTab("test")}><Icon name="target" size={15} /> {T.test}</button>
+            <button className={`chip tab ${tab === "mine" ? "on" : ""}`} onClick={() => setTab("mine")}><Icon name="book" size={15} /> {x.szMine}</button>
           </div>
 
           {tab === "day" && (
@@ -200,7 +213,7 @@ export default function Sozdik() {
                     onFlip={() => { setFlip((f) => ({ ...f, [w.kk]: !f[w.kk] })); }} onKnow={() => mark(w)} />
                 ))}
               </div>
-              {known === 10 && words.length === 10 && <p className="alert ok">🎉 {x.szDone}</p>}
+              {known === 10 && words.length === 10 && <p className="alert ok"><Icon name="sparkle" size={16} /> {x.szDone}</p>}
               <button className="btn ghost small" onClick={newSet}><Icon name="refresh" size={15} /> {T.newSet}</button>
             </section>
           )}
@@ -213,7 +226,7 @@ export default function Sozdik() {
                   {tres && <button className="btn gold" onClick={startTest}><Icon name="refresh" size={15} /> {T.again}</button>}
                 </>
               ) : (
-                <div className="sz-testhero"><NatArt name="dombyra" size={110} /><button className="btn gold big" onClick={startTest} disabled={!words.length}>🎯 {T.start}</button></div>
+                <div className="sz-testhero"><NatArt name="dombyra" size={110} /><button className="btn gold big" onClick={startTest} disabled={!words.length}>{T.start}</button></div>
               )}
             </section>
           )}
@@ -231,8 +244,7 @@ export default function Sozdik() {
                 <ul className="sz-list">
                   {mine.map((v) => (
                     <li key={v.kk}>
-                      <span className="sz-e">{v.e || "📝"}</span>
-                      <span className="sz-w"><b>{v.kk}</b><small>{tr(v, explain)}</small></span>
+                      <span className="sz-w"><b lang="kk">{v.kk}</b><small>{tr(v, explain)}</small></span>
                       <button className="icon-btn" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={16} /></button>
                       <button className="icon-btn" title={x.szDel} aria-label={x.szDel} onClick={() => update((s) => ({ ...s, vocab: s.vocab.filter((z) => z.kk !== v.kk) }))}><Icon name="x" size={16} /></button>
                     </li>

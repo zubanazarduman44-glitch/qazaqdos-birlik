@@ -216,14 +216,28 @@ h1, h2, h3 { color: #14263f; }
 .sz-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; } .sz-bar b { white-space: nowrap; }
 .sz-prog { flex: 1; height: 10px; border-radius: 10px; background: rgba(120, 80, 20, 0.15); overflow: hidden; } .sz-prog i { display: block; height: 100%; background: var(--btn-gold); transition: width 0.5s var(--ease); }
 .sz-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 10px; }
-.sz-card { position: relative; height: 150px; perspective: 800px; }
-.sz-face { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 4px; padding: 10px; border-radius: 18px; text-align: center; transition: opacity 0.35s, transform 0.45s var(--ease), visibility 0.35s; background: #fffaf0; box-shadow: inset 0 0 0 1px var(--rim), inset 0 0 0 4px rgba(255, 255, 255, 0.6), var(--shadow); background-image: var(--oyu-tile); background-size: 60px 60px; background-position: right -14px top -14px; background-repeat: no-repeat; }
-.sz-front { cursor: pointer; } .sz-front b { font-family: var(--head); font-size: 18px; }
-.sz-back { opacity: 0; visibility: hidden; transform: scale(0.92) rotate(-2deg); background-color: #fff3d4; } .sz-card.flip .sz-front { opacity: 0; visibility: hidden; transform: scale(0.92) rotate(2deg); } .sz-card.flip .sz-back { opacity: 1; visibility: visible; transform: none; }
-.sz-e { font-size: 38px; } .sz-back .sz-e { font-size: 26px; } .sz-back b { font-size: 16px; } .sz-back small { color: var(--muted); font-weight: 700; }
-.sz-acts { display: flex; align-items: center; gap: 6px; margin-top: 2px; } .sz-acts .icon-btn { width: 32px; height: 32px; }
-.sz-card.known .sz-face { box-shadow: inset 0 0 0 2px #138a5c, var(--shadow); }
-.sz-ok { position: absolute; top: 8px; left: 8px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #138a5c; color: #fff; }
+.sz-card { position: relative; height: 168px; perspective: 1000px; cursor: pointer; border-radius: 16px; outline: none; -webkit-tap-highlight-color: transparent; }
+.sz-card:focus-visible { box-shadow: 0 0 0 3px var(--bg, #FAF6EE), 0 0 0 5px #0F5E7A; }
+.sz-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.25, 1); will-change: transform; }
+.sz-card.flip .sz-inner { transform: rotateY(180deg); }
+@media (hover: hover) { .sz-card:not(.flip):hover .sz-inner { transform: translateY(-3px); } }
+.sz-card:active .sz-inner { transition-duration: 0.15s; }
+.sz-face { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 6px; padding: 30px 12px 46px; border-radius: 16px; text-align: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: #FFFDF7; border: 1.5px solid #E6D9BC; box-shadow: 0 2px 0 #E6D9BC, 0 8px 18px -12px rgba(31, 36, 48, 0.35); }
+.sz-front b { font-family: var(--head); font-weight: 700; font-size: clamp(17px, 2.2vw, 21px); line-height: 1.2; color: #1F2430; overflow-wrap: anywhere; }
+.sz-topic { position: absolute; top: 10px; left: 12px; right: 36px; text-align: left; font-size: 12px; font-weight: 600; color: #5F6470; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sz-foot { position: absolute; left: 8px; right: 10px; bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+.sz-hint { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #0F5E7A; }
+.sz-say { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 0; background: #F4ECDA; color: #0F5E7A; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+.sz-say:hover { background: #EADDC0; } .sz-say:active { transform: scale(0.92); }
+.sz-back { transform: rotateY(180deg); background: #0F5E7A; border-color: #0A4A61; box-shadow: 0 2px 0 #0A4A61, 0 8px 18px -12px rgba(31, 36, 48, 0.45); color: #fff; }
+.sz-back b { font-family: var(--head); font-weight: 700; font-size: clamp(16px, 2vw, 19px); line-height: 1.25; overflow-wrap: anywhere; }
+.sz-back small { color: rgba(255, 255, 255, 0.78); font-weight: 600; font-size: 13px; }
+.sz-acts { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.sz-back .sz-say { background: rgba(255, 255, 255, 0.16); color: #fff; } .sz-back .sz-say:hover { background: rgba(255, 255, 255, 0.26); }
+.sz-know { display: inline-flex; align-items: center; gap: 5px; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 0; background: #E0A526; color: #1F2430; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+.sz-know:active { transform: scale(0.95); } .sz-know.on { background: #fff; color: #2F6B4F; }
+.sz-card.known .sz-front { border-color: #2F6B4F; box-shadow: 0 2px 0 #2F6B4F, 0 8px 18px -12px rgba(31, 36, 48, 0.35); }
+.sz-ok { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #2F6B4F; color: #fff; }
 .sz-search { margin-bottom: 8px; }
 .sz-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
 .sz-list li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: rgba(255, 252, 244, 0.85); box-shadow: inset 0 0 0 1px var(--line); }
@@ -589,7 +603,6 @@ body::after { z-index: -1; }
   background-blend-mode: normal;
   -webkit-backdrop-filter: none; backdrop-filter: none;
 }
-.sz-face { background-image: none; }
 .item-stage { background: radial-gradient(circle at 50% 40%, #fffdf3, #f3dfae); }
 
 /* Жоғарғы жолақ: оюлы жиек барлық жағынан қоршайды */
@@ -603,3 +616,17 @@ body::after { z-index: -1; }
 
 /* Тіл таңдау түймесі айналдырғанда жоғарғы жолақтың үстіне шықпайды */
 .lang-pick { z-index: 5; }
+@media (prefers-reduced-motion: reduce) {
+  .sz-inner { transition: none; transform: none !important; }
+  .sz-face { transition: opacity 0.2s; }
+  .sz-back { transform: none; opacity: 0; }
+  .sz-card.flip .sz-back { opacity: 1; } .sz-card.flip .sz-front { opacity: 0; }
+}
+.sz-know { white-space: nowrap; }
+.sz-cards + .alert, .sz-cards ~ .btn { margin-top: 14px; }
+@media (max-width: 900px) { .sz-side { display: none; } }
+@media (max-width: 520px) {
+  .sz-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .sz-card { height: 160px; }
+  .sz-acts { left: 6px; right: 6px; gap: 4px; } .sz-back .sz-say { width: 32px; height: 32px; flex: none; }
+  .sz-know { padding: 0 9px; font-size: 12px; gap: 3px; min-width: 0; }
+}
