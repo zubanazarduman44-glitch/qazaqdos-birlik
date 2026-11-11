@@ -272,8 +272,8 @@ h1, h2, h3 { color: #14263f; }
 .kzmap-wrap.sky .reg.done.tf-steppe { fill: url(#tfSteppe); } 
 .kzmap-wrap.sky .reg.sel { stroke: #fff; stroke-width: 3.4; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95)) brightness(1.12); transform: translateY(-5px); }
 .kz-lake { fill: #34b3e0; stroke: #fffbe6; stroke-width: 2.4; }
-.kz-river { fill: none; stroke: #1f9fd0; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
-.kz-river-flow { fill: none; stroke: #8fe0f6; stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 10 14; animation: dash 1.8s linear infinite; }
+.kz-river { fill: none; stroke: #1f9fd0; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.kz-river-flow { fill: none; stroke: #8fe0f6; stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 3 9; opacity: .85; animation: dash 1.8s linear infinite; }
 .kz-lm { cursor: pointer; }
 .kz-lm-sh { fill: rgba(30, 14, 4, 0.25); }
 .kz-lm-art { transition: transform 0.3s var(--ease); transform-box: fill-box; transform-origin: 50% 100%; animation: lmIdle 4.2s ease-in-out infinite; }
@@ -344,3 +344,67 @@ h1, h2, h3 { color: #14263f; }
 .hm-treasures small { display: block; color: #7a5a30; }
 .site-treasure { margin: 4px 0 0; font-weight: 700; color: #b8322a; }
 .art-e svg { filter: drop-shadow(0 6px 6px rgba(60, 30, 5, 0.4)); }
+
+/* Телефон: карталар жанға ыңғайлы */
+@media (max-width: 760px) {
+  .kzmap-wrap.sky { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .kzmap-wrap.sky .kzmap { min-width: 760px; }
+  .head-tools { width: 100%; justify-content: space-between; }
+  .lang-pick { position: static; }
+  .lp-menu { position: fixed; left: 12px; right: 12px; bottom: 76px; top: auto; width: auto; max-height: 55vh; z-index: 90; }
+  .lp-btn { padding: 8px 12px; }
+  .hm-eras { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .hm-eras .chip { white-space: nowrap; flex: none; }
+  .hm-treasures { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ═════ Ойындар: анимация ═════ */
+.game-card { transition: transform 0.3s var(--ease), box-shadow 0.3s; background-image: var(--oyu-tile); background-size: 90px 90px; background-blend-mode: soft-light; }
+.game-card:hover { transform: translateY(-6px) rotate(-0.6deg); box-shadow: 0 22px 34px -18px rgba(120, 50, 10, 0.55); }
+.game-card .gc-e { display: inline-block; animation: gcBob 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+.game-card:nth-child(2n) .gc-e { animation-delay: -1s; } .game-card:nth-child(3n) .gc-e { animation-delay: -2s; }
+.game-card:hover .gc-e { animation: gcHop 0.6s ease-in-out infinite; }
+@keyframes gcBob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
+@keyframes gcHop { 50% { transform: translateY(-12px) scale(1.15) rotate(8deg); } }
+.game-head .game-e { animation: gcBob 3s ease-in-out infinite; }
+.g-hero { display: inline-block; animation: gcBob 2.6s ease-in-out infinite; }
+.g-q, .g-ready, .tug, .bestas, .kokpar { animation: gIn 0.5s var(--ease) both; }
+@keyframes gIn { from { opacity: 0; transform: translateY(16px) scale(0.98); } }
+.g-opts .qopt { animation: gIn 0.4s var(--ease) both; transition: transform 0.18s var(--ease), box-shadow 0.2s, background 0.2s; }
+.g-opts .qopt:nth-child(2) { animation-delay: 0.06s; } .g-opts .qopt:nth-child(3) { animation-delay: 0.12s; } .g-opts .qopt:nth-child(4) { animation-delay: 0.18s; }
+.g-opts .qopt:not(:disabled):active { transform: scale(0.95); }
+.qopt.ok { animation: qOk 0.5s var(--ease); } .qopt.bad { animation: qBad 0.45s; }
+@keyframes qOk { 40% { transform: scale(1.07); } }
+@keyframes qBad { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+.g-prompt { animation: gIn 0.45s var(--ease) both; }
+.stone { transition: transform 0.25s var(--ease); } .stone:not(.up):hover { transform: translateY(-4px) rotate(-2deg); }
+.stone.done { animation: qOk 0.6s var(--ease); }
+.game-result .qyran, .game-result svg { animation: gcBob 2s ease-in-out infinite; }
+.game-result h2 { animation: gIn 0.6s var(--ease) both; }
+@media (prefers-reduced-motion: reduce) { .game-card .gc-e, .game-head .game-e, .g-hero, .kk-horse, .kk-goat, .kk-dust, .game-result * { animation: none !important; } }
+
+/* Көкпар */
+.kokpar { padding: 14px; display: grid; gap: 10px; }
+.kk-score { display: flex; justify-content: space-between; align-items: center; }
+.kk-score .chip.bad { background: #f6d4cf; color: #b8322a; animation: qBad 0.6s infinite; }
+.kk-field { position: relative; height: 150px; border-radius: 22px; overflow: hidden; background: linear-gradient(#bfe6f2 0 38%, #9bc94f 38%, #6fa63a); box-shadow: inset 0 0 0 3px #ffd35a, inset 0 0 0 5px #7a3a12; }
+.kk-field::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 46px, rgba(255, 255, 255, 0.08) 46px 92px); }
+.kk-mid { position: absolute; left: 50%; top: 38%; bottom: 0; width: 3px; background: rgba(255, 255, 255, 0.5); }
+.kk-goal { position: absolute; top: 46%; width: 54px; height: 70px; display: grid; place-items: center; font-size: 34px; border: 3px dashed #fff3d4; border-radius: 12px; background: rgba(255, 255, 255, 0.18); }
+.kk-goal.l { left: 8px; border-color: #ff9f9f; } .kk-goal.r { right: 8px; border-color: #ffe27a; }
+.kk-rider, .kk-goat, .kk-dust { position: absolute; bottom: 20px; transition: left 0.5s var(--ease); }
+.kk-rider { font-size: 46px; line-height: 1; transform: translateX(-50%); }
+.kk-horse { display: inline-block; animation: kkGallop 0.45s ease-in-out infinite; }
+.kk-horse.flip { transform: scaleX(-1); animation-name: kkGallop2; }
+.kk-rider.them .kk-horse { filter: hue-rotate(160deg); }
+@keyframes kkGallop { 50% { transform: translateY(-8px) rotate(-6deg); } }
+@keyframes kkGallop2 { 50% { transform: scaleX(-1) translateY(-8px) rotate(-6deg); } }
+.kk-goat { font-size: 30px; transform: translateX(-50%); animation: kkRoll 0.9s ease-in-out infinite; bottom: 16px; z-index: 2; }
+@keyframes kkRoll { 50% { transform: translateX(-50%) translateY(-8px) rotate(14deg); } }
+.kk-dust { width: 70px; height: 12px; transform: translateX(-50%); bottom: 10px; background: radial-gradient(closest-side, rgba(150, 110, 60, 0.45), transparent); animation: kkDust 0.8s ease-in-out infinite; }
+@keyframes kkDust { 50% { transform: translateX(-50%) scaleX(1.4); opacity: 0.5; } }
+.kk-burst { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); padding: 6px 16px; border-radius: 99px; font-weight: 900; color: #4a2b00; background: linear-gradient(#fff0a8, #ffd35a); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); animation: kkBurst 1s var(--ease) both; z-index: 5; }
+.kk-burst.them { background: #f6d4cf; color: #b8322a; }
+@keyframes kkBurst { from { transform: translateX(-50%) scale(0.3); opacity: 0; } 25% { transform: translateX(-50%) scale(1.2); opacity: 1; } to { transform: translateX(-50%) translateY(-6px) scale(1); } }
+.kk-bar { height: 8px; border-radius: 9px; background: #f3e4c0; overflow: hidden; } .kk-bar i { display: block; height: 100%; background: linear-gradient(90deg, #e8a400, #b8322a); transition: width 1s linear; }
+@media (max-width: 560px) { .kk-field { height: 130px; } .kk-rider { font-size: 38px; } .kk-goal { width: 42px; height: 56px; font-size: 26px; } }

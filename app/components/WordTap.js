@@ -56,14 +56,14 @@ export default function WordTap() {
       const id = ++seq.current;
       const key = hit.w.toLowerCase();
       const local = lookupLocal(hit.w) || cache.get(key);
-      if (local) { setPop({ w: hit.w, box: hit.box, data: local }); sayRef.current?.(local.kk || hit.w); return; }
+      if (local) return setPop({ w: hit.w, box: hit.box, data: local });
       setPop({ w: hit.w, box: hit.box, loading: true });
       fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ word: hit.w, context: hit.ctx }) })
         .then(async (r) => {
           const d = await r.json().catch(() => ({}));
           if (!r.ok) throw new Error(d.error || "err");
           cache.set(key, d);
-          if (id === seq.current) { setPop({ w: hit.w, box: hit.box, data: d }); sayRef.current?.(d.kk || hit.w); }
+          if (id === seq.current) { setPop({ w: hit.w, box: hit.box, data: d }) }
         })
         .catch(() => id === seq.current && setPop({ w: hit.w, box: hit.box, err: true }));
     }

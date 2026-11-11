@@ -2,10 +2,10 @@
 import { use } from "react";
 import Link from "next/link";
 import { GAMES } from "../../../../lib/games";
-import { Arkan, Asyk, Baige } from "../../../components/games/QuizGames";
-import { BesTas, Tenge, Togyz } from "../../../components/games/OtherGames";
+import { Arkan, Asyk, Baige, Kokpar } from "../../../components/games/QuizGames";
+import { BesTas, Tenge } from "../../../components/games/OtherGames";
 
-const MAP = { baige: Baige, arkan: Arkan, asyk: Asyk, tenge: Tenge, bestas: BesTas, togyz: Togyz };
+const MAP = { baige: Baige, arkan: Arkan, asyk: Asyk, tenge: Tenge, bestas: BesTas, kokpar: Kokpar };
 
 export default function GamePage({ params }) {
   const { id } = use(params);

@@ -178,7 +178,7 @@ export default function History() {
             {SITES.map((st) => {
               const [cx, cy] = pos(st);
               const on = eraF.f(st.year);
-              const W = 58;
+              const W = 52;
               return (
                 <g key={st.id} transform={`translate(${cx} ${cy})`} className={`hm-site ${sel === st.id ? "sel" : ""} ${on ? "" : "dim"} ${done[st.id] ? "got" : ""}`} onClick={() => pick(st.id)} role="button" tabIndex={0} aria-label={L(st.name, lang)} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && pick(st.id)}>
                   <ellipse className="kz-lm-sh" cx="0" cy="6" rx={W * 0.42} ry="6" />

@@ -343,3 +343,102 @@ export function Asyk({ game }) {
     </Frame>
   );
 }
+
+/* ═════ Көкпар ═════ */
+export function Kokpar({ game }) {
+  const GOALS = 3, STEPS = 4, SEC = 9;
+  const [topic, setTopic] = useState("all");
+  const [phase, setPhase] = useState("ready");
+  const [pos, setPos] = useState(0); // -STEPS..STEPS : оң жаққа қарай — біздің ұпай
+  const [me, setMe] = useState(0);
+  const [them, setThem] = useState(0);
+  const [q, setQ] = useState(null);
+  const [picked, setPicked] = useState(null);
+  const [left, setLeft] = useState(SEC);
+  const [burst, setBurst] = useState(null);
+  const [right, setRight] = useState(0);
+  const [result, setResult] = useState(null);
+  const nextQ = useQuestions(topic);
+  const { finish, reset } = useFinish(game.id);
+  const { t } = useApp();
+  const lock = useRef(false);
+
+  function start() {
+    reset();
+    setPos(0); setMe(0); setThem(0); setRight(0); setPicked(null); setResult(null); setBurst(null);
+    setQ(nextQ()); setLeft(SEC); lock.current = false;
+    setPhase("run");
+  }
+  function move(d) {
+    lock.current = true;
+    let p = pos + d, m = me, th = them, goal = null;
+    if (p >= STEPS) { m += 1; p = 0; goal = "me"; }
+    if (p <= -STEPS) { th += 1; p = 0; goal = "them"; }
+    setPos(p);
+    if (goal) { setMe(m); setThem(th); setBurst({ who: goal, k: Date.now() }); }
+    setTimeout(() => {
+      if (m >= GOALS || th >= GOALS) {
+        const win = m >= GOALS;
+        finish(win, right);
+        setResult({ win, text: `${m} : ${th}` });
+        setPhase("end");
+        return;
+      }
+      setQ(nextQ()); setPicked(null); setLeft(SEC); setBurst(null); lock.current = false;
+    }, goal ? 1100 : ok0(d) ? 450 : 800);
+  }
+  const ok0 = (d) => d > 0;
+  function pick(k) {
+    if (lock.current) return;
+    setPicked(k);
+    const ok = k === q.answer;
+    if (ok) setRight((r) => r + 1);
+    move(ok ? 1 : -1);
+  }
+  useEffect(() => {
+    if (phase !== "run") return;
+    const id = setInterval(() => setLeft((s) => s - 1), 1000);
+    return () => clearInterval(id);
+  }, [phase]);
+  useEffect(() => {
+    if (phase === "run" && left <= 0 && !lock.current) { setPicked("__time"); move(-1); }
+  }, [left, phase]);
+
+  const pct = 50 + (pos / STEPS) * 38;
+  return (
+    <Frame game={game} result={result} onRestart={start}>
+      {phase === "ready" ? (
+        <Ready topic={topic} setTopic={setTopic} onStart={start}>
+          <div className="g-hero kk-hero">🐎🐐🏆</div>
+        </Ready>
+      ) : (
+        <>
+          <section className="card kokpar">
+            <div className="kk-score"><span className="chip gold">🟡 {me}</span><span className={`chip ${left <= 3 ? "bad" : ""}`}>⏱ {Math.max(0, left)}</span><span className="chip">🔴 {them}</span></div>
+            <div className="kk-field">
+              <div className="kk-goal l"><span>🏺</span></div>
+              <div className="kk-goal r"><span>🏺</span></div>
+              <div className="kk-mid" />
+              <div className="kk-rider me" style={{ left: `${pct - 9}%` }} aria-hidden>
+                <span className="kk-horse">🐎</span>
+              </div>
+              <div className="kk-goat" style={{ left: `${pct}%` }} aria-hidden>🐐</div>
+              <div className="kk-rider them" style={{ left: `${pct + 9}%` }} aria-hidden>
+                <span className="kk-horse flip">🏇</span>
+              </div>
+              <div className="kk-dust" style={{ left: `${pct}%` }} />
+              {burst && <div key={burst.k} className={`kk-burst ${burst.who}`}>{burst.who === "me" ? "🎉 ГОЛ!" : "😬"}</div>}
+            </div>
+            <div className="kk-bar"><i style={{ width: `${(left / SEC) * 100}%` }} /></div>
+          </section>
+          {q && (
+            <section className="card g-q">
+              <h3 className="g-prompt">{q.word.e} <b>{q.prompt}</b></h3>
+              <Options q={q} picked={picked && picked !== "__time" ? picked : null} onPick={pick} disabled={picked === "__time"} />
+            </section>
+          )}
+        </>
+      )}
+    </Frame>
+  );
+}
