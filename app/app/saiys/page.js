@@ -1,4 +1,5 @@
 "use client";
+import Avatar from "../../components/Avatar";
 import Link from "next/link";
 import { NatEmpty, NatArt } from "../../components/NatArt";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -135,7 +136,7 @@ export default function Saiys() {
                 <div className="podium">
                   {[1, 0, 2].map((i) => rows[i] && (
                     <div key={i} className={`pod p${i + 1} ${rows[i].user_id === user.id ? "me" : ""}`}>
-                      <span className="pod-av">{rows[i].avatar || "🌱"}</span>
+                      <span className="pod-av"><Avatar value={rows[i].avatar} size={52} /></span>
                       <b>{rows[i].name}</b>
                       <small>{rows[i].tasks} {x.sTasks}</small>
                       <span className="pod-step">{["🥇", "🥈", "🥉"][i]}</span>
@@ -146,7 +147,7 @@ export default function Saiys() {
                   {rows.map((r, i) => (
                     <li key={r.user_id} className={r.user_id === user.id ? "me" : ""}>
                       <span className="rk">{i + 1}</span>
-                      <span className="rk-av">{r.avatar || "🌱"}</span>
+                      <span className="rk-av"><Avatar value={r.avatar} size={36} /></span>
                       <span className="rk-name">{r.name}{r.user_id === user.id ? ` (${x.sYou})` : ""}</span>
                       <b>{r.tasks}</b> <small>{x.sTasks}</small>
                     </li>
@@ -159,7 +160,7 @@ export default function Saiys() {
           {last.length > 0 && (
             <section className="card last">
               <h3>{x.sLast} · {lastKind === "gift" ? "🎁" : "🪙"}</h3>
-              <ul>{last.map((r, i) => <li key={r.user_id}>{["🥇", "🥈", "🥉"][i]} {r.avatar} {r.name} — {r.tasks} {x.sTasks}</li>)}</ul>
+              <ul>{last.map((r, i) => <li key={r.user_id}>{["🥇", "🥈", "🥉"][i]} <Avatar value={r.avatar} size={22} /> {r.name} — {r.tasks} {x.sTasks}</li>)}</ul>
             </section>
           )}
         </>
@@ -330,7 +331,7 @@ function Room({ x, user, state, explain, award }) {
         {players.map((p, i) => (
           <li key={p.user_id} className={p.user_id === user.id ? "me" : ""}>
             <span className="rk">{room?.status === "play" ? i + 1 : "•"}</span>
-            <span className="rk-av">{p.avatar}</span>
+            <span className="rk-av"><Avatar value={p.avatar} size={36} /></span>
             <span className="rk-name">{p.name}{p.done ? " ✅" : ""}</span>
             <b>{p.score}</b> <small>{x.sPoints}</small>
           </li>

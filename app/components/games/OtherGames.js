@@ -3,13 +3,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useApp } from "../Store";
 import Qyran from "../Qyran";
 import Icon from "../Icon";
-import Frame, { TopicPicker, useFinish, useQuestions } from "./Frame";
+import Frame, { LevelPicker, TopicPicker, useFinish, useQuestions } from "./Frame";
 import { shuffle, tr, wordsByTopic } from "../../../lib/words";
 
 /* ═════ Теңге ілу ═════ */
 export function Tenge({ game }) {
   const GOAL = 10;
   const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState(1);
   const [phase, setPhase] = useState("ready");
   const [lane, setLane] = useState(1);
   const [wave, setWave] = useState(null); // { q, y, t0, dur }
@@ -25,16 +26,16 @@ export function Tenge({ game }) {
 
   const newWave = useCallback(
     (n) => {
-      const q = nextQ({ reverse: true });
-      setWave({ q, t0: performance.now(), dur: Math.max(2600, 4600 - n * 180) });
+      const q = nextQ({ reverse: level === 1 ? true : level === 2 ? true : Math.random() < 0.5 });
+      setWave({ q, t0: performance.now(), dur: Math.max(1800, (4600 - n * 180) * [1.25, 1, 0.72][level - 1]) });
     },
-    [nextQ]
+    [nextQ, level]
   );
 
   function start() {
     reset();
     setGot(0);
-    setLives(3);
+    setLives([4, 3, 2][level - 1]);
     setResult(null);
     laneRef.current = 1;
     setLane(1);
@@ -81,7 +82,7 @@ export function Tenge({ game }) {
           if (ng >= GOAL || nl <= 0) {
             setPhase("end");
             const win = ng >= GOAL;
-            finish(win, ng);
+            finish(win, ng, level);
             setResult({ win, text: `🪙 ${ng} / ${GOAL}` });
           } else newWave(ng);
         }, 650);
@@ -98,6 +99,7 @@ export function Tenge({ game }) {
       {phase === "ready" ? (
         <section className="card g-ready">
           <div className="g-hero">🏇🪙</div>
+          <LevelPicker level={level} setLevel={setLevel} />
           <h3>{t.topic}</h3>
           <TopicPicker topic={topic} setTopic={setTopic} />
           <button className="btn gold big" onClick={start}>
@@ -144,6 +146,8 @@ export function Tenge({ game }) {
 /* ═════ Бес тас (есте сақтау) ═════ */
 export function BesTas({ game }) {
   const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState(1);
+  const pairs = [4, 5, 6][level - 1];
   const [phase, setPhase] = useState("ready");
   const [cards, setCards] = useState([]);
   const [open, setOpen] = useState([]);
@@ -155,7 +159,7 @@ export function BesTas({ game }) {
 
   function start() {
     reset();
-    const ws = shuffle(wordsByTopic(topic)).slice(0, 5);
+    const ws = shuffle(wordsByTopic(topic)).slice(0, pairs);
     const cs = shuffle(ws.flatMap((w) => [
       { id: `${w.kk}-a`, pair: w.kk, face: w.kk, kind: "kk" },
       { id: `${w.kk}-b`, pair: w.kk, face: tr(w, explain), e: w.e, kind: "tr" },
@@ -179,9 +183,9 @@ export function BesTas({ game }) {
         setTimeout(() => {
           setMatched(nm);
           setOpen([]);
-          if (nm.length === 5) {
-            const score = Math.max(10, 100 - (moves + 1 - 5) * 8);
-            finish(true, score);
+          if (nm.length === pairs) {
+            const score = Math.max(10, 100 - (moves + 1 - pairs) * 8);
+            finish(true, score, level);
             setResult({ win: true, text: `${t.moves}: ${moves + 1}` });
             setPhase("end");
           }
@@ -195,6 +199,7 @@ export function BesTas({ game }) {
       {phase === "ready" ? (
         <section className="card g-ready">
           <div className="g-hero">🪨🪨🪨🪨🪨</div>
+          <LevelPicker level={level} setLevel={setLevel} />
           <h3>{t.topic}</h3>
           <TopicPicker topic={topic} setTopic={setTopic} />
           <button className="btn gold big" onClick={start}>
@@ -205,7 +210,7 @@ export function BesTas({ game }) {
         <section className="card bestas">
           <div className="tenge-top">
             <span className="chip">
-              {t.pairs}: {matched.length} / 5
+              {t.pairs}: {matched.length} / {pairs}
             </span>
             <span className="chip">
               {t.moves}: {moves}

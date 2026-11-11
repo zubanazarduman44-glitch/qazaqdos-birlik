@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Avatar from "./Avatar";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "./Store";
@@ -119,7 +120,7 @@ export default function Shell({ children }) {
         </nav>
         <div className="side-foot">
           <Link href="/app/profile" className={`side-me ${active("/app/profile") ? "on" : ""}`}>
-            <span className="me-av">{state.profile.avatar}</span>
+            <span className="me-av"><Avatar value={state.profile.avatar} size={40} /></span>
             <span className="me-txt">
               <b>{state.profile.name || t.guest}</b>
               <small>{user ? user.email : t.guest}</small>

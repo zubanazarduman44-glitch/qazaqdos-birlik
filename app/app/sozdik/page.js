@@ -2,11 +2,27 @@
 import { useEffect, useMemo, useState } from "react";
 import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
-import { NatEmpty } from "../../components/NatArt";
+import { NatEmpty, NatArt } from "../../components/NatArt";
 import LangPicker from "../../components/LangPicker";
 import { WORDS, WTR, setWordTr, tr } from "../../../lib/words";
 import { tx } from "../../../lib/tx";
 import { sayKk } from "../../../lib/speak";
+import Quiz from "../../components/Quiz";
+import { shuffle } from "../../../lib/words";
+
+// Әр рет басқаша сұрақтар: түрі де, нұсқалары да кездейсоқ
+function mkTest(words, explain) {
+  const kinds = shuffle(["kk2tr", "tr2kk", "e2kk", "kk2e"]);
+  return shuffle(words).map((w, i) => {
+    const kind = kinds[i % kinds.length];
+    const others = shuffle(uniq.filter((z) => z.kk !== w.kk && tr(z, explain) !== tr(w, explain))).slice(0, 3);
+    const opts = shuffle([w, ...others]);
+    if (kind === "kk2tr") return { prompt: `${w.kk} → ?`, options: opts.map((o) => ({ key: o.kk, label: tr(o, explain) })), answer: w.kk };
+    if (kind === "tr2kk") return { prompt: `${tr(w, explain)} → ?`, options: opts.map((o) => ({ key: o.kk, label: o.kk })), answer: w.kk };
+    if (kind === "e2kk") return { prompt: `${w.e} ?`, options: opts.map((o) => ({ key: o.kk, label: o.kk })), answer: w.kk };
+    return { prompt: `${w.kk} ?`, options: opts.map((o) => ({ key: o.kk, label: o.e, e: "" })), answer: w.kk };
+  });
+}
 
 const OFF = 5 * 3600_000;
 const dayKey = () => new Date(Date.now() + OFF).toISOString().slice(0, 10);
@@ -76,6 +92,11 @@ export default function Sozdik() {
   const [flip, setFlip] = useState({});
   const [q, setQ] = useState("");
   const [, bump] = useState(0);
+  const [test, setTest] = useState(null);
+  const [tres, setTres] = useState(null);
+  const [round, setRound] = useState(0);
+  const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
+  const T = { test: ["Тест", "Тест", "Quiz"][li], newSet: ["Жаңа 10 сөз", "Новые 10 слов", "New 10 words"][li], again: ["Қайта тапсыру (жаңа сұрақтар)", "Пройти заново (новые вопросы)", "Retake (new questions)"][li], start: ["Тестті бастау", "Начать тест", "Start the quiz"][li] };
   const today = dayKey();
   const sz = state.sozdik || { days: {}, learned: {}, done: {} };
 
@@ -117,6 +138,17 @@ export default function Sozdik() {
     return () => { dead = true; };
   }, [explain, state.vocab?.length, words.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  function newSet() {
+    update((s) => {
+      const cur = s.sozdik || { days: {}, learned: {}, done: {} };
+      const old = new Set(cur.days?.[today] || []);
+      const fresh = uniq.filter((w) => !cur.learned?.[w.kk] && !old.has(w.kk));
+      const base = fresh.length >= 10 ? fresh : uniq.filter((w) => !old.has(w.kk));
+      return { ...s, sozdik: { ...cur, days: { ...cur.days, [today]: shuffle(base).slice(0, 10).map((w) => w.kk) } } };
+    });
+    setFlip({}); setTest(null); setTres(null);
+  }
+  function startTest() { setRound((n) => n + 1); setTres(null); setTest(mkTest(words, explain)); }
   function mark(w) {
     update((s) => {
       const cur = s.sozdik || { days: {}, learned: {}, done: {} };
@@ -151,6 +183,7 @@ export default function Sozdik() {
         <div className="sz-main">
           <div className="shop-tabs">
             <button className={`chip tab ${tab === "day" ? "on" : ""}`} onClick={() => setTab("day")}>🌅 {x.szDay}</button>
+            <button className={`chip tab ${tab === "test" ? "on" : ""}`} onClick={() => setTab("test")}>🎯 {T.test}</button>
             <button className={`chip tab ${tab === "mine" ? "on" : ""}`} onClick={() => setTab("mine")}>📖 {x.szMine}</button>
           </div>
 
@@ -168,6 +201,20 @@ export default function Sozdik() {
                 ))}
               </div>
               {known === 10 && words.length === 10 && <p className="alert ok">🎉 {x.szDone}</p>}
+              <button className="btn ghost small" onClick={newSet}><Icon name="refresh" size={15} /> {T.newSet}</button>
+            </section>
+          )}
+
+          {tab === "test" && (
+            <section className="card">
+              {test ? (
+                <>
+                  <Quiz key={round} questions={test} onDone={(r, t2) => { setTres({ r, t2 }); award(r >= t2 - 1 ? 15 : 5, r >= t2 - 1 ? 8 : 1); }} />
+                  {tres && <button className="btn gold" onClick={startTest}><Icon name="refresh" size={15} /> {T.again}</button>}
+                </>
+              ) : (
+                <div className="sz-testhero"><NatArt name="dombyra" size={110} /><button className="btn gold big" onClick={startTest} disabled={!words.length}>🎯 {T.start}</button></div>
+              )}
             </section>
           )}
 

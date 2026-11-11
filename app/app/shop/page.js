@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { useApp } from "../../components/Store";
 import DressUp from "../../components/Dress";
-import Qyran from "../../components/Qyran";
+import ItemArt from "../../components/ItemArt";
 import Icon from "../../components/Icon";
 import { ITEMS, CATS } from "../../../lib/shop";
 import { tx } from "../../../lib/tx";
@@ -22,7 +22,7 @@ export default function Shop() {
       const sh = s.shop || { owned: [], wear: {} };
       return { ...s, coins: (s.coins || 0) - it.price, shop: { owned: [...sh.owned, it.id], wear: { ...sh.wear, [it.cat]: it.id } } };
     });
-    toast(`${x.shBought} ${it.e} ${L(it.name, lang)}`, "cheer");
+    toast(`${x.shBought} ${L(it.name, lang)}`, "cheer");
   }
   function wear(it, on) {
     update((s) => {
@@ -57,7 +57,7 @@ export default function Shop() {
             {Object.keys(CATS).map((c) => (
               <li key={c}>
                 <span>{L(CATS[c], lang)}</span>
-                <b>{wearing(c) ? `${wearing(c).e} ${L(wearing(c).name, lang)}` : "—"}</b>
+                <b>{wearing(c) ? L(wearing(c).name, lang) : "—"}</b>
               </li>
             ))}
           </ul>
@@ -77,8 +77,8 @@ export default function Shop() {
               const own = shop.owned?.includes(it.id);
               const on = shop.wear?.[it.cat] === it.id;
               return (
-                <article key={it.id} className={`card item ${on ? "on" : ""}`} style={{ animationDelay: `${i * 0.04}s` }}>
-                  <span className="item-e">{it.e}</span>
+                <article key={it.id} className={`card item ${on ? "on" : ""} ${own ? "own" : ""}`} style={{ animationDelay: `${i * 0.04}s` }}>
+                  <div className="item-stage"><span className="item-e"><ItemArt id={it.id} size={104} /></span>{own && <span className="item-own">✓</span>}{on && <span className="item-on">★</span>}</div>
                   <h4>{L(it.name, lang)}</h4>
                   <p>{L(it.desc, lang)}</p>
                   <div className="item-foot">

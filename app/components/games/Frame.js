@@ -13,14 +13,14 @@ export function useFinish(id) {
   const doneRef = useRef(false);
   const reset = useCallback(() => (doneRef.current = false), []);
   const finish = useCallback(
-    (win, score = 0) => {
+    (win, score = 0, level = 1) => {
       if (doneRef.current) return;
       doneRef.current = true;
       update((s) => {
         const g = s.games?.[id] || {};
-        return { ...s, games: { ...s.games, [id]: { wins: (g.wins || 0) + (win ? 1 : 0), plays: (g.plays || 0) + 1, best: Math.max(g.best || 0, score) } } };
+        return { ...s, games: { ...s.games, [id]: { wins: (g.wins || 0) + (win ? 1 : 0), plays: (g.plays || 0) + 1, best: Math.max(g.best || 0, score), lv: win ? Math.max(g.lv || 0, level) : g.lv || 0 } } };
       });
-      if (win) award(20, 10);
+      if (win) award(20 + (level - 1) * 10, 10 + (level - 1) * 5);
       else award(5, 1);
     },
     [id, update, award]
@@ -39,6 +39,26 @@ export function useQuestions(topic) {
       return q;
     },
     [topic, explain]
+  );
+}
+
+const LV_NAME = [["Жеңіл", "Лёгкий", "Easy"], ["Орташа", "Средний", "Medium"], ["Қиын", "Сложный", "Hard"]];
+export function LevelPicker({ level, setLevel }) {
+  const { lang } = useApp();
+  const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
+  const head = ["Деңгей", "Уровень", "Level"][li];
+  return (
+    <div className="lv-pick">
+      <span className="lv-pick-t">{head}</span>
+      <div className="lv-pick-row" role="radiogroup">
+        {[1, 2, 3].map((n) => (
+          <button key={n} role="radio" aria-checked={level === n} className={`lv-pick-b ${level === n ? "on" : ""}`} onClick={() => setLevel(n)}>
+            <span className="lv-stars">{"★".repeat(n)}{"☆".repeat(3 - n)}</span>
+            <b>{n} · {LV_NAME[n - 1][li]}</b>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

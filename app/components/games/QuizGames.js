@@ -3,13 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { useApp } from "../Store";
 import Qyran from "../Qyran";
 import Icon from "../Icon";
-import Frame, { Options, TopicPicker, useFinish, useQuestions } from "./Frame";
+import Frame, { LevelPicker, Options, TopicPicker, useFinish, useQuestions } from "./Frame";
 
-function Ready({ topic, setTopic, onStart, children }) {
+function Ready({ topic, setTopic, onStart, children, level, setLevel }) {
   const { t } = useApp();
   return (
     <section className="card g-ready">
       {children}
+      {setLevel && <LevelPicker level={level} setLevel={setLevel} />}
       <h3>{t.topic}</h3>
       <TopicPicker topic={topic} setTopic={setTopic} />
       <button className="btn gold big" onClick={onStart}>
@@ -22,6 +23,8 @@ function Ready({ topic, setTopic, onStart, children }) {
 /* ═════ Бәйге ═════ */
 export function Baige({ game }) {
   const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState(1);
+  const hard = () => (level === 3 ? { reverse: Math.random() < 0.5 } : {});
   const [phase, setPhase] = useState("ready");
   const [pos, setPos] = useState([0, 0, 0, 0]);
   const [q, setQ] = useState(null);
@@ -35,10 +38,11 @@ export function Baige({ game }) {
 
   function start() {
     reset();
-    speeds.current = [0, 0.26 + Math.random() * 0.08, 0.22 + Math.random() * 0.08, 0.3 + Math.random() * 0.08];
+    const m = [0.78, 1, 1.32][level - 1];
+    speeds.current = [0, (0.26 + Math.random() * 0.08) * m, (0.22 + Math.random() * 0.08) * m, (0.3 + Math.random() * 0.08) * m];
     setPos([0, 0, 0, 0]);
     setRight(0);
-    setQ(nextQ());
+    setQ(nextQ(hard()));
     setPicked(null);
     setResult(null);
     setPhase("run");
@@ -58,7 +62,7 @@ export function Baige({ game }) {
     if (lead !== -1) {
       setPhase("end");
       const win = lead === 0;
-      finish(win, right);
+      finish(win, right, level);
       setResult({ win, text: t.score(right, right) });
     }
   }, [pos, phase]);
@@ -69,7 +73,7 @@ export function Baige({ game }) {
     if (ok) setRight((r) => r + 1);
     setPos((p) => [Math.max(0, Math.min(100, p[0] + (ok ? 9 : -2))), ...p.slice(1)]);
     setTimeout(() => {
-      setQ(nextQ());
+      setQ(nextQ(hard()));
       setPicked(null);
     }, ok ? 350 : 700);
   }
@@ -77,7 +81,7 @@ export function Baige({ game }) {
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start}>
+        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
           <div className="g-hero">🏇🏇🏇🏇</div>
         </Ready>
       ) : (
@@ -112,6 +116,8 @@ export function Baige({ game }) {
 /* ═════ Арқан тартыс ═════ */
 export function Arkan({ game }) {
   const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState(1);
+  const hard = () => (level === 3 ? { reverse: Math.random() < 0.5 } : {});
   const [phase, setPhase] = useState("ready");
   const [v, setV] = useState(0);
   const [time, setTime] = useState(30);
@@ -126,16 +132,16 @@ export function Arkan({ game }) {
   function start() {
     reset();
     setV(0);
-    setTime(30);
+    setTime([36, 30, 24][level - 1]);
     setRight(0);
-    setQ(nextQ());
+    setQ(nextQ(hard()));
     setPicked(null);
     setResult(null);
     setPhase("run");
   }
   useEffect(() => {
     if (phase !== "run") return;
-    const pull = setInterval(() => setV((x) => x - (5 + Math.random() * 4)), 1000);
+    const pull = setInterval(() => setV((x) => x - (5 + Math.random() * 4) * [0.75, 1, 1.4][level - 1]), 1000);
     const clock = setInterval(() => setTime((s) => s - 1), 1000);
     return () => {
       clearInterval(pull);
@@ -147,7 +153,7 @@ export function Arkan({ game }) {
     if (v >= 100 || v <= -100 || time <= 0) {
       setPhase("end");
       const win = v >= 100 || (time <= 0 && v > 0);
-      finish(win, right);
+      finish(win, right, level);
       setResult({ win, draw: time <= 0 && Math.round(v) === 0, text: t.score(right, right) });
     }
   }, [v, time, phase]);
@@ -158,7 +164,7 @@ export function Arkan({ game }) {
     if (ok) setRight((r) => r + 1);
     setV((x) => Math.min(100, x + (ok ? 17 : -6)));
     setTimeout(() => {
-      setQ(nextQ());
+      setQ(nextQ(hard()));
       setPicked(null);
     }, ok ? 300 : 650);
   }
@@ -167,7 +173,7 @@ export function Arkan({ game }) {
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start}>
+        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
           <div className="g-hero">💪🪢🐺</div>
         </Ready>
       ) : (
@@ -217,6 +223,8 @@ function AsykSvg({ down }) {
 export function Asyk({ game }) {
   const ROUNDS = 5;
   const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState(1);
+  const hard = () => (level === 3 ? { reverse: Math.random() < 0.5 } : {});
   const [phase, setPhase] = useState("ready"); // ready | ask | aim | shot | end
   const [round, setRound] = useState(0);
   const [hits, setHits] = useState([]);
@@ -236,7 +244,7 @@ export function Asyk({ game }) {
     setRound(0);
     setHits([]);
     setResult(null);
-    setQ(nextQ());
+    setQ(nextQ(hard()));
     setPicked(null);
     setMsg("");
     setPhase("ask");
@@ -244,14 +252,14 @@ export function Asyk({ game }) {
   useEffect(() => {
     if (phase !== "aim") return;
     const t0 = performance.now();
-    const speed = 1.6 + round * 0.25;
+    const speed = (1.6 + round * 0.25) * [0.8, 1, 1.35][level - 1];
     const loop = (now) => {
       setPower(50 + 50 * Math.sin(((now - t0) / 1000) * speed * Math.PI));
       raf.current = requestAnimationFrame(loop);
     };
     raf.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf.current);
-  }, [phase, round]);
+  }, [phase, round, level]);
 
   function endRound(hit) {
     const nh = [...hits, hit];
@@ -261,12 +269,12 @@ export function Asyk({ game }) {
       if (nh.length >= ROUNDS) {
         const n = nh.filter(Boolean).length;
         const win = n >= 3;
-        finish(win, n);
+        finish(win, n, level);
         setResult({ win, text: `${n} / ${ROUNDS} 🦴` });
         setPhase("end");
       } else {
         setRound(nh.length);
-        setQ(nextQ());
+        setQ(nextQ(hard()));
         setPicked(null);
         setMsg("");
         setPhase("ask");
@@ -277,7 +285,7 @@ export function Asyk({ game }) {
     setPicked(k);
     if (k === q.answer) {
       setTimeout(() => {
-        const w = 22 - round * 2;
+        const w = [30, 22, 15][level - 1] - round * 2;
         const s = 12 + Math.random() * (76 - w);
         setZone([s, s + w]);
         setPhase("aim");
@@ -297,7 +305,7 @@ export function Asyk({ game }) {
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start}>
+        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
           <div className="g-hero asyk-row">
             {[0, 1, 2, 3, 4].map((i) => (
               <AsykSvg key={i} />
@@ -346,8 +354,11 @@ export function Asyk({ game }) {
 
 /* ═════ Көкпар ═════ */
 export function Kokpar({ game }) {
-  const GOALS = 3, STEPS = 4, SEC = 9;
+  
   const [topic, setTopic] = useState("all");
+  const [level, setLevel] = useState(1);
+  const hard = () => (level === 3 ? { reverse: Math.random() < 0.5 } : {});
+  const GOALS = [2, 3, 3][level - 1], STEPS = [3, 4, 4][level - 1], SEC = [12, 9, 6][level - 1];
   const [phase, setPhase] = useState("ready");
   const [pos, setPos] = useState(0); // -STEPS..STEPS : оң жаққа қарай — біздің ұпай
   const [me, setMe] = useState(0);
@@ -366,7 +377,7 @@ export function Kokpar({ game }) {
   function start() {
     reset();
     setPos(0); setMe(0); setThem(0); setRight(0); setPicked(null); setResult(null); setBurst(null);
-    setQ(nextQ()); setLeft(SEC); lock.current = false;
+    setQ(nextQ(hard())); setLeft(SEC); lock.current = false;
     setPhase("run");
   }
   function move(d) {
@@ -379,12 +390,12 @@ export function Kokpar({ game }) {
     setTimeout(() => {
       if (m >= GOALS || th >= GOALS) {
         const win = m >= GOALS;
-        finish(win, right);
+        finish(win, right, level);
         setResult({ win, text: `${m} : ${th}` });
         setPhase("end");
         return;
       }
-      setQ(nextQ()); setPicked(null); setLeft(SEC); setBurst(null); lock.current = false;
+      setQ(nextQ(hard())); setPicked(null); setLeft(SEC); setBurst(null); lock.current = false;
     }, goal ? 1100 : ok0(d) ? 450 : 800);
   }
   const ok0 = (d) => d > 0;
@@ -408,7 +419,7 @@ export function Kokpar({ game }) {
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start}>
+        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
           <div className="g-hero kk-hero">🐎🐐🏆</div>
         </Ready>
       ) : (

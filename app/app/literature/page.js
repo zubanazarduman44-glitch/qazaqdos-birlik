@@ -9,6 +9,8 @@ import Quiz from "../../components/Quiz";
 import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
 import { shuffle } from "../../../lib/words";
 import { WORKS } from "../../../lib/literature";
+import { LIT_TR } from "../../../lib/litTr";
+const staticTr = (id, to) => (to === "ru" ? LIT_TR[id]?.[0] : to === "en" ? LIT_TR[id]?.[1] : null);
 import { tx } from "../../../lib/tx";
 import { L } from "../../../lib/i18n";
 
@@ -150,7 +152,7 @@ export default function Literature() {
   // Мәтінді ашқанда аударма фонда әзірленеді: батырманы басқанда лезде шығады
   const ready = useRef({});
   useEffect(() => {
-    if (!work || explain === "kk") return;
+    if (!work || explain === "kk" || staticTr(work.id, explain)) return;
     const key = `qd_lt_${work.id}_${explain}`;
     try {
       const hit = localStorage.getItem(key);
@@ -177,6 +179,8 @@ export default function Literature() {
   }, [id, explain]);
   async function translate() {
     if (trans) return setTrans(null);
+    const st = staticTr(work.id, explain);
+    if (st) return setTrans(st);
     const key = `qd_lt_${work.id}_${explain}`;
     let v = ready.current[key];
     if (typeof v === "string") return setTrans(v);

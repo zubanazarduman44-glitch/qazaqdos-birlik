@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
+import Avatar from "../../components/Avatar";
+import LangPicker from "../../components/LangPicker";
+import { NatArt } from "../../components/NatArt";
 import Icon from "../../components/Icon";
 import { LangSeg } from "../../components/Shell";
 import { AVATARS, EXPLAIN_LANGS } from "../../../lib/i18n";
@@ -17,41 +20,50 @@ export default function Profile() {
   const [name, setName] = useState(state.profile.name);
   const wins = Object.values(state.games || {}).reduce((a, g) => a + (g.wins || 0), 0);
 
+  const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
+  const kick = ["Жеке бет", "Личный кабинет", "My space"][li];
+  const sub = ["Аватарың, ойын жетістіктерің және баптауларың осында.", "Ваш аватар, достижения и настройки в одном месте.", "Your avatar, achievements and settings in one place."][li];
   return (
     <div className="profile">
       <header className="page-head">
         <div>
+          <span className="kicker">{kick}</span>
           <h1>{t.profileTitle}</h1>
+          <p>{sub}</p>
         </div>
+        <div className="head-tools"><LangPicker /></div>
       </header>
 
-      <section className="card prof-top">
-        <span className="prof-av">{state.profile.avatar}</span>
-        <div className="prof-main">
-          <h2>{state.profile.name || t.guest}</h2>
-          <span className="chip gold">⭐ {t.levelN(lvl.level)} · {state.xp} XP</span>
-          <div className="bar">
-            <i style={{ width: `${lvl.pct}%` }} />
+      <div className="prof-grid">
+      <aside className="prof-side">
+        <section className="card prof-top rise">
+          <Avatar value={state.profile.avatar} size={112} className="prof-avatar" />
+          <div className="prof-main">
+            <h2>{state.profile.name || t.guest}</h2>
+            <span className="chip gold">⭐ {t.levelN(lvl.level)} · {state.xp} XP</span>
+            <div className="bar">
+              <i style={{ width: `${lvl.pct}%` }} />
+            </div>
           </div>
+          <Qyran mood="happy" size={96} />
+        </section>
+        <div className="prof-stats">
+          {[
+            ["🛂", `${Object.keys(state.stamps || {}).length}/${REGIONS.length}`, t.statsStamps],
+            ["🏺", `${Object.keys(state.sites || {}).length}/${SITES.length}`, t.nav.history],
+            ["🏆", wins, t.wins],
+            ["📚", state.vocab?.length || 0, t.saveWord],
+          ].map(([e, v, l]) => (
+            <div key={l} className="card tight stat">
+              <span className="stat-e">{e}</span>
+              <b>{v}</b>
+              <small className="muted">{l}</small>
+            </div>
+          ))}
         </div>
-        <Qyran mood="happy" size={90} />
-      </section>
-
-      <div className="grid g4">
-        {[
-          ["🛂", `${Object.keys(state.stamps || {}).length}/${REGIONS.length}`, t.statsStamps],
-          ["🏺", `${Object.keys(state.sites || {}).length}/${SITES.length}`, t.nav.history],
-          ["🏆", wins, t.wins],
-          ["📚", state.vocab?.length || 0, t.saveWord],
-        ].map(([e, v, l]) => (
-          <div key={l} className="card tight stat">
-            <span className="stat-e">{e}</span>
-            <b>{v}</b>
-            <small className="muted">{l}</small>
-          </div>
-        ))}
-      </div>
-
+        <div className="prof-art"><NatArt name="dombyra" size={80} /><NatArt name="taqiya" size={70} /><NatArt name="kamshy" size={80} /></div>
+      </aside>
+      <div className="prof-col">
       <section className="card">
         <label className="field">
           <span>{t.nick}</span>
@@ -66,8 +78,8 @@ export default function Profile() {
           <span>{t.avatar}</span>
           <div className="av-row">
             {AVATARS.map((a) => (
-              <button key={a} className={`av ${state.profile.avatar === a ? "on" : ""}`} onClick={() => setProfile({ avatar: a })}>
-                {a}
+              <button key={a} className={`av ${state.profile.avatar === a ? "on" : ""}`} onClick={() => setProfile({ avatar: a })} aria-label={a}>
+                <Avatar value={a} size={60} />
               </button>
             ))}
           </div>
@@ -139,6 +151,8 @@ export default function Profile() {
           {t.resetProgress}
         </button>
       </section>
+      </div>
+      </div>
     </div>
   );
 }

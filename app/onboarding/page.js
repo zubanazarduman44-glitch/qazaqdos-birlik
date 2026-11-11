@@ -1,4 +1,5 @@
 "use client";
+import Avatar from "../components/Avatar";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "../components/Store";
@@ -14,7 +15,7 @@ export default function Onboarding() {
   const [explain, setExplain] = useState(state.profile.explain || "ru");
   const [name, setName] = useState(state.profile.name || "");
   const [goal, setGoal] = useState(state.profile.goal || "travel");
-  const [avatar, setAvatar] = useState(state.profile.avatar || "🌱");
+  const [avatar, setAvatar] = useState(state.profile.avatar && state.profile.avatar.startsWith("av:") ? state.profile.avatar : "av:zhigit");
 
   useEffect(() => {
     if (!name && (state.profile.name || user?.name)) setName(state.profile.name || user?.name || "");
@@ -80,8 +81,7 @@ export default function Onboarding() {
               <span>{t.avatar}</span>
               <div className="av-row">
                 {AVATARS.map((a) => (
-                  <button key={a} className={`av ${avatar === a ? "on" : ""}`} onClick={() => setAvatar(a)} aria-label={a}>
-                    {a}
+                  <button key={a} className={`av ${avatar === a ? "on" : ""}`} onClick={() => setAvatar(a)} aria-label={a}><Avatar value={a} size={50} />
                   </button>
                 ))}
               </div>

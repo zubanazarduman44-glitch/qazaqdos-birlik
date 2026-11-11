@@ -408,3 +408,51 @@ h1, h2, h3 { color: #14263f; }
 @keyframes kkBurst { from { transform: translateX(-50%) scale(0.3); opacity: 0; } 25% { transform: translateX(-50%) scale(1.2); opacity: 1; } to { transform: translateX(-50%) translateY(-6px) scale(1); } }
 .kk-bar { height: 8px; border-radius: 9px; background: #f3e4c0; overflow: hidden; } .kk-bar i { display: block; height: 100%; background: linear-gradient(90deg, #e8a400, #b8322a); transition: width 1s linear; }
 @media (max-width: 560px) { .kk-field { height: 130px; } .kk-rider { font-size: 38px; } .kk-goal { width: 42px; height: 56px; font-size: 26px; } }
+
+/* Дүкен */
+.item { background: linear-gradient(180deg, #fffaf0, #fbefd2); box-shadow: inset 0 0 0 1.5px #e8c77a, 0 12px 22px -16px rgba(122, 58, 18, 0.55); transition: transform 0.3s var(--ease), box-shadow 0.3s; }
+.item:hover { transform: translateY(-6px); box-shadow: inset 0 0 0 2px #e8a400, 0 20px 30px -16px rgba(122, 58, 18, 0.6); }
+.item.on { background: linear-gradient(180deg, #fff6cf, #ffe9a0); }
+.item-stage { position: relative; display: grid; place-items: center; height: 126px; border-radius: 18px; background: var(--oyu-tile) center / 80px 80px, radial-gradient(circle at 50% 40%, #fffdf3, #f3dfae); background-blend-mode: soft-light, normal; overflow: hidden; }
+.item-stage::before { content: ""; position: absolute; width: 112px; height: 112px; border-radius: 50%; border: 2px dashed rgba(232, 164, 0, 0.6); animation: itemSpin 22s linear infinite; }
+@keyframes itemSpin { to { transform: rotate(360deg); } }
+.item-e { position: relative; font-size: 0; line-height: 0; animation: itemFloat 3.4s ease-in-out infinite; filter: drop-shadow(0 8px 6px rgba(70, 35, 8, 0.35)); transition: transform 0.3s var(--ease); }
+.item:hover .item-e { transform: scale(1.14) rotate(-4deg); animation-play-state: paused; }
+.item:nth-child(2n) .item-e { animation-delay: -1.2s; } .item:nth-child(3n) .item-e { animation-delay: -2.2s; }
+@keyframes itemFloat { 50% { transform: translateY(-6px) rotate(2deg); } }
+.item-e .nat-art { animation: none; }
+.item-own, .item-on { position: absolute; top: 8px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 13px; }
+.item-own { left: 8px; background: #2f9d5c; color: #fff; } .item-on { right: 8px; background: #ffd35a; color: #7a3a12; animation: itemPop 1.6s ease-in-out infinite; }
+@keyframes itemPop { 50% { transform: scale(1.18); } }
+.item .btn.gold:not(:disabled) { animation: btnGlow 2.2s ease-in-out infinite; }
+@keyframes btnGlow { 50% { box-shadow: 0 0 0 5px rgba(255, 211, 90, 0.4); } }
+.shop-tabs .chip.tab { transition: transform 0.2s var(--ease); } .shop-tabs .chip.tab:hover { transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { .item-e, .item-stage::before, .item-on, .item .btn.gold { animation: none !important; } }
+
+/* Профиль: басқа бөлімдер сияқты екі бағанды */
+.profile { max-width: none; }
+.prof-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 18px; align-items: start; }
+.prof-side { display: grid; gap: 14px; position: sticky; top: 90px; }
+.prof-col { display: grid; gap: 16px; min-width: 0; }
+.prof-top { flex-direction: column; text-align: center; padding: 22px 18px; background: var(--oyu-tile) center / 90px 90px, linear-gradient(180deg, #fffaf0, #fbefd2); background-blend-mode: soft-light, normal; }
+.prof-top .prof-main { justify-items: center; width: 100%; }
+.prof-avatar { filter: drop-shadow(0 10px 10px rgba(80, 40, 10, 0.35)); animation: itemFloat 4s ease-in-out infinite; }
+.prof-top > svg:not(.avatar) { display: block !important; }
+.prof-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.prof-art { display: flex; justify-content: center; gap: 10px; opacity: 0.95; }
+.av-row { gap: 10px; } .av { width: 68px; height: 68px; padding: 0; overflow: hidden; display: grid; place-items: center; transition: transform 0.2s var(--ease); }
+.av:hover { transform: translateY(-3px) scale(1.06); } .av.on { transform: scale(1.06); }
+.avatar { display: block; } .av-emoji { line-height: 1; }
+.me-av { overflow: hidden; padding: 0; } .pod-av, .rk-av { display: grid; place-items: center; }
+@media (max-width: 900px) { .prof-grid { grid-template-columns: minmax(0, 1fr); } .prof-side { position: static; } .prof-top { flex-direction: row; text-align: left; flex-wrap: wrap; justify-content: center; } .prof-top .prof-main { justify-items: start; width: auto; } .prof-art { display: none; } }
+
+/* Ойын деңгейі */
+.lv-pick { display: grid; gap: 8px; justify-items: center; width: 100%; }
+.lv-pick-t { font-weight: 800; color: #7a3a12; }
+.lv-pick-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(520px, 100%); }
+.lv-pick-b { display: grid; gap: 2px; justify-items: center; padding: 10px 8px; border-radius: 16px; border: 0; cursor: pointer; font: inherit; background: #fffaf0; box-shadow: inset 0 0 0 1.5px #e8c77a; transition: transform 0.2s var(--ease), box-shadow 0.2s; }
+.lv-pick-b:hover { transform: translateY(-3px); }
+.lv-pick-b .lv-stars { color: #e8a400; letter-spacing: 2px; font-size: 16px; }
+.lv-pick-b b { font-size: 13px; }
+.lv-pick-b.on { background: linear-gradient(#fff0a8, #ffd35a); box-shadow: inset 0 0 0 2.5px #b8322a, 0 8px 16px -8px rgba(184, 50, 42, 0.6); animation: qOk 0.4s var(--ease); }
+.sz-testhero { display: grid; justify-items: center; gap: 14px; padding: 10px; }
