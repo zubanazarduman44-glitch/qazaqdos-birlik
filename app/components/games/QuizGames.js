@@ -31,6 +31,7 @@ export function Baige({ game }) {
   const [picked, setPicked] = useState(null);
   const [right, setRight] = useState(0);
   const [result, setResult] = useState(null);
+  const asked = useRef(0);
   const speeds = useRef([0, 0, 0, 0]);
   const nextQ = useQuestions(topic);
   const { finish, reset } = useFinish(game.id);
@@ -38,6 +39,7 @@ export function Baige({ game }) {
 
   function start() {
     reset();
+    asked.current = 0;
     const m = [0.78, 1, 1.32][level - 1];
     speeds.current = [0, (0.26 + Math.random() * 0.08) * m, (0.22 + Math.random() * 0.08) * m, (0.3 + Math.random() * 0.08) * m];
     setPos([0, 0, 0, 0]);
@@ -63,13 +65,14 @@ export function Baige({ game }) {
       setPhase("end");
       const win = lead === 0;
       finish(win, right, level);
-      setResult({ win, text: t.score(right, right) });
+      setResult({ win, text: t.score(right, Math.max(asked.current, right)) });
     }
   }, [pos, phase]);
 
   function pick(k) {
     setPicked(k);
     const ok = k === q.answer;
+    asked.current += 1;
     if (ok) setRight((r) => r + 1);
     setPos((p) => [Math.max(0, Math.min(100, p[0] + (ok ? 9 : -2))), ...p.slice(1)]);
     setTimeout(() => {
@@ -125,12 +128,14 @@ export function Arkan({ game }) {
   const [picked, setPicked] = useState(null);
   const [right, setRight] = useState(0);
   const [result, setResult] = useState(null);
+  const asked = useRef(0);
   const nextQ = useQuestions(topic);
   const { finish, reset } = useFinish(game.id);
   const { t } = useApp();
 
   function start() {
     reset();
+    asked.current = 0;
     setV(0);
     setTime([36, 30, 24][level - 1]);
     setRight(0);
@@ -154,13 +159,14 @@ export function Arkan({ game }) {
       setPhase("end");
       const win = v >= 100 || (time <= 0 && v > 0);
       finish(win, right, level);
-      setResult({ win, draw: time <= 0 && Math.round(v) === 0, text: t.score(right, right) });
+      setResult({ win, draw: time <= 0 && Math.round(v) === 0, text: t.score(right, Math.max(asked.current, right)) });
     }
   }, [v, time, phase]);
 
   function pick(k) {
     setPicked(k);
     const ok = k === q.answer;
+    asked.current += 1;
     if (ok) setRight((r) => r + 1);
     setV((x) => Math.min(100, x + (ok ? 17 : -6)));
     setTimeout(() => {
