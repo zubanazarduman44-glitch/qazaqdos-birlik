@@ -364,7 +364,7 @@ export function Kokpar({ game }) {
   const [topic, setTopic] = useState("all");
   const [level, setLevel] = useState(1);
   const hard = () => (level === 3 ? { reverse: Math.random() < 0.5 } : {});
-  const GOALS = [2, 3, 3][level - 1], STEPS = [3, 4, 4][level - 1], SEC = [12, 9, 6][level - 1];
+  const GOALS = [2, 3, 3][level - 1], STEPS = [3, 4, 4][level - 1], SEC = [8, 5, 3][level - 1];
   const [phase, setPhase] = useState("ready");
   const [pos, setPos] = useState(0); // -STEPS..STEPS : оң жаққа қарай — біздің ұпай
   const [me, setMe] = useState(0);
