@@ -15,7 +15,7 @@ import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
 export const NAV = [
   { href: "/app", key: "home", icon: "home" },
   { href: "/app/travel", key: "travel", icon: "map" },
-  { href: "/app/history", key: "history", icon: "scroll" },
+  { href: "/app/history", key: "history", icon: "globe" },
   { href: "/app/games", key: "games", icon: "target" },
   { href: "/app/qyran", key: "chat", icon: "chat" },
   { href: "/app/vision", key: "vision", icon: "camera" },
@@ -24,11 +24,19 @@ export const NAV = [
   { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
   { href: "/app/level", key: "level", icon: "chart" },
   { href: "/app/saiys", key: "saiys", icon: "trophy" },
-  { href: "/app/literature", key: "lit", icon: "book" },
+  { href: "/app/literature", key: "lit", icon: "scroll" },
   { href: "/app/class", key: "class", icon: "user" },
   { href: "/app/shop", key: "shop", icon: "bag" },
 ];
-const MOBILE = ["home", "travel", "games", "chat"];
+const MOBILE = ["home", "course", "games", "chat"];
+// Бүйір мәзір топтары: оқу → жаттығу → таным → қауым
+const GROUPS = [
+  { id: "top", keys: ["home"] },
+  { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn" }, keys: ["course", "sozdik", "level"] },
+  { id: "practice", name: { kk: "Жаттығу", ru: "Практика", en: "Practise" }, keys: ["games", "chat", "vision", "tuzel"] },
+  { id: "explore", name: { kk: "Таным", ru: "Познание", en: "Explore" }, keys: ["travel", "history", "lit"] },
+  { id: "community", name: { kk: "Қауым", ru: "Сообщество", en: "Community" }, keys: ["saiys", "class", "shop"] },
+];
 
 // Қошқар мүйіз өрнегі (алтын жолақ)
 export function Orn({ className = "" }) {
@@ -97,7 +105,7 @@ export function Stats() {
 }
 
 export default function Shell({ children }) {
-  const { state, ready, user, t, authReady } = useApp();
+  const { state, ready, user, t, authReady, lang } = useApp();
   const path = usePathname();
   const router = useRouter();
   const [more, setMore] = useState(false);
@@ -121,11 +129,16 @@ export default function Shell({ children }) {
       <aside className="side">
         <Logo />
         <nav className="side-nav">
-          {NAV.filter(showNav).map((n) => (
-            <Link key={n.href} href={n.href} className={`side-link ${active(n.href) ? "on" : ""}`}>
-              <Icon name={n.icon} size={20} />
-              <span>{label(n.key)}</span>
-            </Link>
+          {GROUPS.map((g) => (
+            <div key={g.id} className="side-group">
+              {g.name && <span className="side-cap">{g.name[lang] || g.name.en}</span>}
+              {g.keys.map((k) => NAV.find((n) => n.key === k)).map((n) => (
+                <Link key={n.href} href={n.href} className={`side-link ${active(n.href) ? "on" : ""}`} aria-current={active(n.href) ? "page" : undefined}>
+                  <Icon name={n.icon} size={19} />
+                  <span>{label(n.key)}</span>
+                </Link>
+              ))}
+            </div>
           ))}
           {admin && (
             <Link href="/app/admin" className={`side-link ${active("/app/admin") ? "on" : ""}`}>

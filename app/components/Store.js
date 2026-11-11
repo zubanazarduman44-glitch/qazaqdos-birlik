@@ -18,6 +18,8 @@ export const EMPTY = {
   xp: 0,
   coins: 0,
   streak: 0,
+  embers: 0,
+  quests: null,
   lastDay: null,
   today: { date: null, xp: 0 },
   stamps: {},
@@ -174,20 +176,28 @@ export function AppProvider({ children }) {
       setState((s) => {
         const today = dayKey();
         let streak = s.streak || 0;
+        let embers = s.embers || 0;
         if (s.lastDay !== today) {
           const yd = new Date();
           yd.setDate(yd.getDate() - 1);
           const y = dayKey(yd);
-          streak = s.lastDay === y ? streak + 1 : 1;
+          const yd2 = new Date();
+          yd2.setDate(yd2.getDate() - 2);
+          // «Шоқ»: бір күн үзіліп қалса, сақталған шоқ ошақты сөндірмейді
+          if (s.lastDay === y) streak += 1;
+          else if (s.lastDay === dayKey(yd2) && (s.embers || 0) > 0 && streak > 0) { streak += 1; embers -= 1; }
+          else streak = 1;
         }
         const t = s.today?.date === today ? s.today.xp : 0;
+        const tk = s.today?.date === today ? s.today.tasks || 0 : 0;
         return {
           ...s,
           xp: (s.xp || 0) + xp,
           coins: (s.coins || 0) + coins,
           streak,
+          embers,
           lastDay: today,
-          today: { date: today, xp: t + xp },
+          today: { date: today, xp: t + xp, tasks: tk + 1 },
           weekly: (() => {
             const wk = weekKey();
             const w = s.weekly?.week === wk ? s.weekly : { week: wk, tasks: 0, xp: 0 };

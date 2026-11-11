@@ -1,6 +1,7 @@
 import "./globals.css";
 import "./app.css";
 import "./nat.css";
+import "./kiiz.css";
 import { AppProvider } from "./components/Store";
 
 export const metadata = {
@@ -14,7 +15,7 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f6ecd6",
+  themeColor: "#faf6ee",
 };
 
 export default function RootLayout({ children }) {
@@ -25,17 +26,11 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Unbounded:wght@500;600;700;800&display=swap&subset=cyrillic,cyrillic-ext"
+          href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Unbounded:wght@600;800&display=swap&subset=cyrillic,cyrillic-ext"
           rel="stylesheet"
         />
       </head>
       <body>
-        <div className="sky-fx" aria-hidden="true">
-          <span className="cloud" />
-          <span className="cloud" />
-          <span className="cloud" />
-          <span className="stars" />
-        </div>
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

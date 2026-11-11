@@ -1,0 +1,196 @@
+/* ════════════════════════════════════════════════════════════════════
+   TILIM · «Ақ киіз» дизайн жүйесі (соңғы қабат)
+   Қағидасы: ою — құрылым мен екпін, тұсқағаз емес. Түс шектеулі:
+   киіз ақшылы, көк, қызыл (мадер), алтын. Мәтін әрқашан анық оқылады.
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Түстер */
+  --bg: #faf6ee;            /* ақ киіз */
+  --surface: #fffdf7;       /* панель */
+  --surface-2: #f4ecda;     /* екінші деңгей */
+  --kok: #0f5e7a;           /* негізгі әрекет */
+  --kok-2: #0a4a61;
+  --qyzyl: #a63a2b;         /* екінші екпін */
+  --altyn: #e0a526;         /* тек толтыру мен ою, мәтінге емес */
+  --altyn-soft: #f6e3b0;
+  --ink: #1f2430;
+  --muted: #4a5160;
+  --faint: #5f6470;
+  --ok: #2f6b4f;
+  --bad: #b3261e;
+  --brand: var(--kok);
+  --brand-ink: var(--kok-2);
+  --gold: var(--altyn);
+  --gold-ink: #3a2500;
+  /* Беттер */
+  --paper: var(--surface);
+  --paper-solid: var(--surface);
+  --paper-strong: var(--surface);
+  --paper-2: var(--surface-2);
+  --rim: rgba(122, 86, 22, 0.22);
+  --line: rgba(31, 36, 48, 0.12);
+  --edge: transparent;
+  --shadow: 0 1px 2px rgba(60, 40, 10, 0.06), 0 10px 24px -18px rgba(60, 40, 10, 0.35);
+  --shadow-lg: 0 2px 4px rgba(60, 40, 10, 0.07), 0 22px 44px -24px rgba(60, 40, 10, 0.45);
+  --blur: none; --blur-s: none;
+  /* Пішін: карточка 16, түйме 12, шағын 10 */
+  --r: 16px; --r-sm: 12px;
+  --btn-blue: var(--kok);
+  --btn-gold: var(--altyn);
+  /* Қаріп: тақырып — Unbounded, мәтін — Golos Text (қазақ әріптері толық) */
+  --head: "Unbounded", "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --body: "Golos Text", "Segoe UI", Roboto, "Noto Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  /* Аралық шкаласы */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+}
+
+/* ── Негіз ── */
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+body::after { opacity: 0.05; }
+.sky-fx { display: none; }
+* { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+h1, h2, h3, h4 { color: var(--ink); letter-spacing: -0.01em; }
+h1 { font-family: var(--head); font-weight: 800; line-height: 1.12; }
+h2 { font-family: var(--head); font-weight: 600; line-height: 1.2; }
+h3 { font-family: var(--body); font-weight: 700; }
+.muted, small.muted { color: var(--muted); }
+a { color: var(--kok); }
+
+/* Көрінетін фокус: екі түсті сақина кез келген фонда байқалады */
+:focus-visible { outline: 3px solid var(--kok); outline-offset: 2px; box-shadow: 0 0 0 5px rgba(255, 253, 247, 0.9); border-radius: 8px; }
+
+/* Қозғалысты азайту баптауы — бәріне бірдей */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ── Панельдер ── */
+.card, .game-card, .quick-card, .lv-intro, .lv-res, .crs-unit, .cls-head, .prof-top, .proverb, .tradition {
+  background: var(--surface); border-radius: var(--r);
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
+}
+.card.hover:hover, .game-card:hover, .quick-card:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px rgba(15, 94, 122, 0.45), var(--shadow-lg); }
+.card::after { display: none; }
+
+/* ── Түймелер: бір негізгі, бір екінші, бір бейтарап ── */
+.btn {
+  min-height: 44px; padding: 10px 18px; border-radius: var(--r-sm); border: 0;
+  font-family: var(--body); font-weight: 700; font-size: 15px; letter-spacing: 0; text-shadow: none;
+  transition: transform 0.12s var(--ease), background-color 0.15s, box-shadow 0.15s;
+}
+.btn.small { min-height: 44px; padding: 8px 14px; font-size: 14px; border-radius: 10px; }
+.btn.big { min-height: 54px; padding: 14px 24px; font-size: 16px; border-radius: 14px; }
+.btn.blue, .btn.primary { background: var(--kok); color: #fff; box-shadow: 0 3px 0 var(--kok-2); }
+.btn.blue:hover:not(:disabled), .btn.primary:hover:not(:disabled) { background: #12698a; filter: none; }
+.btn.gold { background: var(--altyn); color: var(--gold-ink); box-shadow: 0 3px 0 #b07c10; }
+.btn.gold:hover:not(:disabled) { background: #e9b23a; filter: none; }
+.btn.ghost { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--rim); }
+.btn.ghost:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--kok); filter: none; }
+.btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.link-btn { border: 0; background: none; padding: 6px 0; min-height: 32px; font: inherit; font-size: 13px; font-weight: 600; color: var(--kok); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn:disabled { color: var(--faint); text-decoration: none; cursor: not-allowed; }
+
+.chip { min-height: 36px; border-radius: 99px; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rim); font-weight: 600; }
+.chip.tab { min-height: 40px; }
+.chip.on, .chip.tab.on { background: var(--kok); color: #fff; box-shadow: none; }
+.pill { background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim); }
+.input, select.input, textarea.input { min-height: 44px; border-radius: var(--r-sm); background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--rim); font-family: var(--body); font-size: 16px; }
+.input:focus { box-shadow: inset 0 0 0 2px var(--kok); outline: none; }
+.icon-btn { min-width: 40px; min-height: 40px; }
+.badge { background: var(--altyn-soft); color: #5a3d00; }
+.alert { border-radius: var(--r-sm); }
+
+/* ── Бет тақырыбы: бір өлшем, астында жіңішке жиек-ою ── */
+.page-head h1 { font-size: clamp(26px, 3.2vw, 36px); margin: 4px 0 6px; }
+.page-head p { color: var(--muted); max-width: 68ch; }
+.page-head::after { height: 12px; margin-top: 12px; background-size: auto 12px; border-radius: 3px; box-shadow: none; opacity: 0.95; }
+.kicker { color: var(--qyzyl); font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+/* ── Бүйір мәзір: топталған, белсенді бөлімде қошқар мүйіз белгісі ── */
+@media (min-width: 861px) { .shell { grid-template-columns: 248px minmax(0, 1fr); } }
+.side { background: var(--surface); gap: 10px; padding: 14px 12px; border-right: 14px solid transparent; border-image: var(--oyu-band) 0 20 0 0 / 0 14px 0 0 repeat; }
+.side-nav { display: flex; flex-direction: column; gap: clamp(2px, 0.9vh, 10px); flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+.side-group { display: grid; gap: 1px; }
+.side-cap { padding: 2px 12px 1px; font-size: 11.5px; font-weight: 700; color: var(--faint); }
+.side-link { position: relative; padding: clamp(5px, 0.95vh, 9px) 12px; border-radius: 10px; font-size: clamp(13.5px, 1.75vh, 15px); font-weight: 600; color: var(--ink); gap: 10px; }
+.side-link:hover { background: var(--surface-2); }
+.side-link.on { background: var(--kok); color: #fff; box-shadow: none; }
+.side-link.on::after {
+  content: ""; position: absolute; right: 10px; top: 50%; width: 18px; height: 12px; transform: translateY(-50%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'%3E%3Cg fill='none' stroke='%23e0a526' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M18 22c0-9-7-13-12-9-4 4-1 10 4 8'/%3E%3Cpath d='M18 22c0-9 7-13 12-9 4 4 1 10-4 8'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+.side-me { background: var(--surface-2); box-shadow: none; border-radius: 12px; }
+.seg { background: var(--surface-2); box-shadow: none; }
+.seg button { min-height: 36px; }
+.seg button.on { background: var(--kok); color: #fff; }
+
+/* ── Жоғарғы жолақ пен төменгі мәзір ── */
+.topbar { top: 10px; margin: 10px clamp(14px, 3vw, 32px) 4px; padding: 5px 10px; border-width: 4px; border-radius: 16px; background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--oyu-band) border-box; background-size: auto, auto 8px; box-shadow: var(--shadow); }
+.bottom-nav { background: var(--surface); box-shadow: 0 -1px 0 var(--rim), 0 -10px 24px -18px rgba(60, 40, 10, 0.4); }
+.bottom-nav a, .bottom-nav button { min-height: 52px; color: var(--muted); font-weight: 600; }
+.bottom-nav a.on, .bottom-nav button.on { color: var(--kok); background: none; box-shadow: none; outline: 0; border-color: transparent; }
+.bottom-nav a.on::before { content: ""; position: absolute; top: 0; left: 30%; right: 30%; height: 3px; border-radius: 0 0 3px 3px; background: var(--altyn); }
+.bottom-nav a { position: relative; }
+.sheet { background: var(--surface); border-radius: 18px; }
+.sheet-link.on { background: var(--kok); color: #fff; }
+
+/* ── Төр: бүгінгі сабақ, ошақ, күндік тапсырмалар ── */
+.tor { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; margin: 14px 0; }
+.tor-lesson { position: relative; display: grid; align-content: start; gap: 10px; padding: 22px; border-radius: var(--r); background: var(--kok); color: #fff; overflow: hidden; }
+.tor-lesson::before { /* сырмақ тәсілі: бір ою, екі реңк */
+  content: ""; position: absolute; right: -34px; bottom: -40px; width: 230px; height: 230px; opacity: 0.16;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23fff' stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M60 104c0-30-24-44-42-30-14 12-6 34 14 28 12-4 12-20 0-20'/%3E%3Cpath d='M60 104c0-30 24-44 42-30 14 12 6 34-14 28-12-4-12-20 0-20'/%3E%3Cpath d='M60 104V60'/%3E%3Cpath d='M60 16l14 14-14 14-14-14z'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+.tor-cap { font-size: 13px; font-weight: 700; color: #f6e3b0; }
+.tor-lesson h2 { margin: 0; color: #fff; font-size: clamp(20px, 2.4vw, 28px); }
+.tor-meta { margin: 0; color: #d7e8ee; font-size: 14px; }
+.tor-cta { justify-self: start; margin-top: 6px; background: var(--altyn) !important; color: var(--gold-ink) !important; box-shadow: 0 3px 0 #9c6d0c !important; position: relative; }
+/* Домбыра пернелері — бөлім ішіндегі сабақтар шкаласы */
+.frets { display: flex; gap: 4px; max-width: 420px; }
+.frets i { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.24); }
+.frets i.on { background: var(--altyn); } .frets i.cur { background: #fff; }
+.tor-side { display: grid; gap: 14px; }
+.tor-hearth, .tor-quests { padding: 16px 18px; border-radius: var(--r); background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim), var(--shadow); }
+.tor-hearth { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 14px; }
+.tor-h-txt { display: grid; } .tor-h-txt b { font-family: var(--head); font-size: 26px; line-height: 1.1; } .tor-h-txt b small { font-family: var(--body); font-size: 14px; font-weight: 600; color: var(--muted); }
+.tor-h-txt span { font-size: 14px; color: var(--muted); }
+.hearth .h-flame { fill: #d9d2c2; } .hearth .h-core { fill: #efe9db; } .hearth .h-pot { fill: #3a3f4a; } .hearth .h-rim { stroke: #1f2430; stroke-width: 4; stroke-linecap: round; fill: none; }
+.hearth.lit .h-flame { fill: var(--qyzyl); transform-origin: 50% 70%; animation: flick 1.6s ease-in-out infinite; } .hearth.lit .h-core { fill: var(--altyn); }
+@keyframes flick { 50% { transform: scale(1.06, 0.95); } }
+.tor-embers { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line); }
+.tor-embers span { display: inline-flex; gap: 5px; } .tor-embers i { width: 14px; height: 14px; border-radius: 50% 50% 50% 4px; transform: rotate(-45deg); background: #e4dccb; } .tor-embers i.on { background: var(--qyzyl); box-shadow: 0 0 0 3px rgba(224, 165, 38, 0.35); }
+.tor-quests h3 { margin: 0 0 8px; font-size: 16px; }
+.tor-quests ul { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
+.tor-quests li { display: grid; grid-template-columns: 22px minmax(0, 1fr) 70px 34px; align-items: center; gap: 8px; font-size: 14.5px; }
+.q-mark { width: 20px; height: 20px; border-radius: 6px; box-shadow: inset 0 0 0 1.5px var(--rim); display: grid; place-items: center; color: #fff; }
+li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { color: var(--muted); text-decoration: line-through; }
+.q-bar { height: 7px; border-radius: 4px; background: var(--surface-2); overflow: hidden; } .q-bar i { display: block; height: 100%; background: var(--kok); } li.done .q-bar i { background: var(--ok); }
+.q-num { font-size: 13px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 860px) { .tor { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── Курс: сабақ түйіндері бір-біріне шықпайды ── */
+.crs-path { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 12px 10px; padding: 6px 2px 8px; }
+.crs-node { width: 48px; height: 48px; transform: none; justify-self: center; background: var(--altyn-soft); color: #5a3d00; box-shadow: 0 3px 0 #c9992c, inset 0 0 0 1.5px #e0a526; font-family: var(--body); font-weight: 700; }
+.crs-node:hover:not(:disabled) { transform: translateY(-2px); }
+.crs-node.done { background: var(--ok); color: #fff; box-shadow: 0 3px 0 #1f4a36; }
+.crs-node.lock { background: #ebe5d6; color: #5f6470; box-shadow: inset 0 0 0 1.5px #cfc6b0; }
+.crs-lv.on { background: var(--kok); color: #fff; }
+
+/* ── Жеңіл түзетулер ── */
+.game-card::before { height: 4px; }
+.game-card:hover { transform: translateY(-3px); rotate: 0deg; }
+.side-link .ic, .bottom-nav .ic { flex: none; }
+.hh-bubble, .bubble { background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim); }
+@media (max-width: 860px) {
+  .topbar { margin: 8px 10px 2px; }
+  .page-head h1 { font-size: 24px; }
+}
+
+/* Бүйір мәзір 720px биіктікте де түгел сыяды */
+.side { gap: clamp(4px, 1vh, 10px); padding: clamp(8px, 1.4vh, 14px) 12px; }
+.side-nav { gap: clamp(0px, 0.5vh, 8px); }
+.side-cap { font-size: 11px; line-height: 1.3; padding: 1px 12px 0; }
+.side-link { padding: clamp(3px, 0.62vh, 9px) 12px; line-height: 1.3; }
+.side-foot { gap: 6px; } .side-me { padding: 5px 8px; }
+@media (max-height: 800px) { .side .logo { transform: scale(0.9); transform-origin: left center; } .side-me .me-av svg, .side-me .me-av { width: 32px; height: 32px; } }

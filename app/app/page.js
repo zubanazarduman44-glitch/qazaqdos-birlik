@@ -2,6 +2,7 @@
 import { tx } from "../../lib/tx";
 import { PROVERBS, TRADITIONS } from "../../lib/culture";
 import Link from "next/link";
+import Tor from "../components/Tor";
 import { useMemo } from "react";
 import { DAILY_GOAL, dayKey, localDayIndex, useApp } from "../components/Store";
 import Qyran from "../components/Qyran";
@@ -107,6 +108,7 @@ export default function Home() {
           <span className="small">{t.todayGoal}</span>
         </div>
       </section>
+      <Tor />
       {!state.cefr && (
         <Link href="/app/level" className="card hover lv-banner rise">
           <Qyran mood="wow" size={56} />
