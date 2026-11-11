@@ -2,7 +2,7 @@
 import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
 
 export const maxDuration = 60;
-const MAX_MESSAGES = 20;
+const MAX_MESSAGES = 10;
 const MAX_LEN_USER = 2000;
 const MAX_LEN_BOT = 6000; // Aqyl-тың ұзын жауаптары кесілмесін
 
@@ -22,7 +22,7 @@ function system(explain, name, level) {
   3. 3–5 мысал келтір: қазақша, аудармасы.
   4. Ерекшеліктер мен жиі кететін қателерді айт.
   5. Соңында 1–2 шағын жаттығу ұсын немесе келесі қадамды ұсын.
-- Әдеттегі жауап 120–350 сөз, күрделі тақырыпқа 500 сөзге дейін. Бос сөзбен созба, бірақ маңызды жерін қысқартып тастама. Жауапты міндетті түрде аяқта.
+- Әдеттегі жауап 60–200 сөз, күрделі тақырыпқа 300 сөзге дейін. Жылдам, нақты жауап бер. Бос сөзбен созба, бірақ маңызды жерін қысқартып тастама. Жауапты міндетті түрде аяқта.
 
 Форматтау (бет мынаны көрсете алады): **жуан**, *көлбеу*, ### тақырыпша, «- » тізім, «1. » нөмірленген тізім және | кесте |. Септік, жалғау, жіктеу сияқты салыстыруды кестемен көрсет.
 
@@ -61,9 +61,10 @@ export async function POST(req) {
     const text = await callGemini(contents, {
       system: system(explain, String(name || "").slice(0, 40), String(level || "").slice(0, 20)),
       temperature: 0.5,
-      fast: false, // толық модельдер: жауап сапасы жоғары
-      thinking: "low",
-      maxTokens: 6000,
+      fast: true, // жылдам модельдер алдымен: жауап тез келеді
+      thinking: "minimal",
+      maxTokens: 1800,
+      perCallMs: 14_000,
     });
     return Response.json({ text });
   } catch (e) {
