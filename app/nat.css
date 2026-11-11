@@ -567,3 +567,13 @@ h1, h2, h3 { color: #14263f; }
   .side-foot { gap: 6px; }
   .side-me { padding: 6px 8px; }
 }
+
+/* Әкімші панелі */
+.adm-note { display: grid; gap: 10px; padding: 24px; max-width: 560px; margin: 30px auto; }
+.adm-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.adm-k { display: grid; gap: 2px; padding: 12px 14px; } .adm-k b { font-family: var(--head); font-size: 28px; color: #7a3a12; } .adm-k small { color: var(--muted); }
+.adm-bars { display: flex; align-items: flex-end; gap: 6px; height: 130px; margin-top: 10px; }
+.adm-bar { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; } .adm-bar i { width: 100%; min-height: 3px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #e8a400, #b8322a); } .adm-bar b { font-size: 11px; } .adm-bar small { font-size: 10px; color: var(--muted); }
+.adm-tools { display: grid; grid-template-columns: 1fr 220px; gap: 8px; margin-bottom: 10px; } @media (max-width: 560px) { .adm-tools { grid-template-columns: 1fr; } }
+.adm-wrap { overflow-x: auto; max-height: 560px; overflow-y: auto; }
+.adm-table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; } .adm-table th { text-align: left; position: sticky; top: 0; background: #fff3d4; padding: 8px 10px; } .adm-table td { padding: 7px 10px; border-top: 1px solid #ead9a8; }
