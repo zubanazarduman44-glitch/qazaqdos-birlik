@@ -12,7 +12,7 @@ import { shuffle } from "../../../lib/words";
 
 // Әр рет басқаша сұрақтар: түрі де, нұсқалары да кездейсоқ
 function mkTest(words, explain) {
-  const kinds = shuffle(["kk2tr", "tr2kk", "e2kk", "kk2e"]);
+  const kinds = shuffle(["kk2tr", "tr2kk"]);
   return shuffle(words).map((w, i) => {
     const kind = kinds[i % kinds.length];
     const others = shuffle(uniq.filter((z) => z.kk !== w.kk && tr(z, explain) !== tr(w, explain))).slice(0, 3);

@@ -63,7 +63,7 @@ export async function POST(req) {
       temperature: 0.5,
       fast: false, // толық модельдер: жауап сапасы жоғары
       thinking: "low",
-      maxTokens: 3500,
+      maxTokens: 6000,
     });
     return Response.json({ text });
   } catch (e) {

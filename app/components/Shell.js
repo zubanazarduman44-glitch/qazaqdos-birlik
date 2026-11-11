@@ -106,6 +106,7 @@ export default function Shell({ children }) {
   }, [ready, authReady, state.profile.onboarded, router]);
   useEffect(() => { setMore(false); try { window.speechSynthesis?.cancel(); } catch {} }, [path]);
 
+  const showNav = (n) => n.key !== "class" || state.profile?.role === "teacher";
   const active = (href) => (href === "/app" ? path === "/app" : path?.startsWith(href));
   const label = (k) => t.navLong[k] || t.nav[k];
 
@@ -114,7 +115,7 @@ export default function Shell({ children }) {
       <aside className="side">
         <Logo />
         <nav className="side-nav">
-          {NAV.map((n) => (
+          {NAV.filter(showNav).map((n) => (
             <Link key={n.href} href={n.href} className={`side-link ${active(n.href) ? "on" : ""}`}>
               <Icon name={n.icon} size={20} />
               <span>{label(n.key)}</span>
@@ -156,7 +157,7 @@ export default function Shell({ children }) {
 
       {/* Телефондағы төменгі мәзір */}
       <nav className="bottom-nav">
-        {NAV.filter((n) => MOBILE.includes(n.key)).map((n) => (
+        {NAV.filter(showNav).filter((n) => MOBILE.includes(n.key)).map((n) => (
           <Link key={n.href} href={n.href} className={active(n.href) ? "on" : ""}>
             <Icon name={n.icon} size={22} />
             <span>{t.nav[n.key]}</span>
@@ -170,7 +171,7 @@ export default function Shell({ children }) {
       {more && (
         <div className="sheet-wrap" onClick={() => setMore(false)}>
           <div className="sheet card rise" onClick={(e) => e.stopPropagation()}>
-            {NAV.filter((n) => !MOBILE.includes(n.key)).map((n) => (
+            {NAV.filter(showNav).filter((n) => !MOBILE.includes(n.key)).map((n) => (
               <Link key={n.href} href={n.href} className={`sheet-link ${active(n.href) ? "on" : ""}`}>
                 <Icon name={n.icon} size={20} /> {label(n.key)}
               </Link>
