@@ -3,6 +3,7 @@ import "./app.css";
 import "./nat.css";
 import "./kiiz.css";
 import "./lesson.css";
+import "./games.css";
 import { AppProvider } from "./components/Store";
 
 export const metadata = {

@@ -3,22 +3,21 @@ import { useEffect, useRef, useState } from "react";
 import { useApp } from "../Store";
 import Qyran from "../Qyran";
 import Icon from "../Icon";
-import Frame, { LevelPicker, Options, TopicPicker, useFinish, useQuestions } from "./Frame";
+import Frame, { AsykBone, Burst, Clock, FinishPost, Goat, Horse, KazanGoal, QPanel, Ready, TimeBar, Wolf, useFinish, useQuestions, useTx } from "./Frame";
 
-function Ready({ topic, setTopic, onStart, children, level, setLevel }) {
-  const { t } = useApp();
-  return (
-    <section className="card g-ready">
-      {children}
-      {setLevel && <LevelPicker level={level} setLevel={setLevel} />}
-      <h3>{t.topic}</h3>
-      <TopicPicker topic={topic} setTopic={setTopic} />
-      <button className="btn gold big" onClick={onStart}>
-        {t.play} <Icon name="right" size={18} />
-      </button>
-    </section>
-  );
-}
+// Жеңіс жұлдыздары (тек көрініс үшін, ұпайға әсер етпейді)
+const accStars = (win, right, asked) => {
+  if (!win) return 0;
+  const a = right / Math.max(1, asked);
+  return a >= 0.9 ? 3 : a >= 0.7 ? 2 : 1;
+};
+
+const RACERS = [
+  { coat: "#7A4A22", mane: "#2B1A10", rider: "#0F5E7A", cloth: "#E0A526" },
+  { coat: "#3B2A20", mane: "#1A120C", rider: "#A63A2B", cloth: "#1E8A8A" },
+  { coat: "#B07A3A", mane: "#5A3A1A", rider: "#2F6B4F", cloth: "#A63A2B" },
+  { coat: "#8E8A80", mane: "#4A4A4A", rider: "#1E8A8A", cloth: "#0F5E7A" },
+];
 
 /* ═════ Бәйге ═════ */
 export function Baige({ game }) {
@@ -36,6 +35,7 @@ export function Baige({ game }) {
   const nextQ = useQuestions(topic);
   const { finish, reset } = useFinish(game.id);
   const { t } = useApp();
+  const tx = useTx();
 
   function start() {
     reset();
@@ -65,7 +65,7 @@ export function Baige({ game }) {
       setPhase("end");
       const win = lead === 0;
       finish(win, right, level);
-      setResult({ win, text: t.score(right, Math.max(asked.current, right)) });
+      setResult({ win, text: t.score(right, Math.max(asked.current, right)), stars: accStars(win, right, asked.current) });
     }
   }, [pos, phase]);
 
@@ -81,35 +81,37 @@ export function Baige({ game }) {
     }, ok ? 350 : 700);
   }
 
+  const place = 1 + pos.slice(1).filter((x) => x > pos[0]).length;
+  const fx = picked ? (picked === q?.answer ? "boost" : "stumble") : "";
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
-          <div className="g-hero">🏇🏇🏇🏇</div>
-        </Ready>
+        <Ready game={game} topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel} />
       ) : (
         <>
           <section className="card track">
+            <div className="track-top">
+              <span className={`chip g-place p${place}`} key={place}>
+                <Icon name="trophy" size={15} /> {tx.place(place)}
+              </span>
+              <span className="track-fin">{tx.finish}</span>
+            </div>
             {pos.map((v, i) => (
-              <div key={i} className={`lane ${i === 0 ? "me" : ""}`}>
-                <span className="lane-n">{i === 0 ? "★" : i}</span>
+              <div key={i} className={`lane ${i === 0 ? `me ${fx}` : ""}`}>
+                <span className="lane-n" style={{ "--rc": RACERS[i].rider }}>{i === 0 ? tx.you : i}</span>
                 <span className="lane-run">
-                  <span className="horse" style={{ left: `calc(${v}% - ${v * 0.36}px)` }}>
-                    🏇
+                  <span className="lane-slot" style={{ transform: `translateX(calc(${v}% - ${v / 100} * var(--hw)))` }}>
+                    <span className="lane-horse">
+                      <Horse {...RACERS[i]} />
+                    </span>
+                    {i === 0 && fx === "boost" && <Burst n={8} className="small" key={asked.current} />}
                   </span>
                 </span>
-                <span className="finish">🏁</span>
+                <FinishPost />
               </div>
             ))}
           </section>
-          {q && (
-            <section className="card g-q">
-              <h3 className="g-prompt">
-                {q.word.e} <b>{q.prompt}</b>
-              </h3>
-              <Options q={q} picked={picked} onPick={pick} />
-            </section>
-          )}
+          {q && <QPanel q={q} picked={picked} onPick={pick} />}
         </>
       )}
     </Frame>
@@ -132,6 +134,7 @@ export function Arkan({ game }) {
   const nextQ = useQuestions(topic);
   const { finish, reset } = useFinish(game.id);
   const { t } = useApp();
+  const tx = useTx();
 
   function start() {
     reset();
@@ -159,7 +162,7 @@ export function Arkan({ game }) {
       setPhase("end");
       const win = v >= 100 || (time <= 0 && v > 0);
       finish(win, right, level);
-      setResult({ win, draw: time <= 0 && Math.round(v) === 0, text: t.score(right, Math.max(asked.current, right)) });
+      setResult({ win, draw: time <= 0 && Math.round(v) === 0, text: t.score(right, Math.max(asked.current, right)), stars: accStars(win, right, asked.current) });
     }
   }, [v, time, phase]);
 
@@ -175,41 +178,49 @@ export function Arkan({ game }) {
     }, ok ? 300 : 650);
   }
   const shift = Math.max(-100, Math.min(100, v));
+  const total = [36, 30, 24][level - 1];
+  const fx = picked ? (picked === q?.answer ? "pull-me" : "pull-them") : "";
 
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
-          <div className="g-hero">💪🪢🐺</div>
-        </Ready>
+        <Ready game={game} topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel} />
       ) : (
         <>
-          <section className="card tug">
+          <section className={`card tug ${fx} ${shift > 40 ? "near-me" : shift < -40 ? "near-them" : ""}`}>
             <div className="tug-top">
-              <span className="chip">⏱ {time}</span>
+              <span className="chip tug-side me">{tx.you}</span>
+              <span className={`chip g-tchip-time ${time / total < 0.3 ? "low" : ""}`}>
+                <Clock /> {Math.max(0, time)}
+              </span>
+              <span className="chip tug-side them">{tx.rival}</span>
             </div>
             <div className="tug-field">
               <div className="tug-team me">
                 <Qyran mood={shift > 20 ? "cheer" : shift < -40 ? "support" : "happy"} size={84} />
               </div>
               <div className="tug-rope">
-                <span className="tug-mark left" />
-                <span className="tug-mark right" />
-                <span className="tug-line" style={{ transform: `translateX(${-shift * 0.42}%)` }}>
-                  <span className="tug-flag">🎀</span>
+                <span className="tug-zone left" />
+                <span className="tug-zone right" />
+                <span className="tug-mid" />
+                <span className="tug-line" style={{ transform: `translateX(${-shift * 0.21}%)` }}>
+                  <span className="tug-rope-in" />
+                  <span className="tug-flag">
+                    <svg viewBox="0 0 24 40" aria-hidden="true" focusable="false">
+                      <path d="M12 6L4 30H20Z" fill="#A63A2B" />
+                      <circle cx="12" cy="8" r="6.5" fill="#E0A526" />
+                      <path d="M7 30V37M12 30V39M17 30V37" stroke="#A63A2B" strokeWidth="2.4" strokeLinecap="round" />
+                    </svg>
+                  </span>
                 </span>
               </div>
-              <div className="tug-team them">🐺</div>
+              <div className="tug-team them">
+                <Wolf />
+              </div>
             </div>
+            <TimeBar frac={time / total} label={tx.time} />
           </section>
-          {q && (
-            <section className="card g-q">
-              <h3 className="g-prompt">
-                {q.word.e} <b>{q.prompt}</b>
-              </h3>
-              <Options q={q} picked={picked} onPick={pick} />
-            </section>
-          )}
+          {q && <QPanel q={q} picked={picked} onPick={pick} />}
         </>
       )}
     </Frame>
@@ -217,15 +228,6 @@ export function Arkan({ game }) {
 }
 
 /* ═════ Асық ату ═════ */
-function AsykSvg({ down }) {
-  return (
-    <svg viewBox="0 0 60 44" className={`asyk ${down ? "down" : ""}`} aria-hidden="true">
-      <path d="M8 22c0-10 6-16 14-14 4 1 6 3 8 3s4-2 8-3c8-2 14 4 14 14s-6 16-14 14c-4-1-6-3-8-3s-4 2-8 3C14 38 8 32 8 22Z" fill="#f1d9a7" stroke="#b98a3e" strokeWidth="2.5" />
-      <path d="M24 16c3 3 9 3 12 0M24 28c3-3 9-3 12 0" stroke="#b98a3e" strokeWidth="2" fill="none" />
-    </svg>
-  );
-}
-
 export function Asyk({ game }) {
   const ROUNDS = 5;
   const [topic, setTopic] = useState("all");
@@ -244,6 +246,7 @@ export function Asyk({ game }) {
   const nextQ = useQuestions(topic);
   const { finish, reset } = useFinish(game.id);
   const { t } = useApp();
+  const tx = useTx();
 
   function start() {
     reset();
@@ -276,7 +279,7 @@ export function Asyk({ game }) {
         const n = nh.filter(Boolean).length;
         const win = n >= 3;
         finish(win, n, level);
-        setResult({ win, text: `${n} / ${ROUNDS} 🦴` });
+        setResult({ win, text: `${n} / ${ROUNDS}`, stars: n >= 5 ? 3 : n >= 4 ? 2 : n >= 3 ? 1 : 0 });
         setPhase("end");
       } else {
         setRound(nh.length);
@@ -304,54 +307,60 @@ export function Asyk({ game }) {
   function shoot() {
     cancelAnimationFrame(raf.current);
     const hit = power >= zone[0] && power <= zone[1];
-    setMsg(hit ? "💥 " + t.correct : "💨");
+    setMsg(hit ? t.correct : tx.missed);
     endRound(hit);
   }
 
+  const last = hits.length - 1;
+  const thrown = phase === "shot" && msg !== t.wrong;
+  const inZone = power >= zone[0] && power <= zone[1];
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
-          <div className="g-hero asyk-row">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <AsykSvg key={i} />
-            ))}
-          </div>
-        </Ready>
+        <Ready game={game} topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel} />
       ) : (
         <>
-          <section className="card asyk-field">
-            <div className="asyk-row">
-              {Array.from({ length: ROUNDS }, (_, i) => (
-                <AsykSvg key={i} down={hits[i] === true} />
-              ))}
-            </div>
+          <section className={`card asyk-field ph-${phase}`}>
             <div className="asyk-info">
-              <span className="chip">
-                {Math.min(round + 1, ROUNDS)} / {ROUNDS}
+              <span className="asyk-pips" aria-label={`${tx.round} ${Math.min(round + 1, ROUNDS)} / ${ROUNDS}`}>
+                {Array.from({ length: ROUNDS }, (_, i) => (
+                  <i key={i} className={hits[i] === true ? "hit" : hits[i] === false ? "miss" : i === round ? "cur" : ""} />
+                ))}
               </span>
-              {msg && <b className="pop">{msg}</b>}
+              {msg && (
+                <b className={`asyk-msg ${hits[last] ? "ok" : "bad"}`} key={msg + hits.length}>
+                  {msg}
+                </b>
+              )}
+            </div>
+            <div className="asyk-ring">
+              <div className="asyk-row">
+                {Array.from({ length: ROUNDS }, (_, i) => (
+                  <span key={i} className={`asyk-t ${hits[i] === true ? "down" : ""} ${thrown && i === last ? "now" : ""} ${i === round && phase !== "shot" ? "target" : ""}`}>
+                    <AsykBone />
+                    {thrown && i === last && hits[i] && <Burst n={10} />}
+                  </span>
+                ))}
+              </div>
+              <span className={`asyk-saka ${thrown ? (hits[last] ? "fly-hit" : "fly-miss") : phase === "aim" ? "ready" : ""}`} style={{ "--i": Math.max(0, thrown ? last : round) }} key={`${round}-${thrown}`}>
+                <AsykBone saka />
+              </span>
             </div>
             {phase === "aim" && (
               <div className="aim rise">
-                <div className="power">
+                <div className={`power ${inZone ? "in" : ""}`}>
                   <span className="zone" style={{ left: `${zone[0]}%`, width: `${zone[1] - zone[0]}%` }} />
-                  <span className="needle" style={{ left: `${power}%` }} />
+                  <span className="needle-slot" style={{ transform: `translateX(${power}%)` }}>
+                    <span className="needle" />
+                  </span>
                 </div>
                 <button className="btn gold big" onClick={shoot} autoFocus>
-                  🎯 {t.throwBtn}
+                  <Icon name="target" size={18} /> {t.throwBtn}
                 </button>
               </div>
             )}
           </section>
-          {phase === "ask" && q && (
-            <section className="card g-q">
-              <h3 className="g-prompt">
-                {q.word.e} <b>{q.prompt}</b>
-              </h3>
-              <Options q={q} picked={picked} onPick={pick} />
-            </section>
-          )}
+          {phase === "ask" && q && <QPanel q={q} picked={picked} onPick={pick} />}
         </>
       )}
     </Frame>
@@ -360,7 +369,7 @@ export function Asyk({ game }) {
 
 /* ═════ Көкпар ═════ */
 export function Kokpar({ game }) {
-  
+
   const [topic, setTopic] = useState("all");
   const [level, setLevel] = useState(1);
   const hard = () => (level === 3 ? { reverse: Math.random() < 0.5 } : {});
@@ -378,6 +387,7 @@ export function Kokpar({ game }) {
   const nextQ = useQuestions(topic);
   const { finish, reset } = useFinish(game.id);
   const { t } = useApp();
+  const tx = useTx();
   const lock = useRef(false);
 
   function start() {
@@ -397,7 +407,7 @@ export function Kokpar({ game }) {
       if (m >= GOALS || th >= GOALS) {
         const win = m >= GOALS;
         finish(win, right, level);
-        setResult({ win, text: `${m} : ${th}` });
+        setResult({ win, text: `${m} : ${th}`, stars: !win ? 0 : th === 0 ? 3 : m - th >= 2 ? 2 : 1 });
         setPhase("end");
         return;
       }
@@ -422,38 +432,40 @@ export function Kokpar({ game }) {
   }, [left, phase]);
 
   const pct = 50 + (pos / STEPS) * 38;
+  const fx = picked ? (picked === q?.answer ? "push-me" : "push-them") : "";
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <Ready topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel}>
-          <div className="g-hero kk-hero">🐎🐐🏆</div>
-        </Ready>
+        <Ready game={game} topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel} />
       ) : (
         <>
-          <section className="card kokpar">
-            <div className="kk-score"><span className="chip gold">🟡 {me}</span><span className={`chip ${left <= 3 ? "bad" : ""}`}>⏱ {Math.max(0, left)}</span><span className="chip">🔴 {them}</span></div>
-            <div className="kk-field">
-              <div className="kk-goal l"><span>🏺</span></div>
-              <div className="kk-goal r"><span>🏺</span></div>
-              <div className="kk-mid" />
-              <div className="kk-rider me" style={{ left: `${pct - 9}%` }} aria-hidden>
-                <span className="kk-horse">🐎</span>
-              </div>
-              <div className="kk-goat" style={{ left: `${pct}%` }} aria-hidden>🐐</div>
-              <div className="kk-rider them" style={{ left: `${pct + 9}%` }} aria-hidden>
-                <span className="kk-horse flip">🏇</span>
-              </div>
-              <div className="kk-dust" style={{ left: `${pct}%` }} />
-              {burst && <div key={burst.k} className={`kk-burst ${burst.who}`}>{burst.who === "me" ? "🎉 ГОЛ!" : "😬"}</div>}
+          <section className={`card kokpar ${fx} ${burst ? `goal-${burst.who}` : ""}`}>
+            <div className="kk-score">
+              <span className="chip kk-team me"><i /> {tx.you} <b key={me}>{me}</b></span>
+              <span className={`chip g-tchip-time ${left / SEC < 0.3 ? "low" : ""}`}><Clock /> {Math.max(0, left)}</span>
+              <span className="chip kk-team them"><b key={them}>{them}</b> {tx.rival} <i /></span>
             </div>
-            <div className="kk-bar"><i style={{ width: `${(left / SEC) * 100}%` }} /></div>
+            <div className="kk-field">
+              <span className="kk-ground" />
+              <div className="kk-goal l"><KazanGoal color="#A63A2B" /></div>
+              <div className="kk-goal r"><KazanGoal color="#0F5E7A" /></div>
+              <div className="kk-mid" />
+              <div className="kk-slot" style={{ transform: `translateX(${pct}%)` }}>
+                <span className="kk-dust" />
+                <span className="kk-rider me"><Horse rider="#0F5E7A" cloth="#E0A526" /></span>
+                <span className="kk-goat"><Goat /></span>
+                <span className="kk-rider them"><Horse coat="#3B2A20" mane="#1A120C" rider="#A63A2B" cloth="#1E8A8A" /></span>
+              </div>
+              {burst && (
+                <div key={burst.k} className={`kk-burst ${burst.who}`}>
+                  {burst.who === "me" && <Burst n={14} className="big" />}
+                  <b>{burst.who === "me" ? tx.goal : tx.rivalGoal}</b>
+                </div>
+              )}
+            </div>
+            <TimeBar frac={left / SEC} label={tx.time} />
           </section>
-          {q && (
-            <section className="card g-q">
-              <h3 className="g-prompt">{q.word.e} <b>{q.prompt}</b></h3>
-              <Options q={q} picked={picked && picked !== "__time" ? picked : null} onPick={pick} disabled={picked === "__time"} />
-            </section>
-          )}
+          {q && <QPanel q={q} picked={picked} onPick={pick} />}
         </>
       )}
     </Frame>

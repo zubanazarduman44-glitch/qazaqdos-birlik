@@ -1,9 +1,8 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useApp } from "../Store";
-import Qyran from "../Qyran";
 import Icon from "../Icon";
-import Frame, { LevelPicker, TopicPicker, useFinish, useQuestions } from "./Frame";
+import Frame, { Burst, CoinIcon, Heart, Horse, Muiz, Ready, useFinish, useQuestions, useTx } from "./Frame";
 import { shuffle, tr, wordsByTopic } from "../../../lib/words";
 
 /* ═════ Теңге ілу ═════ */
@@ -23,6 +22,8 @@ export function Tenge({ game }) {
   const nextQ = useQuestions(topic);
   const { finish, reset } = useFinish(game.id);
   const { t } = useApp();
+  const tx = useTx();
+  const maxLives = [4, 3, 2][level - 1];
 
   const newWave = useCallback(
     (n) => {
@@ -83,7 +84,7 @@ export function Tenge({ game }) {
             setPhase("end");
             const win = ng >= GOAL;
             finish(win, ng, level);
-            setResult({ win, text: `🪙 ${ng} / ${GOAL}` });
+            setResult({ win, text: `${ng} / ${GOAL}`, stars: !win ? 0 : nl >= [4, 3, 2][level - 1] ? 3 : nl >= [4, 3, 2][level - 1] - 1 ? 2 : 1 });
           } else newWave(ng);
         }, 650);
         return;
@@ -97,43 +98,48 @@ export function Tenge({ game }) {
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <section className="card g-ready">
-          <div className="g-hero">🏇🪙</div>
-          <LevelPicker level={level} setLevel={setLevel} />
-          <h3>{t.topic}</h3>
-          <TopicPicker topic={topic} setTopic={setTopic} />
-          <button className="btn gold big" onClick={start}>
-            {t.play} <Icon name="right" size={18} />
-          </button>
-        </section>
+        <Ready game={game} topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel} />
       ) : (
-        <section className="card tenge">
+        <section className={`card tenge ${flash ? (flash.ok ? "caught" : "dropped") : ""}`}>
           <div className="tenge-top">
-            <span className="chip">🪙 {got} / {GOAL}</span>
-            <span className="tenge-ask">
+            <span className="chip tenge-count">
+              <CoinIcon /> <b key={got}>{got}</b> / {GOAL}
+            </span>
+            <span className="tenge-ask" key={wave?.q.answer}>
               {t.catchWord} <b>{wave?.q.prompt}</b>
             </span>
-            <span className="chip">{"❤️".repeat(Math.max(0, lives))}</span>
+            <span className="chip tenge-lives" aria-label={`${t.lives}: ${Math.max(0, lives)}`}>
+              {Array.from({ length: maxLives }, (_, i) => (
+                <Heart key={i} on={i < lives} />
+              ))}
+            </span>
           </div>
-          <div className="tenge-field">
-            {[0, 1, 2, 3].map((i) => (
-              <button key={i} className={`tenge-lane ${flash?.lane === i ? (flash.ok ? "ok" : "bad") : ""}`} onClick={() => goTo(i)} aria-label={`lane ${i + 1}`}>
-                {wave && (
-                  <span className="coin" style={{ top: `calc(${y * 100}% - ${y * 64}px)` }}>
-                    {wave.q.options[i]?.label}
-                  </span>
-                )}
-              </button>
-            ))}
-            <span className="rider" style={{ left: `calc(${lane * 25}% + 12.5% - 28px)` }}>
-              🏇
+          <div className="tenge-field" style={{ "--y": y }}>
+            <span className="tenge-ground" aria-hidden="true" />
+            {[0, 1, 2, 3].map((i) => {
+              const fl = flash?.lane === i ? (flash.ok ? "ok" : "bad") : "";
+              return (
+                <button key={i} className={`tenge-lane ${fl} ${lane === i ? "here" : ""}`} onClick={() => goTo(i)} aria-label={`${tx.lane(i + 1)}${wave ? `: ${wave.q.options[i]?.label || ""}` : ""}`}>
+                  {wave && (
+                    <span className={`coin ${flash ? (wave.q.options[i]?.key === wave.q.answer ? "good" : "gone") : ""} ${fl}`} key={wave.t0}>
+                      <span className="coin-in">{wave.q.options[i]?.label}</span>
+                    </span>
+                  )}
+                  {fl === "ok" && <Burst n={12} className="low" />}
+                </button>
+              );
+            })}
+            <span className="rider-slot" style={{ transform: `translateX(${lane * 100}%)` }}>
+              <span className={`rider ${flash ? (flash.ok ? "ok" : "bad") : ""}`}>
+                <Horse coat="#3B2A20" mane="#1A120C" rider="#A63A2B" cloth="#1E8A8A" />
+              </span>
             </span>
           </div>
           <div className="tenge-ctrl">
-            <button className="btn ghost big" onClick={() => move(-1)} aria-label="left">
+            <button className="btn ghost big" onClick={() => move(-1)} aria-label={tx.left}>
               <Icon name="left" size={22} />
             </button>
-            <button className="btn ghost big" onClick={() => move(1)} aria-label="right">
+            <button className="btn ghost big" onClick={() => move(1)} aria-label={tx.right}>
               <Icon name="right" size={22} />
             </button>
           </div>
@@ -186,7 +192,8 @@ export function BesTas({ game }) {
           if (nm.length === pairs) {
             const score = Math.max(10, 100 - (moves + 1 - pairs) * 8);
             finish(true, score, level);
-            setResult({ win: true, text: `${t.moves}: ${moves + 1}` });
+            const extra = moves + 1 - pairs;
+            setResult({ win: true, text: `${t.moves}: ${moves + 1}`, stars: extra <= 1 ? 3 : extra <= 4 ? 2 : 1 });
             setPhase("end");
           }
         }, 450);
@@ -197,37 +204,36 @@ export function BesTas({ game }) {
   return (
     <Frame game={game} result={result} onRestart={start}>
       {phase === "ready" ? (
-        <section className="card g-ready">
-          <div className="g-hero">🪨🪨🪨🪨🪨</div>
-          <LevelPicker level={level} setLevel={setLevel} />
-          <h3>{t.topic}</h3>
-          <TopicPicker topic={topic} setTopic={setTopic} />
-          <button className="btn gold big" onClick={start}>
-            {t.play} <Icon name="right" size={18} />
-          </button>
-        </section>
+        <Ready game={game} topic={topic} setTopic={setTopic} onStart={start} level={level} setLevel={setLevel} />
       ) : (
         <section className="card bestas">
           <div className="tenge-top">
-            <span className="chip">
-              {t.pairs}: {matched.length} / {pairs}
+            <span className="chip bt-pairs">
+              {t.pairs}: <b key={matched.length}>{matched.length}</b> / {pairs}
+              <span className="bt-pips" aria-hidden="true">
+                {Array.from({ length: pairs }, (_, i) => (
+                  <i key={i} className={i < matched.length ? "on" : ""} />
+                ))}
+              </span>
             </span>
             <span className="chip">
-              {t.moves}: {moves}
+              {t.moves}: <b key={moves}>{moves}</b>
             </span>
           </div>
-          <div className="stones">
-            {cards.map((c) => {
+          <div className={`stones n${cards.length}`}>
+            {cards.map((c, i) => {
               const up = open.includes(c.id) || matched.includes(c.pair);
+              const miss = open.length === 2 && open.includes(c.id) && cards.find((x) => x.id === open[0])?.pair !== cards.find((x) => x.id === open[1])?.pair;
+              const hit = open.length === 2 && open.includes(c.id) && !miss;
               return (
-                <button key={c.id} className={`stone ${up ? "up" : ""} ${matched.includes(c.pair) ? "done" : ""}`} onClick={() => flip(c)}>
+                <button key={c.id} className={`stone s${i % 5} ${up ? "up" : ""} ${matched.includes(c.pair) ? "done" : ""} ${miss ? "miss" : ""} ${hit ? "hit" : ""}`} style={{ "--i": i }} onClick={() => flip(c)} aria-label={up ? c.face : `${i + 1}`}>
                   <span className="stone-in">
-                    <span className="stone-back">🪨</span>
-                    <span className={`stone-face ${c.kind}`}>
-                      {c.e && <span className="stone-e">{c.e}</span>}
-                      {c.face}
+                    <span className="stone-back">
+                      <Muiz color="#FFFDF7" w={12} />
                     </span>
+                    <span className={`stone-face ${c.kind}`}>{c.face}</span>
                   </span>
+                  {hit && <Burst n={10} />}
                 </button>
               );
             })}
