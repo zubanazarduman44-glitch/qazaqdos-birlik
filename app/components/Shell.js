@@ -9,6 +9,7 @@ import Icon from "./Icon";
 import Qyran from "./Qyran";
 import Shanyrak from "./Shanyrak";
 import WordTap from "./WordTap";
+import { authed } from "../../lib/auth";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
 
 export const NAV = [
@@ -100,6 +101,11 @@ export default function Shell({ children }) {
   const path = usePathname();
   const router = useRouter();
   const [more, setMore] = useState(false);
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) return setAdmin(false);
+    authed("/rest/v1/rpc/admin_overview", { method: "POST", body: "{}" }).then(() => setAdmin(true)).catch(() => setAdmin(false));
+  }, [user?.id]); // eslint-disable-line
 
   useEffect(() => {
     if (ready && authReady && !state.profile.onboarded) router.replace("/onboarding");
@@ -121,6 +127,12 @@ export default function Shell({ children }) {
               <span>{label(n.key)}</span>
             </Link>
           ))}
+          {admin && (
+            <Link href="/app/admin" className={`side-link ${active("/app/admin") ? "on" : ""}`}>
+              <Icon name="chart" size={20} />
+              <span>Әкімші</span>
+            </Link>
+          )}
         </nav>
         <div className="side-foot">
           <Link href="/app/profile" className={`side-me ${active("/app/profile") ? "on" : ""}`}>
@@ -176,6 +188,11 @@ export default function Shell({ children }) {
                 <Icon name={n.icon} size={20} /> {label(n.key)}
               </Link>
             ))}
+            {admin && (
+              <Link href="/app/admin" className={`sheet-link ${active("/app/admin") ? "on" : ""}`}>
+                <Icon name="chart" size={20} /> Әкімші
+              </Link>
+            )}
             <Link href="/app/profile" className={`sheet-link ${active("/app/profile") ? "on" : ""}`}>
               <Icon name="user" size={20} /> {t.nav.profile}
             </Link>
