@@ -28,7 +28,6 @@ export const NAV = [
   { href: "/app/shop", key: "shop", icon: "bag" },
 ];
 const MOBILE = ["home", "travel", "games", "chat"];
-const SIDE = ["home", "history", "travel", "games", "chat", "vision", "level", "sozdik"];
 
 // Қошқар мүйіз өрнегі (алтын жолақ)
 export function Orn({ className = "" }) {
@@ -116,16 +115,12 @@ export default function Shell({ children }) {
       <aside className="side">
         <Logo />
         <nav className="side-nav">
-          {SIDE.map((k) => NAV.find((n) => n.key === k)).map((n) => (
+          {NAV.filter(showNav).map((n) => (
             <Link key={n.href} href={n.href} className={`side-link ${active(n.href) ? "on" : ""}`}>
               <Icon name={n.icon} size={20} />
               <span>{label(n.key)}</span>
             </Link>
           ))}
-          <button className={`side-link side-more ${more ? "on" : ""}`} onClick={() => setMore((x) => !x)} aria-expanded={more}>
-            <Icon name="menu" size={20} />
-            <span>{t.nav.more}</span>
-          </button>
         </nav>
         <div className="side-foot">
           <Link href="/app/profile" className={`side-me ${active("/app/profile") ? "on" : ""}`}>
