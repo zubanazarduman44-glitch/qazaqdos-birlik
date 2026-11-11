@@ -14,7 +14,7 @@ const KEY = "qd_state_v1";
 export const DAILY_GOAL = 50;
 
 export const EMPTY = {
-  profile: { name: "", avatar: "🌱", skin: "eagle", goal: "travel", explain: "ru", ui: "kk", theme: null, onboarded: false },
+  profile: { name: "", avatar: "🌱", skin: "eagle", goal: "travel", explain: "ru", ui: "kk", theme: null, onboarded: false, role: "student" },
   xp: 0,
   coins: 0,
   streak: 0,
@@ -31,6 +31,7 @@ export const EMPTY = {
   saiys: { claimed: {} },
   shop: { owned: [], wear: {} },
   sozdik: { days: {}, learned: {}, done: {} },
+  course: { done: {} },
   lit: {},
   speaking: { level: null, best: {}, log: [] },
   updatedAt: 0,

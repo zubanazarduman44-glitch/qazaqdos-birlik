@@ -65,6 +65,17 @@ export default function Profile() {
       </aside>
       <div className="prof-col">
       <section className="card">
+        <h3>{["Рөлің", "Ваша роль", "Your role"][li]}</h3>
+        <div className="role-pick">
+          {[["student", "🎒", ["Оқушы", "Ученик", "Student"], ["Сабақ оқып, ойын ойнап, сыныпқа кодпен қосыламын.", "Учусь, играю и вступаю в класс по коду.", "I learn, play and join a class with a code."]],
+            ["teacher", "🧑‍🏫", ["Мұғалім", "Учитель", "Teacher"], ["Барлық функция бар + «Менің сыныбым»: сынып, тапсырма, белсенділік.", "Все функции + «Мой класс»: классы, задания, активность.", "All features + “My class”: classes, tasks, activity."]]].map(([id, e, n, d]) => (
+            <button key={id} className={`role-card ${(state.profile.role || "student") === id ? "on" : ""}`} onClick={() => setProfile({ role: id })}>
+              <span className="role-e">{e}</span><b>{n[li]}</b><small>{d[li]}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+      <section className="card">
         <label className="field">
           <span>{t.nick}</span>
           <div className="row-inline">

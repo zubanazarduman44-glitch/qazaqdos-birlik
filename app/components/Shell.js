@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Avatar from "./Avatar";
+import ClassSync from "./ClassSync";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp } from "./Store";
@@ -18,10 +19,12 @@ export const NAV = [
   { href: "/app/qyran", key: "chat", icon: "chat" },
   { href: "/app/vision", key: "vision", icon: "camera" },
   { href: "/app/tuzel", key: "tuzel", icon: "pen" },
+  { href: "/app/course", key: "course", icon: "book" },
   { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
   { href: "/app/level", key: "level", icon: "chart" },
   { href: "/app/saiys", key: "saiys", icon: "trophy" },
   { href: "/app/literature", key: "lit", icon: "book" },
+  { href: "/app/class", key: "class", icon: "user" },
   { href: "/app/shop", key: "shop", icon: "bag" },
 ];
 const MOBILE = ["home", "travel", "games", "chat"];
@@ -148,6 +151,7 @@ export default function Shell({ children }) {
         </header>
         <main className="main">{children}</main>
         <WordTap />
+        <ClassSync />
       </div>
 
       {/* Телефондағы төменгі мәзір */}
