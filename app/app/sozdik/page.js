@@ -182,7 +182,7 @@ export default function Sozdik() {
   const mine = (state.vocab || []).filter((v) => !q.trim() || [v.kk, v.ru, v.en].some((t) => (t || "").toLowerCase().includes(q.trim().toLowerCase())));
 
   return (
-    <div className="sozdik">
+    <div className="sozdik" data-notap>
       <header className="page-head">
         <div>
           <span className="kicker">{x.szKicker}</span>
