@@ -547,3 +547,13 @@ h1, h2, h3 { color: #14263f; }
 .role-card .role-e { font-size: 28px; } .role-card small { color: var(--muted); }
 .role-card.on { background: #fff3d4; box-shadow: inset 0 0 0 2.5px #e8a400; }
 @media (max-width: 520px) { .role-pick { grid-template-columns: 1fr; } }
+
+/* Компьютерде «Мәзір» — барлық бөлім */
+.side-more { width: 100%; border: 0; background: transparent; font: inherit; cursor: pointer; text-align: left; }
+@media (min-width: 861px) {
+  .sheet-wrap { display: block; position: fixed; inset: 0; z-index: 39; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .sheet { position: absolute; left: 268px; top: 90px; bottom: auto; width: 270px; max-height: calc(100vh - 120px); overflow: auto; display: grid; gap: 4px; padding: 10px; }
+  .sheet-link { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 14px; font-weight: 700; color: var(--ink); }
+  .sheet-link:hover { background: var(--paper-2); }
+}
+.role-join { display: inline-flex; margin-top: 8px; }

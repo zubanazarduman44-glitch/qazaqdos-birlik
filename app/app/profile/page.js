@@ -74,6 +74,9 @@ export default function Profile() {
             </button>
           ))}
         </div>
+        {(state.profile.role || "student") !== "teacher" && (
+          <Link href="/app/class" className="btn blue small role-join">{["Сыныпқа қосылу (код бойынша)", "Вступить в класс по коду", "Join a class with a code"][li]}</Link>
+        )}
       </section>
       <section className="card">
         <label className="field">
