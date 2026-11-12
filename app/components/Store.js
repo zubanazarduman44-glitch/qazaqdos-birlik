@@ -1,6 +1,5 @@
 "use client";
-import { setWordTr } from "../../lib/words";
-import { allKkWords } from "../../lib/dict";
+import { setWordTr } from "../../lib/wordTools";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { T, UI_LANGS } from "../../lib/i18n";
 import { flatten, apply } from "../../lib/uitr";
@@ -252,8 +251,13 @@ export function AppProvider({ children }) {
     } catch {}
     setWordTr(exp, have);
     setWtrVer((v) => v + 1);
-    const missing = allKkWords().filter((w) => !have[w]);
     (async () => {
+      // Сөздік (барлық сөз қоры) тек осы сирек жағдайда керек: ортақ бандлға кірмеуі үшін кейін жүктейміз
+      let missing = [];
+      try {
+        const { allKkWords } = await import("../../lib/dict");
+        missing = allKkWords().filter((w) => !have[w]);
+      } catch {}
       for (let i = 0; i < missing.length && !dead; i += 80) {
         try {
           const r = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ words: missing.slice(i, i + 80), to: exp }) });

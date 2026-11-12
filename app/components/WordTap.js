@@ -1,13 +1,17 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./Store";
-import { lookupLocal } from "../../lib/dict";
+import { whenIdle } from "../../lib/idle";
 import { tx } from "../../lib/tx";
 import { sayKk } from "../../lib/speak";
 
 const WORD = /[\p{L}\p{M}][\p{L}\p{M}'’-]*/u;
 const SKIP = "button,a,input,textarea,select,label,summary,[data-notap],svg,.wt-pop,.toasts,nav,.msg-input,.composer";
 const cache = new Map();
+
+// Жергілікті сөздік (сөз қоры + өңірлер) ортақ бандлда емес: бет ашылған соң бос уақытта жүктеледі
+let dict = null;
+const loadDict = () => import("../../lib/dict").then((m) => (dict = m));
 
 function wordAt(x, y) {
   let node, off;
@@ -54,8 +58,12 @@ export default function WordTap() {
       const hit = wordAt(e.clientX, e.clientY);
       if (!hit) return setPop(null);
       const id = ++seq.current;
+      if (dict) show(hit, id);
+      else loadDict().catch(() => null).then(() => id === seq.current && show(hit, id));
+    }
+    function show(hit, id) {
       const key = hit.w.toLowerCase();
-      const local = lookupLocal(hit.w) || cache.get(key);
+      const local = dict?.lookupLocal(hit.w) || cache.get(key);
       if (local) return setPop({ w: hit.w, box: hit.box, data: local });
       setPop({ w: hit.w, box: hit.box, loading: true });
       fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ word: hit.w, context: hit.ctx }) })
@@ -69,11 +77,13 @@ export default function WordTap() {
     }
     const close = () => setPop(null);
     const esc = (e) => e.key === "Escape" && setPop(null);
+    const cancelIdle = whenIdle(loadDict);
     document.addEventListener("click", onClick);
     window.addEventListener("scroll", close, true);
     window.addEventListener("resize", close);
     window.addEventListener("keydown", esc);
     return () => {
+      cancelIdle();
       document.removeEventListener("click", onClick);
       window.removeEventListener("scroll", close, true);
       window.removeEventListener("resize", close);

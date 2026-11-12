@@ -2,9 +2,10 @@
 import LangPicker from "../../components/LangPicker";
 import KzSymbols from "../../components/KzSymbols";
 import { buildDecor, TERRAIN, LANDMARK, RIVERS, LAKES } from "../../../lib/kzscene";
-import RegionAtlas from "../../components/RegionAtlas";
+import dynamic from "next/dynamic";
 import SightArt, { kindOf, RegionScene } from "../../components/SightArt";
-import { REGION_ABOUT } from "../../../lib/sights";
+import { REGION_ABOUT } from "../../../lib/regionAbout";
+import { whenIdle } from "../../../lib/idle";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
@@ -15,7 +16,11 @@ import { tx } from "../../../lib/tx";
 import { REGIONS } from "../../../lib/regions";
 import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { L } from "../../../lib/i18n";
-import { shuffle, tr } from "../../../lib/words";
+import { shuffle, tr } from "../../../lib/wordTools";
+
+// Өңір атласы (көрікті жерлер мәтіндерімен) тек өңір таңдалғанда керек: бөлек чанк, бет ашылған соң алдын ала жүктеледі
+const loadAtlas = () => import("../../components/RegionAtlas");
+const RegionAtlas = dynamic(() => import("../../components/RegionAtlas"), { loading: () => <section className="ra" aria-busy="true" style={{ minHeight: 420 }} /> });
 
 const CITY_IDS = ["astana", "almaty-city", "shymkent"];
 
@@ -65,6 +70,8 @@ function Travel() {
   const [hov, setHov] = useState(null);
   const prevRef = useRef(null);
   const [trail, setTrail] = useState(null);
+
+  useEffect(() => whenIdle(loadAtlas), []);
 
   useEffect(() => {
     const id = params.get("r");

@@ -8,7 +8,7 @@ import { NatArt } from "../../components/NatArt";
 import Icon from "../../components/Icon";
 import { QUESTIONS, LEVELS, grade } from "../../../lib/levelTest";
 import { tx } from "../../../lib/tx";
-import { shuffle } from "../../../lib/words";
+import { shuffle } from "../../../lib/wordTools";
 
 const pick = (v, lang) => (typeof v === "string" ? v : v[lang] || v.en || v.ru || v.kk);
 

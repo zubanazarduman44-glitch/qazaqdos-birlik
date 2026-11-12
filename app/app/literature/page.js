@@ -7,7 +7,7 @@ import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import Quiz from "../../components/Quiz";
 import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
-import { shuffle } from "../../../lib/words";
+import { shuffle } from "../../../lib/wordTools";
 import { WORKS } from "../../../lib/literature";
 import { LIT_TR } from "../../../lib/litTr";
 const staticTr = (id, to) => (to === "ru" ? LIT_TR[id]?.[0] : to === "en" ? LIT_TR[id]?.[1] : null);

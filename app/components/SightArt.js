@@ -4,16 +4,13 @@
 // <SightArt kind="canyon" wide />   — кең баннер (hero)
 // <SightArt kind="canyon" mini />   — 40px белгіше (тек басты нысан, анимациясыз)
 import { useEffect, useId, useRef } from "react";
-import { SIGHTS } from "../../lib/sights";
+// Тек түр картасы (мәтіндері бар lib/sights.js бұл бетке жүктелмейді)
+import { SIGHT_KINDS, SIGHT_KIND } from "../../lib/sightKinds";
 
-export const SIGHT_KINDS = [
-  "tower", "tent", "embankment", "ice", "hill", "ski", "park", "bazaar", "pineLake", "wetland",
-  "reservoir", "lowMountains", "canyon", "alpineLakes", "river", "ruins", "mausoleum", "peaks", "dunes", "steppeReserve",
-  "lakeShore", "rocket", "sea", "whiteCliffs", "cave", "rocks", "ancient", "horde", "snowPeak", "mountainLake",
-];
+export { SIGHT_KINDS };
 
 export function kindOf(sight) {
-  const k = sight && SIGHTS && SIGHTS[sight.en] && SIGHTS[sight.en].kind;
+  const k = sight && SIGHT_KIND[sight.en];
   return k && SIGHT_KINDS.includes(k) ? k : "steppeReserve";
 }
 

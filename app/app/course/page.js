@@ -2,12 +2,17 @@
 import { useEffect, useState } from "react";
 import LangPicker from "../../components/LangPicker";
 import Icon from "../../components/Icon";
-import LessonPlayer from "../../components/LessonPlayer";
+import dynamic from "next/dynamic";
 import TopicArt from "../../components/TopicArt";
 import { useApp } from "../../components/Store";
 import { ALL_LESSONS, LEVELS, UNITS, levelStats, lessonTitle } from "../../../lib/course";
 import { TOPICS } from "../../../lib/words";
 import { L } from "../../../lib/i18n";
+import { whenIdle } from "../../../lib/idle";
+
+// Сабақ ойнатқышы (сабақ жоспары, дыбыс) тек сабақ ашылғанда керек: бөлек чанк, жол беті ашылған соң алдын ала жүктеледі
+const loadPlayer = () => import("../../components/LessonPlayer");
+const LessonPlayer = dynamic(() => import("../../components/LessonPlayer"), { loading: () => <section className="lp" aria-busy="true" /> });
 
 const TXT = {
   kicker: ["Оқу жолы", "Путь обучения", "Learning path"],
@@ -79,6 +84,7 @@ export default function Course() {
   const done = state.course?.done || {};
   const [lv, setLv] = useState(state.cefr && ["A1", "A2", "B1"].includes(state.cefr) ? state.cefr : "A1");
   const [open, setOpen] = useState(null);
+  useEffect(() => whenIdle(loadPlayer), []);
   useEffect(() => {
     try {
       const id = new URLSearchParams(window.location.search).get("l");

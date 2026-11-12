@@ -13,7 +13,7 @@ import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { SITES } from "../../../lib/history";
 import { REGIONS } from "../../../lib/regions";
 import { L } from "../../../lib/i18n";
-import { shuffle, tr } from "../../../lib/words";
+import { shuffle, tr } from "../../../lib/wordTools";
 import { tx } from "../../../lib/tx";
 
 function useCountUp(target, ms = 1100) {
