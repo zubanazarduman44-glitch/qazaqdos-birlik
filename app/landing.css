@@ -1,0 +1,347 @@
+/* ════════════════════════════════════════════════════════════════════
+   Qyzyl til · басты бет (лендинг)
+   Идея: «Өнер алды — қызыл тіл». Логотиптегі қызыл тіл — толқынды лента,
+   оның бойымен қазақ сөздері аудармасымен ағады; Aqyl сол лентаға қонады.
+   Төмендегі бөлімдер — бір қызыл жіппен тігілген әңгіме.
+   Барлық стиль .ld ішінде; ескі .landing/.hero ережелеріне тәуелсіз.
+   ════════════════════════════════════════════════════════════════════ */
+.ld {
+  --red: #b8322a; --red-2: #8a2018; --red-3: #6e1e2e;
+  --cream: #fffdf7; --cream-2: #faf6ee; --sand: #f4ecda;
+  --ink: #1f2430; --mut: #4a5160; --gold: #e0a526; --gold-soft: #f6e3b0; --blue: #0f5e7a;
+  --ribH: 180px; --ribS: 1;           /* лента биіктігі мен масштабы (180 бірлік = ribH) */
+  --ease-out: cubic-bezier(0.2, 0.75, 0.2, 1);
+  --spring: cubic-bezier(0.34, 1.45, 0.5, 1);
+  position: relative;
+  overflow-x: hidden;
+  overflow-x: clip;
+  background: var(--cream-2);
+  color: var(--ink);
+}
+.ld-wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+
+/* ── Тақырыпша жол ── */
+.ld-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; padding-bottom: 18px; position: relative; z-index: 5; animation: ldFade 0.6s ease both; }
+.ld-head-r { display: flex; align-items: center; gap: 10px; }
+.ld .btn.ld-primary { background: var(--red); color: #fff; box-shadow: 0 3px 0 var(--red-2); }
+.ld .btn.ld-primary:hover:not(:disabled) { background: #a32a23; filter: none; }
+.ld .btn.ld-primary:active:not(:disabled) { background: var(--red-2); box-shadow: none; }
+.ld .btn.ghost.ld-second { background: var(--cream); box-shadow: inset 0 0 0 2px var(--ink); }
+.ld .btn.ghost.ld-second:hover:not(:disabled) { box-shadow: inset 0 0 0 2px var(--red); color: var(--red-2); }
+
+/* ═════════ HERO ═════════ */
+.ld-hero { position: relative; padding-bottom: calc(var(--ribH) - 50px * var(--ribS)); }
+.ld-hero::before { /* киіз фон: ақшыл дақ + жіңішке ою торы */
+  content: ""; position: absolute; inset: -90px 0 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(60% 70% at 78% 42%, rgba(224, 165, 38, 0.16), transparent 70%),
+    radial-gradient(40% 50% at 10% 20%, rgba(184, 50, 42, 0.07), transparent 70%);
+}
+.ld-hero-in { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: end; padding-top: clamp(12px, 3vw, 36px); }
+.ld-copy { padding-bottom: calc(70px * var(--ribS) + 12px); }
+
+/* Мақал — типографиялық белгі */
+.ld-proverb { margin: 0 0 18px; display: grid; gap: 4px; animation: ldUp 0.6s 0.05s var(--ease-out) both; }
+.ld-proverb-kk {
+  display: inline-flex; align-items: center; gap: 10px; justify-self: start;
+  font-family: var(--head); font-weight: 600; font-size: clamp(14px, 1.25vw, 16.5px); letter-spacing: 0.01em;
+  color: var(--red-2); padding: 7px 14px 7px 10px; border-radius: 999px; background: #f6e4df;
+}
+.ld-proverb-kk::before { /* логотиптің тілі */
+  content: ""; width: 22px; height: 14px; flex: none; background: var(--red);
+  border-radius: 2px 14px 14px 14px / 2px 12px 12px 12px; transform: rotate(18deg);
+}
+.ld-proverb-tr { font-size: 15px; font-weight: 600; color: var(--mut); padding-left: 4px; }
+
+.ld-title { margin: 0 0 30px; font-family: var(--head); font-weight: 800; font-size: clamp(34px, 4.5vw, 62px); line-height: 1.06; letter-spacing: -0.025em; color: var(--ink); }
+.ld-t1, .ld-t2 { display: block; }
+.ld-t1 { animation: ldUp 0.75s 0.15s var(--ease-out) both; }
+.ld-t2 { position: relative; justify-self: start; width: fit-content; max-width: 100%; animation: ldUp 0.75s 0.28s var(--ease-out) both; }
+.ld-hl { position: relative; z-index: 1; color: var(--red); }
+.ld-swoosh { position: absolute; z-index: 0; left: -2%; right: -6%; bottom: -0.34em; width: 108%; height: 0.36em; overflow: visible; }
+.ld-swoosh path:first-child { stroke-dasharray: 1; stroke-dashoffset: 1; animation: ldDraw 0.8s 0.85s var(--ease-out) forwards; }
+.ld-swoosh path:last-child { opacity: 0; transform-origin: 85% 50%; animation: ldTip 0.4s 1.45s var(--spring) forwards; }
+
+.ld-lead { margin: 0 0 26px; max-width: 540px; font-size: clamp(16px, 1.35vw, 18.5px); line-height: 1.6; color: var(--mut); animation: ldUp 0.6s 0.45s var(--ease-out) both; }
+.ld-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; animation: ldUp 0.6s 0.55s var(--ease-out) both; }
+.ld-checks { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; padding: 0; list-style: none; font-weight: 700; font-size: 15px; color: var(--ink); animation: ldUp 0.6s 0.65s var(--ease-out) both; }
+.ld-checks li { display: inline-flex; align-items: center; gap: 8px; }
+.ld-tick { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #2f6b4f; color: #fff; }
+
+/* Сахна: арка-терезе, Aqyl, бұлт, чиптер */
+.ld-stage { position: relative; height: clamp(440px, 36vw, 520px); }
+.ld-arch {
+  position: absolute; top: 0; right: 0; bottom: 0; left: 92px; overflow: hidden;
+  border-radius: 50% 50% 26px 26px / 220px 220px 26px 26px;
+  border: 10px solid var(--red); background: #cfe6ea;
+  box-shadow: 0 0 0 5px var(--cream), 0 0 0 7px rgba(138, 32, 24, 0.25), 0 30px 50px -30px rgba(90, 30, 10, 0.55);
+  animation: ldArch 1s 0.3s var(--ease-out) both;
+}
+.ld-arch::after { /* киіз тігісі */
+  content: ""; position: absolute; inset: 8px; border-radius: inherit; pointer-events: none;
+  border: 2px dashed rgba(255, 253, 247, 0.75);
+}
+.ld-arch .sa { position: absolute; inset: 0; }
+.ld-arch-sun { position: absolute; left: 50%; top: 18%; width: 34%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 236, 170, 0.55), transparent); pointer-events: none; }
+
+.ld-aqyl { position: absolute; z-index: 4; left: -72px; bottom: calc(-6px - 50px * var(--ribS) + 42px * var(--ribS)); width: 230px; animation: ldPerch 0.8s 1.05s var(--spring) both; filter: drop-shadow(0 14px 14px rgba(60, 20, 10, 0.28)); }
+.ld-aqyl svg { display: block; width: 100%; height: auto; }
+
+.ld-bubble {
+  position: absolute; z-index: 5; left: 150px; bottom: 200px; max-width: 270px;
+  padding: 14px 18px; border-radius: 22px; background: var(--cream); color: var(--ink);
+  font-weight: 700; font-size: 16px; line-height: 1.4;
+  box-shadow: 0 0 0 2px var(--ink), 0 6px 0 var(--ink);
+  transform-origin: 0% 100%; animation: ldPop 0.45s 1.3s var(--spring) both;
+}
+.ld-bubble::after { /* құйрығы Aqyl-ға қарай */
+  content: ""; position: absolute; left: 10px; bottom: -19px; width: 26px; height: 22px; background: var(--ink);
+  clip-path: polygon(0 100%, 30% 0, 100% 0);
+}
+.ld-bubble::before {
+  content: ""; position: absolute; z-index: 1; left: 14px; bottom: -11px; width: 18px; height: 14px; background: var(--cream);
+  clip-path: polygon(0 100%, 30% 0, 100% 0);
+}
+.ld-typed { display: grid; }
+.ld-typed > span { grid-area: 1 / 1; }
+.ld-typed-ghost { visibility: hidden; }
+.ld-caret { display: inline-block; width: 2px; height: 1.05em; margin-left: 2px; vertical-align: -0.15em; background: var(--red); animation: ldBlink 0.8s steps(2) infinite; }
+
+.ld-chip {
+  position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px 7px 7px; border-radius: 999px; background: var(--cream); color: var(--ink);
+  font-weight: 800; font-size: 14.5px; white-space: nowrap;
+  box-shadow: 0 0 0 1.5px rgba(31, 36, 48, 0.14), 0 10px 22px -12px rgba(60, 30, 10, 0.5);
+  animation: ldPop 0.45s var(--d, 1.6s) var(--spring) both, ldFloat 6s calc(var(--d, 1.6s) + 0.5s) ease-in-out infinite;
+}
+.ld-chip-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: #fff; }
+.ld-chip.c1 { --d: 1.6s; top: 34px; left: 40px; }
+.ld-chip.c1 .ld-chip-ic { background: var(--blue); }
+.ld-chip.c2 { --d: 1.75s; top: 44%; right: -14px; animation-duration: 0.45s, 7s; }
+.ld-chip.c2 .ld-chip-ic { background: #b07c10; }
+.ld-chip.c3 { --d: 1.9s; bottom: 110px; right: 28px; animation-duration: 0.45s, 6.5s; }
+.ld-chip.c3 .ld-chip-ic { background: var(--red); }
+
+/* «Қызыл тіл» лентасы */
+.ld-rib { position: absolute; z-index: 3; left: 50%; bottom: 0; width: 100vw; height: var(--ribH); transform: translateX(-50%); pointer-events: auto; animation: ldUnroll 1.2s 0.55s var(--ease-out) both; }
+.ld-rib svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ld-rib-shade { fill: none; stroke: var(--red-3); stroke-width: 62; stroke-linecap: round; opacity: 0.55; }
+.ld-rib-band { fill: none; stroke: var(--red); stroke-width: 62; stroke-linecap: round; }
+.ld-rib-stitch { fill: none; stroke: var(--cream); stroke-width: 2; stroke-dasharray: 9 7; opacity: 0.6; }
+.ld-rib-txt { font-family: var(--body); font-size: 23px; font-weight: 600; fill: var(--gold-soft); }
+.ld-rib-kk { font-family: var(--head); font-weight: 800; fill: var(--cream); }
+.ld-rib-tr { font-weight: 500; }
+.ld-rib-dot { fill: var(--gold); font-size: 15px; }
+
+.ld-orn { display: block; width: min(560px, 70%); height: 18px; margin: 34px auto 0; color: var(--gold); }
+
+/* ═════════ Бөлімдер ═════════ */
+.ld-sec { padding-top: clamp(48px, 7vw, 96px); }
+.ld-h2 { margin: 0 auto clamp(28px, 4vw, 52px); max-width: 860px; text-align: center; font-family: var(--head); font-weight: 800; font-size: clamp(26px, 3.3vw, 44px); line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); }
+
+/* Айналдырғанда пайда болу (JS бар, қозғалыс рұқсат) */
+.ld-js [data-reveal] { transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); transition-delay: var(--d, 0s); }
+.ld-js [data-reveal]:not(.in) { opacity: 0; transform: translateY(28px); }
+
+/* Төрт әлем: ортада қызыл жіп, суреттер кезектесіп */
+.ld-worlds { position: relative; list-style: none; margin: 0 auto; padding: 0; max-width: 1080px; display: grid; gap: clamp(28px, 4vw, 48px); }
+.ld-worlds::before { content: ""; position: absolute; top: 40px; bottom: 40px; left: 50%; width: 0; border-left: 3px dashed rgba(184, 50, 42, 0.55); transform: translateX(-1.5px); }
+.ld-world { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 84px minmax(0, 1fr); grid-template-areas: "art n txt"; align-items: center; }
+.ld-world:nth-child(even) { grid-template-areas: "txt n art"; }
+.ld-world-art { grid-area: art; position: relative; aspect-ratio: 12 / 7; border-radius: 24px; overflow: hidden; background: var(--sand); box-shadow: 0 0 0 6px var(--cream), 0 0 0 7.5px rgba(122, 86, 22, 0.22), 0 26px 40px -28px rgba(70, 30, 10, 0.55); transform: rotate(var(--tilt, -1.2deg)); transition: transform 0.5s var(--ease-out); }
+.ld-world:nth-child(even) .ld-world-art { --tilt: 1.2deg; }
+.ld-world:hover .ld-world-art { transform: rotate(0deg) scale(1.015); }
+.ld-world-art > .sa, .ld-world-art > svg, .ld-world-art .ld-art-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ld-world-art .g-scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ld-world-n { grid-area: n; justify-self: center; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--red); color: var(--cream); font-family: var(--head); font-weight: 800; font-size: 26px; box-shadow: 0 0 0 7px var(--cream-2), 0 4px 0 7px rgba(138, 32, 24, 0.18); }
+.ld-world-txt { grid-area: txt; padding: 8px clamp(4px, 2vw, 20px); }
+.ld-world:nth-child(even) .ld-world-txt { text-align: right; }
+.ld-world-txt h3 { margin: 0 0 8px; font-family: var(--head); font-weight: 600; font-size: clamp(20px, 2.1vw, 29px); line-height: 1.2; color: var(--ink); }
+.ld-world-txt p { margin: 0; font-size: 18px; line-height: 1.6; color: var(--mut); max-width: 440px; }
+.ld-world:nth-child(even) .ld-world-txt p { margin-left: auto; }
+
+.ld-world-aqyl { position: absolute; left: 4%; bottom: -6px; width: 34%; max-width: 150px; }
+.ld-world-aqyl svg { display: block; width: 100%; height: auto; }
+.ld-chat-b1, .ld-chat-b2 { transform-box: fill-box; transform-origin: 90% 100%; }
+.ld-world.in .ld-chat-b1 { animation: ldPop 0.5s 0.35s var(--spring) both; }
+.ld-world.in .ld-chat-b2 { transform-origin: 0% 100%; animation: ldPop 0.5s 0.7s var(--spring) both; }
+
+.ld-vision { position: absolute; inset: 0; }
+.ld-vision-obj { position: absolute; left: 50%; top: 46%; width: 30%; transform: translate(-50%, -50%); }
+.ld-vision-obj svg { display: block; width: 100%; height: auto; }
+.ld-vision-frame { position: absolute; left: 50%; top: 46%; width: 42%; transform: translate(-50%, -50%); overflow: visible; }
+.ld-vision-scan { animation: ldScan 2.6s ease-in-out infinite alternate; }
+.ld-vision-tag { position: absolute; right: 7%; bottom: 9%; display: grid; padding: 8px 14px; border-radius: 14px; background: var(--cream); box-shadow: 0 0 0 2px var(--red), 0 4px 0 var(--red-2); line-height: 1.2; transform: rotate(-3deg); }
+.ld-vision-tag b { font-family: var(--head); font-weight: 800; font-size: 18px; color: var(--red-2); }
+.ld-vision-tag span { font-size: 14px; font-weight: 600; color: var(--mut); }
+
+/* Саяхат: пошта маркасы түріндегі ашықхаттар */
+.ld-travel { padding-bottom: 8px; }
+.ld-cards {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(176px, 1fr); gap: 20px;
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: thin;
+  max-width: 1240px; margin: 0 auto; padding: 14px clamp(16px, 4vw, 40px) 26px;
+  scroll-padding-inline: clamp(16px, 4vw, 40px);
+}
+.ld-card { position: relative; display: grid; scroll-snap-align: start; color: var(--ink); text-decoration: none; transform: rotate(var(--tilt, 0deg)); transition: transform 0.45s var(--spring); filter: drop-shadow(0 12px 14px rgba(70, 30, 10, 0.2)); border-radius: 8px; }
+.ld-card:hover, .ld-card:focus-visible { transform: rotate(0deg) translateY(-6px); }
+.ld-card-in {
+  --p: 7px;
+  display: grid; grid-template-rows: auto 1fr; gap: 10px; height: 100%; padding: calc(var(--p) + 6px); background: var(--cream);
+  -webkit-mask: radial-gradient(var(--p) at var(--p) var(--p), #0000 97%, #000) calc(-1 * var(--p)) calc(-1 * var(--p)) / calc(3 * var(--p)) calc(3 * var(--p)) round, linear-gradient(#000 0 0) content-box;
+  mask: radial-gradient(var(--p) at var(--p) var(--p), #0000 97%, #000) calc(-1 * var(--p)) calc(-1 * var(--p)) / calc(3 * var(--p)) calc(3 * var(--p)) round, linear-gradient(#000 0 0) content-box;
+}
+.ld-card-art { position: relative; display: block; aspect-ratio: 4 / 4.4; overflow: hidden; border-radius: 3px; background: #cfe6ea; }
+.ld-card-art .sa { position: absolute; inset: 0; }
+.ld-card-txt { display: grid; align-content: start; gap: 2px; padding: 0 2px 4px; }
+.ld-card-txt b { font-family: var(--head); font-weight: 600; font-size: 15px; line-height: 1.25; }
+.ld-card-txt small { font-size: 14px; font-weight: 600; color: var(--mut); }
+.ld-card-stamp {
+  position: absolute; top: 4px; right: 4px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+  color: var(--red); background: rgba(255, 253, 247, 0.92); box-shadow: inset 0 0 0 2.5px var(--red), inset 0 0 0 5px rgba(255, 253, 247, 0.92), inset 0 0 0 6.5px var(--red);
+  transform: rotate(-14deg) scale(0.9); transition: transform 0.4s var(--spring);
+}
+.ld-card-stamp .qz-mark { display: block; }
+.ld-card:hover .ld-card-stamp, .ld-card:focus-visible .ld-card-stamp { transform: rotate(-4deg) scale(1.08); }
+
+/* Қадамдар: өсетін сөйлеу бұлттары */
+.ld-steps { position: relative; list-style: none; margin: 0 auto; padding: 0 0 26px; max-width: 1080px; display: grid; grid-template-columns: 0.86fr 1fr 1.16fr; gap: clamp(16px, 2.4vw, 30px); align-items: end; }
+.ld-steps::after { content: ""; position: absolute; left: 4%; right: 4%; bottom: 0; height: 0; border-top: 3px dotted rgba(184, 50, 42, 0.45); }
+.ld-step { position: relative; padding: 22px 24px 24px; border-radius: 28px; background: var(--cream); box-shadow: 0 0 0 2px var(--ink), 0 6px 0 var(--ink); }
+.ld-step::after { content: ""; position: absolute; left: 30px; bottom: -22px; width: 28px; height: 24px; background: var(--ink); clip-path: polygon(0 100%, 20% 0, 100% 0); }
+.ld-step::before { content: ""; position: absolute; z-index: 1; left: 34px; bottom: -13px; width: 20px; height: 16px; background: var(--cream); clip-path: polygon(0 100%, 20% 0, 100% 0); }
+.ld-step-n { display: block; margin-bottom: 8px; font-family: var(--head); font-weight: 800; font-size: 40px; line-height: 1; color: var(--red); letter-spacing: -0.03em; }
+.ld-step h3 { margin: 0 0 6px; font-family: var(--head); font-weight: 600; font-size: 19px; line-height: 1.25; color: var(--ink); }
+.ld-step p { margin: 0; font-size: 16px; line-height: 1.55; color: var(--mut); }
+.ld-step.s1 { min-height: 190px; }
+.ld-step.s2 { min-height: 220px; }
+.ld-step.s3 { min-height: 250px; padding: 28px 30px 30px; background: var(--red); box-shadow: 0 0 0 2px var(--ink), 0 6px 0 var(--ink); }
+.ld-step.s3::before { background: var(--red); }
+.ld-step.s3 .ld-step-n { font-size: 56px; color: var(--gold-soft); }
+.ld-step.s3 h3 { font-size: 22px; color: var(--cream); }
+.ld-step.s3 p { color: var(--cream); font-size: 17px; }
+
+/* FAQ: сұрақ — менің бұлтым (оң), жауап — Aqyl (сол) */
+.ld-dialog { max-width: 820px; margin: 0 auto; display: grid; gap: 18px; }
+.ld-qa summary { list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 12px; cursor: pointer; border-radius: 22px; }
+.ld-qa summary::-webkit-details-marker { display: none; }
+.ld-q { position: relative; max-width: min(620px, 88%); padding: 14px 20px; border-radius: 22px 22px 6px 22px; background: var(--blue); color: #fff; font-weight: 700; font-size: 17px; line-height: 1.4; box-shadow: 0 4px 0 #0a4a61; transition: transform 0.25s var(--ease-out); }
+.ld-qa summary:hover .ld-q { transform: translateY(-2px); }
+.ld-q-ic { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--cream); color: var(--red); box-shadow: inset 0 0 0 2px var(--red); transition: transform 0.35s var(--spring), background 0.2s, color 0.2s; }
+.ld-qa[open] .ld-q-ic { transform: rotate(45deg); background: var(--red); color: #fff; }
+.ld-a { display: flex; align-items: flex-end; gap: 12px; margin-top: 14px; }
+.ld-qa[open] .ld-a { animation: ldPopL 0.45s var(--spring) both; }
+.ld-a-av { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: var(--gold-soft); box-shadow: inset 0 0 0 2px var(--red); }
+.ld-a-av svg { display: block; width: 46px; height: auto; }
+.ld-a p { margin: 0; max-width: 640px; padding: 14px 20px; border-radius: 22px 22px 22px 6px; background: var(--cream); color: var(--ink); font-size: 16.5px; line-height: 1.6; box-shadow: 0 0 0 1.5px rgba(122, 86, 22, 0.25), 0 10px 22px -16px rgba(60, 30, 10, 0.4); }
+
+/* Соңғы шақыру — қызыл киіз */
+.ld-final { position: relative; margin: clamp(56px, 8vw, 104px) 0 28px; display: flex; align-items: center; gap: clamp(16px, 3vw, 40px); padding: clamp(26px, 4vw, 48px) clamp(22px, 5vw, 64px); border-radius: 34px; background: var(--red); color: var(--cream); overflow: hidden; box-shadow: 0 6px 0 var(--red-2), 0 30px 50px -30px rgba(90, 20, 10, 0.6); }
+.ld-final::before { content: ""; position: absolute; inset: 10px; border-radius: 26px; border: 2px dashed rgba(255, 253, 247, 0.5); pointer-events: none; }
+.ld-final::after { /* үлкен тіл пішіні фонда */
+  content: ""; position: absolute; right: -60px; bottom: -120px; width: 380px; height: 260px; border-radius: 10px 200px 200px 200px; background: rgba(110, 30, 46, 0.35); transform: rotate(-24deg); pointer-events: none;
+}
+.ld-final-aqyl { position: relative; z-index: 1; flex: none; width: 150px; }
+.ld-final-aqyl svg { display: block; width: 100%; height: auto; }
+.ld-final-txt { position: relative; z-index: 1; }
+.ld-final h2 { margin: 0 0 20px; font-family: var(--head); font-weight: 800; font-size: clamp(24px, 3.2vw, 42px); line-height: 1.15; color: var(--cream); letter-spacing: -0.02em; }
+.ld .btn.ld-onred { background: var(--cream); color: var(--red-2); box-shadow: 0 4px 0 var(--red-3); }
+.ld .btn.ld-onred:hover:not(:disabled) { background: #fff; filter: none; }
+.ld .btn.ld-onred:focus-visible { outline-color: var(--cream); box-shadow: 0 0 0 5px var(--red-3); }
+
+.ld-foot { padding-top: 10px; padding-bottom: 40px; text-align: center; color: var(--mut); }
+.ld-foot .orn { display: block; width: min(420px, 70%); height: 18px; margin: 0 auto 10px; color: var(--gold); }
+.ld-foot p { margin: 0; font-size: 14px; }
+
+/* ═════════ Анимациялар ═════════ */
+@keyframes ldFade { from { opacity: 0; } }
+@keyframes ldUp { from { opacity: 0; transform: translateY(22px); } }
+@keyframes ldDraw { to { stroke-dashoffset: 0; } }
+@keyframes ldTip { from { opacity: 0; transform: scale(0.2); } to { opacity: 1; transform: none; } }
+@keyframes ldArch { from { clip-path: inset(100% 0 0 0 round 30px); transform: translateY(18px); } to { clip-path: inset(0 0 0 0 round 0); transform: none; } }
+@keyframes ldUnroll { from { clip-path: inset(0 50% 0 50%); } to { clip-path: inset(-40px 0 -40px 0); } }
+@keyframes ldPerch { 0% { opacity: 0; transform: translateY(-60px) rotate(-8deg); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+@keyframes ldPop { from { opacity: 0; transform: scale(0.6); } }
+@keyframes ldPopL { from { opacity: 0; transform: translateY(8px) scale(0.92); transform-origin: 0 100%; } }
+@keyframes ldFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+@keyframes ldBlink { 50% { opacity: 0; } }
+@keyframes ldScan { from { transform: translateY(-46px); } to { transform: translateY(46px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ld *, .ld *::before, .ld *::after { animation: none !important; transition: none !important; }
+  .ld-swoosh path:first-child { stroke-dashoffset: 0; }
+  .ld-swoosh path:last-child { opacity: 1; }
+}
+
+/* ═════════ Бейімделу ═════════ */
+@media (max-width: 1100px) {
+  .ld-aqyl { left: -60px; width: 200px; }
+  .ld-bubble { left: 120px; bottom: 176px; max-width: 220px; font-size: 15px; }
+  .ld-chip.c2 { top: 26%; }
+}
+@media (max-width: 960px) {
+  .ld { --ribH: 150px; --ribS: 0.8333; }
+  .ld-hero-in { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .ld-copy { padding-bottom: 0; }
+  .ld-stage { height: 440px; }
+  .ld-arch { left: 0; border-radius: 50% 50% 24px 24px / 200px 200px 24px 24px; }
+  .ld-aqyl { left: max(-8px, calc(50% - 230px)); width: 190px; }
+  .ld-bubble { left: calc(max(-8px, calc(50% - 230px)) + 170px); bottom: 160px; }
+  .ld-chip.c1 { left: 12px; }
+  .ld-chip.c2 { right: 12px; top: 34%; }
+  /* төрт әлем: жіп сол жақта */
+  .ld-worlds::before { left: 28px; }
+  .ld-world, .ld-world:nth-child(even) { grid-template-columns: 56px minmax(0, 1fr); grid-template-areas: "n art" "n txt"; column-gap: 14px; row-gap: 14px; align-items: start; }
+  .ld-world-n { width: 52px; height: 52px; font-size: 21px; margin-top: 8px; }
+  .ld-world:nth-child(even) .ld-world-txt { text-align: left; }
+  .ld-world:nth-child(even) .ld-world-txt p { margin-left: 0; }
+  .ld-world-txt { padding: 2px 4px 0; }
+  .ld-steps { grid-template-columns: minmax(0, 1fr); gap: 34px; max-width: 560px; padding-bottom: 0; }
+  .ld-steps::after { display: none; }
+  .ld-step.s1, .ld-step.s2, .ld-step.s3 { min-height: 0; }
+  .ld-step.s1 { width: 82%; }
+  .ld-step.s2 { width: 90%; justify-self: end; }
+  .ld-step.s2::after { left: auto; right: 30px; transform: scaleX(-1); }
+  .ld-step.s2::before { left: auto; right: 34px; transform: scaleX(-1); }
+}
+@media (max-width: 600px) {
+  .ld { --ribH: 130px; --ribS: 0.7222; }
+  .ld .ld-head .seg button { padding: 6px 7px; font-size: 12.5px; }
+  .ld .ld-head .btn.small { padding: 8px 11px; font-size: 13px; }
+  .ld-head { padding-top: 12px; padding-bottom: 12px; gap: 8px; }
+  .ld-head .logo { gap: 6px; }
+  .ld-head .logo-word { font-size: 15.5px; white-space: nowrap; letter-spacing: 0.01em; }
+  .ld-head .logo-mark { flex: none; }
+  .ld-head .logo-mark { width: 36px; height: 36px; }
+  .ld-head-r { gap: 6px; }
+  .ld-title { font-size: clamp(31px, 8.6vw, 40px); }
+  .ld-proverb-tr { font-size: 14px; }
+  .ld-cta .btn { flex: 1 1 100%; }
+  .ld-checks { gap: 8px 14px; font-size: 14.5px; }
+  .ld-stage { height: 360px; margin-top: 6px; }
+  .ld-arch { border-width: 8px; border-radius: 50% 50% 20px 20px / 150px 150px 20px 20px; }
+  .ld-aqyl { left: -14px; width: 150px; }
+  .ld-bubble { left: 124px; right: 0; bottom: 118px; max-width: none; padding: 11px 14px; font-size: 14.5px; border-radius: 18px; }
+  .ld-chip { font-size: 13.5px; padding: 5px 12px 5px 5px; gap: 6px; }
+  .ld-chip-ic { width: 26px; height: 26px; }
+  .ld-chip.c1 { top: 52px; left: 4px; }
+  .ld-chip.c2 { top: 92px; right: 4px; }
+  .ld-chip.c3 { top: 132px; bottom: auto; left: 18px; right: auto; }
+  .ld-orn { margin-top: 10px; }
+  .ld-world-txt p { font-size: 16px; }
+  .ld-cards { grid-auto-columns: 62%; gap: 16px; }
+  .ld-step { padding: 18px 20px 20px; }
+  .ld-step.s3 { padding: 22px 22px 24px; }
+  .ld-step.s3 .ld-step-n { font-size: 46px; }
+  .ld-q { font-size: 16px; padding: 12px 16px; max-width: 100%; }
+  .ld-q-ic { width: 36px; height: 36px; }
+  .ld-a-av { width: 42px; height: 42px; }
+  .ld-a-av svg { width: 38px; }
+  .ld-a p { padding: 12px 16px; font-size: 16px; }
+  .ld-final { flex-direction: column; text-align: center; border-radius: 28px; }
+  .ld-final-aqyl { width: 120px; }
+  .ld-final .btn { width: 100%; }
+}
+@media (max-width: 374px) {
+  .ld-head .logo-word { display: none; }
+}
