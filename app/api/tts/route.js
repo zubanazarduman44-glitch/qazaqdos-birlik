@@ -34,6 +34,37 @@ function wav(pcm, rate = 24000) {
   return Buffer.concat([h, pcm]);
 }
 
+// Дыбысты тазалау: басы мен соңындағы үнсіздікті кесеміз, жұмсақ кіру/сөну қосамын,
+// соңына қысқа тыныштық қоямыз — сонда соңында «шырт» еткен дыбыс болмайды.
+function cleanPcm(buf, rate = 24000) {
+  const n = Math.floor(buf.length / 2);
+  if (n < rate / 10) return buf;
+  const src = new Int16Array(buf.buffer.slice(buf.byteOffset, buf.byteOffset + n * 2));
+  const TH = 600; // ~ -35 dB
+  let a = 0;
+  while (a < n && Math.abs(src[a]) < TH) a++;
+  let b = n - 1;
+  while (b > a && Math.abs(src[b]) < TH) b--;
+  if (b - a < rate / 20) return buf; // тым қысқа — өзгертпейміз
+  a = Math.max(0, a - Math.round(rate * 0.04));
+  // Сөну дыбыстың нақты соңына келеді (үнсіздікке емес) — кенет үзілген жерде де шырт етпейді
+  b = Math.min(n - 1, b + Math.round(rate * 0.015));
+  const body = src.slice(a, b + 1);
+  const fin = Math.min(Math.round(rate * 0.012), body.length >> 2);
+  const fout = Math.min(Math.round(rate * 0.07), body.length >> 2);
+  for (let i = 0; i < fin; i++) body[i] = Math.round(body[i] * (i / fin));
+  for (let i = 0; i < fout; i++) {
+    const k = body.length - 1 - i;
+    const g = i / fout;
+    body[k] = Math.round(body[k] * g * g);
+  }
+  const padStart = Math.round(rate * 0.03);
+  const padEnd = Math.round(rate * 0.18);
+  const out = new Int16Array(padStart + body.length + padEnd);
+  out.set(body, padStart);
+  return Buffer.from(out.buffer);
+}
+
 export async function POST(req) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return Response.json({ error: "GEMINI_API_KEY missing" }, { status: 500 });
@@ -48,12 +79,11 @@ export async function POST(req) {
   if (!text) return Response.json({ error: "Bad request" }, { status: 400 });
   const ckey = `${slow ? "s" : "n"}|${text}`;
   if (cache.has(ckey)) return Response.json({ audio: cache.get(ckey) });
-  // Қысқа сөз бе, сөйлем бе — нұсқаулық соған қарай
+  // Нұсқаулық өте қысқа: модель тек қос нүктеден кейінгі мәтінді айтады, артық сөз қоспайды
   const short = text.split(/\s+/).length <= 3;
-  const pace = slow ? "very slowly, syllable by syllable, then once more at a slow natural pace" : "slowly and clearly at a calm, even pace";
   const prompt = short
-    ? `Language: Kazakh (kk-KZ). Pronounce this Kazakh word or phrase in standard Kazakh phonetics (not Russian, not Turkish), ${pace}, with correct vowel harmony and the special Kazakh sounds (ә, ө, ү, ұ, қ, ғ, ң, һ, і). Say only the text, nothing else, no introduction: ${text}`
-    : `Language: Kazakh (kk-KZ). Read this Kazakh text aloud in standard Kazakh phonetics (not Russian), ${pace}, warm and natural intonation, pausing briefly at punctuation. Read only the text: ${text}`;
+    ? `Say in Kazakh, ${slow ? "slowly and very clearly" : "clearly"}: ${text}`
+    : `Read aloud in Kazakh, ${slow ? "slowly" : "at a calm pace"}: ${text}`;
 
   const models = [...new Set([...FALLBACK, ...(await ttsModels(key))])].slice(0, 5);
   let last = "";
@@ -79,7 +109,7 @@ export async function POST(req) {
         last = `${m}: empty`;
         continue;
       }
-      const audio = wav(Buffer.from(b64, "base64")).toString("base64");
+      const audio = wav(cleanPcm(Buffer.from(b64, "base64"))).toString("base64");
       if (cache.size > 40) cache.clear();
       cache.set(ckey, audio);
       return Response.json({ audio });
