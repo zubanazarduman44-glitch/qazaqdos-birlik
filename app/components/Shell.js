@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useApp } from "./Store";
 import Icon from "./Icon";
 import Qyran from "./Qyran";
-import Shanyrak from "./Shanyrak";
+import QyzylMark from "./QyzylMark";
 import WordTap from "./WordTap";
 import { authed } from "../../lib/auth";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
@@ -59,12 +59,12 @@ export function Orn({ className = "" }) {
 
 export function Logo({ small }) {
   return (
-    <Link href="/" className={`logo ${small ? "sm" : ""}`} aria-label="TILIM">
+    <Link href="/" className={`logo ${small ? "sm" : ""}`} aria-label="Qyzyl til">
       <span className="logo-mark">
-        <Shanyrak size={small ? 32 : 40} />
+        <QyzylMark size={small ? 32 : 38} />
       </span>
       <span className="logo-word">
-        TIL<b>IM</b>
+        Qyzyl <b>til</b>
       </span>
     </Link>
   );

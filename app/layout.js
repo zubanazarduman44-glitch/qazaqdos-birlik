@@ -8,10 +8,10 @@ import "./travel.css";
 import { AppProvider } from "./components/Store";
 
 export const metadata = {
-  title: "TILIM — қазақ тілін Aqyl-мен бірге үйрен",
+  title: "Qyzyl til — қазақ тілін Aqyl-мен бірге үйрен",
   description:
-    "TILIM: Қазақстанды аралап, ұлттық ойындар ойнап, Aqyl атты виртуалды доспен сөйлесе отырып қазақ тілін үйрен. Учите казахский язык в путешествии и в игре.",
-  applicationName: "TILIM",
+    "Qyzyl til: «Өнер алды — қызыл тіл». Қазақстанды аралап, ұлттық ойындар ойнап, Aqyl атты виртуалды доспен сөйлесе отырып қазақ тілін үйрен. Учите казахский язык в путешествии и в игре.",
+  applicationName: "Qyzyl til",
   icons: { icon: "/icon.svg" },
 };
 

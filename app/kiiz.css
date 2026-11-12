@@ -289,3 +289,11 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 @keyframes vzIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes vzUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @media (max-width: 520px) { .vz-kk { font-size: 22px; } .composer { gap: 6px; } .composer .btn { min-width: 46px; padding-left: 0; padding-right: 0; } }
+
+/* ── Qyzyl til логотипі ── */
+.logo-word { letter-spacing: -0.01em; font-weight: 800; }
+.logo-word b { color: #B8322A; font-weight: 800; }
+.logo .qz-mark { display: block; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.25, 1); }
+.logo .qz-tongue { transform-origin: 112px 136px; transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1); }
+@media (hover: hover) { .logo:hover .qz-tongue { transform: rotate(-8deg) scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .logo .qz-tongue { transition: none; } }
