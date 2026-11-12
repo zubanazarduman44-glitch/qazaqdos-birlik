@@ -10,6 +10,21 @@ import { setSkin } from "../../lib/skin";
 import Qyran from "./Qyran";
 
 const KEY = "qd_state_v1";
+
+// kk/ru/en-нен басқа 8 тілдің дайын интерфейс аудармасы: тек сол тіл таңдалса жүктеледі (ортақ бандлға кірмейді)
+const UI_STATIC = {
+  zh: () => import("../../lib/ui/zh"),
+  es: () => import("../../lib/ui/es"),
+  de: () => import("../../lib/ui/de"),
+  fr: () => import("../../lib/ui/fr"),
+  tr: () => import("../../lib/ui/tr"),
+  ar: () => import("../../lib/ui/ar"),
+  ko: () => import("../../lib/ui/ko"),
+  ja: () => import("../../lib/ui/ja"),
+};
+// Сөздердің дайын аудармасы (lib/wtr/<тіл>.js); файл жоқ болса — ЖИ арқылы аударамыз
+const loadWordTr = (l) => import(/* webpackInclude: /\.js$/ */ `../../lib/wtr/${l}.js`);
+const RTL = ["ar"];
 export const DAILY_GOAL = 50;
 
 export const EMPTY = {
@@ -155,10 +170,12 @@ export function AppProvider({ children }) {
     document.documentElement.dataset.theme = "light";
     try { localStorage.removeItem("qd_theme"); } catch {}
     setSkin(state.profile.skin || "eagle");
-    document.documentElement.lang = state.profile.ui || "kk";
-    document.documentElement.dir = state.profile.ui === "ar" ? "rtl" : "ltr";
+    const ui = state.profile.ui || "kk";
+    document.documentElement.lang = ui === "zh" ? "zh-Hans" : ui;
+    document.documentElement.dir = RTL.includes(ui) ? "rtl" : "ltr";
   }, [state.profile.ui, state.profile.skin]);
 
+  const tRef = useRef(T.kk); // award() үшін ағымдағы тіл мәтіндері
   const update = useCallback((fn) => {
     setState((s) => ({ ...fn(s), updatedAt: Date.now() }));
   }, []);
@@ -205,10 +222,9 @@ export function AppProvider({ children }) {
           updatedAt: Date.now(),
         };
       });
-      const tt = T[state.profile.ui] || T.en;
-      toast(msg || tt.reward(xp, coins));
+      toast(msg || tRef.current.reward(xp, coins));
     },
-    [toast, state.profile.ui]
+    [toast]
   );
 
   // Түсіндіру тілін өзгерткенде интерфейс те сол тілге ауысады (kk/ru/en болса)
@@ -238,7 +254,7 @@ export function AppProvider({ children }) {
     setState({ ...EMPTY, profile: { ...state.profile }, updatedAt: Date.now() });
   }, [state.profile]);
 
-  // Басқа тілге ауысқанда сөздердің аудармасын ЖИ арқылы бір рет алып, құрылғыда сақтаймыз
+  // Басқа тілге ауысқанда: алдымен дайын lib/wtr/<тіл>.js, жетіспеген сөздерді ғана ЖИ аударып, құрылғыда сақтаймыз
   const [wtrVer, setWtrVer] = useState(0);
   const exp = state.profile.explain || "ru";
   useEffect(() => {
@@ -252,11 +268,21 @@ export function AppProvider({ children }) {
     setWordTr(exp, have);
     setWtrVer((v) => v + 1);
     (async () => {
-      // Сөздік (барлық сөз қоры) тек осы сирек жағдайда керек: ортақ бандлға кірмеуі үшін кейін жүктейміз
+      // 1) Дайын статикалық аударма (бар болса) — кэштен басым
+      let stat = {};
+      try {
+        stat = (await loadWordTr(exp)).default || {};
+      } catch {}
+      if (dead) return;
+      if (Object.keys(stat).length) {
+        setWordTr(exp, stat);
+        setWtrVer((v) => v + 1);
+      }
+      // 2) Тек жетіспейтін сөздерді ЖИ-ден сұраймыз. Сөздік ортақ бандлға кірмеуі үшін кейін жүктеледі
       let missing = [];
       try {
         const { allKkWords } = await import("../../lib/dict");
-        missing = allKkWords().filter((w) => !have[w]);
+        missing = allKkWords().filter((w) => !stat[w] && !have[w]);
       } catch {}
       for (let i = 0; i < missing.length && !dead; i += 80) {
         try {
@@ -289,31 +315,50 @@ export function AppProvider({ children }) {
     return () => clearTimeout(id);
   }, [user, state.weekly, state.profile.name, state.profile.avatar]);
 
-  // Басқа тілдер (қытай, араб…): интерфейсті ЖИ бір рет аударып, құрылғыда сақтаймыз
+  // Басқа тілдер (қытай, араб…): алдымен дайын lib/ui/<тіл>.js, жетіспейтін жолдарды ғана ЖИ аударады
   const lang = state.profile.ui || "kk";
   const [uiMap, setUiMap] = useState({});
+  const [uiFns, setUiFns] = useState(null);
   useEffect(() => {
     if (UI_LANGS.includes(lang)) {
       setUiMap({});
+      setUiFns(null);
       setTxOverride(null, null);
       return;
     }
     let dead = false;
-    const key = `qd_ui2_${lang}`;
+    // qd_ui3: ЖИ аударған жолдар ғана сақталады (ескі qd_ui2 кэші дайын аудармадан нашар, өшіреміз)
+    const key = `qd_ui3_${lang}`;
     let have = {};
     try {
+      localStorage.removeItem(`qd_ui2_${lang}`);
       have = JSON.parse(localStorage.getItem(key) || "{}");
     } catch {}
     const en = { ...Object.fromEntries(Object.entries(flatten(T.en)).map(([k, v]) => ["T." + k, v])), ...Object.fromEntries(Object.entries(flatten(tx("en"))).map(([k, v]) => ["X." + k, v])) };
+    let fns = null;
     const push = (m) => {
       setUiMap(m);
+      setUiFns(fns);
       const xm = {};
+      const xf = {};
       for (const [k, v] of Object.entries(m)) if (k.startsWith("X.")) xm[k.slice(2)] = v;
-      setTxOverride(lang, xm);
+      for (const [k, v] of Object.entries(fns || {})) if (k.startsWith("X.")) xf[k.slice(2)] = v;
+      setTxOverride(lang, xm, xf);
     };
-    push(have);
-    const miss = Object.keys(en).filter((k) => !have[k]);
+    push(have); // алдыңғы тілдің жолдары қалып қоймауы үшін бірден ауыстырамыз
     (async () => {
+      const load = UI_STATIC[lang];
+      if (load) {
+        try {
+          const mod = await load();
+          if (dead) return;
+          fns = mod.fn || null;
+          have = { ...have, ...mod.default }; // дайын аударма кэштен басым
+          push({ ...have });
+        } catch {}
+      }
+      const miss = Object.keys(en).filter((k) => !have[k]);
+      if (!miss.length || dead) return;
       const chunks = [];
       for (let i = 0; i < miss.length; i += 70) chunks.push(miss.slice(i, i + 70));
       await Promise.all(
@@ -324,7 +369,9 @@ export function AppProvider({ children }) {
             if (!r.ok || !d.items || dead) return;
             keys.forEach((k, i) => (have[k] = d.items[i]));
             try {
-              localStorage.setItem(key, JSON.stringify(have));
+              const cached = JSON.parse(localStorage.getItem(key) || "{}");
+              keys.forEach((k, i) => (cached[k] = d.items[i]));
+              localStorage.setItem(key, JSON.stringify(cached));
             } catch {}
             push({ ...have });
           } catch {}
@@ -339,8 +386,11 @@ export function AppProvider({ children }) {
     if (T[lang]) return T[lang];
     const m = {};
     for (const [k, v] of Object.entries(uiMap)) if (k.startsWith("T.")) m[k.slice(2)] = v;
-    return apply(T.en, m);
-  }, [lang, uiMap]);
+    const out = apply(T.en, m);
+    for (const [k, v] of Object.entries(uiFns || {})) if (k.startsWith("T.")) out[k.slice(2)] = v;
+    return out;
+  }, [lang, uiMap, uiFns]);
+  tRef.current = tMemo;
   const value = useMemo(
     () => ({
       state,
