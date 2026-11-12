@@ -12,6 +12,8 @@ import { buildDecor, TERRAIN, RIVERS, LAKES } from "../../../lib/kzscene";
 import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { SITES } from "../../../lib/history";
 import { REGIONS } from "../../../lib/regions";
+import { useHistoryL10n, HIST_UI } from "../../../lib/l10nHistory";
+import { useTravelL10n } from "../../../lib/l10nTravel";
 import { L } from "../../../lib/i18n";
 import { shuffle, tr } from "../../../lib/wordTools";
 import { tx } from "../../../lib/tx";
@@ -39,6 +41,8 @@ function useCountUp(target, ms = 1100) {
 
 const fmtYear = (y, lang) => {
   const n = Math.abs(y);
+  const tpl = HIST_UI[lang]?.[y < 0 ? "YEAR.bc" : "YEAR.ad"];
+  if (tpl) return tpl.replace("{n}", n);
   if (y < 0) return `${n} ${lang === "kk" ? "б.з.д." : lang === "ru" ? "до н. э." : "BC"}`;
   return lang === "kk" ? `${n} ж.` : lang === "ru" ? `${n} г.` : `${n} AD`;
 };
@@ -73,6 +77,8 @@ function buildQuiz(site, lang, explain) {
 
 export default function History() {
   const { t, lang, explain, state, update, award, saveWord } = useApp();
+  useHistoryL10n(lang);
+  useTravelL10n(lang);
   const [sel, setSel] = useState(SORTED[0].id);
   const [quiz, setQuiz] = useState(null);
   const [res, setRes] = useState(null);
@@ -142,7 +148,7 @@ export default function History() {
       <section className="card map-card hist-map">
         <div className="hm-eras">
           {ERAS.map((e) => (
-            <button key={e.id} className={`chip ${era === e.id ? "gold" : ""}`} onClick={() => setEra(e.id)}>{e.n[li]}</button>
+            <button key={e.id} className={`chip ${era === e.id ? "gold" : ""}`} onClick={() => setEra(e.id)}>{HIST_UI[lang]?.[`ERA.${e.id}`] || e.n[li]}</button>
           ))}
         </div>
         <div className="kzmap-wrap sky hist">

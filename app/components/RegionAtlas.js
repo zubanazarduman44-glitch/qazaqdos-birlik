@@ -6,6 +6,7 @@ import { KZ_PATHS, KZ_CENTERS } from "../../lib/kzmap";
 import { REGIONS } from "../../lib/regions";
 import { SIGHTS, REGION_ABOUT } from "../../lib/sights";
 import { L } from "../../lib/i18n";
+import { useTravelL10n } from "../../lib/l10nTravel";
 import { tx } from "../../lib/tx";
 import SightArt, { kindOf } from "./SightArt";
 
@@ -146,7 +147,10 @@ function SightCard({ s, i, lang }) {
   );
 }
 
+const L10N_EXTRA = { sights: SIGHTS, labels: LBL };
+
 export default function RegionAtlas({ region, lang }) {
+  useTravelL10n(lang, L10N_EXTRA);
   const x = tx(lang);
   const aboutObj = REGION_ABOUT && REGION_ABOUT[region.id];
   const about = aboutObj ? L(aboutObj, lang) : L(region.fact, lang);

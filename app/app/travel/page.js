@@ -16,6 +16,7 @@ import { tx } from "../../../lib/tx";
 import { REGIONS } from "../../../lib/regions";
 import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { L } from "../../../lib/i18n";
+import { useTravelL10n } from "../../../lib/l10nTravel";
 import { shuffle, tr } from "../../../lib/wordTools";
 
 // Өңір атласы (көрікті жерлер мәтіндерімен) тек өңір таңдалғанда керек: бөлек чанк, бет ашылған соң алдын ала жүктеледі
@@ -60,6 +61,7 @@ const shortName = (r, lang) => {
 
 function Travel() {
   const { t, lang, explain, state, update, award, saveWord } = useApp();
+  useTravelL10n(lang);
   const params = useSearchParams();
   const [sel, setSel] = useState(null);
   const [q, setQ] = useState("");
