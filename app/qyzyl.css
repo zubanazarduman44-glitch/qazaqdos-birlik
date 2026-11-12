@@ -1,0 +1,118 @@
+/* ════════════════════════════════════════════════════════════════════
+   Qyzyl til · «Өнер алды — қызыл тіл» — қызыл палитра (СЫНАҚ ҚАБАТЫ)
+   Бұл файл ЕҢ СОҢҒЫ қабат. layout.js ішіндегі `import "./qyzyl.css"`
+   жолын өшірсе, сайт бұрынғы «Ақ киіз» (көк) түріне толық қайтады.
+   Қағида: анар — қолтаңба (~10%): логотип, негізгі түйме, белсенді күй,
+   негізгі прогресс. Көк — екінші түс (дыбыс, ақпарат, мәтін ішіндегі сілтеме).
+   Қате жауап — бренд қызылы ЕМЕС: шарап реңкі + үзік жиек + ✕.
+   ════════════════════════════════════════════════════════════════════ */
+:root, :root[data-theme="light"] {
+  --anar: #b8322a;          /* бренд: негізгі түйме, белсенді күй */
+  --anar-2: #8a2018;        /* басу/hover, түйме көлеңкесі, ақ фондағы қызыл мәтін */
+  --anar-hover: #a32a23;
+  --anar-soft: #f6e4df;     /* белсенді элементтің әлсіз фоны */
+  --wine: #6e1e2e;          /* қате: мәтін, жиек, белгі */
+  --wine-soft: #f3e3e6;     /* қате: фон */
+  --brand: var(--anar);
+  --brand-ink: var(--anar-2);
+  --bad: var(--wine);
+  --bad-soft: var(--wine-soft);
+  /* Ою жолағы: көк орнына қою анар, алтын өрнек */
+  --oyu-band: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='20' viewBox='0 0 48 20'%3E%3Crect width='48' height='20' fill='%238a2018'/%3E%3Cg fill='none' stroke='%23e0a526' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M24 17c0-5-4-8-8-6-3 2-1 6 2 5'/%3E%3Cpath d='M24 17c0-5 4-8 8-6 3 2 1 6-2 5'/%3E%3C/g%3E%3Cpath d='M24 2l4 4-4 4-4-4z' fill='%23e0a526'/%3E%3Cg fill='%23f6e3b0'%3E%3Ccircle cx='6' cy='10' r='2'/%3E%3Ccircle cx='42' cy='10' r='2'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── Негіз: фокус сақинасы, тақырып белгісі ── */
+:focus-visible { outline-color: var(--anar); }
+.gl-card:focus-visible { outline-color: var(--anar); }
+.sz-card:focus-visible { box-shadow: 0 0 0 3px var(--bg, #faf6ee), 0 0 0 5px var(--anar); }
+.kicker, .lp-kicker, .ra-kicker { color: var(--anar-2); }
+.card.hover:hover, .game-card:hover, .quick-card:hover { box-shadow: inset 0 0 0 1px rgba(184, 50, 42, 0.4), var(--shadow-lg); }
+
+/* ── Түймелер: негізгі = анар; екінші (көк) сақталады ── */
+.btn.blue, .btn.primary { background: var(--anar); color: #fff; box-shadow: 0 3px 0 var(--anar-2); }
+.btn.blue:hover:not(:disabled), .btn.primary:hover:not(:disabled) { background: var(--anar-hover); }
+.btn.blue:active:not(:disabled), .btn.primary:active:not(:disabled) { background: var(--anar-2); box-shadow: none; }
+/* Өшірулі негізгі түйме қызғылт болып «қате» сияқты көрінбесін — бейтарап */
+.btn.blue:disabled, .btn.primary:disabled, .tor-cta:disabled { opacity: 1; background: var(--surface-2) !important; color: var(--faint) !important; box-shadow: inset 0 0 0 1.5px var(--line) !important; }
+.btn.ghost:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--anar); }
+.link-btn { color: var(--anar-2); }
+.input:focus { box-shadow: inset 0 0 0 2px var(--anar); }
+.icon-btn:hover { box-shadow: inset 0 0 0 1.5px var(--anar); }
+
+/* ── Белсенді күйлер: чип, сегмент, мәзір ── */
+.chip.on, .chip.tab.on, .seg button.on, .sp-lv.on, .tz-tabs button.on, .lp-menu button.on, .reg-list button.on, .crs-lv.on, .sheet-link.on {
+  background: var(--anar); color: #fff; box-shadow: none;
+}
+.side-link.on { background: var(--anar); color: #fff; box-shadow: none; }
+.side-link.on:hover { background: var(--anar-hover); }
+.bottom-nav a.on, .bottom-nav button.on { color: var(--anar); }
+.bottom-nav a.on::before { background: var(--anar); height: 4px; }
+.side-me.on { box-shadow: inset 0 0 0 2px var(--anar); }
+
+/* ── Жоғарғы жолақ: ою жиегі қою анар (--oyu-band арқылы) ── */
+
+/* ── Төр: «Бүгінгі сабақ» — ақ киіз карточка, қызыл тек түйме мен прогресте ── */
+.tor-lesson { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rim), inset 0 4px 0 var(--anar), var(--shadow); }
+.tor-lesson::before {
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23b8322a' stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M60 104c0-30-24-44-42-30-14 12-6 34 14 28 12-4 12-20 0-20'/%3E%3Cpath d='M60 104c0-30 24-44 42-30 14 12 6 34-14 28-12-4-12-20 0-20'/%3E%3Cpath d='M60 104V60'/%3E%3Cpath d='M60 16l14 14-14 14-14-14z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.tor-cap { color: var(--anar-2); }
+.tor-lesson h2 { color: var(--ink); }
+.tor-meta { color: var(--muted); }
+.tor-cta { background: var(--anar) !important; color: #fff !important; box-shadow: 0 3px 0 var(--anar-2) !important; }
+.tor-cta:hover:not(:disabled) { background: var(--anar-hover) !important; }
+.tor-cta:active:not(:disabled) { background: var(--anar-2) !important; box-shadow: none !important; }
+.frets i { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--rim); }
+.frets i.on { background: var(--anar); box-shadow: none; }
+.frets i.cur { background: var(--altyn); box-shadow: inset 0 0 0 1px #b07c10; }
+.q-bar i { background: var(--anar); }
+
+/* ── Сабақ ойнатқышы: прогресс = анар; дыбыс түймелері көк қалады ── */
+.lp-frets i.on { background: var(--anar); }
+.lp-sum-score b { color: var(--anar-2); }
+.lp-tf-eq { color: var(--anar-2); }
+
+/* ── Ойындар ── */
+.lv-pick-b.on { background: var(--anar); color: #fff; box-shadow: 0 3px 0 var(--anar-2); }
+
+/* ── Жауап нұсқаларының hover сақинасы көк қалады (қызыл «қате» болып көрінбесін) ── */
+.qopt:not(:disabled):hover { box-shadow: inset 0 0 0 2px var(--kok), 0 4px 0 rgba(15, 94, 122, 0.25); }
+
+/* ── Чат: менің хабарым — көк (үлкен қызыл фон болмасын) ── */
+.msg.me .msg-b { background: var(--kok); }
+
+/* ════════ ҚАТЕ / ҚАТЕЛІК: шарап реңкі, үзік жиек, ✕ мен шайқалу сақталады ════════ */
+.lp { --lp-bad-soft: var(--wine-soft); }
+.lp-opt.is-wrong, .lp-pair.is-miss, .lp-slots.is-wrong {
+  background: var(--wine-soft); color: var(--wine);
+  box-shadow: none; outline: 2px dashed var(--wine); outline-offset: -2px;
+}
+.lp-opt.is-wrong .lp-mark, .lp-pair.is-miss .lp-mark, .lp-slots.is-wrong .lp-mark { background: var(--wine); color: #fff; }
+.lp-status.is-miss { color: var(--wine); }
+.lp-fb.is-bad { background: var(--wine-soft); box-shadow: none; outline: 2px dashed var(--wine); outline-offset: -2px; }
+.lp-fb.is-bad .lp-fb-ic { background: var(--wine); }
+.lp-fb.is-bad .lp-fb-txt b { color: var(--wine); }
+
+/* Жалпы тест (Quiz, Сөздік тесті, тарих/атлас тесттері) */
+.qopt.bad, .g-opts .qopt.bad, .lv-opt.bad {
+  background: var(--wine-soft); color: var(--wine);
+  box-shadow: 0 3px 0 rgba(110, 30, 46, 0.28); outline: 2px dashed var(--wine); outline-offset: -2px;
+}
+.g-opts .qopt.bad .qk { background: var(--wine); color: #fff; }
+.quiz-fb.bad { background: var(--wine-soft); color: var(--wine); outline: 2px dashed var(--wine); outline-offset: -2px; }
+.alert { background: var(--wine-soft); color: var(--wine); box-shadow: none; outline: 2px dashed rgba(110, 30, 46, 0.55); outline-offset: -2px; }
+.alert.ok { background: var(--ok-soft); color: var(--ok); outline: 0; box-shadow: inset 0 0 0 1px rgba(47, 107, 79, 0.25); }
+.crs-after.no { box-shadow: none; outline: 2px dashed var(--wine); outline-offset: -2px; }
+.crs-after.no b { color: var(--wine); }
+
+/* Ойын күйлері */
+.g-q.bad::after { background: rgba(110, 30, 46, 0.07); box-shadow: inset 0 0 0 2.5px var(--wine); }
+.g-tchip-time.low { background: var(--wine-soft); color: var(--wine); box-shadow: inset 0 0 0 1.5px var(--wine); }
+.tenge-field::after { background: rgba(110, 30, 46, 0.12); box-shadow: inset 0 0 0 3px var(--wine); }
+.tenge-lane.bad { background: rgba(110, 30, 46, 0.14); }
+.tenge-field .coin.bad { background: #e3c3ca; }
+.stone.miss .stone-face { background: var(--wine-soft); box-shadow: inset 0 0 0 3px var(--wine); }
+.kk-score .chip.bad { background: var(--wine-soft); color: var(--wine); }
+.sp-log .sc { background: var(--wine-soft); color: var(--wine); }
+.sp-log .sc.good { background: var(--ok-soft); color: var(--ok); }
