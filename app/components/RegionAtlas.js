@@ -1,9 +1,19 @@
 "use client";
-// Өңір келбеті: өңірдің толық шекарасы (масштабталған карта) + көрікті жерлер (Wikipedia фотосы мен қысқаша мәтіні).
-import { useEffect, useId, useMemo, useState } from "react";
+// Өңір келбеті: атлас-карта (шекара өзі сызылады, орталыққа түйреуіш түседі),
+// «Өңір туралы» мәтіні және көрікті жерлердің суретті карточкалары. Барлық мәтін — өзіміздікі (lib/sights.js).
+import { useId, useMemo } from "react";
 import { KZ_PATHS, KZ_CENTERS } from "../../lib/kzmap";
+import { REGIONS } from "../../lib/regions";
+import { SIGHTS, REGION_ABOUT } from "../../lib/sights";
 import { L } from "../../lib/i18n";
 import { tx } from "../../lib/tx";
+import SightArt, { kindOf } from "./SightArt";
+
+const LBL = {
+  about: { kk: "Өңір туралы", ru: "О регионе", en: "About the region" },
+  count: { kk: "Көрікті жер", ru: "Мест", en: "Sights" },
+  north: { kk: "С", ru: "С", en: "N" },
+};
 
 function bbox(d) {
   const n = (d.match(/-?\d+\.?\d*/g) || []).map(Number);
@@ -14,106 +24,166 @@ function bbox(d) {
   }
   return [x0, y0, x1, y1];
 }
+const BY_MAP = Object.fromEntries(REGIONS.map((r) => [r.map, r]));
+const shortName = (r, lang) =>
+  r.city ? L(r.center, lang) : L(r.name, lang).replace(/ облысы$| область$| Region$/i, "");
 
-const cache = new Map();
-function loadLS() {
-  try { return JSON.parse(localStorage.getItem("qd_wp1") || "{}"); } catch { return {}; }
-}
-function saveLS(k, v) {
-  try { const o = loadLS(); o[k] = v; const keys = Object.keys(o); if (keys.length > 160) delete o[keys[0]]; localStorage.setItem("qd_wp1", JSON.stringify(o)); } catch {}
-}
-async function wiki(sight, lang) {
-  const tries = lang === "ru" ? [["ru", sight.ru], ["en", sight.en]] : [["en", sight.en], ["ru", sight.ru]];
-  const key = `${lang}|${sight.en}`;
-  if (cache.has(key)) return cache.get(key);
-  const ls = loadLS()[key];
-  if (ls) { cache.set(key, ls); return ls; }
-  let out = null;
-  for (const [wl, title] of tries) {
-    try {
-      const r = await fetch(`https://${wl}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}?redirect=true`);
-      if (!r.ok) continue;
-      const d = await r.json();
-      if (d.type === "disambiguation") continue;
-      const img = d.originalimage?.source || d.thumbnail?.source || null;
-      const thumb = d.thumbnail?.source ? d.thumbnail.source.replace(/\/\d+px-/, "/900px-") : img;
-      const cur = { img: thumb, text: d.extract || "", url: d.content_urls?.desktop?.page || "" };
-      if (!out) out = cur;
-      else { out.img = out.img || cur.img; out.text = out.text || cur.text; }
-      if (out.img && out.text) break;
-    } catch {}
-  }
-  if (out) { cache.set(key, out); saveLS(key, out); }
-  return out;
+function AtlasMap({ region, lang, x }) {
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const d = KZ_PATHS[region.map];
+  const geo = useMemo(() => {
+    if (!d) return null;
+    const [x0, y0, x1, y1] = bbox(d);
+    const w = x1 - x0, h = y1 - y0;
+    const pad = Math.max(w, h) * 0.2;
+    const vx = x0 - pad, vy = y0 - pad, vw = w + pad * 2, vh = h + pad * 2;
+    const k = Math.max(vw, vh) / 300;
+    // Градус торы (шартты)
+    const raw = 40 * k, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 5, 10].map((m) => m * mag).find((s) => s >= raw) || raw;
+    const gx = [], gy = [];
+    for (let v = Math.floor((vx - vw) / step) * step; v < vx + vw * 2; v += step) gx.push(v);
+    for (let v = Math.floor((vy - vh) / step) * step; v < vy + vh * 2; v += step) gy.push(v);
+    return { vb: `${vx} ${vy} ${vw} ${vh}`, vx, vy, vw, vh, k, gx, gy };
+  }, [d]);
+  if (!d || !geo) return null;
+  const { vx, vy, vw, vh, k } = geo;
+  const c = KZ_CENTERS[region.map];
+  const inView = ([cx, cy]) => cx > vx - vw * 0.25 && cx < vx + vw * 1.25 && cy > vy + 4 * k && cy < vy + vh - 4 * k;
+  const others = Object.entries(KZ_PATHS).filter(([m]) => m !== region.map);
+  const cities = others.filter(([m]) => BY_MAP[m]?.city);
+  const name = L(region.name, lang);
+  return (
+    <figure className="ra-map">
+      <figcaption className="ra-cap">
+        <span>{x.atBorder}</span>
+        <b>{name}</b>
+      </figcaption>
+      <svg viewBox={geo.vb} preserveAspectRatio="xMidYMid meet" role="img" aria-label={name}>
+        <defs>
+          <linearGradient id={`${id}t`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#E3E7C6" />
+            <stop offset=".55" stopColor="#EADFB6" />
+            <stop offset="1" stopColor="#DFC99A" />
+          </linearGradient>
+          <radialGradient id={`${id}l`} cx=".3" cy=".25" r=".8">
+            <stop offset="0" stopColor="#fff" stopOpacity=".55" />
+            <stop offset="1" stopColor="#fff" stopOpacity="0" />
+          </radialGradient>
+          <clipPath id={`${id}c`}>
+            <path d={d} />
+          </clipPath>
+        </defs>
+        <g className="ra-grid" strokeWidth={0.6 * k}>
+          {geo.gx.map((v) => <path key={`x${v}`} d={`M${v} ${vy - vh}V${vy + vh * 2}`} />)}
+          {geo.gy.map((v) => <path key={`y${v}`} d={`M${vx - vw}  ${v}H${vx + vw * 2}`} />)}
+        </g>
+        {others.filter(([m]) => !BY_MAP[m]?.city).map(([m, p]) => <path key={m} d={p} className="ra-nb" strokeWidth={0.9 * k} />)}
+        <g className="ra-region">
+          <path d={d} className="ra-fill" fill={`url(#${id}t)`} />
+          <path d={d} className="ra-fill" fill={`url(#${id}l)`} />
+          <g clipPath={`url(#${id}c)`}>
+            <path d={d} className="ra-halo" strokeWidth={12 * k} />
+          </g>
+          <path d={d} className="ra-border" strokeWidth={2.2 * k} pathLength="1" />
+        </g>
+        {cities.map(([m, p]) => <path key={m} d={p} className="ra-city" strokeWidth={0.9 * k} />)}
+        <g className="ra-labels" fontSize={9.5 * k}>
+          {others.map(([m]) => {
+            const r = BY_MAP[m], cc = KZ_CENTERS[m];
+            if (!r || !cc || !inView(cc)) return null;
+            return (
+              <text key={m} x={cc[0]} y={cc[1]} textAnchor="middle" strokeWidth={3 * k}>
+                {shortName(r, lang)}
+              </text>
+            );
+          })}
+        </g>
+        <g transform={`translate(${vx + vw - 20 * k} ${vy + 24 * k}) scale(${k})`} className="ra-compass">
+          <circle r="11" />
+          <path d="M0 -9 L3.5 2 L0 0 L-3.5 2Z" className="ra-n1" />
+          <path d="M0 9 L3.5 2 L0 0 L-3.5 2Z" className="ra-n2" />
+          <text y="-14" textAnchor="middle">{L(LBL.north, lang)}</text>
+        </g>
+        {c && (
+          <g transform={`translate(${c[0]} ${c[1]}) scale(${k})`}>
+            <ellipse className="ra-shadow" rx="6" ry="2.2" />
+            <circle className="ra-rip" r="10" />
+            <circle className="ra-rip ra-rip2" r="10" />
+            <g className="ra-drop">
+              <path d="M0 0 C-2 -6 -9 -10 -9 -17 a9 9 0 0 1 18 0 C9 -10 2 -6 0 0Z" className="ra-pin" />
+              <circle cy="-17" r="3.4" fill="#FFFDF7" />
+            </g>
+            <text className="ra-ctr" x="12" y="-12" strokeWidth="3.4">
+              {L(region.center, lang)}
+            </text>
+          </g>
+        )}
+      </svg>
+      <div className="ra-legend">
+        <span><i className="ra-lg-r" /> {shortName(region, lang)}</span>
+        <span><i className="ra-lg-c" /> {x.atCenter}: {L(region.center, lang)}</span>
+      </div>
+    </figure>
+  );
 }
 
-function Sight({ s, i, lang, x, e }) {
-  const [d, setD] = useState(null);
-  const [bad, setBad] = useState(false);
-  useEffect(() => {
-    let ok = true;
-    wiki(s, lang).then((r) => ok && setD(r));
-    return () => { ok = false; };
-  }, [s.en, lang]); // eslint-disable-line react-hooks/exhaustive-deps
+function SightCard({ s, i, lang }) {
+  const info = SIGHTS && SIGHTS[s.en];
+  const text = info && info.text ? L(info.text, lang) : "";
   const name = L(s, lang);
   return (
-    <article className="sight" style={{ animationDelay: `${i * 90}ms` }}>
-      <div className="sight-ph">
-        {d?.img && !bad ? <img src={d.img} alt={name} loading="lazy" onError={() => setBad(true)} /> : <span className="sight-fb">{e}</span>}
-        <span className="sight-n">{i + 1}</span>
-        <span className="sight-shade" />
-        <h4>{name}</h4>
+    <article className="ra-card" style={{ "--i": i }}>
+      <div className="ra-art">
+        <SightArt kind={kindOf(s)} title={name} />
+        <span className="ra-n">{i + 1}</span>
       </div>
-      <p>{d ? (d.text.length > 190 ? d.text.slice(0, 190).replace(/\s+\S*$/, "") + "…" : d.text) : x.atLoad}</p>
-      {d?.url && <a href={d.url} target="_blank" rel="noopener noreferrer">{x.atMore} →</a>}
+      <div className="ra-body">
+        <h4>{name}</h4>
+        {text && <p>{text}</p>}
+      </div>
     </article>
   );
 }
 
 export default function RegionAtlas({ region, lang }) {
-  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const x = tx(lang);
-  const d = KZ_PATHS[region.map];
-  const [vb, c] = useMemo(() => {
-    if (!d) return [null, null];
-    const [x0, y0, x1, y1] = bbox(d);
-    const w = x1 - x0, h = y1 - y0;
-    const pad = Math.max(w, h) * 0.14;
-    return [`${x0 - pad} ${y0 - pad} ${w + pad * 2} ${h + pad * 2}`, KZ_CENTERS[region.map]];
-  }, [d, region.map]);
-  if (!d) return null;
+  const aboutObj = REGION_ABOUT && REGION_ABOUT[region.id];
+  const about = aboutObj ? L(aboutObj, lang) : L(region.fact, lang);
   return (
-    <section className="atlas">
-      <div className="atlas-map">
-        <div className="atlas-cap"><span>{x.atBorder}</span><b>{L(region.name, lang)}</b></div>
-        <svg viewBox={vb} role="img" aria-label={L(region.name, lang)}>
-          <defs>
-            <linearGradient id={`ag${id}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffe48a" /><stop offset="1" stopColor="#e39b00" /></linearGradient>
-            <pattern id={`ap${id}`} width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
-              <path d="M13 21c0-5-4-8-7-5s-1 6 2 5M13 21c0-5 4-8 7-5s1 6-2 5M13 6l3 3-3 3-3-3z" fill="none" stroke="#b8322a" strokeWidth="1.2" opacity=".42" />
-            </pattern>
-            <filter id={`as${id}`} x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#6b4220" floodOpacity=".4" /></filter>
-          </defs>
-          {Object.entries(KZ_PATHS).map(([k, p]) => k !== region.map && <path key={k} d={p} className="atlas-bg" />)}
-          <g filter={`url(#as${id})`}>
-            <path d={d} fill={`url(#ag${id})`} stroke="#b8322a" strokeWidth="3" strokeLinejoin="round" />
-            <path d={d} fill={`url(#ap${id})`} />
-            <path d={d} fill="none" stroke="#fff7e2" strokeWidth="1.6" strokeDasharray="10 8" strokeLinejoin="round" className="atlas-march" />
-          </g>
-          {c && (
-            <g transform={`translate(${c[0]} ${c[1]})`}>
-              <circle r="14" className="atlas-ring" />
-              <circle r="6" fill="#b8322a" stroke="#fff7e2" strokeWidth="2.4" />
-              <text className="atlas-e" textAnchor="middle" dy="-16">{region.e}</text>
-            </g>
-          )}
-        </svg>
-        <div className="atlas-center"><span>{x.atCenter}</span><b>{L(region.center, lang)}</b></div>
+    <section className="ra">
+      <div className="ra-top">
+        <AtlasMap region={region} lang={lang} x={x} />
+        <div className="ra-about">
+          <span className="ra-kicker">{L(LBL.about, lang)}</span>
+          {about && <p className="ra-lead">{about}</p>}
+          <dl className="ra-facts">
+            <div>
+              <dt>{x.atCenter}</dt>
+              <dd>{L(region.center, lang)}</dd>
+            </div>
+            <div>
+              <dt>{L(LBL.count, lang)}</dt>
+              <dd>{region.sights.length}</dd>
+            </div>
+          </dl>
+          <ol className="ra-list">
+            {region.sights.map((s, i) => (
+              <li key={s.en} style={{ "--i": i }}>
+                <SightArt kind={kindOf(s)} mini />
+                <span className="ra-ln">{i + 1}</span>
+                <b>{L(s, lang)}</b>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
-      <div className="atlas-sights">
+      <div className="ra-sights">
         <h3>{x.atSights}</h3>
-        <div className="sights">
-          {region.sights.map((s, i) => <Sight key={s.en} s={s} i={i} lang={lang} x={x} e={region.e} />)}
+        <div className="ra-grid-cards">
+          {region.sights.map((s, i) => (
+            <SightCard key={s.en} s={s} i={i} lang={lang} />
+          ))}
         </div>
       </div>
     </section>

@@ -1,0 +1,199 @@
+/* ════════════════════════════════════════════════════════════════════
+   TILIM · Саяхат: өңір келбеті («Ақ киіз» жүйесі бойынша)
+   Анимация тек transform / opacity / stroke-dashoffset арқылы.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── SightArt: негіз ── */
+.sa { position: relative; width: 100%; height: 100%; overflow: hidden; --mx: 0; --my: 0; }
+.sa svg { display: block; width: 100%; height: 100%; }
+.sa-p0, .sa-p1, .sa-p2, .sa-p3, .sa-p4 { transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.sa-p0 { transform: translate(calc(var(--mx) * 2px), 0); }
+.sa-p1 { transform: translate(calc(var(--mx) * -2px), calc(var(--my) * -1px)); }
+.sa-p2 { transform: translate(calc(var(--mx) * -4px), calc(var(--my) * -1.5px)); }
+.sa-p3 { transform: translate(calc(var(--mx) * -7px), calc(var(--my) * -2.5px)); }
+.sa-p4 { transform: translate(calc(var(--mx) * -11px), calc(var(--my) * -3.5px)) scale(1.02); transform-origin: 50% 100%; }
+
+/* Экраннан тыс болса — тоқтайды (IntersectionObserver .sa-on қосады) */
+.sa:not(.sa-on) * { animation-play-state: paused !important; }
+.sa-mini * { animation: none !important; transition: none !important; }
+.sa-mini { border-radius: 50%; }
+
+/* Қозғалыстар */
+.sa-sunr { animation: saRise 2.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.sa-cloud { animation: saDrift 46s ease-in-out infinite alternate; }
+.sa-birds { animation: saGlide 26s linear infinite; }
+.sa-flap { transform-box: fill-box; transform-origin: center; animation: saFlap 0.9s ease-in-out infinite alternate; }
+.sa-shim { animation: saShim 4.2s ease-in-out infinite; }
+.sa-tw { transform-box: fill-box; transform-origin: center; animation: saTw 3.2s ease-in-out infinite; }
+.sa-glow { animation: saGlow 4s ease-in-out infinite; }
+.sa-sway { transform-box: fill-box; transform-origin: 50% 100%; animation: saSway 5s ease-in-out infinite alternate; }
+.sa-sail { animation: saSail 14s ease-in-out infinite alternate; }
+.sa-wade { animation: saBob 3.4s ease-in-out infinite; }
+.sa-graze { animation: saBob 4.6s ease-in-out infinite; }
+.sa-fly { animation: saFly 24s linear infinite; }
+.sa-gondola { animation: saCable 12s ease-in-out infinite alternate; }
+.sa-chair { animation: saCable 12s linear infinite; }
+.sa-skate { animation: saSkate 6s ease-in-out infinite alternate; }
+.sa-skate.sa-rev { animation-direction: alternate-reverse; animation-duration: 7.5s; }
+.sa-skier { animation: saSki 7s ease-in-out infinite; }
+.sa-jet { transform-box: fill-box; transform-origin: 50% 100%; animation: saJet 2.2s ease-in-out infinite; }
+.sa-sweep { animation: saSweep 7s ease-in-out infinite; }
+.sa-sand { animation: saSand 10s linear infinite; }
+.sa-blow { animation: saBlow 3.6s ease-out infinite; }
+.sa-mist { animation: saDrift 22s ease-in-out infinite alternate; }
+.sa-tide { animation: saTide 9s ease-in-out infinite alternate; }
+.sa-smoke { transform-box: fill-box; transform-origin: 50% 100%; animation: saSmoke 3.4s ease-in-out infinite; }
+.sa-flame { transform-box: fill-box; transform-origin: 50% 0; animation: saFlick 0.16s linear infinite alternate; opacity: 0.85; }
+.sa-rocket { transition: transform 2.6s cubic-bezier(0.55, 0, 0.85, 0.35); }
+.sa-bob { animation: none; }
+.sa-walk { animation: saWalk 38s linear infinite; }
+.sa-walk-slow { animation-duration: 60s; }
+.sa-soar { animation: saSoar 22s ease-in-out infinite alternate; }
+/* Ұшу: карточкаға немесе суретке апарғанда/түрткенде */
+.ra-card:hover .sa-rocket, .sa-wide:hover .sa-rocket, .ra-card:focus-within .sa-rocket { transform: translateY(-120px); }
+.ra-card:hover .sa-flame, .sa-wide:hover .sa-flame { animation-duration: 0.08s; }
+.ra-card:hover .sa-flame path, .sa-wide:hover .sa-flame path { transform: scaleY(1.6); transform-box: fill-box; transform-origin: 50% 0; }
+
+@keyframes saRise { from { transform: translateY(26px); opacity: 0; } }
+@keyframes saDrift { from { transform: translateX(-24px); } to { transform: translateX(24px); } }
+@keyframes saGlide { from { transform: translate(-260px, 10px); } to { transform: translate(620px, -14px); } }
+@keyframes saFly { from { transform: translate(-320px, 14px); } to { transform: translate(560px, -18px); } }
+@keyframes saFlap { from { transform: scaleY(1); } to { transform: scaleY(0.35); } }
+@keyframes saShim { 0%, 100% { opacity: 0.15; transform: translateX(0); } 50% { opacity: 0.8; transform: translateX(6px); } }
+@keyframes saTw { 0%, 100% { opacity: 0.1; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes saGlow { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes saSway { from { transform: skewX(-4deg); } to { transform: skewX(4deg); } }
+@keyframes saSail { from { transform: translateX(-14px); } to { transform: translateX(22px); } }
+@keyframes saBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(1.6px); } }
+@keyframes saCable { from { transform: translate(0, 0); } to { transform: translate(var(--dx), var(--dy)); } }
+@keyframes saSkate { from { transform: translateX(-30px); } to { transform: translateX(34px); } }
+@keyframes saSki { 0% { transform: translate(0, 0); } 25% { transform: translate(-10px, 18px); } 50% { transform: translate(6px, 38px); } 75% { transform: translate(-6px, 58px); opacity: 1; } 100% { transform: translate(4px, 76px); opacity: 0; } }
+@keyframes saJet { 0%, 100% { transform: scaleY(1); opacity: 0.9; } 50% { transform: scaleY(0.75); opacity: 0.6; } }
+@keyframes saSweep { 0%, 30% { transform: translateX(-140px); } 70%, 100% { transform: translateX(160px); } }
+@keyframes saSand { from { transform: translateX(0); } to { transform: translateX(-30px); } }
+@keyframes saBlow { from { transform: translate(0, 0); opacity: 0; } 20% { opacity: 1; } to { transform: translate(40px, -10px); opacity: 0; } }
+@keyframes saTide { from { transform: translateX(-12px); } to { transform: translateX(12px); } }
+@keyframes saSmoke { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.08, 1.12); opacity: 1; } }
+@keyframes saWalk { 0% { transform: translateX(-30px); opacity: 0; } 8% { opacity: 1; } 92% { opacity: 1; } 100% { transform: translateX(50px); opacity: 0; } }
+@keyframes saSoar { 0% { transform: translate(0, 0) rotate(-3deg); } 33% { transform: translate(60px, -8px) rotate(4deg); } 66% { transform: translate(120px, 4px) rotate(-2deg); } 100% { transform: translate(180px, -4px) rotate(3deg); } }
+@keyframes saFlick { from { transform: scaleY(0.82); } to { transform: scaleY(1.12); } }
+
+/* ── Өңір баннері (hero): екі көрікті жерден құрылған панорама ── */
+.card.region { overflow: hidden; }
+.region-hero { position: relative; height: clamp(300px, 31vw, 420px); background: #e9dfc6; overflow: hidden; }
+.region-hero .sa { position: absolute; inset: 0; animation: raZoom 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.region-hero .region-e { display: none; }
+/* Қараңғы реңк тек тақырып тұрған төменгі сол жақта */
+.region-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 95% at 0% 100%, rgba(16, 26, 36, 0.78) 0%, rgba(16, 26, 36, 0.5) 32%, rgba(16, 26, 36, 0) 62%);
+}
+.region-title { position: absolute; left: 28px; bottom: 24px; max-width: min(560px, calc(100% - 56px)); color: #fffdf7; animation: raUp 0.8s 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.region-title h2 { margin: 0 0 6px; color: #fffdf7; font-family: var(--head); font-weight: 800; font-size: clamp(24px, 3.4vw, 40px); line-height: 1.1; text-shadow: 0 1px 2px rgba(10, 20, 30, 0.4); }
+.region-title > span { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; color: rgba(255, 253, 247, 0.95); }
+.region-title > span::before { content: ""; width: 8px; height: 8px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--altyn); }
+.region-tease { margin: 10px 0 0; font-size: 15.5px; line-height: 1.5; color: rgba(255, 253, 247, 0.94); text-shadow: 0 1px 2px rgba(10, 20, 30, 0.45); }
+.region-hero .stamp-mark { display: inline-flex; align-items: center; gap: 6px; background: var(--altyn); color: var(--gold-ink); }
+@keyframes raZoom { from { transform: scale(1.07); opacity: 0.3; } }
+@keyframes raUp { from { transform: translateY(14px); opacity: 0; } }
+
+/* ── Өңір келбеті: жоғарғы бөлік ── */
+.ra { padding: 22px 22px 8px; display: grid; gap: 26px; }
+.ra-top { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+
+.ra-map { position: relative; margin: 0; border-radius: 16px; padding: 12px 12px 10px; background: #f6f1e4; box-shadow: inset 0 0 0 1px var(--rim); overflow: hidden; }
+.ra-cap { display: grid; margin: 2px 4px 6px; }
+.ra-cap span, .ra-kicker, .ra-facts dt { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.ra-cap b { font-family: var(--head); font-weight: 600; font-size: 15px; color: var(--ink); }
+.ra-map svg { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; max-height: 380px; border-radius: 12px; background: #f1ead8; }
+.ra-grid path { stroke: rgba(15, 94, 122, 0.1); fill: none; }
+.ra-nb { fill: #ece5d2; stroke: #c8b994; stroke-linejoin: round; }
+.ra-city { fill: #e8ddc4; stroke: #b7a47c; stroke-linejoin: round; }
+.ra-fill { animation: raFade 1s 0.5s ease both; }
+.ra-halo { fill: none; stroke: var(--qyzyl); opacity: 0.16; stroke-linejoin: round; animation: raFade 1s 0.9s ease both; }
+.ra-border { fill: none; stroke: var(--qyzyl); stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1 0; animation: raDraw 1.8s cubic-bezier(0.45, 0, 0.2, 1) both; }
+.ra-labels text { fill: #7b7262; font-family: var(--body); font-weight: 600; letter-spacing: 0.02em; stroke: #f1ead8; paint-order: stroke; stroke-linejoin: round; animation: raFade 0.8s 1.2s ease both; }
+.ra-compass circle { fill: #fffdf7; stroke: var(--rim); stroke-width: 1; }
+.ra-compass .ra-n1 { fill: var(--qyzyl); }
+.ra-compass .ra-n2 { fill: #c8b994; }
+.ra-compass text { font-family: var(--head); font-size: 9px; font-weight: 600; fill: var(--ink); }
+.ra-pin { fill: var(--qyzyl); stroke: #fffdf7; stroke-width: 1.6; }
+.ra-drop { animation: raDrop 0.9s 1.3s cubic-bezier(0.3, 0, 0.3, 1) both; }
+.ra-shadow { fill: rgba(60, 40, 10, 0.28); transform-box: fill-box; transform-origin: center; animation: raShadow 0.9s 1.3s cubic-bezier(0.3, 0, 0.3, 1) both; }
+.ra-rip { fill: none; stroke: var(--qyzyl); stroke-width: 1.4; opacity: 0; transform-box: fill-box; transform-origin: center; animation: raRip 2.6s 2.1s ease-out infinite; }
+.ra-rip2 { animation-delay: 3.4s; }
+.ra-ctr { font-family: var(--head); font-weight: 600; font-size: 11px; fill: var(--ink); stroke: #fffdf7; paint-order: stroke; stroke-linejoin: round; animation: raFade 0.6s 2s ease both; }
+.ra-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 4px 0; font-size: 13px; color: var(--muted); }
+.ra-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ra-legend i { display: inline-block; width: 18px; height: 11px; border-radius: 3px; }
+.ra-lg-r { background: linear-gradient(135deg, #e3e7c6, #dfc99a); box-shadow: inset 0 0 0 2px var(--qyzyl); }
+.ra-lg-c { width: 11px !important; border-radius: 50% 50% 50% 0 !important; transform: rotate(-45deg); background: var(--qyzyl); }
+
+@keyframes raDraw { from { stroke-dashoffset: 1; stroke-dasharray: 1 1; } to { stroke-dashoffset: 0; stroke-dasharray: 1 1; } }
+@keyframes raFade { from { opacity: 0; } }
+@keyframes raDrop { 0% { transform: translateY(-46px); opacity: 0; } 15% { opacity: 1; } 60% { transform: translateY(0); } 75% { transform: translateY(-7px); } 88% { transform: translateY(0); } 94% { transform: translateY(-2px); } 100% { transform: translateY(0); } }
+@keyframes raShadow { 0% { transform: scale(0.2); opacity: 0; } 60% { transform: scale(1); opacity: 1; } 75% { transform: scale(0.8); } 100% { transform: scale(1); } }
+@keyframes raRip { 0% { transform: scale(0.4); opacity: 0.7; } 100% { transform: scale(2.6); opacity: 0; } }
+
+/* «Өңір туралы» */
+.ra-about { display: grid; gap: 14px; align-content: start; animation: raUp 0.7s 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.ra-kicker { color: var(--qyzyl); }
+.ra-lead { margin: -6px 0 0; font-size: 16.5px; line-height: 1.6; color: var(--ink); }
+.ra-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.ra-facts div { padding: 10px 14px; border-radius: 12px; background: var(--surface-2); }
+.ra-facts dd { margin: 2px 0 0; font-family: var(--head); font-weight: 600; font-size: 17px; color: var(--ink); overflow-wrap: anywhere; }
+.ra-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ra-list li { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; border-radius: 12px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); animation: raUp 0.5s calc(0.5s + var(--i) * 0.1s) cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.ra-list .sa { flex: none; width: 44px; height: 44px; box-shadow: 0 0 0 2px #fffdf7, 0 0 0 3px var(--rim); }
+.ra-list b { font-weight: 600; font-size: 15px; line-height: 1.3; min-width: 0; }
+.ra-ln { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--qyzyl); color: #fffdf7; font-size: 12px; font-weight: 700; }
+
+/* ── Көрікті жер карточкалары ── */
+.ra-sights h3 { margin: 0 0 12px; font-family: var(--head); font-weight: 600; font-size: 18px; }
+.ra-grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; }
+.ra-card {
+  display: grid; grid-template-rows: auto 1fr; border-radius: 16px; overflow: hidden; background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s;
+  animation: raCard 0.7s calc(0.35s + var(--i) * 0.14s) cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ra-card:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px var(--rim), var(--shadow-lg); }
+.ra-art { position: relative; aspect-ratio: 9 / 5; background: #e9dfc6; }
+.ra-art .sa { position: absolute; inset: 0; }
+.ra-n { position: absolute; top: 10px; left: 10px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--qyzyl); color: #fffdf7; font-weight: 700; font-size: 14px; box-shadow: 0 0 0 2px #fffdf7; }
+.ra-body { padding: 14px 16px 16px; display: grid; gap: 6px; align-content: start; }
+.ra-body h4 { margin: 0; font-family: var(--head); font-weight: 600; font-size: 16px; line-height: 1.25; color: var(--ink); }
+.ra-body p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--muted); }
+@keyframes raCard { from { transform: translateY(22px) scale(0.98); opacity: 0; } }
+
+/* ── Өңірлер тізімі мен паспорт: эмодзи орнына мини-суреттер ── */
+.rl-e { position: relative; flex: none; width: 34px; height: 34px; font-size: 0; }
+.rl-e .sa { width: 34px; height: 34px; box-shadow: 0 0 0 1.5px #fffdf7, 0 0 0 2.5px var(--rim); }
+.rl-ok { position: absolute; right: -3px; bottom: -3px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--ok); color: #fffdf7; box-shadow: 0 0 0 1.5px #fffdf7; }
+.stamp-e { display: block; width: 46px; height: 46px; font-size: 0; }
+.stamp-e .sa { width: 46px; height: 46px; }
+.stamp.got .stamp-e .sa { box-shadow: 0 0 0 2px #fffdf7, 0 0 0 3.5px var(--altyn); }
+.passport h2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.head-tools .chip.gold { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ── Шағын экран ── */
+@media (max-width: 900px) {
+  .ra-top { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .ra { padding: 16px 14px 6px; gap: 20px; }
+  .region-title { left: 16px; bottom: 16px; max-width: calc(100% - 32px); }
+  .region-hero { height: 290px; }
+  .region-tease { display: none; }
+  /* Тар экран: басты нысан (620 бірліктің x=180 нүктесі) ортада тұрады */
+  .region-hero .sa-region svg { position: absolute; top: 0; left: 50%; height: 290px; width: 899px; max-width: none; transform: translateX(-69.4%); }
+  .region-shade { background: linear-gradient(180deg, rgba(16, 26, 36, 0) 30%, rgba(16, 26, 36, 0.78) 100%); }
+  .ra-lead { font-size: 16px; }
+}
+
+/* ── Қозғалысты азайту ── */
+@media (prefers-reduced-motion: reduce) {
+  .sa *, .ra *, .ra-card, .ra-about, .ra-list li, .region-hero .sa, .region-title { animation: none !important; transition: none !important; }
+  .sa-p0, .sa-p1, .sa-p2, .sa-p3, .sa-p4 { transform: none !important; }
+  .ra-card:hover .sa-rocket, .sa-wide:hover .sa-rocket { transform: none; }
+}

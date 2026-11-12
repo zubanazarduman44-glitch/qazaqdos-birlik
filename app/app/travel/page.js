@@ -3,6 +3,8 @@ import LangPicker from "../../components/LangPicker";
 import KzSymbols from "../../components/KzSymbols";
 import { buildDecor, TERRAIN, LANDMARK, RIVERS, LAKES } from "../../../lib/kzscene";
 import RegionAtlas from "../../components/RegionAtlas";
+import SightArt, { kindOf, RegionScene } from "../../components/SightArt";
+import { REGION_ABOUT } from "../../../lib/sights";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
@@ -14,11 +16,16 @@ import { REGIONS } from "../../../lib/regions";
 import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { L } from "../../../lib/i18n";
 import { shuffle, tr } from "../../../lib/words";
-import { photoUrl } from "../../../lib/photo";
 
 const CITY_IDS = ["astana", "almaty-city", "shymkent"];
 
 const trW = tr;
+
+// Баннерге «Өңір туралы» мәтінінің алғашқы сөйлемі
+const teaser = (t) => {
+  const first = (t || "").split(/(?<=[.!?])\s+/)[0] || "";
+  return first.length > 150 ? first.slice(0, 150).replace(/\s+\S*$/, "") + "…" : first;
+};
 
 function buildQuiz(r, t, lang, explain) {
   const centers = shuffle(REGIONS.filter((x) => x.id !== r.id).map((x) => L(x.center, lang))).slice(0, 3);
@@ -45,53 +52,6 @@ const shortName = (r, lang) => {
   const n = L(r.name, lang).replace(/ қаласы$|^город |^г\. | city$| city/gi, "").replace(/ облысы$/, " обл.").replace(/ область$/, " обл.").replace(/ region$/i, "");
   return n.length > 15 ? L(r.center, lang) : n;
 };
-
-function RegionBrief({ region, lang, explain }) {
-  const x = tx(lang);
-  const [text, setText] = useState("");
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    let dead = false;
-    const key = `qd_brief_${region.id}_${explain}`;
-    let hit = null;
-    try {
-      hit = localStorage.getItem(key);
-    } catch {}
-    if (hit) {
-      setText(hit);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setText("");
-    fetch("/api/region", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: region.name.kk, center: region.center.kk, sights: region.sights.map((s) => s.kk), explain }) })
-      .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => {
-        if (dead) return;
-        const t = ok && d.text ? d.text : `${L(region.name, lang)} — ${L(region.center, lang)}. ${region.sights.map((s) => L(s, lang)).join(", ")}. ${L(region.fact, lang)}`;
-        setText(t);
-        if (ok && d.text) {
-          try {
-            localStorage.setItem(key, d.text);
-          } catch {}
-        }
-      })
-      .catch(() => !dead && setText(`${L(region.name, lang)} — ${L(region.center, lang)}. ${L(region.fact, lang)}`))
-      .finally(() => !dead && setLoading(false));
-    return () => {
-      dead = true;
-    };
-  }, [region.id, explain]);
-  return (
-    <div className="brief">
-      <Qyran mood={loading ? "think" : "happy"} size={64} />
-      <div>
-        <h4>{x.brTitle}</h4>
-        <p>{loading ? x.brLoading : text}</p>
-      </div>
-    </div>
-  );
-}
 
 function Travel() {
   const { t, lang, explain, state, update, award, saveWord } = useApp();
@@ -193,7 +153,7 @@ function Travel() {
         </div>
         <div className="head-tools">
           <LangPicker />
-          <span className="chip gold">🛂 {t.stamps(count, REGIONS.length)}</span>
+          <span className="chip gold"><Icon name="stamp" size={16} /> {t.stamps(count, REGIONS.length)}</span>
         </div>
       </header>
 
@@ -277,8 +237,8 @@ function Travel() {
           </svg>
           {hovR && ctr(hovR) && (
             <div className="map-chip" style={{ left: `${(ctr(hovR)[0] / VW) * 100}%`, top: `${(ctr(hovR)[1] / VH) * 100}%` }}>
-              <b>{hovR.e} {L(hovR.name, lang)}</b>
-              <span>{L(hovR.center, lang)}{stamps[hovR.id] ? " · 🛂" : ""}</span>
+              <b>{L(hovR.name, lang)}</b>
+              <span>{L(hovR.center, lang)}{stamps[hovR.id] ? ` · ${t.visited}` : ""}</span>
             </div>
           )}
           <div className="sky-hint">{x.tapHint}</div>
@@ -303,7 +263,7 @@ function Travel() {
                       setQ("");
                     }}
                   >
-                    {r.e} {L(r.name, lang)}
+                    {L(r.name, lang)}
                   </button>
                 ))}
               </div>
@@ -322,7 +282,7 @@ function Travel() {
             {order.map((r) => (
               <li key={r.id}>
                 <button className={`${sel === r.id ? "on" : ""} ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} onMouseEnter={() => setHov(r.id)} onMouseLeave={() => setHov(null)}>
-                  <span className="rl-e">{stamps[r.id] ? "🛂" : r.e}</span>
+                  <span className="rl-e"><SightArt kind={kindOf(r.sights[0])} mini />{stamps[r.id] && <span className="rl-ok"><Icon name="check" size={11} /></span>}</span>
                   <span className="rl-t"><b>{L(r.name, lang)}</b><small>{L(r.center, lang)}</small></span>
                 </button>
               </li>
@@ -337,29 +297,21 @@ function Travel() {
       {region ? (
         <section className="card region rise" key={region.id}>
           <div className="region-hero">
-            {region.photo ? <img src={photoUrl(region.photo, 1400, 600)} alt="" /> : <span className="region-e">{region.e}</span>}
+            <RegionScene region={region} />
             <span className="region-shade" />
             <div className="region-title">
               <h2>{L(region.name, lang)}</h2>
               <span>
                 {t.regionCenter}: <b>{L(region.center, lang)}</b>
               </span>
+              {REGION_ABOUT[region.id] && <p className="region-tease">{teaser(L(REGION_ABOUT[region.id], lang))}</p>}
             </div>
-            {stamps[region.id] && <span className="stamp-mark pop">🛂 {t.visited}</span>}
+            {stamps[region.id] && <span className="stamp-mark pop"><Icon name="stamp" size={16} /> {t.visited}</span>}
           </div>
 
           <RegionAtlas region={region} lang={lang} />
-          <RegionBrief region={region} lang={lang} explain={explain} />
           <div className="region-body">
             <div className="region-info">
-              <h3>{t.sights}</h3>
-              <div className="chips-row">
-                {region.sights.map((s) => (
-                  <span key={s.kk} className="chip">
-                    📍 {L(s, lang)}
-                  </span>
-                ))}
-              </div>
               <div className="fact">
                 <Qyran mood="wow" size={56} />
                 <p>
@@ -384,7 +336,6 @@ function Travel() {
                   >
                     <span className="flip-in">
                       <span className="flip-f">
-                        <span className="flip-e">{w.e}</span>
                         <b>{w.kk}</b>
                       </span>
                       <span className="flip-b">
@@ -404,7 +355,7 @@ function Travel() {
                 <Quiz questions={quiz} onDone={finishQuiz} pass={4} />
                 {result && (
                   <div className={`alert ${result.ok ? "ok" : ""} rise`}>
-                    {result.ok ? (stamps[region.id] ? `🛂 ${t.stampGot}` : t.stampGot) : t.stampMiss}
+                    {result.ok ? t.stampGot : t.stampMiss}
                     <button className="btn ghost small" onClick={() => { setQuiz(buildQuiz(region, t, lang, explain)); setResult(null); }}>
                       <Icon name="refresh" size={15} /> {t.retry}
                     </button>
@@ -427,12 +378,12 @@ function Travel() {
 
       <section className="passport">
         <h2>
-          🛂 {t.passport} <span className="muted small">{t.stamps(count, REGIONS.length)}</span>
+          <Icon name="stamp" size={22} /> {t.passport} <span className="muted small">{t.stamps(count, REGIONS.length)}</span>
         </h2>
         <div className="stamp-grid">
           {REGIONS.map((r) => (
             <button key={r.id} className={`stamp ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} title={L(r.name, lang)}>
-              <span className="stamp-e">{r.e}</span>
+              <span className="stamp-e"><SightArt kind={kindOf(r.sights[0])} mini /></span>
               <span className="stamp-n">{L(r.center, lang)}</span>
             </button>
           ))}
