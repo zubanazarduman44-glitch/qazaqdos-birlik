@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import SectionIntro from "../../components/SectionIntro";
 import LangPicker from "../../components/LangPicker";
 import Icon from "../../components/Icon";
 import dynamic from "next/dynamic";
@@ -13,6 +14,12 @@ import { whenIdle } from "../../../lib/idle";
 // Сабақ ойнатқышы (сабақ жоспары, дыбыс) тек сабақ ашылғанда керек: бөлек чанк, жол беті ашылған соң алдын ала жүктеледі
 const loadPlayer = () => import("../../components/LessonPlayer");
 const LessonPlayer = dynamic(() => import("../../components/LessonPlayer"), { loading: () => <section className="lp" aria-busy="true" /> });
+
+const INTRO = {
+  kk: { title: "Tilbil — қазақ тілін ретімен үйрен", text: "A1-ден B1-ге дейінгі жол: әр аялдама — бір тақырыптағы шағын сабақ. Алдымен жаңа сөздермен танысасың, сосын оларды әртүрлі жаттығулармен бекітесің.", points: ["Бір сабақ — бірнеше минут", "70% дұрыс жауап берсең, келесі сабақ ашылады", "Қате жіберген сөздерің соңында қайталанады"] },
+  ru: { title: "Tilbil — учите казахский по порядку", text: "Путь от A1 до B1: каждая остановка — короткий урок по одной теме. Сначала знакомитесь с новыми словами, потом закрепляете их разными упражнениями.", points: ["Урок занимает несколько минут", "70% верных ответов открывают следующий урок", "Слова с ошибками повторяются в конце"] },
+  en: { title: "Tilbil — learn Kazakh step by step", text: "A path from A1 to B1: each stop is a short lesson on one topic. Meet the new words first, then lock them in with a mix of exercises.", points: ["Each lesson takes a few minutes", "70% correct answers unlock the next lesson", "Words you missed come back at the end"] },
+};
 
 const TXT = {
   kicker: ["Оқу жолы", "Путь обучения", "Learning path"],
@@ -108,10 +115,10 @@ export default function Course() {
         <div>
           <span className="kicker">{T("kicker")}</span>
           <h1>{T("title")}</h1>
-          <p>{T("sub")}</p>
         </div>
         <div className="head-tools"><LangPicker /></div>
       </header>
+      <SectionIntro icon="map" {...(INTRO[lang] || INTRO.en)} />
 
       <div className="kosh-levels" role="tablist">
         {LEVELS.map((l, i) => {

@@ -297,3 +297,14 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .logo .qz-tongue { transform-origin: 112px 136px; transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1); }
 @media (hover: hover) { .logo:hover .qz-tongue { transform: rotate(-8deg) scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .logo .qz-tongue { transition: none; } }
+
+/* ── Бөлім түсіндірмесі (Tilbil, Түзел) ── */
+.sec-intro { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 18px; padding: 16px 18px; border-radius: 16px; background: #FFFDF7; border: 1px solid #E6D9BC; }
+.sec-intro-ic { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #F4ECDA; color: #8A2018; }
+.sec-intro-body { display: grid; gap: 4px; min-width: 0; }
+.sec-intro-body b { font-family: var(--head); font-weight: 700; font-size: 17px; line-height: 1.3; color: #1F2430; }
+.sec-intro-body p { margin: 0; font-size: 15px; line-height: 1.5; color: #4A5160; max-width: 70ch; }
+.sec-intro-body ul { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.sec-intro-body li { display: inline-flex; align-items: flex-start; gap: 6px; line-height: 1.4; font-size: 14px; font-weight: 600; color: #2F6B4F; }
+@media (max-width: 520px) { .sec-intro { padding: 14px; gap: 12px; } .sec-intro-ic { width: 38px; height: 38px; } .sec-intro-body ul { flex-direction: column; } }
+.sec-intro-body li svg { flex: none; margin-top: 3px; }
