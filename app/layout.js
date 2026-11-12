@@ -5,6 +5,7 @@ import "./kiiz.css";
 import "./lesson.css";
 import "./games.css";
 import "./travel.css";
+import "./aqyl.css";
 import "./qyzyl.css"; // Qyzyl til қызыл палитрасы — осы жолды өшірсең, бұрынғы көк «Ақ киіз» түстері қайтады
 import { AppProvider } from "./components/Store";
 

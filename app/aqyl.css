@@ -1,0 +1,58 @@
+/* ═════ Aqyl (жас алтын қыран) — қосымша анимациялар ═════
+   Тек transform / opacity. Негізгі .bk-* / .an-* анимациялары globals.css және nat.css ішінде. */
+
+/* Көз жыпылықтау: жиірек және екі рет, тірі көрінуі үшін */
+.qyran.aq .bk-eyes { animation: aqBlink 4.6s infinite; }
+@keyframes aqBlink {
+  0%, 44%, 49%, 90%, 100% { transform: scaleY(1); }
+  46.5% { transform: scaleY(0.08); }
+  92% { transform: scaleY(0.08); }
+  94% { transform: scaleY(1); }
+  96% { transform: scaleY(0.08); }
+}
+.qyran.aq.bk-sleep .bk-eyes, .qyran.aq.bk-cheer .bk-eyes { animation: none; }
+
+/* Үкі қауырсындары желмен тербеледі */
+.qyran.aq .aq-uki { animation: aqUki 3.4s ease-in-out infinite; }
+@keyframes aqUki { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(5deg); } }
+.qyran.aq.bk-cheer .aq-uki, .qyran.aq.bk-happy .aq-uki { animation-duration: 0.9s; }
+.qyran.aq.bk-sleep .aq-uki { animation: none; transform: rotate(-10deg); }
+
+/* Қанат: happy — бір қанатпен сәлем, cheer — екеуі де (globals.css bkWave-тан күштірек) */
+.qyran.aq.bk-happy .bk-arm-r { animation: aqWave 0.8s ease-in-out infinite; }
+.qyran.aq.bk-cheer .bk-arm-r { animation: aqFlap 0.8s ease-in-out infinite; }
+.qyran.aq.bk-cheer .bk-arm-l { animation: aqFlap 0.8s ease-in-out infinite; }
+@keyframes aqWave { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-22deg); } }
+@keyframes aqFlap { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(16deg); } }
+
+/* wow: қанаттар сәл дірілдейді, көздер «шошып» үлкейеді */
+.qyran.aq.bk-wow .bk-arm-l, .qyran.aq.bk-wow .bk-arm-r { animation: aqWow 1.6s ease-in-out infinite; }
+@keyframes aqWow { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
+
+/* think: иекті ұстаған қанат ақырын «тықылдатады», ой көпіршіктері кезекпен шығады */
+.qyran.aq.bk-think .aq-chin { animation: aqChin 2.2s ease-in-out infinite; }
+@keyframes aqChin { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-5deg); } }
+.qyran.aq .aq-dots > * { animation: aqDot 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+.qyran.aq .aq-dots > :nth-child(2) { animation-delay: 0.25s; }
+.qyran.aq .aq-dots > :nth-child(n + 3) { animation-delay: 0.5s; }
+@keyframes aqDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.75; transform: scale(0.88); } }
+
+/* support: жүрек тұсындағы қанат жылы «қағады» */
+.qyran.aq.bk-support .aq-heart { animation: aqHeart 2.4s ease-in-out infinite; }
+@keyframes aqHeart { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-6deg); } }
+
+/* cheer: конфетти жыпылықтайды */
+.qyran.aq .aq-confetti > * { animation: aqConf 1.2s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+.qyran.aq .aq-confetti > :nth-child(2n) { animation-delay: 0.4s; }
+@keyframes aqConf { 50% { opacity: 0.3; transform: translateY(4px) rotate(40deg); } }
+
+/* sleep: z әріптері жоғары қалқиды */
+.qyran.aq .bk-zzz path { animation: aqZ 2.6s ease-in-out infinite; }
+.qyran.aq .bk-zzz path:nth-child(2) { animation-delay: 0.5s; }
+.qyran.aq .bk-zzz path:nth-child(3) { animation-delay: 1s; }
+@keyframes aqZ { 0% { opacity: 0; transform: translateY(6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .qyran.aq .bk-eyes, .qyran.aq .aq-uki, .qyran.aq .bk-arm-l, .qyran.aq .bk-arm-r, .qyran.aq .aq-dots > *,
+  .qyran.aq .aq-confetti > *, .qyran.aq .bk-zzz path { animation: none !important; }
+}
