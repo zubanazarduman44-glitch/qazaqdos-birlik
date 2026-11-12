@@ -21,7 +21,6 @@ export const NAV = [
   { href: "/app/tuzel", key: "tuzel", icon: "pen" },
   { href: "/app/course", key: "course", icon: "book" },
   { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
-  { href: "/app/level", key: "level", icon: "chart" },
   { href: "/app/saiys", key: "saiys", icon: "trophy" },
   { href: "/app/literature", key: "lit", icon: "scroll" },
   { href: "/app/class", key: "class", icon: "user" },
@@ -31,7 +30,7 @@ const MOBILE = ["home", "course", "games", "chat"];
 // Бүйір мәзір топтары: оқу → жаттығу → таным → қауым
 const GROUPS = [
   { id: "top", keys: ["home"] },
-  { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn" }, keys: ["course", "sozdik", "level"] },
+  { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn" }, keys: ["course", "sozdik"] },
   { id: "practice", name: { kk: "Жаттығу", ru: "Практика", en: "Practise" }, keys: ["games", "chat", "tuzel"] },
   { id: "explore", name: { kk: "Таным", ru: "Познание", en: "Explore" }, keys: ["travel", "history", "lit"] },
   { id: "community", name: { kk: "Қауым", ru: "Сообщество", en: "Community" }, keys: ["saiys", "class", "shop"] },
@@ -117,11 +116,25 @@ export default function Shell({ children }) {
   useEffect(() => {
     if (ready && authReady && !state.profile.onboarded) router.replace("/onboarding");
   }, [ready, authReady, state.profile.onboarded, router]);
+  // Жаңа тіркелген қолданушы алдымен деңгей тестін тапсырады, сосын ғана сайтқа өтеді
+  const levelPending = Boolean(state.profile.levelPending) && state.profile.onboarded;
+  useEffect(() => {
+    if (ready && levelPending && path !== "/app/level") router.replace("/app/level?first=1");
+  }, [ready, levelPending, path, router]);
   useEffect(() => { setMore(false); try { window.speechSynthesis?.cancel(); } catch {} }, [path]);
 
   const showNav = () => true;
   const active = (href) => (href === "/app" ? path === "/app" : path?.startsWith(href));
   const label = (k) => t.navLong[k] || t.nav[k];
+
+  if (levelPending) {
+    return (
+      <div className="shell-focus">
+        <header className="focus-head"><Logo /></header>
+        <main className="focus-main">{children}</main>
+      </div>
+    );
+  }
 
   return (
     <div className="shell">

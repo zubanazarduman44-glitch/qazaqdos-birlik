@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { Suspense, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import { NatArt } from "../../components/NatArt";
@@ -15,6 +15,8 @@ const pick = (v, lang) => (typeof v === "string" ? v : v[lang] || v.en || v.ru |
 function Level() {
   const { lang, state, update, award } = useApp();
   const router = useRouter();
+  // Тіркелгеннен кейінгі бірінші тест: кіріспесіз бірден басталады, өткізіп жіберу жоқ
+  const first = useSearchParams().get("first") === "1" || Boolean(state.profile.levelPending);
   const x = tx(lang);
   const [phase, setPhase] = useState("intro");
   const [i, setI] = useState(0);
@@ -22,6 +24,10 @@ function Level() {
   const [answers, setAnswers] = useState([]);
   const [picked, setPicked] = useState(null);
   const [res, setRes] = useState(null);
+  useEffect(() => {
+    if (first && phase === "intro") start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [first]);
 
   function start() {
     setOrder(QUESTIONS.map((q) => shuffle(q.o.map((_, k) => k))));
@@ -42,7 +48,7 @@ function Level() {
       } else {
         const g = grade(next);
         setRes(g);
-        update((s) => ({ ...s, cefr: g.cefr }));
+        update((s) => ({ ...s, cefr: g.cefr, profile: { ...s.profile, levelPending: false } }));
         award(20 + g.total * 2, 10);
         setPhase("result");
       }
@@ -137,7 +143,7 @@ function Level() {
         <p className="lv-next">💡 {x.lvlNext[cur]}</p>
         <p className="muted small">{x.lvlHint}</p>
         <div className="lv-actions">
-          <button className="btn gold big" onClick={() => router.push("/app")}>
+          <button className="btn gold big" onClick={() => router.replace("/app")}>
             {x.lvlGo} <Icon name="right" size={18} />
           </button>
           <button className="btn ghost" onClick={start}>

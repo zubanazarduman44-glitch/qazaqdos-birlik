@@ -23,7 +23,7 @@ export default function Onboarding() {
 
   function finish() {
     const first = !state.profile.onboarded;
-    setProfile({ explain, name: name.trim() || "Дос", goal, avatar, onboarded: true });
+    setProfile({ explain, name: name.trim() || "Дос", goal, avatar, onboarded: true, ...(first ? { levelPending: true } : {}) });
     if (first) award(10, 5);
     router.push(first ? "/app/level?first=1" : "/app");
   }
