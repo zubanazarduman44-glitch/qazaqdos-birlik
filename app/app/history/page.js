@@ -1,4 +1,5 @@
 "use client";
+import "../../history.css";
 import LangPicker from "../../components/LangPicker";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -59,6 +60,59 @@ const SILK = ["taraz", "otrar", "turkistan", "sauran", "syganak"];
 const SORTED = [...SITES].sort((a, b) => a.year - b.year);
 
 const trW = tr;
+
+// Шежіре безендіруі: балауыз мөр, бұрыштағы қошқар мүйіз өрнегі, киіз медальон
+function HistSeal({ size = 40 }) {
+  return (
+    <svg className="hist-seal" viewBox="0 0 40 40" width={size} height={size} aria-hidden="true" focusable="false">
+      <path className="hs-wax" d="M20 2.5c3 0 4 2.2 6.6 3s5-.4 6.8 1.8.4 4.8 1.4 7.3 3 3.6 2.7 6.4-2.6 3.6-3.4 6.2.6 5.1-1.6 6.9-4.7.6-7.3 1.6S23 39.5 20 39.5s-4-2.6-6.6-3.6-5.2.4-7.3-1.6-.8-4.4-1.6-6.9-3.1-3.4-3.4-6.2 1.7-3.9 2.7-6.4-.4-5.1 1.4-7.3 4.2-1 6.8-1.8S17 2.5 20 2.5Z" />
+      <circle className="hs-ring" cx="20" cy="21" r="11.5" />
+      <path className="hs-mark" d="M14.5 21.2l3.8 3.8 7.4-8" />
+    </svg>
+  );
+}
+
+function HistCorner({ c }) {
+  return (
+    <svg className={`hf-corner ${c}`} viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <path d="M4 44V12a8 8 0 0 1 8-8h32" />
+      <path d="M10 38V17c0-4 3-7 7-7h21" />
+      <path className="hf-horn" d="M17 17c6 0 9 3 9 7.5S22 30 19.5 27.5 20 22 23 23" />
+      <circle cx="4" cy="44" r="2.6" />
+      <circle cx="44" cy="4" r="2.6" />
+    </svg>
+  );
+}
+
+function HistFelt() {
+  // Киіз медальон: тігіс жолы бар ойық шеңбер
+  const pts = Array.from({ length: 24 }, (_, i) => {
+    const a = (i / 24) * Math.PI * 2;
+    const r = i % 2 ? 58 : 63;
+    return `${(64 + Math.cos(a) * r).toFixed(1)} ${(64 + Math.sin(a) * r).toFixed(1)}`;
+  });
+  return (
+    <svg className="hist-felt" viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+      <path className="hfl-a" d={`M${pts.join(" L")}Z`} />
+      <circle className="hfl-b" cx="64" cy="64" r="49" />
+      <circle className="hfl-st" cx="64" cy="64" r="44" />
+      <circle className="hfl-c" cx="64" cy="64" r="38" />
+    </svg>
+  );
+}
+
+function HistSeals({ done, label }) {
+  return (
+    <div className="hist-seals" role="img" aria-label={label}>
+      {SORTED.map((s, i) => (
+        <span key={s.id} className={`hsl ${done[s.id] ? "got" : ""}`} style={{ "--i": i }} aria-hidden="true">
+          <svg viewBox="0 0 64 64"><use href={`#${s.tsym}`} /></svg>
+          {done[s.id] && <HistSeal size={18} />}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 function buildQuiz(site, lang, explain) {
   const answers = site.a.map((x, i) => ({ key: String(i), label: L(x, lang) }));
@@ -133,23 +187,31 @@ export default function History() {
           <i key={i} style={{ left: `${(i * 47) % 100}%`, animationDelay: `${(i % 9) * 0.9}s`, animationDuration: `${9 + (i % 5) * 2}s`, "--s": 0.5 + (i % 4) * 0.35 }} />
         ))}
       </div>
-      <header className="page-head">
-        <div>
+      <header className="page-head hist-head">
+        <div className="hist-head-t">
           <span className="kicker">{t.histKicker}</span>
           <h1>{t.histTitle}</h1>
           <p>{t.histSub}</p>
         </div>
         <div className="head-tools">
           <LangPicker />
-          <span className="chip gold">🏺 {t.sitesDone(count, SITES.length)}</span>
+          <span className="chip gold"><Icon name="scroll" size={16} /> {t.sitesDone(count, SITES.length)}</span>
         </div>
+        <HistSeals done={done} label={t.sitesDone(count, SITES.length)} />
       </header>
 
       <section className="card map-card hist-map">
-        <div className="hm-eras">
-          {ERAS.map((e) => (
-            <button key={e.id} className={`chip ${era === e.id ? "gold" : ""}`} onClick={() => setEra(e.id)}>{HIST_UI[lang]?.[`ERA.${e.id}`] || e.n[li]}</button>
-          ))}
+        <div className="hm-eras hist-ribbon">
+          {ERAS.map((e, k) => {
+            const list = SORTED.filter((st) => e.f(st.year));
+            return (
+              <button key={e.id} className={`hr-seg ${era === e.id ? "on" : ""}`} aria-pressed={era === e.id} onClick={() => setEra(e.id)} style={{ "--k": k }}>
+                <b>{HIST_UI[lang]?.[`ERA.${e.id}`] || e.n[li]}</b>
+                {list.length > 0 && <small>{fmtYear(list[0].year, lang)} – {fmtYear(list[list.length - 1].year, lang)}</small>}
+                <span className="hr-dots" aria-hidden="true">{list.map((st) => <i key={st.id} className={done[st.id] ? "got" : ""} />)}</span>
+              </button>
+            );
+          })}
         </div>
         <div className="kzmap-wrap sky hist">
           <div className="sky-stars" aria-hidden />
@@ -206,7 +268,7 @@ export default function History() {
           {SORTED.filter((st) => eraF.f(st.year)).map((st) => (
             <li key={st.id}>
               <button className={sel === st.id ? "on" : ""} onClick={() => pick(st.id)}>
-                <svg viewBox="0 0 64 64" width="38" height="38"><use href={`#${st.tsym}`} /></svg>
+                <span className="hm-tr-art"><svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true"><use href={`#${st.tsym}`} /></svg>{done[st.id] && <HistSeal size={18} />}</span>
                 <span><b>{L(st.treasure, lang)}</b><small>{L(st.name, lang)} · {fmtYear(st.year, lang)}</small></span>
               </button>
             </li>
@@ -228,7 +290,7 @@ export default function History() {
           <div className="timeline">
             {SORTED.map((s, i) => (
               <button key={s.id} className={`tl-node ${sel === s.id ? "on" : ""} ${done[s.id] ? "done" : ""} ${i < idx ? "past" : ""}`} onClick={() => pick(s.id)} style={{ animationDelay: `${i * 0.07}s`, "--n": 18 + i * 34 }}>
-                <span className="tl-dot">{done[s.id] ? "🏅" : s.e}</span>
+                <span className="tl-dot"><svg viewBox="0 0 64 64" aria-hidden="true"><use href={`#${s.tsym}`} /></svg>{done[s.id] && <HistSeal size={20} />}</span>
                 <b>{L(s.name, lang)}</b>
                 <small>{fmtYear(s.year, lang)}</small>
               </button>
@@ -246,7 +308,11 @@ export default function History() {
       </section>
 
       <div ref={panel} className="region-anchor" />
-      <section className="card site rise" key={site.id}>
+      <section className="card site hist-folio rise" key={site.id}>
+        <HistCorner c="tl" />
+        <HistCorner c="tr" />
+        <HistCorner c="bl" />
+        <HistCorner c="br" />
         <div className="site-head">
           <div
             className="artifact"
@@ -256,6 +322,7 @@ export default function History() {
             }}
             onMouseLeave={() => setTilt({ x: 0, y: 0 })}
           >
+            <HistFelt />
             <i className="ar a1" />
             <i className="ar a2" />
             <span className="art-e" style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}><svg viewBox="0 0 64 64" width="84" height="84"><use href={`#${site.tsym}`} /></svg></span>
@@ -263,14 +330,14 @@ export default function History() {
           <div>
             <span className="badge">{L(site.era, lang)}</span>
             <h2>{L(site.name, lang)}</h2>
-            <p className="site-treasure">💎 {L(site.treasure, lang)}</p>
+            <p className="site-treasure"><Icon name="sparkle" size={15} /> {L(site.treasure, lang)}</p>
             {reg && (
               <Link href={`/app/travel?r=${reg.id}`} className="site-reg">
                 <Icon name="map" size={15} /> {L(reg.name, lang)}
               </Link>
             )}
           </div>
-          {done[site.id] && <span className="stamp-mark static pop">🏅 {t.badge}</span>}
+          {done[site.id] && <span className="stamp-mark static pop hist-wax"><HistSeal size={30} /> <span>{t.badge}</span></span>}
         </div>
         <div className="site-body">
           <div className="story">
@@ -286,7 +353,7 @@ export default function History() {
               const saved = state.vocab?.some((v) => v.kk === w.kk);
               return (
                 <button key={w.kk} className={`word-chip ${saved ? "saved" : ""}`} onClick={() => saveWord({ kk: w.kk, tr: trW(w, explain), e: w.e, src: site.id })}>
-                  <span className="wc-e">{w.e}</span>
+                  <span className="wc-e hist-tamga" aria-hidden="true">{w.kk.charAt(0).toUpperCase()}</span>
                   <span>
                     <b>{w.kk}</b>
                     <small>{trW(w, explain)}</small>
@@ -302,7 +369,7 @@ export default function History() {
                 <Quiz questions={quiz} onDone={finish} pass={quiz.length - 1} />
                 {res && (
                   <div className={`alert ${res.ok ? "ok" : ""} rise`}>
-                    {res.ok ? `🏅 ${t.badge}` : t.score(res.right, res.total)}
+                    <span className="hist-res">{res.ok ? <><HistSeal size={26} /> {t.badge}</> : t.score(res.right, res.total)}</span>
                     <button className="btn ghost small" onClick={() => { setQuiz(buildQuiz(site, lang, explain)); setRes(null); }}>
                       <Icon name="refresh" size={15} /> {t.retry}
                     </button>

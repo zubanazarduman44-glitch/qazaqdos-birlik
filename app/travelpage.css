@@ -1,0 +1,288 @@
+/* ════════════════════════════════════════════════════════════════════
+   Qyzyl til · Саяхат беті: «жол картасы» — панорама терезесі, ашықхат
+   тізімі, компас іздеу, мөрлі паспорт кітапшасы. Тек .travel ішінде.
+   (Өңір атласы — travel.css, оны өзгертпейміз.)
+   ════════════════════════════════════════════════════════════════════ */
+.travel {
+  --tp-red: #b8322a; --tp-deep: #8a2018; --tp-cream: #faf6ee; --tp-surface: #fffdf7; --tp-parch: #f4ecda;
+  --tp-ink: #1f2430; --tp-muted: #4a5160; --tp-gold: #e0a526; --tp-blue: #0f5e7a; --tp-ok: #2f6b4f;
+  --tp-rim: rgba(122, 86, 22, 0.24);
+  --tp-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ── Тақырып: мәтін + панорама терезесі ── */
+.travel .trip-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  grid-template-areas: "t w" "tools w" "band band"; column-gap: 28px; row-gap: 14px; align-items: end;
+}
+.trip-head-t { grid-area: t; min-width: 0; align-self: end; }
+.travel .trip-head .head-tools { grid-area: tools; align-self: start; }
+.travel .trip-head::after { grid-area: band; margin-top: 4px; }
+.trip-window {
+  grid-area: w; position: relative; margin: 0; height: 196px; border-radius: 22px 22px 22px 6px; overflow: hidden;
+  background: #e9dfc6; box-shadow: 0 0 0 1px var(--tp-rim), 0 18px 34px -24px rgba(60, 40, 10, 0.6);
+  animation: tpWin 0.9s var(--tp-ease) both;
+}
+.trip-window .sa { position: absolute; inset: 0; }
+.tw-frame {
+  position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 0 0 6px rgba(255, 253, 247, 0.92), inset 0 0 0 7px rgba(122, 86, 22, 0.25);
+}
+.tw-tag {
+  position: absolute; inset-inline-start: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 7px; max-width: calc(100% - 32px);
+  padding: 7px 12px 7px 10px; border-radius: 10px; background: var(--tp-surface); color: var(--tp-ink); font-size: 14px;
+  box-shadow: 0 6px 14px -8px rgba(30, 20, 5, 0.55);
+}
+.tw-tag .ic { color: var(--tp-red); flex: none; }
+.tw-tag b { font-family: var(--head); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tw-got { display: inline-flex; align-items: center; gap: 4px; padding-inline-start: 8px; margin-inline-start: 2px; border-inline-start: 1px solid var(--tp-rim); color: var(--tp-ok); font-weight: 700; font-size: 13px; white-space: nowrap; }
+.tw-got .ic { color: var(--tp-ok); }
+@keyframes tpWin { from { opacity: 0; transform: translateY(12px) scale(0.98); } }
+
+/* ── Карта жанындағы панель ── */
+.travel .map-side { gap: 14px 16px; }
+.travel .side-prog { background: var(--tp-parch); box-shadow: inset 0 0 0 1px var(--tp-rim); padding: 12px 14px; }
+.travel .side-prog h3 { font-family: var(--head); font-weight: 600; font-size: 16px; color: var(--tp-ink); }
+.travel .trip-ring { width: 80px; height: 80px; background: conic-gradient(var(--tp-red) var(--p), rgba(122, 86, 22, 0.16) 0); }
+.travel .trip-ring::before {
+  inset: 7px; background:
+    repeating-conic-gradient(from -1deg, rgba(122, 86, 22, 0.4) 0 2deg, transparent 2deg 22.5deg) border-box,
+    var(--tp-surface);
+  box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.25);
+}
+.travel .trip-ring::after { content: ""; position: absolute; inset: 15px; border-radius: 50%; background: var(--tp-surface); box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.15); }
+.travel .trip-ring b, .travel .trip-ring small { z-index: 1; }
+.travel .trip-ring b { color: var(--tp-deep); }
+.travel .trip-ring small { color: var(--tp-muted); }
+.travel .map-legend { color: var(--tp-muted); }
+.travel .side-prog .map-legend { flex-wrap: wrap; gap: 4px 12px; }
+.travel .side-prog > div:last-child { min-width: 0; }
+.travel .lg-done { background: var(--tp-gold); }
+.travel .lg-todo { background: #e6d6b4; box-shadow: inset 0 0 0 1px var(--tp-rim); }
+
+/* Компас іздеу өрісі */
+.travel .trip-search {
+  min-height: 52px; padding: 0 14px 0 6px; gap: 10px; border-radius: 999px; background: var(--tp-surface);
+  box-shadow: inset 0 0 0 1.5px var(--tp-rim), 0 6px 14px -12px rgba(60, 40, 10, 0.5);
+  transition: box-shadow 0.2s;
+}
+.travel .trip-search:focus-within { box-shadow: inset 0 0 0 2px var(--tp-red), 0 0 0 4px rgba(184, 50, 42, 0.12); }
+.travel .trip-search input { min-height: 50px; font-size: 15.5px; color: var(--tp-ink); }
+.travel .trip-search input::placeholder { color: #6a6f7a; }
+.ts-ic { position: relative; flex: none; display: grid; place-items: center; width: 40px; height: 40px; }
+.ts-ic .trip-compass { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ts-ic > .ic { position: relative; z-index: 1; color: var(--tp-deep); background: var(--tp-surface); border-radius: 50%; padding: 1px; opacity: 0; transform: scale(0.6); transition: opacity 0.25s, transform 0.25s var(--tp-ease); }
+.trip-search:focus-within .ts-ic > .ic { opacity: 1; transform: none; }
+.trip-search:focus-within .tc-needle { transform: rotate(200deg); }
+.travel .search-pop { padding: 6px; border-radius: 16px; background: var(--tp-surface); box-shadow: 0 0 0 1px var(--tp-rim), var(--shadow-lg); }
+.travel .search-pop button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px 7px 7px; border-radius: 12px; text-align: start; }
+.travel .search-pop button:hover, .travel .search-pop button:focus-visible { background: var(--tp-parch); }
+.ts-art { flex: none; width: 34px; height: 34px; }
+.ts-art .sa { width: 34px; height: 34px; box-shadow: 0 0 0 1.5px #fffdf7, 0 0 0 2.5px var(--tp-rim); }
+.ts-t { display: grid; min-width: 0; }
+.ts-t b { font-weight: 700; font-size: 14.5px; color: var(--tp-ink); }
+.ts-t small { font-size: 12.5px; font-weight: 600; color: var(--tp-muted); }
+
+/* Компас (SVG) */
+.trip-compass { display: block; overflow: visible; }
+.tc-bez { fill: var(--tp-parch); stroke: rgba(122, 86, 22, 0.45); stroke-width: 1.5; }
+.tc-face { fill: var(--tp-surface); stroke: rgba(122, 86, 22, 0.25); stroke-width: 1; }
+.tc-ticks path { stroke: rgba(122, 86, 22, 0.55); stroke-width: 1.4; stroke-linecap: round; }
+.tc-needle { transform-box: view-box; transform-origin: 50% 50%; transition: transform 0.9s var(--tp-ease); animation: tpNeedle 6s ease-in-out infinite alternate; }
+.tc-n { fill: var(--tp-red); }
+.tc-s { fill: #b9a77f; }
+.tc-hub { fill: var(--tp-gold); stroke: var(--tp-surface); stroke-width: 1.2; }
+@keyframes tpNeedle { 0% { rotate: -14deg; } 100% { rotate: 18deg; } }
+
+/* ── Өңірлер: ашықхат тақташалары ── */
+.travel .trip-cards {
+  gap: 10px; padding: 2px 6px 18px 2px; max-height: 232px; scroll-padding-block: 2px;
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent);
+}
+.travel .trip-cards button {
+  position: relative; gap: 12px; min-height: 64px; padding: 7px 12px 7px 7px; border-radius: 12px; overflow: hidden;
+  background: var(--tp-surface); color: var(--tp-ink);
+  box-shadow: inset 0 0 0 1px var(--tp-rim), 0 5px 12px -10px rgba(60, 40, 10, 0.55);
+  transition: transform 0.25s var(--tp-ease), box-shadow 0.25s, background-color 0.25s;
+}
+/* Пошта жиегі: ашықхаттың сол шетіндегі қызыл-көк сызық */
+.travel .trip-cards button::before {
+  content: ""; position: absolute; inset-block: 0; inset-inline-end: 0; width: 5px;
+  background: repeating-linear-gradient(180deg, var(--tp-red) 0 7px, var(--tp-surface) 7px 10px, var(--tp-blue) 10px 17px, var(--tp-surface) 17px 20px);
+  opacity: 0.55;
+}
+.travel .trip-cards button:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.45), 0 10px 18px -12px rgba(60, 40, 10, 0.55); }
+.travel .trip-cards button.got { background: #fbf3e0; }
+.travel .trip-cards button.on { background: var(--tp-deep); color: var(--tp-cream); box-shadow: 0 10px 18px -12px rgba(138, 32, 24, 0.7); }
+.travel .trip-cards button.on::before { opacity: 0.9; background: repeating-linear-gradient(180deg, var(--tp-gold) 0 7px, transparent 7px 10px); }
+.travel .trip-cards button.on small { color: rgba(250, 246, 238, 0.9); }
+.travel .trip-cards .rl-e { width: 50px; height: 50px; }
+.travel .trip-cards .rl-e .sa { width: 50px; height: 50px; border-radius: 9px; box-shadow: 0 0 0 2px #fffdf7, 0 0 0 3px var(--tp-rim); }
+.travel .trip-cards .rl-t b { font-size: 14.5px; line-height: 1.25; }
+.travel .trip-cards .rl-t small { color: var(--tp-muted); font-weight: 600; }
+.travel .trip-cards .rl-ok {
+  right: auto; inset-inline-end: -7px; bottom: -6px; width: 24px; height: 24px; background: var(--tp-surface); color: var(--tp-ok);
+  box-shadow: inset 0 0 0 1.5px var(--tp-ok), 0 0 0 2px var(--tp-surface); transform: rotate(-12deg);
+}
+.travel .trip-cards button.on .rl-ok { color: var(--tp-deep); box-shadow: inset 0 0 0 1.5px var(--tp-deep), 0 0 0 2px var(--tp-surface); }
+.travel .trip-cards button:focus-visible { outline: 3px solid var(--tp-red); outline-offset: 2px; }
+
+/* ── Бос күй: жол билеті ── */
+.travel .trip-hint {
+  position: relative; overflow: hidden; gap: 20px; padding: 22px 26px; background: var(--tp-surface);
+  box-shadow: inset 0 0 0 1px var(--tp-rim), var(--shadow);
+}
+.travel .trip-hint::before {
+  content: ""; position: absolute; inset-block: 14px; inset-inline-end: 132px; border-inline-start: 2px dashed rgba(122, 86, 22, 0.3);
+}
+.travel .trip-hint p { flex: 1; font-family: var(--head); font-weight: 600; font-size: 17px; line-height: 1.5; color: var(--tp-ink); }
+.th-compass { flex: none; width: 84px; height: 84px; margin-inline-start: 22px; }
+
+/* ── Өңір бөлімі: қызық дерек, сөз карточкалары, тест ── */
+.travel .region-hero .stamp-mark {
+  top: 18px; right: 18px; padding: 8px 16px; border-radius: 10px; background: rgba(255, 253, 247, 0.94); color: var(--tp-ok);
+  box-shadow: inset 0 0 0 2px var(--tp-ok), inset 0 0 0 4px rgba(255, 253, 247, 0.94), inset 0 0 0 5px var(--tp-ok), 0 8px 18px -10px rgba(0, 0, 0, 0.5);
+  font-family: var(--head); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 13px; transform: rotate(-7deg);
+}
+.travel .fact {
+  position: relative; padding: 16px 18px 16px 16px; border-radius: 14px; background: #fbf3e0;
+  box-shadow: inset 0 0 0 1px var(--tp-rim);
+}
+.travel .fact::after {
+  content: ""; position: absolute; top: 12px; inset-inline-end: 12px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--bg, #faf6ee); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.4);
+}
+.travel .fact b { color: var(--tp-deep); }
+.travel .region-words h3 { font-family: var(--head); font-weight: 600; }
+.travel .flip { height: 108px; }
+.travel .flip-f, .travel .flip-b { border-radius: 14px; }
+.travel .flip-f {
+  background:
+    linear-gradient(var(--tp-surface), var(--tp-surface)) padding-box,
+    repeating-linear-gradient(135deg, var(--tp-red) 0 8px, var(--tp-surface) 8px 12px, var(--tp-blue) 12px 20px, var(--tp-surface) 20px 24px) border-box;
+  border: 4px solid transparent; box-shadow: 0 6px 14px -10px rgba(60, 40, 10, 0.55);
+}
+.travel .flip-f b { color: var(--tp-ink); }
+.travel .flip-b { background: var(--tp-blue); color: #fff; }
+.travel .flip:hover .flip-in { transform: translateY(-3px); }
+.travel .flip.on:hover .flip-in { transform: rotateY(180deg) translateY(-3px); }
+.travel .flip:focus-visible { outline: 3px solid var(--tp-red); outline-offset: 3px; border-radius: 16px; }
+
+.travel .region-quiz { justify-items: stretch; }
+.travel .region-quiz > .btn.big { justify-self: start; }
+.travel .quiz-q { font-family: var(--head); font-weight: 600; }
+.travel .quiz-opts { counter-reset: tpq; gap: 12px; }
+.travel .qopt {
+  counter-increment: tpq; min-height: 58px; gap: 12px; padding: 12px 16px 12px 12px; border-radius: 12px; background: var(--tp-surface); text-align: start;
+  box-shadow: inset 0 0 0 1px var(--tp-rim), 0 6px 14px -12px rgba(60, 40, 10, 0.5);
+}
+.travel .qopt::before {
+  content: counter(tpq); flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px;
+  font-family: var(--head); font-weight: 700; font-size: 13px; color: var(--tp-blue); background: #e7f0f2; transform: rotate(-6deg);
+  box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.5);
+}
+.travel .qopt:not(:disabled):hover { transform: translateY(-2px); box-shadow: inset 0 0 0 2px var(--tp-blue), 0 10px 18px -12px rgba(15, 94, 122, 0.55); }
+.travel .qopt.ok { background: #eef4ef; color: var(--tp-ok); box-shadow: inset 0 0 0 2px var(--tp-ok); }
+.travel .qopt.ok::before { color: #fff; background: var(--tp-ok); box-shadow: none; animation: tpStamp 0.45s var(--tp-ease) both; }
+.travel .qopt.bad { background: #f3e3e6; color: #6e1e2e; box-shadow: inset 0 0 0 2px #6e1e2e; }
+.travel .qopt.bad::before { color: #6e1e2e; background: #fff; box-shadow: inset 0 0 0 1.5px #6e1e2e; }
+@keyframes tpStamp { 0% { transform: scale(1.8) rotate(-25deg); opacity: 0; } 60% { transform: scale(0.92) rotate(-6deg); opacity: 1; } 100% { transform: rotate(-6deg); } }
+
+/* ── Паспорт кітапшасы ── */
+.travel .trip-passport { display: grid; gap: 0; border-radius: 22px; overflow: hidden; background: var(--tp-surface); box-shadow: 0 0 0 1px var(--tp-rim), var(--shadow-lg); }
+.tp-cover {
+  position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding: 16px 22px 18px;
+  background: var(--tp-deep); color: var(--tp-cream);
+}
+.tp-cover::after {
+  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 6px;
+  background: var(--oyu-band, none) repeat-x left center; background-size: auto 6px; opacity: 0.9;
+}
+.tp-emblem {
+  flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; color: var(--tp-gold);
+  box-shadow: inset 0 0 0 2px var(--tp-gold), inset 0 0 0 5px var(--tp-deep), inset 0 0 0 6px rgba(224, 165, 38, 0.55);
+}
+.travel .trip-passport h2 {
+  flex: 1; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin: 0;
+  font-family: var(--head); font-weight: 700; font-size: clamp(19px, 2.2vw, 24px); letter-spacing: 0.02em; color: var(--tp-cream);
+}
+.tp-count { font-family: var(--body); font-weight: 600; font-size: 14px; letter-spacing: 0; color: rgba(250, 246, 238, 0.9); }
+.tp-bar { position: relative; flex: 0 1 220px; height: 8px; border-radius: 99px; overflow: hidden; background: rgba(250, 246, 238, 0.18); }
+.tp-bar i { position: absolute; inset: 0; background: var(--tp-gold); border-radius: inherit; transform-origin: left center; transition: transform 0.9s var(--tp-ease); }
+[dir="rtl"] .tp-bar i { transform-origin: right center; }
+.tp-pages {
+  position: relative; padding: 22px 22px 24px;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 14px), rgba(122, 86, 22, 0.1) calc(50% - 2px), rgba(122, 86, 22, 0.22) 50%, rgba(122, 86, 22, 0.1) calc(50% + 2px), transparent calc(50% + 14px)),
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(15, 94, 122, 0.05) 27px 28px),
+    #fbf6ea;
+}
+.travel .trip-passport .stamp-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 14px 10px; }
+.travel .trip-passport .stamp:nth-child(5n) { margin-inline-end: 12px; }
+.travel .trip-passport .stamp:nth-child(5n + 1) { margin-inline-start: 12px; }
+.travel .trip-passport .stamp:nth-child(10n + 1) { margin-inline-start: 0; }
+.travel .trip-passport .stamp:nth-child(10n) { margin-inline-end: 0; }
+.travel .trip-passport .stamp {
+  position: relative; gap: 4px; padding: 10px 4px; border: 0; border-radius: 50%; filter: none; opacity: 1; color: var(--tp-muted); background: transparent;
+  box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.28); transition: transform 0.25s var(--tp-ease);
+}
+.travel .trip-passport .stamp::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; border: 1.5px dashed rgba(122, 86, 22, 0.28); pointer-events: none; }
+.travel .trip-passport .stamp .stamp-e { width: 40px; height: 40px; }
+.travel .trip-passport .stamp .stamp-e .sa { width: 40px; height: 40px; filter: grayscale(1) contrast(0.9); opacity: 0.45; }
+.travel .trip-passport .stamp-n { font-size: 11.5px; font-weight: 700; line-height: 1.15; color: var(--tp-muted); max-width: 100%; letter-spacing: -0.01em; }
+.travel .trip-passport .stamp:hover { transform: rotate(-4deg) scale(1.05); }
+.travel .trip-passport .stamp:focus-visible { outline: 3px solid var(--tp-red); outline-offset: 2px; }
+/* Басылған мөр: сия жайылып түседі */
+.travel .trip-passport .stamp.got {
+  --ink: var(--tp-red); color: var(--ink); background: rgba(255, 253, 247, 0.6); transform: rotate(var(--r, -6deg));
+  box-shadow: inset 0 0 0 2.5px var(--ink), inset 0 0 0 5px rgba(255, 253, 247, 0.6), inset 0 0 0 6px var(--ink);
+  animation: tpInk 0.6s calc(0.1s + var(--i) * 0.04s) cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.travel .trip-passport .stamp.got:nth-child(3n + 2) { --ink: var(--tp-blue); }
+.travel .trip-passport .stamp.got:nth-child(3n) { --ink: var(--tp-ok); }
+.travel .trip-passport .stamp.got::before { inset: 8px; border: 1px dashed var(--ink); opacity: 0.45; }
+.travel .trip-passport .stamp.got .stamp-e .sa { filter: none; opacity: 1; box-shadow: 0 0 0 2px #fffdf7, 0 0 0 3px var(--ink); }
+.travel .trip-passport .stamp.got .stamp-n { color: var(--ink); font-weight: 800; }
+.travel .trip-passport .stamp.got:hover { transform: rotate(var(--r, -6deg)) scale(1.06); }
+@keyframes tpInk { 0% { opacity: 0; transform: scale(1.7) rotate(calc(var(--r, -6deg) - 18deg)); } 100% { opacity: 1; transform: rotate(var(--r, -6deg)); } }
+
+/* ── RTL ── */
+[dir="rtl"] .trip-window { border-radius: 22px 22px 6px 22px; }
+
+/* ── Шағын экран ── */
+@media (max-width: 1100px) {
+  .travel .trip-passport .stamp-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .travel .trip-passport .stamp:nth-child(n) { margin: 0; }
+  .tp-pages { background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(15, 94, 122, 0.05) 27px 28px), #fbf6ea; }
+}
+@media (max-width: 760px) {
+  .travel .trip-head { grid-template-columns: minmax(0, 1fr); grid-template-areas: "t" "w" "tools" "band"; row-gap: 12px; }
+  .trip-window { height: 150px; border-radius: 18px 18px 18px 6px; }
+  .travel .trip-hint { flex-wrap: wrap; padding: 18px; gap: 12px; }
+  .travel .trip-hint::before { display: none; }
+  .travel .trip-hint .qyran { width: 64px; height: auto; }
+  .travel .trip-hint p { flex: 1 1 200px; font-size: 15.5px; }
+  .th-compass { display: none; }
+}
+@media (max-width: 560px) {
+  /* Ашықхаттар: көлденең жылжымалы таспа */
+  .travel .trip-cards { display: flex; max-height: none; -webkit-mask-image: none; mask-image: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; gap: 8px; padding: 2px 2px 10px; }
+  .travel .trip-cards li { flex: 0 0 min(72%, 240px); scroll-snap-align: start; }
+  .travel .trip-cards button { height: 100%; }
+  .travel .trip-passport .stamp-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 8px; }
+  .tp-pages { padding: 18px 14px 20px; }
+  .tp-cover { padding: 14px 16px 16px; }
+  .tp-bar { flex-basis: 100%; }
+  .travel .trip-passport .stamp .stamp-e, .travel .trip-passport .stamp .stamp-e .sa { width: 34px; height: 34px; }
+  .travel .trip-passport .stamp { padding: 8px 0; }
+  .travel .trip-passport .stamp-n { font-size: 10px; }
+  .travel .trip-passport .stamp.got .stamp-n { font-size: 9.5px; letter-spacing: -0.02em; }
+  .travel .region-hero .stamp-mark { top: 12px; right: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trip-window, .travel .trip-passport .stamp.got, .travel .qopt.ok::before, .tc-needle { animation: none !important; }
+  .tc-needle, .ts-ic > .ic, .tp-bar i, .travel .trip-cards button, .travel .trip-passport .stamp { transition: none; }
+  .travel .trip-cards button:hover, .travel .flip:hover .flip-in { transform: none; }
+  .travel .trip-passport .stamp:not(.got):hover { transform: none; }
+}

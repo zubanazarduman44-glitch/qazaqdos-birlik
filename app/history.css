@@ -1,0 +1,279 @@
+/* ════════════════════════════════════════════════════════════════════
+   Qyzyl til · Тарих: «шежіре» — дәуір таспасы, мөрлер, қолжазба парағы
+   Тек осы бетке (.history) қатысты. Қозғалыс: transform / opacity.
+   ════════════════════════════════════════════════════════════════════ */
+.history {
+  --hz-red: #b8322a; --hz-deep: #8a2018; --hz-cream: #faf6ee; --hz-surface: #fffdf7; --hz-parch: #f4ecda;
+  --hz-ink: #1f2430; --hz-muted: #4a5160; --hz-gold: #e0a526; --hz-gold-ink: #6b4a00; --hz-ok: #2f6b4f;
+  --hz-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Фон: түрлі түсті жарқыл орнына жұмсақ алтын тозаң */
+.history .h-bg { background: radial-gradient(60% 40% at 50% 0%, rgba(224, 165, 38, 0.16), transparent 70%); }
+.history .h-bg i { background: rgba(224, 165, 38, 0.55); box-shadow: 0 0 8px rgba(224, 165, 38, 0.45); }
+
+/* ── Тақырып + жиналған мөрлер ── */
+.hist-head-t { min-width: 0; }
+.hist-seals { flex-basis: 100%; order: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
+.hsl {
+  position: relative; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  background: var(--hz-surface); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.28);
+  animation: hzSealIn 0.5s calc(0.15s + var(--i) * 0.05s) var(--hz-ease) both;
+}
+.hsl::before { content: ""; position: absolute; inset: 3px; border-radius: 50%; border: 1px dashed rgba(122, 86, 22, 0.32); }
+.hsl svg:first-child { width: 28px; height: 28px; filter: grayscale(1); opacity: 0.38; }
+.hsl.got { background: var(--hz-parch); box-shadow: inset 0 0 0 2px var(--hz-gold), 0 4px 10px -6px rgba(110, 60, 10, 0.6); }
+.hsl.got::before { border-color: rgba(138, 32, 24, 0.35); }
+.hsl.got svg:first-child { filter: none; opacity: 1; }
+.hsl .hist-seal { position: absolute; inset-inline-end: -5px; bottom: -4px; }
+@keyframes hzSealIn { from { opacity: 0; transform: scale(0.6) rotate(-20deg); } }
+
+/* Балауыз мөр */
+.hist-seal { display: block; flex: none; overflow: visible; }
+.hs-wax { fill: var(--hz-red); stroke: var(--hz-deep); stroke-width: 1.4; }
+.hs-ring { fill: none; stroke: rgba(255, 220, 200, 0.55); stroke-width: 1.3; stroke-dasharray: 2 2.4; }
+.hs-mark { fill: none; stroke: #fff4e6; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── Дәуір таспасы ── */
+.history .hist-ribbon {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; padding: 0; overflow: hidden;
+  border-radius: 14px; background: var(--hz-parch); box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.25);
+}
+.hr-seg {
+  position: relative; display: grid; align-content: start; gap: 3px; min-width: 0; padding: 10px 14px 10px 16px;
+  border: 0; background: transparent; color: var(--hz-ink); font: inherit; text-align: start; cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+}
+.hr-seg + .hr-seg { border-inline-start: 1px solid rgba(122, 86, 22, 0.22); }
+.hr-seg + .hr-seg::before {
+  content: ""; position: absolute; inset-inline-start: -5px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
+  transform: rotate(45deg); background: var(--hz-gold); box-shadow: 0 0 0 2px var(--hz-parch); z-index: 1;
+}
+.hr-seg b { font-family: var(--head); font-weight: 600; font-size: 14px; line-height: 1.2; }
+.hr-seg small { font-size: 12px; font-weight: 600; color: var(--hz-muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.hr-dots { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.hr-dots i { width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.5); }
+.hr-dots i.got { background: var(--hz-gold); box-shadow: none; }
+.hr-seg:hover { background: rgba(224, 165, 38, 0.16); }
+.hr-seg.on { background: var(--hz-deep); color: var(--hz-cream); }
+.hr-seg.on small { color: rgba(250, 246, 238, 0.88); }
+.hr-seg.on .hr-dots i { box-shadow: inset 0 0 0 1.5px rgba(250, 246, 238, 0.7); }
+.hr-seg.on .hr-dots i.got { background: var(--hz-gold); box-shadow: none; }
+.hr-seg:focus-visible { outline: 3px solid var(--hz-red); outline-offset: -3px; }
+
+/* ── Қазына каталогы ── */
+.history .hm-treasures { grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 10px; }
+.history .hm-treasures button {
+  min-height: 60px; padding: 8px 12px 8px 8px; border-radius: 14px; background: var(--hz-surface); color: var(--hz-ink);
+  box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.22), 0 6px 14px -12px rgba(60, 40, 10, 0.5);
+  transition: transform 0.25s var(--hz-ease), box-shadow 0.25s, background-color 0.25s;
+}
+.history .hm-treasures button:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.45), 0 10px 18px -12px rgba(60, 40, 10, 0.55); }
+.history .hm-treasures button.on { background: #fbefe0; box-shadow: inset 0 0 0 2px var(--hz-red), 0 10px 18px -12px rgba(138, 32, 24, 0.5); }
+.history .hm-treasures b { font-weight: 700; font-size: 14.5px; line-height: 1.25; }
+.history .hm-treasures small { color: var(--hz-muted); font-size: 12.5px; }
+.hm-tr-art { position: relative; flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--hz-parch); box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.25); }
+.hm-tr-art::before { content: ""; position: absolute; inset: 3px; border-radius: 50%; border: 1px dashed rgba(122, 86, 22, 0.35); }
+.hm-tr-art svg { position: relative; }
+.hm-tr-art .hist-seal { position: absolute; inset-inline-end: -5px; bottom: -4px; }
+
+/* ── Уақыт өзені: шиыршық қағаз ── */
+.history .portal {
+  position: relative; background: linear-gradient(180deg, #f8efdc, var(--hz-surface) 60%);
+  box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.2), var(--shadow);
+}
+.history .portal::before, .history .portal::after {
+  content: ""; position: absolute; inset-inline: 0; height: 10px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(122, 86, 22, 0.18), transparent);
+}
+.history .portal::before { top: 0; }
+.history .portal::after { bottom: 0; transform: scaleY(-1); }
+.history .portal-year small { color: var(--hz-muted); letter-spacing: 0.06em; }
+.history .portal-year b {
+  background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--hz-deep); filter: none;
+  text-shadow: 0 2px 0 rgba(224, 165, 38, 0.35);
+}
+.history .river { padding-top: 16px; }
+.history .river-wave { top: 26px; }
+.history .rw { stroke: rgba(15, 94, 122, 0.28); }
+.history .rw2 { stroke: rgba(224, 165, 38, 0.45); }
+.history .rw-fill { stroke: var(--hz-red); filter: none; stroke-width: 4; }
+.history .tl-dot {
+  position: relative; width: 58px; height: 58px; font-size: 0; background: var(--hz-surface);
+  box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.3), 0 8px 18px -12px rgba(60, 40, 10, 0.6);
+}
+.history .tl-dot::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 1px dashed rgba(122, 86, 22, 0.35); }
+.history .tl-dot > svg:first-child { position: relative; width: 38px; height: 38px; }
+.history .tl-dot .hist-seal { position: absolute; inset-inline-end: -6px; bottom: -4px; }
+.history .tl-node.past .tl-dot { background: var(--hz-parch); box-shadow: inset 0 0 0 2px rgba(224, 165, 38, 0.8), 0 8px 18px -12px rgba(60, 40, 10, 0.6); }
+.history .tl-node.on .tl-dot {
+  background: var(--hz-parch); animation: none; transform: scale(1.22);
+  box-shadow: 0 0 0 3px var(--hz-surface), 0 0 0 5.5px var(--hz-red), 0 12px 22px -10px rgba(138, 32, 24, 0.6);
+}
+.history .tl-node.on b { color: var(--hz-deep); }
+.history .tl-node small { color: var(--hz-muted); }
+.history .tl-node:focus-visible { outline: 3px solid var(--hz-red); outline-offset: 2px; border-radius: 12px; }
+
+/* ── Тарихи орын: безендірілген қолжазба парағы ── */
+.history .hist-folio {
+  position: relative; padding: 0; background: var(--hz-surface);
+  box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.22), var(--shadow-lg);
+}
+.history .hist-folio::before {
+  content: ""; position: absolute; inset: 8px; z-index: 1; border-radius: 12px; pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(184, 50, 42, 0.3), inset 0 0 0 4px var(--hz-surface), inset 0 0 0 5px rgba(224, 165, 38, 0.45);
+}
+.history .hist-folio .site-head { position: relative; z-index: 0; }
+.hf-corner { position: absolute; z-index: 2; width: 44px; height: 44px; pointer-events: none; fill: none; stroke: var(--hz-red); stroke-width: 2; stroke-linecap: round; }
+.hf-corner .hf-horn { stroke: var(--hz-gold); stroke-width: 2.4; }
+.hf-corner circle { fill: var(--hz-gold); stroke: none; }
+.hf-corner.tl { top: 12px; left: 12px; }
+.hf-corner.tr { top: 12px; right: 12px; transform: scaleX(-1); }
+.hf-corner.bl { bottom: 12px; left: 12px; transform: scaleY(-1); }
+.hf-corner.br { bottom: 12px; right: 12px; transform: scale(-1, -1); }
+.history .hist-folio .site-head {
+  gap: 22px; padding: 30px 34px 22px; background:
+    radial-gradient(120% 140% at 0% 0%, rgba(224, 165, 38, 0.2), transparent 55%),
+    linear-gradient(180deg, #f8efdc, var(--hz-surface));
+  border-bottom: 1px solid rgba(122, 86, 22, 0.18);
+}
+.history .hist-folio .site-head::before { background: linear-gradient(100deg, transparent, rgba(255, 253, 247, 0.7), transparent); }
+.history .hist-folio .site-head h2 { font-family: var(--head); font-weight: 700; font-size: clamp(24px, 3vw, 34px); line-height: 1.1; color: var(--hz-ink); margin: 8px 0 6px; }
+.history .hist-folio .badge { background: var(--hz-deep); color: var(--hz-cream); box-shadow: none; font-weight: 700; letter-spacing: 0.02em; }
+.history .site-treasure { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px; color: var(--hz-deep); font-weight: 700; }
+.history .site-treasure .ic { color: var(--hz-gold); }
+.history .site-reg { color: #0f5e7a; text-decoration: none; padding: 4px 10px 4px 8px; border-radius: 999px; background: rgba(15, 94, 122, 0.08); }
+.history .site-reg:hover { background: rgba(15, 94, 122, 0.14); }
+
+/* Киіз медальондағы жәдігер */
+.history .artifact { width: 148px; height: 148px; }
+.hist-felt { position: absolute; inset: 0; width: 100%; height: 100%; animation: hzFelt 0.8s var(--hz-ease) both; }
+.hfl-a { fill: var(--hz-red); }
+.hfl-b { fill: var(--hz-parch); }
+.hfl-st { fill: none; stroke: var(--hz-red); stroke-width: 1.6; stroke-dasharray: 4 4; opacity: 0.55; }
+.hfl-c { fill: #fbf4e4; }
+.history .artifact .ar { inset: -6px; border: 1.5px dashed rgba(224, 165, 38, 0.75); }
+.history .artifact .a2 { display: none; }
+.history .art-e { position: relative; z-index: 1; filter: drop-shadow(0 10px 10px rgba(80, 40, 10, 0.35)); }
+.history .art-e svg { width: 78px; height: 78px; filter: none; }
+@keyframes hzFelt { from { opacity: 0; transform: scale(0.7) rotate(-30deg); } }
+
+/* Балауыз мөр белгісі */
+.history .hist-wax {
+  display: inline-flex; align-items: center; gap: 8px; top: 30px; right: 70px; padding: 6px 14px 6px 6px;
+  background: var(--hz-surface); color: var(--hz-deep); font-weight: 800; font-size: 14px;
+  box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.4), 0 8px 16px -10px rgba(138, 32, 24, 0.5);
+  transform: rotate(-4deg);
+}
+
+/* Оқиға: бас әріп (буквица) */
+.history .hist-folio .site-body { padding: 24px 34px 32px; gap: 22px; }
+.history .story { gap: 16px; padding: 18px 20px; border-radius: 16px; background: #fbf4e4; box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.16); }
+.history .story-lines { font-size: 17px; line-height: 1.65; color: var(--hz-ink); }
+.history .story-lines::first-letter {
+  float: inline-start; margin: 4px 10px 0 0; margin-inline-end: 10px; margin-inline-start: 0; padding: 4px 10px; border-radius: 8px;
+  font-family: var(--head); font-weight: 700; font-size: 40px; line-height: 1; color: var(--hz-cream); background: var(--hz-deep);
+  box-shadow: inset 0 0 0 2px var(--hz-deep), inset 0 0 0 3.5px var(--hz-gold);
+}
+
+/* Сөздер: таңбалы тамға */
+.history .site-words { gap: 12px; }
+.history .word-chip {
+  min-height: 64px; padding: 10px 12px; border-radius: 14px; background: var(--hz-surface);
+  box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.24), 0 6px 14px -12px rgba(60, 40, 10, 0.5);
+  transition: transform 0.25s var(--hz-ease), box-shadow 0.25s;
+}
+.history .word-chip:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.45), 0 10px 18px -12px rgba(60, 40, 10, 0.55); }
+.history .word-chip b { font-size: 16px; }
+.history .word-chip small { color: var(--hz-muted); }
+.history .word-chip .ic { color: var(--hz-red); }
+.history .word-chip.saved { background: #eef4ef; box-shadow: inset 0 0 0 1.5px var(--hz-ok); }
+.history .word-chip.saved .ic { color: var(--hz-ok); }
+.hist-tamga {
+  --tg: var(--hz-red); --tg-ink: var(--hz-cream);
+  position: relative; z-index: 0; flex: none; display: grid; place-items: center; width: 42px; height: 42px;
+  font-family: var(--head); font-weight: 700; font-size: 17px; line-height: 1; color: var(--tg-ink);
+}
+.hist-tamga::before {
+  content: ""; position: absolute; z-index: -1; inset: 6px; border-radius: 7px; transform: rotate(45deg); background: var(--tg);
+  box-shadow: inset 0 0 0 2px var(--tg), inset 0 0 0 3.5px rgba(255, 253, 247, 0.65);
+  transition: transform 0.35s var(--hz-ease);
+}
+.history .wc-e.hist-tamga { font-size: 17px; }
+.history .word-chip:hover .hist-tamga::before { transform: rotate(135deg); }
+.history .word-chip:nth-child(3n + 2) .hist-tamga { --tg: #0f5e7a; }
+.history .word-chip:nth-child(3n) .hist-tamga { --tg: var(--hz-gold); --tg-ink: #3a2500; }
+
+/* ── Сұрақ: мөрлі жауап тақташалары ── */
+.history .site-quiz { justify-items: stretch; padding-top: 6px; border-top: 1px dashed rgba(122, 86, 22, 0.3); }
+.history .site-quiz > .btn.big { justify-self: start; }
+.history .quiz-q { font-family: var(--head); font-weight: 600; color: var(--hz-ink); }
+.history .quiz .badge { background: var(--hz-parch); color: var(--hz-deep); box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.3); }
+.history .quiz-opts { counter-reset: hzq; gap: 12px; }
+.history .qopt {
+  position: relative; counter-increment: hzq; min-height: 60px; padding: 12px 16px 12px 12px; gap: 12px; border-radius: 12px;
+  background: var(--hz-surface); color: var(--hz-ink); text-align: start;
+  box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.28), inset 0 0 0 5px var(--hz-surface), inset 0 0 0 6px rgba(122, 86, 22, 0.16), 0 6px 14px -12px rgba(60, 40, 10, 0.5);
+}
+.history .qopt::before {
+  content: counter(hzq, upper-alpha); flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  font-family: var(--head); font-weight: 700; font-size: 14px; color: var(--hz-deep); background: var(--hz-parch);
+  box-shadow: inset 0 0 0 1.5px rgba(138, 32, 24, 0.45); transition: transform 0.3s var(--hz-ease);
+}
+.history .qopt:not(:disabled):hover { transform: translateY(-2px); box-shadow: inset 0 0 0 2px var(--hz-red), inset 0 0 0 5px var(--hz-surface), inset 0 0 0 6px rgba(184, 50, 42, 0.2), 0 10px 18px -12px rgba(138, 32, 24, 0.5); }
+.history .qopt:not(:disabled):hover::before { transform: rotate(-12deg) scale(1.08); }
+.history .qopt.ok { background: #eef4ef; color: var(--hz-ok); box-shadow: inset 0 0 0 2px var(--hz-ok), inset 0 0 0 5px #eef4ef, inset 0 0 0 6px rgba(47, 107, 79, 0.3); }
+.history .qopt.ok::before { content: "✓"; color: #fff; background: var(--hz-ok); box-shadow: none; animation: hzStamp 0.45s var(--hz-ease) both; }
+.history .qopt.bad { background: #f3e3e6; color: #6e1e2e; box-shadow: inset 0 0 0 2px #6e1e2e, inset 0 0 0 5px #f3e3e6, inset 0 0 0 6px rgba(110, 30, 46, 0.25); }
+.history .qopt.bad::before { color: #6e1e2e; background: #fff; box-shadow: inset 0 0 0 1.5px #6e1e2e; }
+@keyframes hzStamp { 0% { transform: scale(1.8) rotate(-25deg); opacity: 0; } 60% { transform: scale(0.92) rotate(-8deg); opacity: 1; } 100% { transform: rotate(-8deg); } }
+.history .site-quiz .alert { display: flex; gap: 12px; flex-wrap: wrap; }
+.hist-res { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.history .site-quiz .btn.gold.big { box-shadow: inset 0 -3px 0 rgba(107, 74, 0, 0.35), 0 10px 20px -12px rgba(138, 90, 0, 0.6); }
+
+/* ── RTL ── */
+[dir="rtl"] .hf-corner.tl { left: auto; right: 12px; transform: scaleX(-1); }
+[dir="rtl"] .hf-corner.tr { right: auto; left: 12px; transform: none; }
+[dir="rtl"] .hf-corner.bl { left: auto; right: 12px; transform: scale(-1, -1); }
+[dir="rtl"] .hf-corner.br { right: auto; left: 12px; transform: scaleY(-1); }
+[dir="rtl"] .history .hist-wax { right: auto; left: 70px; transform: rotate(4deg); }
+[dir="rtl"] .history .story-lines::first-letter { margin: 4px 0 0 10px; }
+
+/* ── Шағын экран ── */
+@media (max-width: 760px) {
+  .history .hist-ribbon { grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
+  .hr-seg:nth-child(3) { border-inline-start: 0; }
+  .hr-seg:nth-child(n + 3) { border-top: 1px solid rgba(122, 86, 22, 0.22); }
+  .hr-seg:nth-child(3)::before { display: none; }
+  .hr-seg:first-child { border-start-start-radius: 14px; }
+  .hr-seg:nth-child(2) { border-start-end-radius: 14px; }
+  .hr-seg:nth-child(3) { border-end-start-radius: 14px; }
+  .hr-seg:nth-child(4) { border-end-end-radius: 14px; }
+}
+@media (max-width: 640px) {
+  .hist-seals { gap: 4px; flex-wrap: nowrap; }
+  .hsl { flex: 1 1 0; width: auto; max-width: 34px; height: auto; aspect-ratio: 1; min-width: 0; }
+  .hsl::before { inset: 2px; }
+  .hsl svg:first-child { width: 72%; height: 72%; }
+  .hsl .hist-seal { width: 14px; height: 14px; inset-inline-end: -4px; bottom: -3px; }
+  .history .hm-treasures { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 8px; padding: 2px 2px 8px; margin: 0 -2px; scrollbar-width: thin; }
+  .history .hm-treasures li { flex: 0 0 min(78%, 260px); scroll-snap-align: start; }
+  .history .hm-treasures button { height: 100%; }
+  .history .hist-folio .site-head { flex-direction: column; align-items: flex-start; padding: 30px 22px 18px; gap: 10px; }
+  .history .hist-folio .artifact { align-self: center; margin-top: 4px; }
+  .history .hist-folio .site-body { padding: 18px 18px 26px; }
+  .history .artifact { width: 112px; height: 112px; }
+  .history .art-e svg { width: 60px; height: 60px; }
+  .history .hist-wax { top: auto; right: auto; }
+  .hf-corner { width: 34px; height: 34px; }
+  .history .story { padding: 14px 14px 14px 10px; gap: 8px; }
+  .history .story .qyran { flex: none; width: 46px; height: auto; }
+  .history .story-lines { font-size: 16px; }
+  .history .quiz-opts { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hsl, .hist-felt, .history .qopt.ok::before { animation: none !important; }
+  .history .hm-treasures button, .history .word-chip, .history .qopt, .history .qopt::before, .hist-tamga::before { transition: none; }
+  .history .hm-treasures button:hover, .history .word-chip:hover, .history .qopt:not(:disabled):hover { transform: none; }
+}

@@ -1,4 +1,5 @@
 "use client";
+import "../../travelpage.css";
 import LangPicker from "../../components/LangPicker";
 import KzSymbols from "../../components/KzSymbols";
 import { buildDecor, TERRAIN, LANDMARK, RIVERS, LAKES } from "../../../lib/kzscene";
@@ -58,6 +59,40 @@ const shortName = (r, lang) => {
   const n = L(r.name, lang).replace(/ қаласы$|^город |^г\. | city$| city/gi, "").replace(/ облысы$/, " обл.").replace(/ область$/, " обл.").replace(/ region$/i, "");
   return n.length > 15 ? L(r.center, lang) : n;
 };
+
+// «Жол картасы» безендіруі: терезедегі панорама, компас, паспорт мөрі
+function TripWindow({ region, lang, got, t }) {
+  return (
+    <figure className="trip-window">
+      <RegionScene key={region.id} region={region} />
+      <span className="tw-frame" aria-hidden="true" />
+      <figcaption className="tw-tag">
+        <Icon name="map" size={14} />
+        <b>{L(region.center, lang)}</b>
+        {got && <span className="tw-got"><Icon name="stamp" size={13} /> {t.visited}</span>}
+      </figcaption>
+    </figure>
+  );
+}
+
+function TripCompass({ className = "" }) {
+  return (
+    <svg className={`trip-compass ${className}`} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <circle className="tc-bez" cx="32" cy="32" r="30" />
+      <circle className="tc-face" cx="32" cy="32" r="24" />
+      <g className="tc-ticks">
+        {Array.from({ length: 16 }, (_, i) => (
+          <path key={i} d="M32 9.5V13" transform={`rotate(${i * 22.5} 32 32)`} />
+        ))}
+      </g>
+      <g className="tc-needle">
+        <path className="tc-n" d="M32 12 37 32H27Z" />
+        <path className="tc-s" d="M32 52 27 32H37Z" />
+        <circle cx="32" cy="32" r="3" className="tc-hub" />
+      </g>
+    </svg>
+  );
+}
 
 function Travel() {
   const { t, lang, explain, state, update, award, saveWord } = useApp();
@@ -133,6 +168,7 @@ function Travel() {
   const eagleAt = (region && ctr(region)) || KZ_CENTERS["Астана"] || [500, 200];
   const hovR = hov && REGIONS.find((r) => r.id === hov);
   const x = tx(lang);
+  const lastR = REGIONS.filter((r) => stamps[r.id]).sort((a, b) => stamps[b.id] - stamps[a.id])[0] || REGIONS.find((r) => r.id === "astana") || REGIONS[0];
   const DECOR = useMemo(() => buildDecor(), []);
 
   const matches = q.trim()
@@ -154,8 +190,8 @@ function Travel() {
 
   return (
     <div className="travel">
-      <header className="page-head">
-        <div>
+      <header className="page-head trip-head">
+        <div className="trip-head-t">
           <span className="kicker">{t.travelKicker}</span>
           <h1>{t.travelTitle}</h1>
           <p>{t.travelSub}</p>
@@ -164,6 +200,7 @@ function Travel() {
           <LangPicker />
           <span className="chip gold"><Icon name="stamp" size={16} /> {t.stamps(count, REGIONS.length)}</span>
         </div>
+        <TripWindow region={lastR} lang={lang} got={Boolean(stamps[lastR.id])} t={t} />
       </header>
 
       <section className="card map-card map-split">
@@ -255,12 +292,12 @@ function Travel() {
         </div>
         <aside className="map-side">
           <div className="side-prog">
-            <div className="ring" style={{ "--p": `${Math.round((count / REGIONS.length) * 100)}%` }}><b>{count}</b><small>/ {REGIONS.length}</small></div>
+            <div className="ring trip-ring" style={{ "--p": `${Math.round((count / REGIONS.length) * 100)}%` }}><b>{count}</b><small>/ {REGIONS.length}</small></div>
             <div><h3>{t.stamps(count, REGIONS.length)}</h3><div className="map-legend"><span><i className="lg-done" /> {t.visited}</span><span><i className="lg-todo" /> {t.notVisited}</span></div></div>
           </div>
         <div className="map-tools">
-          <div className="search">
-            <Icon name="search" size={18} />
+          <div className="search trip-search">
+            <span className="ts-ic" aria-hidden="true"><TripCompass /><Icon name="search" size={15} /></span>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.searchRegion} aria-label={t.searchRegion} />
             {matches.length > 0 && (
               <div className="search-pop">
@@ -272,7 +309,8 @@ function Travel() {
                       setQ("");
                     }}
                   >
-                    {L(r.name, lang)}
+                    <span className="ts-art"><SightArt kind={kindOf(r.sights[0])} mini /></span>
+                    <span className="ts-t"><b>{L(r.name, lang)}</b><small>{L(r.center, lang)}</small></span>
                   </button>
                 ))}
               </div>
@@ -287,11 +325,11 @@ function Travel() {
             </span>
           </div>
         </div>
-          <ul className="reg-list">
+          <ul className="reg-list trip-cards">
             {order.map((r) => (
               <li key={r.id}>
                 <button className={`${sel === r.id ? "on" : ""} ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} onMouseEnter={() => setHov(r.id)} onMouseLeave={() => setHov(null)}>
-                  <span className="rl-e"><SightArt kind={kindOf(r.sights[0])} mini />{stamps[r.id] && <span className="rl-ok"><Icon name="check" size={11} /></span>}</span>
+                  <span className="rl-e"><SightArt kind={kindOf(r.sights[0])} mini />{stamps[r.id] && <span className="rl-ok"><Icon name="stamp" size={13} /></span>}</span>
                   <span className="rl-t"><b>{L(r.name, lang)}</b><small>{L(r.center, lang)}</small></span>
                 </button>
               </li>
@@ -379,23 +417,30 @@ function Travel() {
           </div>
         </section>
       ) : (
-        <section className="card pick-hint">
+        <section className="card pick-hint trip-hint">
           <Qyran mood="think" size={90} />
           <p>{t.travelSub}</p>
+          <TripCompass className="th-compass" />
         </section>
       )}
 
-      <section className="passport">
-        <h2>
-          <Icon name="stamp" size={22} /> {t.passport} <span className="muted small">{t.stamps(count, REGIONS.length)}</span>
-        </h2>
-        <div className="stamp-grid">
-          {REGIONS.map((r) => (
-            <button key={r.id} className={`stamp ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} title={L(r.name, lang)}>
-              <span className="stamp-e"><SightArt kind={kindOf(r.sights[0])} mini /></span>
-              <span className="stamp-n">{L(r.center, lang)}</span>
-            </button>
-          ))}
+      <section className="passport trip-passport">
+        <div className="tp-cover">
+          <span className="tp-emblem" aria-hidden="true"><Icon name="eagle" size={26} /></span>
+          <h2>
+            {t.passport} <span className="tp-count">{t.stamps(count, REGIONS.length)}</span>
+          </h2>
+          <span className="tp-bar" aria-hidden="true"><i style={{ transform: `scaleX(${count / REGIONS.length})` }} /></span>
+        </div>
+        <div className="tp-pages">
+          <div className="stamp-grid">
+            {REGIONS.map((r, i) => (
+              <button key={r.id} className={`stamp ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} title={L(r.name, lang)} aria-label={`${L(r.center, lang)} · ${L(r.name, lang)}: ${stamps[r.id] ? t.visited : t.notVisited}`} style={{ "--i": i, "--r": `${((i * 37) % 17) - 8}deg` }}>
+                <span className="stamp-e"><SightArt kind={kindOf(r.sights[0])} mini /></span>
+                <span className="stamp-n">{L(r.center, lang)}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
     </div>
