@@ -1,4 +1,5 @@
 "use client";
+import "../../literature.css";
 import LangPicker from "../../components/LangPicker";
 import { NatEmpty } from "../../components/NatArt";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -6,6 +7,7 @@ import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import Quiz from "../../components/Quiz";
+import { LitEmblem, LitCorner, LitHeroArt, LIT_COVER, LIT_YEAR } from "../../components/LitArt";
 import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
 import { shuffle } from "../../../lib/wordTools";
 import { WORKS } from "../../../lib/literature";
@@ -14,6 +16,17 @@ const staticTr = (id, to) => (to === "ru" ? LIT_TR[id]?.[0] : to === "en" ? LIT_
 import { tx } from "../../../lib/tx";
 import { L } from "../../../lib/i18n";
 
+// Сөре: халық жырлары бөлек, авторлық шығармалар — авторлардың туған жылы бойынша
+const FOLK = WORKS.filter((w) => !LIT_YEAR[w.id]);
+// «т.» — автордың туған жылы (шығарма жылы емес)
+const BORN = { kk: "т.", ru: "р.", en: "b." };
+const BORN_TITLE = { kk: "Авторлардың туған жылдары", ru: "Годы рождения авторов", en: "Authors\u2019 birth years" };
+const AUTH = WORKS.filter((w) => LIT_YEAR[w.id]).sort((a, b) => LIT_YEAR[a.id] - LIT_YEAR[b.id]);
+const Y0 = 1835, Y1 = 1925;
+const coverStyle = (id) => {
+  const [c, d] = LIT_COVER[id] || ["#8A2018", "#5E140F"];
+  return { "--lc": c, "--ld": d };
+};
 export default function Literature() {
   const { lang, explain, state, update, award } = useApp();
   const x = tx(lang);
@@ -249,81 +262,189 @@ export default function Literature() {
     award(right * 4, right >= 4 ? 5 : 0, right >= 4 ? `🏆 ${right}/${total}` : undefined);
   }
 
-  if (!work)
+
+  const readN = Object.keys(lit).length;
+  const corners = (
+    <span className="lit-corners" aria-hidden="true">
+      <i><LitCorner /></i><i><LitCorner /></i><i><LitCorner /></i><i><LitCorner /></i>
+    </span>
+  );
+  const book = (w, i) => (
+    <li key={w.id} className="lit-slot" style={{ "--i": i }}>
+      <button className={`lit-book ${lit[w.id] ? "is-read" : ""}`} onClick={() => open(w)} style={coverStyle(w.id)}>
+        <span className="lit-cover">
+          {corners}
+          <span className="lit-cover-top">
+            <span className="lit-lvl">{w.lvl}</span>
+            {LIT_YEAR[w.id] && <span className="lit-year">{BORN[lang] || BORN.en} {LIT_YEAR[w.id]}</span>}
+          </span>
+          <span className="lit-art"><LitEmblem id={w.id} size={84} /></span>
+          <span className="lit-cover-txt">
+            <b lang="kk" dir="ltr">{w.work}</b>
+            <small lang="kk" dir="ltr">{w.author}</small>
+          </span>
+        </span>
+        <em className="lit-kind">{L(w.kind, lang)}</em>
+        {lit[w.id] && (
+          <span className="lit-ribbon" title={x.litDoneMark}>
+            <Icon name="check" size={14} stroke={3} />
+            <span className="sr-only">{x.litDoneMark}</span>
+          </span>
+        )}
+      </button>
+    </li>
+  );
+
+  if (!work) {
+    // Уақыт сызығы: жақын жылдар бір-бірін баспасын деп қатарларға бөлінеді
+    const lanes = [];
+    const dots = AUTH.map((w) => {
+      const y = LIT_YEAR[w.id];
+      let k = 0;
+      while (lanes[k] != null && y - lanes[k] < 6) k++;
+      lanes[k] = y;
+      return { w, y, k, p: ((y - Y0) / (Y1 - Y0)) * 100 };
+    });
     return (
-      <div className="literature">
-        <header className="page-head">
-          <div>
+      <div className="literature lit-lib">
+        <header className="lit-hero">
+          <div className="lit-hero-txt">
             <span className="kicker">{x.litKicker}</span>
             <h1>{x.litTitle}</h1>
-            <p>{x.litSub}</p>
+            <p className="lit-epi" lang="kk" dir="ltr">«Өнер алды — қызыл тіл»</p>
+            <p className="lit-sub">{x.litSub}</p>
+            <div className="head-tools">
+              <LangPicker />
+              <span className="chip gold lit-count"><Icon name="book" size={16} /> {readN}/{WORKS.length}</span>
+            </div>
+            <div className="lit-spines" aria-hidden="true">
+              {WORKS.map((w) => <i key={w.id} className={lit[w.id] ? "on" : ""} style={coverStyle(w.id)} />)}
+            </div>
           </div>
-          <div className="head-tools">
-            <LangPicker />
-            <span className="chip gold">📚 {Object.keys(lit).length}/{WORKS.length}</span>
+          <div className="lit-hero-art">
+            <LitHeroArt />
+            <span className="lit-hero-aqyl"><Qyran mood={readN ? "happy" : "idle"} size={92} /></span>
           </div>
         </header>
-        <div className="works">
-          {WORKS.map((w, i) => (
-            <button key={w.id} className={`card work ${lit[w.id] ? "read" : ""}`} onClick={() => open(w)} style={{ animationDelay: `${i * 0.04}s` }}>
-              <span className="work-e">{w.e}</span>
-              <span className="work-b">
-                <b>{w.work}</b>
-                <small>{w.author}</small>
-                <em>{L(w.kind, lang)} · {w.lvl}</em>
-              </span>
-              {lit[w.id] && <span className="work-ok">✓</span>}
-            </button>
-          ))}
-        </div>
+
+        <section className="lit-shelf" aria-labelledby="lit-sh-folk">
+          <h2 className="lit-shelf-h" id="lit-sh-folk">
+            <span className="lit-shelf-ic"><Icon name="scroll" size={18} /></span>
+            <span lang="kk" dir="ltr">{FOLK[0]?.author}</span>
+            <small>{FOLK.length}</small>
+          </h2>
+          <ul className="lit-books">{FOLK.map(book)}</ul>
+        </section>
+
+        <section className="lit-shelf" aria-labelledby="lit-sh-auth">
+          <h2 className="lit-shelf-h" id="lit-sh-auth">
+            <span className="lit-shelf-ic"><Icon name="pen" size={18} /></span>
+            <span title={BORN_TITLE[lang] || BORN_TITLE.en}>{LIT_YEAR[AUTH[0].id]} — {LIT_YEAR[AUTH[AUTH.length - 1].id]}</span>
+            <small>{AUTH.length}</small>
+          </h2>
+          <div className="lit-line" aria-hidden="true">
+            <span className="lit-line-axis" />
+            {[1840, 1860, 1880, 1900, 1920].map((t) => (
+              <span key={t} className="lit-tick" style={{ insetInlineStart: `${((t - Y0) / (Y1 - Y0)) * 100}%` }}>{t}</span>
+            ))}
+            {dots.map(({ w, k, p }) => (
+              <i key={w.id} className={`lit-dot ${lit[w.id] ? "on" : ""}`} style={{ ...coverStyle(w.id), insetInlineStart: `${p}%`, "--k": k }} />
+            ))}
+          </div>
+          <ul className="lit-books">{AUTH.map((w, i) => book(w, i + FOLK.length))}</ul>
+        </section>
       </div>
     );
+  }
+
+  const tr = typeof trans === "string" && trans !== "loading" ? trans.split(/(?<=[.!?])\s+/).filter(Boolean) : null;
+  const parallel = !!tr && tr.length === sentences.length;
+  const mood = loadingTts || busy || quiz === "loading" ? "think" : playing ? "happy" : qres ? (qres.right >= 4 ? "cheer" : "support") : "idle";
+  const prog = sentences.length ? Math.max(0, cur + 1) / sentences.length : 0;
+  const snt = (sn, i) => (
+    <span key={i} className={`snt ${i === cur ? "now" : ""} ${i < cur ? "past" : ""}`} onClick={() => setCur(i)}>
+      {sn}{" "}
+    </span>
+  );
 
   return (
-    <div className="literature">
-      <button className="btn ghost small" onClick={() => { stop(); setId(null); }}>
-        <Icon name="left" size={16} /> {x.litBack}
-      </button>
-      <section className="card reader rise">
-        <div className="reader-head">
-          <span className="work-e big">{work.e}</span>
-          <div>
-            <span className="badge">{L(work.kind, lang)} · {work.lvl}</span>
-            <h2>{work.work}</h2>
-            <p className="muted">{work.author}</p>
+    <div className="literature lit-read" style={coverStyle(work.id)}>
+      <nav className="lit-top">
+        <button className="btn ghost small" onClick={() => { stop(); setId(null); }}>
+          <Icon name="left" size={16} /> {x.litBack}
+        </button>
+        <span className="lit-crumb">{x.litKicker}</span>
+      </nav>
+
+      <article className="lit-spread rise">
+        <header className="lit-verso">
+          <div className="lit-mini-cover">
+            {corners}
+            <LitEmblem id={work.id} size={104} />
           </div>
-          <Qyran mood={playing ? "happy" : "idle"} size={80} />
-        </div>
-        <p className="reader-text">
-          {sentences.map((sn, i) => (
-            <span key={i} className={`snt ${i === cur ? "now" : ""} ${i < cur ? "past" : ""}`} onClick={() => setCur(i)}>
-              {sn}{" "}
-            </span>
-          ))}
-        </p>
-        {trans && <p className="lit-trans">{trans === "loading" ? x.tapLoading : trans}</p>}
-        <p className="muted small">💡 {L(work.gist, explain === "ru" ? "ru" : "en")}</p>
-        <p className="muted small">{x.litNote}</p>
-        {noVoice && <p className="muted small">{x.litNoVoice}{err ? ` (${err})` : ""}</p>}
-        <div className="reader-actions">
-          <button className="btn blue" onClick={play}>
-            <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : x.litRead}
-          </button>
-          {explain !== "kk" && (
-            <button className="btn ghost" onClick={translate}>
-              <Icon name="globe" size={18} /> {trans && trans !== "loading" ? x.litTransHide : x.litTrans}
-            </button>
+          <div className="lit-verso-txt">
+            <span className="lit-badge">{L(work.kind, lang)} · {work.lvl}</span>
+            <h2 lang="kk" dir="ltr">{work.work}</h2>
+            <p className="lit-by" lang="kk" dir="ltr">
+              {work.author}
+              {LIT_YEAR[work.id] && <span className="lit-by-y"> · {BORN[lang] || BORN.en} {LIT_YEAR[work.id]}</span>}
+            </p>
+          </div>
+          <div className="lit-gist">
+            <Icon name="sparkle" size={18} />
+            <p dir="ltr">{L(work.gist, explain === "ru" ? "ru" : "en")}</p>
+          </div>
+          <div className={`lit-aqyl ${playing ? "is-on" : ""}`}>
+            <Qyran mood={mood} size={84} />
+          </div>
+        </header>
+
+        <section className="lit-recto">
+          <div className="lit-thread" aria-hidden="true"><i style={{ transform: `scaleX(${prog})` }} /></div>
+          {parallel ? (
+            <ol className="lit-par">
+              {sentences.map((sn, i) => (
+                <li key={i} className={`lit-row ${i === cur ? "now" : ""}`}>
+                  <span className="lit-n" aria-hidden="true">{i + 1}</span>
+                  <span className="lit-kk" lang="kk" dir="ltr">{snt(sn, i)}</span>
+                  <span className="lit-tr" lang={explain} dir="auto" data-notap="">{tr[i]}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className={`reader-text lit-text ${/^[«"“(]/.test(sentences[0] || "") ? "no-cap" : ""}`} lang="kk" dir="ltr">{sentences.map(snt)}</p>
           )}
-          <button className="btn gold" disabled={quiz === "loading"} onClick={finish}>
-            <Icon name="check" size={18} /> {lit[work.id] ? x.litDoneMark : x.litDone}
+          {trans && !parallel && (
+            <p className={`lit-trans ${trans === "loading" ? "is-loading" : ""}`} lang={trans === "loading" ? undefined : explain} dir="auto" data-notap="">
+              {trans === "loading" ? x.tapLoading : trans}
+            </p>
+          )}
+          <p className="lit-note"><Icon name="search" size={15} /> {x.litNote}</p>
+          {noVoice && <p className="lit-note lit-warn">{x.litNoVoice}{err ? ` (${err})` : ""}</p>}
+        </section>
+      </article>
+
+      <div className="lit-dock">
+        <button className={`btn lit-play ${playing ? "is-on" : ""}`} onClick={play}>
+          <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : x.litRead}
+        </button>
+        {explain !== "kk" && (
+          <button className={`btn ghost lit-tbtn ${trans && trans !== "loading" ? "is-on" : ""}`} onClick={translate} aria-pressed={!!trans && trans !== "loading"}>
+            <Icon name="globe" size={18} /> {trans && trans !== "loading" ? x.litTransHide : x.litTrans}
           </button>
-        </div>
-      </section>
+        )}
+        <button className="btn gold lit-done" disabled={quiz === "loading"} onClick={finish}>
+          <Icon name={lit[work.id] ? "star" : "check"} size={18} /> {lit[work.id] ? x.litDoneMark : x.litDone}
+        </button>
+        {cur >= 0 && <span className="lit-pos" aria-hidden="true">{cur + 1}/{sentences.length}</span>}
+      </div>
 
       {quiz && (
         <section className="card lit-quiz rise">
-          <h3>🏆 {x.litTest}</h3>
-          {quiz === "loading" && <p className="muted">{x.litTestLoading}</p>}
+          <h3 className="lit-h"><span className="lit-h-ic"><Icon name="trophy" size={18} /></span> {x.litTest}</h3>
+          {quiz === "loading" && (
+            <div className="lit-wait"><Qyran mood="think" size={56} /><p className="muted">{x.litTestLoading}</p></div>
+          )}
           {quiz === "error" && (
             <>
               {err && <p className="alert">{err}</p>}
@@ -332,8 +453,8 @@ export default function Literature() {
           )}
           {quiz?.qs && <Quiz key={quiz.qs[0].prompt} questions={quiz.qs} onDone={quizDone} pass={4} />}
           {qres && (
-            <div className="alert ok rise">
-              {x.litTestScore(qres.right, qres.total)}
+            <div className="alert ok rise lit-score">
+              <Icon name="trophy" size={18} /> <span>{x.litTestScore(qres.right, qres.total)}</span>
               <button className="btn ghost small" onClick={finish}><Icon name="refresh" size={15} /> {x.spTryAgain}</button>
             </div>
           )}
@@ -341,13 +462,15 @@ export default function Literature() {
       )}
 
       {!chatOn && (
-        <button className="btn ghost" onClick={() => setChatOn(true)}>
-          <Icon name="chat" size={18} /> {x.litAskBtn}
+        <button className="lit-ask" onClick={() => setChatOn(true)}>
+          <span className="lit-ask-av"><Qyran mood="support" size={44} /></span>
+          <span className="lit-ask-t">{x.litAskBtn}</span>
+          <Icon name="chat" size={20} />
         </button>
       )}
       {chatOn && (
         <section className="card lit-chat rise">
-          <h3>{x.litChatTitle}</h3>
+          <h3 className="lit-h"><span className="lit-h-ic"><Icon name="chat" size={18} /></span> {x.litChatTitle}</h3>
           {msgs.length === 0 && <NatEmpty art="kamshy" size={90} text={x.litAsk} lang={lang} />}
           <div className="lit-list" ref={listRef}>
             {msgs.map((m, i) => (
