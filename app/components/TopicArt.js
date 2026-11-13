@@ -1,4 +1,4 @@
-// TopicArt — «Ақ киіз» felt-appliqué illustrations for the 30 Tilbil topics.
+// TopicArt — «Ақ киіз» felt-appliqué illustrations for the 38 Tilbil topics.
 // Pure SVG, no <defs>/ids, so any number of instances can live on one page.
 // Each picture = a rounded felt patch + one bold subject cut from solid shapes.
 
@@ -45,6 +45,15 @@ export const TOPIC_TINT = {
   eco: { bg: C, fg: GR },
   work: { bg: PG, fg: B },
   hist: { bg: GR, fg: PG },
+  // B2 «Қыстау»
+  media: { bg: K, fg: PG },
+  economy: { bg: GR, fg: G },
+  science: { bg: T, fg: C },
+  art: { bg: R, fg: PG },
+  edu: { bg: K, fg: G },
+  law: { bg: PG, fg: B },
+  mind: { bg: C, fg: K },
+  idiom: { bg: GR, fg: C },
 };
 
 const FALLBACK_TINT = { bg: F, fg: K };
@@ -447,6 +456,127 @@ const ART = {
       <rect x="24" y="66" width="72" height="11" rx="3" fill={G} />
       <circle cx="40" cy="71.5" r="2.5" fill={R} />
       <circle cx="80" cy="71.5" r="2.5" fill={R} />
+    </>
+  ),
+  // БАҚ — microphone on air
+  media: () => (
+    <>
+      <path d="M28 40q-9 14 0 28M18 32q-15 22 0 44M92 40q9 14 0 28M102 32q15 22 0 44" fill="none" stroke={C} strokeWidth="5" strokeLinecap="round" />
+      <path d="M38 52v4a22 22 0 0 0 44 0v-4" fill="none" stroke={G} strokeWidth="6" strokeLinecap="round" />
+      <rect x="45" y="14" width="30" height="52" rx="15" fill={PG} />
+      <path d="M49 30H71M49 40H71M49 50H71" stroke={KD} strokeWidth="3.5" strokeLinecap="round" />
+      <rect x="56" y="78" width="8" height="18" fill={G} />
+      <rect x="40" y="94" width="40" height="9" rx="4.5" fill={R} />
+      <circle cx="98" cy="18" r="5.5" fill={R} />
+    </>
+  ),
+
+  // Экономика — rising bars, an arrow and a coin
+  economy: () => (
+    <>
+      <rect x="16" y="72" width="18" height="30" rx="3" fill={PG} />
+      <rect x="38" y="56" width="18" height="46" rx="3" fill={C} />
+      <rect x="60" y="40" width="18" height="62" rx="3" fill={G} />
+      <rect x="12" y="100" width="96" height="6" rx="3" fill={I} />
+      <path d="M16 62 38 44 54 52 86 22" fill="none" stroke={R} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M72 20H90V38" fill="none" stroke={R} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="96" cy="80" r="14" fill={G} />
+      <circle cx="96" cy="80" r="8.5" fill="none" stroke={B} strokeWidth="3" />
+    </>
+  ),
+
+  // Ғылым — a flask with bubbles
+  science: () => (
+    <>
+      <circle cx="82" cy="28" r="4.5" fill={C} />
+      <circle cx="91" cy="15" r="3" fill={C} />
+      <rect x="50" y="20" width="20" height="30" fill={C} />
+      <rect x="45" y="14" width="30" height="9" rx="4.5" fill={C} />
+      <path d="M50 46 24 96a8 8 0 0 0 7 12H89a8 8 0 0 0 7-12L70 46Z" fill={C} />
+      <path d="M34.4 76H85.6L96 96a8 8 0 0 1-7 12H31a8 8 0 0 1-7-12Z" fill={G} />
+      <rect x="50" y="34" width="20" height="5" fill={R} />
+      <circle cx="50" cy="92" r="5" fill={PG} />
+      <circle cx="68" cy="86" r="3.5" fill={PG} />
+      <circle cx="74" cy="98" r="2.6" fill={PG} />
+    </>
+  ),
+
+  // Өнер — palette and brush
+  art: () => (
+    <>
+      <path d="M60 20C88 20 106 38 106 58C106 74 94 78 86 74C78 70 72 76 76 86C80 96 70 104 58 104C34 104 14 86 14 62C14 38 34 20 60 20Z" fill={PG} />
+      <circle cx="38" cy="82" r="7" fill={R} />
+      <circle cx="36" cy="52" r="9" fill={K} />
+      <circle cx="58" cy="38" r="9" fill={G} />
+      <circle cx="84" cy="44" r="8.5" fill={GR} />
+      <circle cx="58" cy="64" r="7.5" fill={T} />
+      <path d="M68 112 97 83" stroke={B} strokeWidth="7" strokeLinecap="round" />
+      <path d="M96 84 103 77" stroke={F} strokeWidth="9" />
+      <path d="M100 80C103 74 107 70 112 68 110 74 107 78 101 82Z" fill={I} />
+    </>
+  ),
+
+  // Жоғары білім — graduation cap and diploma
+  edu: () => (
+    <>
+      <path d="M32 50V70C32 82 88 82 88 70V50L60 62Z" fill={C} />
+      <path d="M60 20 108 40 60 60 12 40Z" fill={PG} />
+      <path d="M60 40 98 48V72" fill="none" stroke={G} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="60" cy="40" r="4.5" fill={R} />
+      <path d="M93 70H103L106 86H90Z" fill={G} />
+      <rect x="22" y="90" width="68" height="14" rx="7" fill={PG} />
+      <rect x="52" y="87" width="8" height="20" fill={R} />
+    </>
+  ),
+
+  // Құқық — balance scales
+  law: () => (
+    <>
+      <path d="M24 40 12 72M24 40 36 72M96 40 84 72M96 40 108 72" stroke={I} strokeWidth="3" />
+      <rect x="56" y="28" width="8" height="64" fill={B} />
+      <rect x="18" y="34" width="84" height="8" rx="4" fill={B} />
+      <circle cx="60" cy="24" r="7" fill={G} />
+      <path d="M36 104C36 94 48 88 60 88S84 94 84 104Z" fill={B} />
+      <path d="M8 72H40a16 16 0 0 1-32 0Z" fill={R} />
+      <path d="M80 72H112a16 16 0 0 1-32 0Z" fill={K} />
+    </>
+  ),
+
+  // Мінез бен сана — a head with a ram's-horn thought
+  mind: () => (
+    <>
+      <path d="M68 20C48 20 38 34 38 48L27 64 37 67V76C37 86 44 90 56 89L57 106H94V58C96 36 88 20 68 20Z" fill={K} />
+      <path
+        d="M70 72V56M70 58C70 46 54 44 54 54C54 61 63 61 63 55M70 58C70 46 86 44 86 54C86 61 77 61 77 55"
+        fill="none"
+        stroke={G}
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="96" cy="24" r="5" fill={R} />
+      <circle cx="102" cy="38" r="3" fill={G} />
+    </>
+  ),
+
+  // Фразеологизмдер — two speech bubbles, one with an ornament
+  idiom: () => (
+    <>
+      <rect x="12" y="16" width="72" height="52" rx="20" fill={C} />
+      <path d="M26 62 20 86 46 66Z" fill={C} />
+      <path
+        d="M48 58V44M48 46C48 36 35 35 35 43C35 48 42 48 42 44M48 46C48 36 61 35 61 43C61 48 54 48 54 44"
+        fill="none"
+        stroke={R}
+        strokeWidth="4.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <rect x="58" y="60" width="50" height="38" rx="16" fill={G} />
+      <path d="M90 94 100 110 78 96Z" fill={G} />
+      <circle cx="72" cy="79" r="4" fill={I} />
+      <circle cx="83" cy="79" r="4" fill={I} />
+      <circle cx="94" cy="79" r="4" fill={I} />
     </>
   ),
 };

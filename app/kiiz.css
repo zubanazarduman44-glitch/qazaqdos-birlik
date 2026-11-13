@@ -316,3 +316,16 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .shell-focus { min-height: 100vh; display: flex; flex-direction: column; }
 .focus-head { display: flex; align-items: center; justify-content: center; padding: 18px 16px 6px; }
 .focus-main { flex: 1; width: min(760px, 100%); margin: 0 auto; padding: 8px 16px 40px; box-sizing: border-box; }
+
+/* ── Tilbil: B2 «Қыстау» — қыстың көгілдір-ақ реңі, қызыл белгімен ── */
+.kosh-lv.s3, .kosh.s3 { --tone: #2e5a86; --frost: #e6eff7; }
+.kosh-lv.s3 .kosh-lv-bar i { background: var(--qyzyl, #a63a2b); }
+.kosh-lv.s3.on { background: radial-gradient(circle at 86% 22%, rgba(255, 255, 255, 0.22) 0 3px, transparent 4px), radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.16) 0 2px, transparent 3px), radial-gradient(circle at 94% 64%, rgba(255, 255, 255, 0.18) 0 2.5px, transparent 3.5px), linear-gradient(160deg, #3a6c9c, var(--tone)); }
+.kosh-lv.s3.on .kosh-lv-id { color: var(--qyzyl, #a63a2b); }
+.kosh-lv.s3.on .kosh-lv-bar i { background: #fff; }
+.kosh.s3 .aul { background: linear-gradient(180deg, color-mix(in srgb, var(--frost) 55%, var(--surface)), var(--surface) 55%); }
+.kosh.s3 .aul.here .aul-cta, .kosh.s3 .stop.cur { background: var(--qyzyl, #a63a2b); }
+.kosh.s3 .stop.cur { box-shadow: 0 0 0 4px color-mix(in srgb, var(--qyzyl, #a63a2b) 22%, transparent); }
+.kosh.s3::before { border-left-color: color-mix(in srgb, var(--tone) 30%, transparent); }
+@media (min-width: 761px) { .kosh-levels:has(> .kosh-lv.s3) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1240px) { .kosh-levels:has(> .kosh-lv.s3) { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
