@@ -1,14 +1,18 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import "../../tuzel.css";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
-import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
+import TuzelMic from "../../components/TuzelMic";
+import TuzelSpeakResult from "../../components/TuzelSpeakResult";
 import { PHRASES, SP_PASS, SP_LEVELS } from "../../../lib/phrases";
 import { tx } from "../../../lib/tx";
 import { toWav } from "../../../lib/audio";
-import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
+import { sayKk, stopKk } from "../../../lib/speak";
 
 const MAX_MS = 15000;
+// Баяу тыңдау түймесінің жазуы (LessonPlayer-дегі мәтінмен бірдей)
+const SLOW = { kk: "Баяу", ru: "Медленно" };
 
 export default function Speaking() {
   const { lang, explain, state, update, award } = useApp();
@@ -22,40 +26,40 @@ export default function Speaking() {
   const [res, setRes] = useState(null);
   const [err, setErr] = useState("");
   const [ms, setMs] = useState(0);
+  const [play, setPlay] = useState(""); // "" | "n" | "s" — қай дыбыс түймесі ойнап тұр
   const recRef = useRef(null);
   const timer = useRef(null);
 
   const list = PHRASES.filter((p) => p.lvl === lv);
   const cur = useCustom && custom.trim() ? { lvl: null, kk: custom.trim(), ru: "", en: "" } : list[idx % list.length];
+  const pos = (idx % list.length) + 1;
 
   useEffect(() => () => {
     clearInterval(timer.current);
     recRef.current?.stream?.getTracks().forEach((t) => t.stop());
     window.speechSynthesis?.cancel();
+    stopKk();
   }, []);
 
-  async function listen() {
+  function listen(slow) {
     setErr("");
-    const voice = await getKkVoice();
-    if (voice) {
-      const u = new SpeechSynthesisUtterance(cur.kk);
-      u.voice = voice;
-      u.lang = voice.lang;
-      u.rate = 0.85;
-      window.speechSynthesis.cancel();
-      return window.speechSynthesis.speak(u);
-    }
-    try {
-      const url = await fetchTtsUrl(cur.kk);
-      new Audio(url).play();
-    } catch {
-      setErr(x.spNoVoice);
-    }
+    const k = slow ? "s" : "n";
+    sayKk(cur.kk, {
+      slow,
+      onState: (s) => {
+        if (s === "error") {
+          setPlay("");
+          setErr(x.spNoVoice);
+        } else setPlay(s === "idle" ? "" : k);
+      },
+    });
   }
 
   async function start() {
     setErr("");
     setRes(null);
+    stopKk();
+    setPlay("");
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") return setErr(x.spNoMic);
     let stream;
     try {
@@ -113,113 +117,115 @@ export default function Speaking() {
     award(d.score >= SP_PASS ? 15 : 5, d.score >= SP_PASS ? 5 : 0, up ? `${x.spNewLevel}: ${up}` : undefined);
   }
 
-  const secs = Math.min(15, ms / 1000);
-  const tone = !res ? "" : res.score >= SP_PASS ? "good" : res.score >= 40 ? "mid" : "low";
+  const gloss = explain === "ru" ? cur.ru : cur.en;
   return (
-    <div className="speaking">
-      <header className="page-head">
+    <div className="speaking tzs">
+      <header className="tz-head tzs-head">
         <div>
           <span className="kicker">{x.spKicker}</span>
           <h1>{x.spTitle}</h1>
           <p>{x.spSub}</p>
         </div>
-        <span className="chip gold">
-          🎤 {x.spLevelNow}: {sp.level || x.spLevelNone}
+        <span className="tzs-lvbadge">
+          <span className="tzs-lvbadge-ic" aria-hidden="true"><Icon name="mic" size={18} /></span>
+          <span>
+            <small>{x.spLevelNow}</small>
+            <b>{sp.level || x.spLevelNone}</b>
+          </span>
         </span>
       </header>
 
-      <section className="card sp-levels">
-        <h3>{x.spPick}</h3>
-        <div className="sp-lv-row">
-          {SP_LEVELS.map((l) => (
-            <button key={l} className={`sp-lv ${lv === l && !useCustom ? "on" : ""} ${(sp.best?.[l] || 0) >= SP_PASS ? "done" : ""}`} onClick={() => { setLv(l); setIdx(0); setUseCustom(false); setRes(null); setErr(""); }}>
-              <b>{l}</b>
-              <small>{sp.best?.[l] ? `${sp.best[l]}` : "–"}</small>
-            </button>
-          ))}
-        </div>
-        <p className="muted small">{x.spLevelHow}</p>
-      </section>
-
-      <section className="card sp-stage">
-        <span className="kicker">{x.spTarget}</span>
-        <p className="sp-phrase">{cur.kk}</p>
-        {(cur.ru || cur.en) && <p className="muted">{explain === "ru" ? cur.ru : cur.en}</p>}
-        <div className="sp-actions">
-          <button className="btn ghost" onClick={listen}>
-            <Icon name="volume" size={18} /> {x.spListen}
-          </button>
-          {!useCustom && (
-            <button className="btn ghost" onClick={() => { setIdx(idx + 1); setRes(null); setErr(""); }}>
-              {x.spNext} <Icon name="right" size={16} />
-            </button>
-          )}
-        </div>
-
-        <div className={`mic-wrap ${phase}`}>
-          {phase === "rec" && <><i className="ring r1" /><i className="ring r2" /><i className="ring r3" /></>}
-          <button className="mic-btn" disabled={phase === "busy"} onClick={phase === "rec" ? stop : start} aria-label={phase === "rec" ? x.spStop : x.spRec}>
-            <Icon name={phase === "rec" ? "stop" : "mic"} size={34} />
-          </button>
-        </div>
-        <p className="sp-status">
-          {phase === "rec" ? `${x.spRecording} ${secs.toFixed(1)} / 15` : phase === "busy" ? x.spAnalyzing : x.spRec}
-        </p>
-        {phase === "busy" && <div className="sp-wave"><i /><i /><i /><i /><i /></div>}
-        <p className="muted small">{x.spLimit} · {x.spHint}</p>
-        {err && <div className="alert">{err}</div>}
-      </section>
-
-      {res && (
-        <section className={`card sp-res rise ${tone}`}>
-          <div className="sp-ring" style={{ "--p": res.score }}>
-            <b>{res.score}</b>
-            <small>{x.spScore}</small>
-          </div>
-          <div className="sp-res-body">
-            <h3>{res.verdict}</h3>
-            <p className="sp-heard">
-              <span>{x.spHeard}:</span> {res.heard ? `«${res.heard}»` : "—"}
-            </p>
-            {res.tips?.length > 0 && (
-              <>
-                <h4>{x.spTips}</h4>
-                <ul>{res.tips.map((tp, i) => <li key={i}>{tp}</li>)}</ul>
-              </>
-            )}
-            <button className="btn gold" onClick={start}>
-              <Icon name="refresh" size={16} /> {x.spTryAgain}
-            </button>
-          </div>
-          <Qyran mood={res.score >= SP_PASS ? "cheer" : "support"} size={90} />
-        </section>
-      )}
-
-      <section className="card sp-custom">
-        <h3>{x.spCustom}</h3>
-        <div className="sp-custom-row">
-          <input className="input" value={custom} maxLength={160} onChange={(e) => setCustom(e.target.value)} placeholder={x.spCustomPh} />
-          <button className="btn ghost" disabled={!custom.trim()} onClick={() => { setUseCustom(true); setRes(null); setErr(""); }}>
-            {x.spUse}
-          </button>
-        </div>
-      </section>
-
-      {sp.log?.length > 0 && (
-        <section className="card sp-log">
-          <h3>{x.spHistory}</h3>
-          <ul>
-            {sp.log.slice(0, 6).map((e, i) => (
-              <li key={i}>
-                <span className={`sc ${e.score >= SP_PASS ? "good" : ""}`}>{e.score}</span>
-                <span>{e.kk}</span>
-                {e.lvl && <em>{e.lvl}</em>}
+      <section className="tzs-levels" aria-labelledby="tzs-pick">
+        <h3 id="tzs-pick">{x.spPick}</h3>
+        <ol className="tzs-steps">
+          {SP_LEVELS.map((l, i) => {
+            const best = sp.best?.[l] || 0;
+            const done = best >= SP_PASS;
+            const on = lv === l && !useCustom;
+            return (
+              <li key={l} style={{ "--i": i }}>
+                <button type="button" className={`tzs-step ${on ? "on" : ""} ${done ? "done" : ""}`} aria-pressed={on} onClick={() => { setLv(l); setIdx(0); setUseCustom(false); setRes(null); setErr(""); }}>
+                  <span className="tzs-step-top">
+                    <b>{l}</b>
+                    {done && <Icon name="check" size={16} stroke={3} className="tzs-step-ok" />}
+                  </span>
+                  <span className="tzs-step-bar" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, best / 100)})` }} /></span>
+                  <small>{best ? `${best}` : "–"}</small>
+                </button>
               </li>
-            ))}
-          </ul>
-          <p className="muted small">{x.spPrivacy}</p>
+            );
+          })}
+        </ol>
+        <p className="tzs-how">
+          <Icon name="target" size={15} /> {x.spLevelHow}
+        </p>
+      </section>
+
+      <section className={`tzs-stage ${phase}`} aria-label={x.spTarget}>
+        <div className="tzs-card">
+          <div className="tzs-card-top">
+            <span className="kicker">{x.spTarget}</span>
+            {useCustom ? (
+              <span className="tzs-tag"><Icon name="pen" size={14} /> {x.spCustom}</span>
+            ) : (
+              <span className="tzs-tag">{lv} · {pos}/{list.length}</span>
+            )}
+          </div>
+          <p className="tzs-phrase" dir="auto" lang="kk" key={cur.kk}>{cur.kk}</p>
+          {(cur.ru || cur.en) && <p className="tzs-gloss">{gloss}</p>}
+          <div className="tzs-audio">
+            <button type="button" className={`tzs-play ${play === "n" ? "playing" : ""}`} onClick={() => listen(false)}>
+              <Icon name="volume" size={20} /> {x.spListen}
+            </button>
+            <button type="button" className={`tzs-play slow ${play === "s" ? "playing" : ""}`} onClick={() => listen(true)}>
+              <Icon name="volume" size={18} /> {SLOW[lang] || "Slowly"}
+              <span className="tzs-x" dir="ltr" aria-hidden="true">0.5×</span>
+            </button>
+            {!useCustom && (
+              <button type="button" className="tzs-next" onClick={() => { setIdx(idx + 1); setRes(null); setErr(""); }}>
+                {x.spNext} <Icon name="right" size={16} className="tz-flip" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        <TuzelMic x={x} phase={phase} ms={ms} stream={phase === "rec" ? recRef.current?.stream || null : null} onStart={start} onStop={stop} />
+        {err && (
+          <p className="tz-alert tzs-err" role="alert">
+            <Icon name="x" size={16} /> {err}
+          </p>
+        )}
+      </section>
+
+      {res && <TuzelSpeakResult x={x} res={res} pass={SP_PASS} target={cur.kk} onRetry={start} />}
+
+      <div className="tzs-more">
+        <section className="tzs-custom" aria-labelledby="tzs-custom-h">
+          <h3 id="tzs-custom-h"><Icon name="pen" size={18} /> {x.spCustom}</h3>
+          <div className="tzs-custom-row">
+            <input className="input" value={custom} maxLength={160} onChange={(e) => setCustom(e.target.value)} placeholder={x.spCustomPh} aria-label={x.spCustom} lang="kk" dir="auto" />
+            <button type="button" className="tzs-use" disabled={!custom.trim()} onClick={() => { setUseCustom(true); setRes(null); setErr(""); }}>
+              {x.spUse}
+            </button>
+          </div>
         </section>
-      )}
+
+        {sp.log?.length > 0 && (
+          <section className="tzs-log" aria-labelledby="tzs-log-h">
+            <h3 id="tzs-log-h"><Icon name="chart" size={18} /> {x.spHistory}</h3>
+            <ul>
+              {sp.log.slice(0, 6).map((e, i) => (
+                <li key={i}>
+                  <span className={`tzs-sc ${e.score >= SP_PASS ? "good" : e.score >= 40 ? "mid" : ""}`}>{e.score}</span>
+                  <span className="tzs-log-kk" dir="auto" lang="kk">{e.kk}</span>
+                  {e.lvl && <em>{e.lvl}</em>}
+                </li>
+              ))}
+            </ul>
+            <p className="tzs-priv"><Icon name="lock" size={14} /> {x.spPrivacy}</p>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

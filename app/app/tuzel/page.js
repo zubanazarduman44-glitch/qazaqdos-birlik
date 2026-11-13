@@ -1,12 +1,13 @@
 "use client";
+import "../../tuzel.css";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
-import Icon from "../../components/Icon";
 import Writing from "../writing/page";
 import Speaking from "../speaking/page";
 import { tx } from "../../../lib/tx";
 import SectionIntro from "../../components/SectionIntro";
+import { TuzelArt } from "../../components/TuzelKit";
 
 const INTRO = {
   kk: { title: "Түзел — жазуың мен айтылымыңды жетілдір", text: "Қазақша жазып не дауыстап айтып көр — Aqyl қатеңді тауып, дұрыс нұсқасын көрсетеді және неге солай екенін түсіндіреді.", points: ["Жазу: мәтініңді тексеріп, түзетілген нұсқасын береді", "Айтылым: дауысыңды тыңдап, дыбыстарды бағалайды", "Әр түзетуге қысқа түсіндірме"] },
@@ -22,24 +23,50 @@ const INTRO = {
   ja: { title: "Tuzel — 書く力と発音をみがこう", text: "カザフ語で文を書いたり、声に出して言ってみよう。Aqyl が間違いを見つけて、正しい言い方とその理由を教えてくれます。", points: ["作文：文章をチェックして直した文を表示", "発音：声を聞いて音を採点", "直すたびに短い解説つき"] },
 };
 
+const TABS = [
+  ["write", "dapter", "tzWrite"],
+  ["speak", "mic", "tzSpeak"],
+];
+
 // Tuzel: жазу көмекшісі + айтылым бір бөлімде
 function Tuzel() {
   const { lang } = useApp();
   const x = tx(lang);
   const q = useSearchParams();
   const [tab, setTab] = useState(q.get("tab") === "speak" ? "speak" : "write");
+  // Көрсеткі пернелер қойындылар арасында ауыстырады
+  function onKey(e) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
+    const next = tab === "write" ? "speak" : "write";
+    const id = e.key === "Home" ? "write" : e.key === "End" ? "speak" : next;
+    setTab(id);
+    document.getElementById(`tz-tab-${id}`)?.focus();
+  }
   return (
     <div className="tuzel">
       <SectionIntro icon="pen" {...(INTRO[lang] || INTRO.en)} />
-      <div className="tz-tabs" role="tablist">
-        <button role="tab" aria-selected={tab === "write"} className={tab === "write" ? "on" : ""} onClick={() => setTab("write")}>
-          <Icon name="pen" size={18} /> {x.tzWrite}
-        </button>
-        <button role="tab" aria-selected={tab === "speak"} className={tab === "speak" ? "on" : ""} onClick={() => setTab("speak")}>
-          <Icon name="mic" size={18} /> {x.tzSpeak}
-        </button>
+      <div className="tz-tabs" role="tablist" aria-label="Tuzel" onKeyDown={onKey}>
+        {TABS.map(([id, art, label]) => (
+          <button
+            key={id}
+            id={`tz-tab-${id}`}
+            type="button"
+            role="tab"
+            aria-selected={tab === id}
+            aria-controls="tz-panel"
+            tabIndex={tab === id ? 0 : -1}
+            className={`tz-tab ${tab === id ? "on" : ""}`}
+            onClick={() => setTab(id)}
+          >
+            <TuzelArt name={art} size={52} />
+            <span className="tz-tab-l">{x[label]}</span>
+          </button>
+        ))}
       </div>
-      {tab === "write" ? <Writing /> : <Speaking />}
+      <div id="tz-panel" role="tabpanel" aria-labelledby={`tz-tab-${tab}`} className="tz-panel">
+        {tab === "write" ? <Writing /> : <Speaking />}
+      </div>
     </div>
   );
 }

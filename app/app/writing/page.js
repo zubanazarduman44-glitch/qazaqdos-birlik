@@ -1,9 +1,12 @@
 "use client";
+import "../../tuzel.css";
 import { useState } from "react";
 import { NatEmpty } from "../../components/NatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
+import TuzelWriteResult from "../../components/TuzelWriteResult";
+import { TuzelSay } from "../../components/TuzelKit";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
 
@@ -14,12 +17,14 @@ export default function Writing() {
   const [busy, setBusy] = useState(false);
   const [res, setRes] = useState(null);
   const [err, setErr] = useState("");
+  const [sent, setSent] = useState(""); // тексерілген мәтін (нәтиже соған салыстырылады)
 
   async function check() {
     if (!text.trim() || busy) return;
     setBusy(true);
     setErr("");
     setRes(null);
+    setSent(text);
     try {
       const r = await fetch("/api/writing", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text, level, explain }) });
       const d = await r.json().catch(() => ({}));
@@ -33,88 +38,63 @@ export default function Writing() {
     }
   }
 
-  const score = Math.max(0, Math.min(100, Number(res?.score) || 0));
+  const fill = Math.min(1, text.length / 2000);
   return (
-    <div className="writing">
-      <header className="page-head">
-        <div>
-          <span className="kicker">AI · {t.nav.writing}</span>
-          <h1>{t.writingTitle}</h1>
-          <p>{t.writingSub}</p>
-        </div>
+    <div className="writing tzw">
+      <header className="tz-head">
+        <span className="kicker">AI · {t.nav.writing}</span>
+        <h1>{t.writingTitle}</h1>
       </header>
 
-      <section className="card wr-in">
-        <div className="wr-top">
-          <span className="muted small">{t.yourLevel}</span>
-          <div className="seg">
-            {LEVELS.map((l) => (
-              <button key={l} className={level === l ? "on" : ""} onClick={() => setLevel(l)}>
+      <div className="tzw-desk">
+        <section className="tzw-book" aria-label={t.writingTitle}>
+          <div className="tzw-tabs" role="group" aria-label={t.yourLevel}>
+            <span className="tzw-tabs-l">{t.yourLevel}</span>
+            {LEVELS.map((l, i) => (
+              <button key={l} type="button" className={`tzw-tab t${i} ${level === l ? "on" : ""}`} aria-pressed={level === l} onClick={() => setLevel(l)}>
                 {l}
               </button>
             ))}
           </div>
-        </div>
-        <textarea className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder={t.writingPh} maxLength={2000} rows={6} />
-        <div className="wr-actions">
-          <span className="muted small">{text.length} / 2000</span>
-          <button className="btn gold big" onClick={check} disabled={busy || !text.trim()}>
-            {busy ? <Qyran mood="think" size={28} /> : <Icon name="sparkle" size={18} />} {t.improve}
-          </button>
-        </div>
-        {err && <p className="alert">{err}</p>}
-      </section>
-
-      {!res && !busy && <NatEmpty art="taqiya" size={130} lang={lang} proverb />}
-      {res && (
-        <section className="card wr-out rise">
-          <div className="wr-score">
-            <Qyran mood={score >= 85 ? "cheer" : score >= 60 ? "happy" : "support"} size={90} />
-            <div>
-              <b className="wr-num">{score}</b>
-              <span className="muted">/100</span>
-              <div className="bar">
-                <i style={{ width: `${score}%` }} />
-              </div>
-              {res.praise && <p>{res.praise}</p>}
-            </div>
+          <div className="tzw-sheet">
+            <label className="sr-only" htmlFor="tzw-text">{t.writingTitle}</label>
+            <textarea id="tzw-text" dir="auto" lang="kk" className="tzw-area" value={text} onChange={(e) => setText(e.target.value)} placeholder={t.writingPh} maxLength={2000} rows={7} />
           </div>
-          <div className="grid g2">
-            <div>
-              <h3>{t.original}</h3>
-              <p className="wr-text">{text}</p>
-            </div>
-            <div>
-              <h3>{t.corrected}</h3>
-              <p className="wr-text good">{res.corrected}</p>
-            </div>
+          <div className="tzw-foot">
+            <span className="tzw-count" aria-live="off">
+              <span className="tzw-count-bar" aria-hidden="true"><i style={{ transform: `scaleX(${fill})` }} /></span>
+              <span className="small">{text.length} / 2000</span>
+            </span>
+            <button type="button" className="tz-cta" onClick={check} disabled={busy || !text.trim()}>
+              {busy ? <span className="tz-cta-bird"><Qyran mood="think" size={30} /></span> : <Icon name="sparkle" size={18} />} {t.improve}
+            </button>
           </div>
-          <h3>{t.changes}</h3>
-          {res.changes?.length ? (
-            <ul className="changes">
-              {res.changes.map((c, i) => (
-                <li key={i}>
-                  <span className="del">{c.from}</span>
-                  <Icon name="right" size={16} />
-                  <span className="ins">{c.to}</span>
-                  <small className="muted">{c.why}</small>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="alert ok">{t.noChanges}</p>
-          )}
-          {res.tip && (
-            <div className="fact">
-              <Qyran mood="idle" size={44} />
-              <p>
-                <b>{t.tip}: </b>
-                {res.tip}
-              </p>
-            </div>
+          {err && (
+            <p className="tz-alert" role="alert">
+              <Icon name="x" size={16} /> {err}
+            </p>
           )}
         </section>
+
+        <aside className="tzw-aqyl">
+          <TuzelSay mood={busy ? "think" : res ? (Number(res.score) >= 85 ? "cheer" : "happy") : "idle"} size={110} className="tzw-aqyl-say">
+            {busy ? (
+              <span className="tz-dots" aria-hidden="true"><i /><i /><i /></span>
+            ) : (
+              <p>{t.writingSub}</p>
+            )}
+          </TuzelSay>
+        </aside>
+      </div>
+
+      {busy && (
+        <div className="tzw-skel" aria-hidden="true">
+          <i /><i /><i /><i />
+          <span className="tzw-skel-pen"><Icon name="pen" size={22} /></span>
+        </div>
       )}
+      {!res && !busy && <NatEmpty art="taqiya" size={110} lang={lang} proverb />}
+      {res && <TuzelWriteResult t={t} text={sent || text} res={res} />}
     </div>
   );
 }
