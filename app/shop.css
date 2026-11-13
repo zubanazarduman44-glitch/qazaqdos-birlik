@@ -1,0 +1,329 @@
+/* ════════════════════════════════════════════════════════════════════
+   Дүкен · «Шеберхана базары»
+   Сол жақта — киім үйі (айна, сырмақ, әмиян), оң жақта — базар сөрелері
+   (шатыр-шымылдық, ілулі белгі, баға қағазы бар киіз бұйымдар).
+   Тек осы бет: барлық класс .sh / sh- арқылы.
+   ════════════════════════════════════════════════════════════════════ */
+.sh {
+  --sh-red: #b8322a; --sh-deep: #8a2018; --sh-cream: #faf6ee; --sh-surf: #fffdf7; --sh-felt: #f4ecda;
+  --sh-ink: #1f2430; --sh-muted: #4a5160; --sh-gold: #e0a526; --sh-gold-ink: #6b4500; --sh-blue: #0f5e7a;
+  --sh-ok: #2f6b4f; --sh-wine: #6e1e2e; --sh-wine-soft: #f3e3e6; --sh-thread: #3a2210;
+  --sh-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .3 0 0 0 0 .12 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  position: relative; color: var(--sh-ink);
+}
+.sh * { min-width: 0; }
+
+/* ── Жалауша тізбегі және тақырып ── */
+.sh-bunting {
+  height: 20px; margin: 2px 0 6px; opacity: 0.95;
+  background:
+    linear-gradient(#8a6a3a, #8a6a3a) 0 0 / 100% 2px no-repeat,
+    conic-gradient(from -34deg at 50% 100%, var(--sh-red) 68deg, transparent 0) -36px 2px / 96px 18px repeat-x,
+    conic-gradient(from -34deg at 50% 100%, var(--sh-gold) 68deg, transparent 0) -12px 2px / 96px 18px repeat-x,
+    conic-gradient(from -34deg at 50% 100%, var(--sh-blue) 68deg, transparent 0) 12px 2px / 96px 18px repeat-x,
+    conic-gradient(from -34deg at 50% 100%, #efe2c4 68deg, transparent 0) 36px 2px / 96px 18px repeat-x;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.sh-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; margin: 4px 0 18px; }
+.sh-head-txt { flex: 1 1 380px; }
+.sh-head h1 { margin: 4px 0 6px; font-family: var(--head); font-size: clamp(30px, 4vw, 44px); line-height: 1.05; letter-spacing: -0.01em; color: var(--sh-ink); }
+.sh-head p { margin: 0; max-width: 60ch; color: var(--sh-muted); font-size: 16px; line-height: 1.5; }
+
+.sh-grid { display: grid; grid-template-columns: minmax(290px, 330px) minmax(0, 1fr); gap: 24px; align-items: start; }
+
+/* ── Киім үйі ── */
+.sh-stage { display: grid; gap: 14px; }
+@media (min-width: 961px) and (min-height: 760px) { .sh-stage { position: sticky; top: 88px; } }
+
+.sh-purse {
+  display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; border-radius: 18px;
+  background: var(--sh-noise), linear-gradient(180deg, #fff8e4, #f7e7bf);
+  box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.4), 0 10px 22px -16px rgba(90, 50, 10, 0.55);
+  position: relative;
+}
+.sh-purse::after { content: ""; position: absolute; inset: 5px; border-radius: 14px; border: 1.5px dashed rgba(176, 124, 16, 0.45); pointer-events: none; }
+.sh-purse-art { flex: none; filter: drop-shadow(0 4px 3px rgba(70, 35, 8, 0.2)); }
+.sh-purse-txt { display: grid; gap: 0; }
+.sh-purse-txt > span { font-size: 13px; font-weight: 700; color: var(--sh-gold-ink); letter-spacing: 0.04em; text-transform: uppercase; }
+.sh-coins { display: inline-flex; align-items: center; gap: 7px; font-family: var(--head); font-size: 28px; line-height: 1.15; color: var(--sh-ink); font-weight: 700; animation: shBump 0.55s var(--ease) both; }
+.sh-coins small { font-family: var(--body); font-size: 14px; font-weight: 700; color: var(--sh-muted); }
+
+/* Айна */
+.sh-mirror { position: relative; padding-top: 30px; }
+.sh-crown { position: absolute; z-index: 2; top: 0; left: 50%; width: 170px; height: auto; transform: translateX(-50%); filter: drop-shadow(0 3px 2px rgba(60, 20, 10, 0.25)); }
+.sh-glass {
+  position: relative; overflow: hidden; display: grid; justify-items: center; align-content: end;
+  min-height: 320px; padding: 34px 12px 12px;
+  border: 12px solid transparent; border-radius: 170px 170px 26px 26px;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 38%, #fffef9 0%, #fbf3e1 55%, #f1e3c2 100%) padding-box,
+    linear-gradient(160deg, #c8443a, var(--sh-red) 40%, var(--sh-deep)) border-box;
+  box-shadow: 0 0 0 2.5px var(--sh-thread), inset 0 0 0 2.5px var(--sh-thread), 0 22px 40px -26px rgba(90, 30, 10, 0.6);
+}
+.sh-glass::before { content: ""; position: absolute; inset: 6px; border-radius: 156px 156px 18px 18px; border: 2px dashed rgba(224, 165, 38, 0.55); pointer-events: none; }
+.sh-glass::after {
+  content: ""; position: absolute; top: -20%; bottom: -20%; width: 34%; inset-inline-start: -40%; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent); transform: skewX(-16deg);
+}
+.sh-mirror.sewn .sh-glass::after { animation: shSheen 1.1s 0.45s var(--ease) both; }
+.sh-glass-label {
+  position: absolute; top: 18px; left: 50%; transform: translateX(-50%); white-space: nowrap; z-index: 1;
+  padding: 3px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 800; letter-spacing: 0.02em;
+  background: var(--sh-surf); color: var(--sh-deep); box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.35);
+}
+.sh-mirror.trying .sh-glass-label { background: var(--sh-blue); color: #fff; box-shadow: none; }
+.sh-mirror.trying .sh-glass::before { border-color: rgba(15, 94, 122, 0.55); }
+.sh-tassel { position: absolute; top: 56px; width: 2px; height: 46px; background: var(--sh-gold); transform-origin: top; animation: shSway 4s ease-in-out infinite; }
+.sh-tassel::after { content: ""; position: absolute; bottom: -14px; left: -5px; width: 12px; height: 16px; border-radius: 6px 6px 2px 2px; background: repeating-linear-gradient(90deg, var(--sh-gold) 0 2px, #b07c10 2px 3px); }
+.sh-tassel.s1 { inset-inline-start: 22px; } .sh-tassel.s2 { inset-inline-end: 22px; animation-delay: -2s; }
+.sh-model { position: relative; display: grid; justify-items: center; width: 100%; }
+.sh-rug { position: absolute; bottom: -4px; left: 50%; width: 252px; height: auto; transform: translateX(-50%); }
+.sh-model-fig { position: relative; z-index: 1; margin-bottom: 4px; }
+.sh-model-fig .dress-svg { display: block; overflow: visible; }
+.sh-stitch { position: absolute; z-index: 0; left: 50%; top: 46%; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; border: 3px dashed var(--sh-gold); opacity: 0; pointer-events: none; }
+.sh-mirror.sewn .sh-stitch { animation: shStitch 1.2s 0.5s var(--ease) both; }
+.sh-spark { position: absolute; z-index: 2; width: 14px; height: 14px; background: var(--sh-gold); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); opacity: 0; pointer-events: none; }
+.sh-spark.k1 { left: 18%; top: 26%; } .sh-spark.k2 { right: 16%; top: 40%; width: 18px; height: 18px; } .sh-spark.k3 { left: 26%; top: 66%; width: 10px; height: 10px; background: var(--sh-red); }
+.sh-mirror.sewn .sh-spark { animation: shSpark 0.9s var(--ease) both; }
+.sh-mirror.sewn .sh-spark.k1 { animation-delay: 0.6s; } .sh-mirror.sewn .sh-spark.k2 { animation-delay: 0.75s; } .sh-mirror.sewn .sh-spark.k3 { animation-delay: 0.9s; }
+
+/* Киіп көру жолағы */
+.sh-try {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; align-items: center; padding: 10px 12px; border-radius: 16px;
+  background: #e6f0f3; box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.35); animation: shIn 0.35s var(--ease) both;
+}
+.sh-try-art { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: var(--sh-surf); box-shadow: inset 0 0 0 1px rgba(15, 94, 122, 0.25); }
+.sh-try-txt { display: grid; } .sh-try-txt small { font-size: 12.5px; font-weight: 700; color: var(--sh-blue); } .sh-try-txt b { font-family: var(--head); font-size: 15px; font-weight: 700; }
+.sh-try-acts { grid-column: 1 / -1; display: flex; gap: 8px; }
+.sh-try-acts .btn:first-child { flex: 1; }
+.sh-icon-btn { min-width: 44px; padding-inline: 10px !important; }
+
+/* Киім орындары */
+.sh-slots { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sh-slot {
+  width: 100%; min-height: 56px; display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border: 0; cursor: pointer; font: inherit; text-align: start;
+  border-radius: 14px; color: var(--sh-ink); background: transparent; box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.3);
+  background-image: linear-gradient(var(--sh-felt), var(--sh-felt)); transition: transform 0.2s var(--ease), box-shadow 0.2s;
+}
+.sh-slot:hover { transform: translateY(-2px); }
+.sh-slot.full { background-image: none; background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.5), 0 6px 14px -12px rgba(90, 50, 10, 0.6); }
+.sh-slot.try { box-shadow: inset 0 0 0 2px var(--sh-blue); }
+.sh-slot[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--sh-red); }
+.sh-slot-art { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: var(--sh-cream); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.18); }
+.sh-slot:not(.full) .sh-slot-art { background: transparent; box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.28); outline: 1.5px dashed rgba(122, 86, 22, 0.35); outline-offset: -5px; }
+.sh-slot-ghost { display: grid; opacity: 0.3; filter: grayscale(1); }
+.sh-slot-txt { display: grid; line-height: 1.2; }
+.sh-slot-txt small { font-size: 12px; font-weight: 700; color: var(--sh-muted); }
+.sh-slot-txt b { font-size: 14px; font-weight: 800; overflow-wrap: anywhere; }
+.sh-slot:not(.full) .sh-slot-txt b { font-weight: 600; color: var(--sh-muted); font-style: italic; }
+.sh-earn { display: flex; gap: 8px; align-items: center; margin: 0; padding: 0 4px; font-size: 14px; color: var(--sh-muted); }
+.sh-stage:has(.sh-try) .sh-earn { display: none; }
+.sh-earn svg { flex: none; color: var(--sh-gold-ink); }
+
+/* ── Базар: сөре таңдау ── */
+.sh-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.sh-tab {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 48px; padding: 4px 11px 4px 5px; border: 0; cursor: pointer; font: inherit;
+  border-radius: 14px; color: var(--sh-ink); background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.26), 0 3px 0 rgba(122, 86, 22, 0.14);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s, background-color 0.2s;
+}
+.sh-tab:hover { transform: translateY(-2px); }
+.sh-tab:active { transform: translateY(1px); }
+.sh-tab-art { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: var(--sh-felt); color: var(--sh-deep); }
+.sh-tab-name { font-weight: 800; font-size: 14.5px; }
+.sh-tab-art svg:not(.ic) { width: 32px; height: 32px; }
+.sh-tab-n { font-size: 12px; font-weight: 800; padding: 2px 7px; border-radius: 99px; background: var(--sh-felt); color: var(--sh-muted); }
+.sh-tab.on { background: var(--sh-red); color: #fff; box-shadow: 0 3px 0 var(--sh-deep); }
+.sh-tab.on .sh-tab-art { background: #fff4ea; }
+.sh-tab.on .sh-tab-n { background: rgba(255, 255, 255, 0.2); color: #fff; }
+
+/* ── Сөре (шатырлы дүкен) ── */
+.sh-stall { --aw: var(--sh-red); position: relative; margin-top: 22px; animation: shIn 0.5s calc(var(--si, 0) * 90ms) var(--ease) both; }
+.sh-stall.st-body { --aw: var(--sh-blue); } .sh-stall.st-foot { --aw: var(--sh-ok); } .sh-stall.st-acc { --aw: #c98a12; }
+.sh-awning {
+  position: relative; z-index: 1; height: 38px; border-radius: 10px 10px 0 0;
+  background:
+    linear-gradient(color-mix(in srgb, var(--aw) 70%, #000), color-mix(in srgb, var(--aw) 70%, #000)) 0 0 / 100% 7px no-repeat,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 60%),
+    repeating-linear-gradient(90deg, var(--aw) 0 30px, #fbf3e2 30px 60px);
+  -webkit-mask: linear-gradient(#000, #000) 0 0 / 100% 23px no-repeat, radial-gradient(circle 15px at 15px 23px, #000 97%, transparent 100%) 0 0 / 30px 100% repeat-x;
+  mask: linear-gradient(#000, #000) 0 0 / 100% 23px no-repeat, radial-gradient(circle 15px at 15px 23px, #000 97%, transparent 100%) 0 0 / 30px 100% repeat-x;
+  filter: drop-shadow(0 4px 0 rgba(60, 30, 10, 0.12));
+}
+.sh-sign {
+  position: absolute; z-index: 2; top: 26px; inset-inline-start: 18px; display: flex; align-items: center; gap: 8px; padding: 4px 14px 4px 6px;
+  border-radius: 12px; background: var(--sh-surf); box-shadow: 0 0 0 2px var(--sh-thread), 0 8px 14px -10px rgba(60, 30, 10, 0.7); transform: rotate(-1.5deg);
+}
+.sh-sign::before, .sh-sign::after { content: ""; position: absolute; bottom: 100%; width: 2px; height: 14px; background: var(--sh-thread); }
+.sh-sign::before { inset-inline-start: 22px; } .sh-sign::after { inset-inline-end: 22px; }
+.sh-sign-art { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 9px; background: var(--sh-felt); }
+.sh-sign h2 { margin: 0; font-family: var(--head); font-size: 17px; font-weight: 700; color: var(--sh-ink); }
+.sh-sign-n { font-size: 12.5px; font-weight: 800; color: var(--sh-muted); padding: 2px 8px; border-radius: 99px; background: var(--sh-felt); }
+.sh-shelf {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(198px, 1fr)); gap: 14px; padding: 52px 14px 18px;
+  margin-top: -12px; border-radius: 0 0 18px 18px;
+  background: var(--sh-noise), linear-gradient(180deg, #efe2c4, var(--sh-felt) 60px);
+  box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.18), inset 0 -8px 0 rgba(122, 86, 22, 0.12);
+}
+
+/* ── Бұйым: киіз тауар ── */
+.sh-good {
+  --rc: var(--sh-blue); --rt: var(--sh-blue); --rs: #e3eef2;
+  position: relative; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 12px; border-radius: 18px;
+  background: var(--sh-surf); box-shadow: 0 0 0 1px rgba(122, 86, 22, 0.16), 0 12px 22px -18px rgba(90, 50, 10, 0.7);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s;
+  animation: shIn 0.45s calc(var(--i, 0) * 45ms + var(--si, 0) * 90ms) var(--ease) both;
+}
+.sh-good::before { content: ""; position: absolute; inset: 5px; border-radius: 14px; border: 1.5px dashed color-mix(in srgb, var(--rc) 45%, transparent); pointer-events: none; }
+.sh-good.r1 { --rc: var(--sh-ok); --rt: var(--sh-ok); --rs: #e2efe8; }
+.sh-good.r2 { --rc: var(--sh-red); --rt: #a12b24; --rs: #f8e5e1; }
+.sh-good.r3 { --rc: var(--sh-gold); --rt: var(--sh-gold-ink); --rs: #fbefcf; }
+.sh-good:hover { transform: translateY(-4px); box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--rc) 60%, transparent), 0 18px 28px -18px rgba(90, 50, 10, 0.75); }
+.sh-good-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.sh-rare { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; color: var(--rt); }
+.sh-rare-dots { display: inline-flex; gap: 2px; }
+.sh-rare-dots i { width: 6px; height: 6px; transform: rotate(45deg); border-radius: 1px; box-shadow: inset 0 0 0 1.2px var(--rc); }
+.sh-rare-dots i.f { background: var(--rc); }
+.sh-tag {
+  position: relative; display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px 3px 16px; border-radius: 5px 9px 9px 5px;
+  font-family: var(--head); font-weight: 700; font-size: 14px; color: var(--sh-ink); background: #fbeecb;
+  box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.5); transform: rotate(4deg); transform-origin: 0 50%;
+}
+.sh-tag::before { content: ""; position: absolute; inset-inline-start: 5px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.6); }
+.sh-tag.own { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: 50%; color: #fff; background: var(--sh-ok); box-shadow: 0 0 0 2px var(--sh-surf), 0 0 0 3.5px rgba(47, 107, 79, 0.35); transform: none; }
+.sh-tag.own::before { display: none; }
+.sh-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.sh-plate {
+  position: relative; display: grid; place-items: center; height: 132px; margin: 2px 0 4px; border-radius: 16px; overflow: hidden;
+  background: radial-gradient(circle at 50% 46%, #fff 0, #fffaf0 34%, var(--rs) 70%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rc) 22%, transparent);
+}
+.sh-plate::before { content: ""; position: absolute; width: 116px; height: 116px; border-radius: 50%; background: color-mix(in srgb, var(--rc) 9%, #fff); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--rc) 30%, transparent); outline: 1.5px dashed color-mix(in srgb, var(--rc) 40%, transparent); outline-offset: -8px; }
+.sh-good.r3 .sh-plate::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 35%, rgba(255, 240, 190, 0.85) 50%, transparent 65%); transform: translateX(-100%); animation: shShine 4.5s 1s ease-in-out infinite; pointer-events: none; }
+.sh-plate-art { position: relative; display: grid; filter: drop-shadow(0 8px 6px rgba(70, 35, 8, 0.28)); transition: transform 0.35s var(--ease); }
+.sh-plate-art .nat-art { animation: none; }
+.sh-good:hover .sh-plate-art { transform: translateY(-4px) scale(1.07) rotate(-3deg); }
+.sh-worn {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 800; background: var(--sh-red); color: #fff; box-shadow: 0 3px 0 var(--sh-deep);
+}
+.sh-good h3 { position: relative; margin: 0; font-family: var(--head); font-size: 16px; font-weight: 700; line-height: 1.2; }
+.sh-good p { position: relative; margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--sh-muted); }
+.sh-need { position: relative; align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 8px; font-size: 12.5px; font-weight: 800; color: var(--sh-wine); background: var(--sh-wine-soft); }
+.sh-acts { position: relative; display: flex; gap: 6px; margin-top: auto; padding-top: 4px; }
+.sh-acts .btn { flex: 1; padding-inline: 8px; gap: 5px; white-space: nowrap; }
+.sh-acts .sh-trybtn { flex: 0 1 auto; background: transparent; color: var(--sh-blue); box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.4); }
+.sh-acts .sh-trybtn:hover:not(:disabled) { background: #e6f0f3; }
+.sh-acts .sh-trybtn.on { background: var(--sh-blue); color: #fff; box-shadow: none; }
+.sh .btn.ghost.sh-poor { color: var(--sh-wine); box-shadow: inset 0 0 0 1.5px rgba(110, 30, 46, 0.35); background: var(--sh-surf); }
+.sh-wide { flex: 1; }
+
+/* Тар бұйымда түймелер бірінің астына бірі */
+.sh-good { container-type: inline-size; }
+@container (max-width: 236px) { .sh-acts { flex-direction: column; } .sh-acts .sh-trybtn { flex: 1; } }
+
+/* Күйлер */
+.sh-good.is-on { background: linear-gradient(180deg, #fff7df, var(--sh-surf) 70%); box-shadow: 0 0 0 2.5px var(--sh-gold), 0 14px 26px -16px rgba(176, 124, 16, 0.75); }
+.sh-good.is-lock .sh-plate-art { filter: grayscale(0.45) opacity(0.78) drop-shadow(0 6px 5px rgba(70, 35, 8, 0.18)); }
+.sh-good.is-lock .sh-tag { background: var(--sh-felt); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.3); }
+.sh-good.trying { box-shadow: 0 0 0 2.5px var(--sh-blue), 0 14px 26px -16px rgba(15, 94, 122, 0.7); }
+.sh-good.shake { animation: shShake 0.45s ease both; }
+
+/* ── Қалқымалы кішкене айна (кіші экран) ── */
+.sh-dock { display: none; }
+@media (max-width: 960px) {
+  .sh-dock {
+    position: fixed; z-index: 38; inset-inline-start: 14px; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 84px);
+    display: flex; align-items: center; gap: 8px; padding: 5px 12px 5px 5px; border-radius: 99px;
+    background: var(--sh-surf); box-shadow: 0 0 0 2px var(--sh-thread), 0 14px 28px -12px rgba(60, 30, 10, 0.55);
+    opacity: 0; transform: translateY(16px) scale(0.92); pointer-events: none; transition: opacity 0.25s, transform 0.3s var(--ease);
+  }
+  .sh-dock.show { opacity: 1; transform: none; pointer-events: auto; }
+  .sh-dock.wide { inset-inline-end: 14px; }
+  .sh-dock.sewn .sh-dock-mirror { animation: shBump 0.6s 0.5s var(--ease) both; }
+  .sh-dock-mirror { flex: none; display: grid; place-items: end center; width: 58px; height: 58px; padding: 0; border: 0; cursor: pointer; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 50% 40%, #fffef9, #f1e3c2); box-shadow: inset 0 0 0 3px var(--sh-red); }
+  .sh-dock-mirror svg { margin-bottom: -4px; }
+  .sh-dock-coins { display: inline-flex; align-items: center; gap: 4px; font-family: var(--head); font-weight: 700; font-size: 16px; }
+  .sh-dock.wide .sh-dock-coins { margin-inline-end: auto; }
+}
+
+/* ── Ұшатын тиындар ── */
+.sh-fly { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+.sh-fly-coin, .sh-fly-item { position: fixed; left: 0; top: 0; }
+.sh-fly-coin { width: 22px; height: 22px; animation: shCoinFly 0.62s var(--d) cubic-bezier(0.5, 0, 0.3, 1) both; }
+.sh-fly-item { width: 84px; height: 84px; animation: shItemFly 0.75s 0.55s cubic-bezier(0.55, 0, 0.25, 1) both; filter: drop-shadow(0 8px 6px rgba(70, 35, 8, 0.3)); }
+
+@keyframes shCoinFly {
+  0% { transform: translate(calc(var(--x0) - 11px), calc(var(--y0) - 11px)) scale(0.6); opacity: 0; }
+  15% { opacity: 1; }
+  50% { transform: translate(calc((var(--x0) + var(--x1)) / 2 - 11px), calc(min(var(--y0), var(--y1)) - 70px)) scale(1.15) rotate(180deg); }
+  88% { opacity: 1; }
+  100% { transform: translate(calc(var(--x1) - 11px), calc(var(--y1) - 11px)) scale(0.7) rotate(360deg); opacity: 0; }
+}
+@keyframes shItemFly {
+  0% { transform: translate(calc(var(--x0) - 42px), calc(var(--y0) - 42px)) scale(1); opacity: 0; }
+  12% { opacity: 1; }
+  55% { transform: translate(calc((var(--x0) + var(--x1)) / 2 - 42px), calc(min(var(--y0), var(--y1)) - 90px)) scale(0.9) rotate(-10deg); }
+  100% { transform: translate(calc(var(--x1) - 42px), calc(var(--y1) - 42px)) scale(0.35) rotate(0); opacity: 0; }
+}
+@keyframes shIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes shBump { 0% { transform: scale(1); } 35% { transform: scale(1.14); } 100% { transform: scale(1); } }
+@keyframes shSway { 0%, 100% { transform: rotate(4deg); } 50% { transform: rotate(-4deg); } }
+@keyframes shSheen { from { transform: translateX(0) skewX(-16deg); } to { transform: translateX(560%) skewX(-16deg); } }
+@keyframes shStitch { 0% { opacity: 0; transform: scale(0.6) rotate(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.15) rotate(90deg); } }
+@keyframes shSpark { 0% { opacity: 0; transform: scale(0) rotate(0); } 40% { opacity: 1; transform: scale(1.3) rotate(45deg); } 100% { opacity: 0; transform: scale(0.6) rotate(90deg); } }
+@keyframes shShine { 0%, 60% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes shShake { 0%, 100% { transform: none; } 20% { transform: translateX(-6px) rotate(-1deg); } 40% { transform: translateX(6px) rotate(1deg); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+
+/* ── Кіші экрандар ── */
+@media (max-width: 960px) {
+  .sh-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .sh-stage { grid-template-columns: minmax(0, 1fr); max-width: 520px; width: 100%; justify-self: center; }
+}
+@media (max-width: 560px) {
+  .sh-head { margin-bottom: 12px; }
+  .sh-head p { font-size: 15px; }
+  .sh-purse { padding: 8px 12px 8px 8px; }
+  .sh-purse-art { width: 52px; height: 52px; }
+  .sh-coins { font-size: 24px; }
+  .sh-mirror { width: min(100%, 330px); justify-self: center; padding-top: 26px; }
+  .sh-crown { width: 140px; }
+  .sh-glass { min-height: 262px; border-width: 10px; padding-top: 30px; }
+  .sh-tassel { top: 48px; height: 34px; }
+  .sh-model-fig svg { width: 160px; height: auto; }
+  .sh-rug { width: 200px; }
+  .sh-slot { min-height: 50px; }
+  .sh-slot-art { width: 38px; height: 38px; }
+  .sh-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .sh-tab { flex-direction: column; gap: 3px; min-height: 76px; padding: 6px 2px 6px; text-align: center; justify-content: center; }
+  .sh-tab-art { width: 36px; height: 36px; }
+  .sh-tab-art svg:not(.ic) { width: 30px; height: 30px; }
+  .sh-tab-name { font-size: 11.5px; line-height: 1.15; overflow-wrap: anywhere; }
+  .sh-tab-n { font-size: 10.5px; padding: 0 5px; }
+  .sh-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 48px 8px 12px; }
+  .sh-sign { inset-inline-start: 10px; }
+  .sh-good { padding: 10px 9px; gap: 5px; }
+  .sh-good::before { inset: 4px; }
+  .sh-plate { height: 108px; }
+  .sh-plate::before { width: 92px; height: 92px; }
+  .sh-plate-art svg { width: 84px; height: 84px; }
+  .sh-good h3 { font-size: 14.5px; }
+  .sh-good p { font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .sh-rare { font-size: 0; gap: 0; }
+  .sh-rare-dots i { width: 7px; height: 7px; }
+  .sh-tag { font-size: 13px; padding-inline: 14px 7px; }
+  .sh-need { font-size: 11.5px; padding: 3px 7px; }
+  .sh-acts { flex-direction: column; gap: 6px; }
+  .sh-acts .sh-trybtn { flex: 1; }
+}
+
+/* RTL: шатыр белгісі мен баға қағазы айналады */
+[dir="rtl"] .sh-sign { transform: rotate(1.5deg); }
+[dir="rtl"] .sh-tag { transform: rotate(-4deg); transform-origin: 100% 50%; border-radius: 9px 5px 5px 9px; }
+[dir="rtl"] .sh-tag.own { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sh *, .sh *::before, .sh *::after { animation: none !important; transition: none !important; }
+  .sh-fly { display: none; }
+}
