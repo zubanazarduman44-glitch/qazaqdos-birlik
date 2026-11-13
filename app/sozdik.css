@@ -1,0 +1,277 @@
+/* ════════════════════════════════════════════════════════════════════
+   Sozdik · «Сөз сандығы» — ақ киіз дастарқандағы сөз карталары.
+   Тек осы бетке арналған (app/app/sozdik/page.js импорттайды).
+   Қозғалыс: тек transform/opacity; prefers-reduced-motion — жұмсақ ауысу.
+   ════════════════════════════════════════════════════════════════════ */
+.szk {
+  --szk-red: #b8322a;
+  --szk-red-d: #8a2018;
+  --szk-cream: #faf6ee;
+  --szk-surface: #fffdf7;
+  --szk-sand: #f4ecda;
+  --szk-sand-d: #e6d9bc;
+  --szk-ink: #1f2430;
+  --szk-muted: #4a5160;
+  --szk-gold: #e0a526;
+  --szk-blue: #0f5e7a;
+  --szk-blue-d: #0a4a61;
+  --szk-ok: #2f6b4f;
+  --szk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --szk-felt: radial-gradient(rgba(122, 86, 22, 0.07) 1px, transparent 1.4px) 0 0 / 7px 7px,
+    radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1.4px) 3px 4px / 9px 9px;
+}
+
+/* ── Қойындылар: киіз жапсырма ── */
+.szk-tabs { display: flex; gap: 6px; padding: 5px; margin: 0 0 16px; border-radius: 16px; background: var(--szk-sand); box-shadow: inset 0 0 0 1px var(--szk-sand-d); max-inline-size: 100%; overflow-x: auto; scrollbar-width: none; }
+.szk-tabs::-webkit-scrollbar { display: none; }
+.szk-tabs button {
+  flex: 1 1 0; min-inline-size: max-content; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  min-block-size: 46px; padding: 0 14px; border: 0; border-radius: 12px; background: transparent; color: var(--szk-ink);
+  font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.szk-tabs button:hover { background: rgba(255, 253, 247, 0.7); }
+.szk-tabs button.on { background: var(--szk-red); color: #fff; box-shadow: 0 3px 0 var(--szk-red-d); }
+.szk-tabs em { font-style: normal; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(31, 36, 48, 0.08); }
+.szk-tabs button.on em { background: rgba(255, 255, 255, 0.2); }
+
+/* ── Бүгінгі сөздер: дастарқан ── */
+.szk-table {
+  position: relative; padding: 0 18px 18px; border-radius: 22px;
+  background: var(--szk-felt), var(--szk-sand);
+  box-shadow: inset 0 0 0 1px var(--szk-sand-d), 0 1px 2px rgba(60, 40, 10, 0.06), 0 14px 30px -22px rgba(60, 40, 10, 0.45);
+}
+.szk-table::before { content: ""; position: absolute; inset: 8px; border-radius: 16px; border: 1.5px dashed rgba(138, 32, 24, 0.22); pointer-events: none; }
+
+/* Сандық қақпағы: қызыл киіз, алтын тігіс, тұмар-моншақ прогресс */
+.szk-hero {
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 0 -18px 16px; padding: 18px 22px 16px; border-radius: 22px 22px 18px 18px;
+  background: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.4px) 0 0 / 6px 6px, linear-gradient(160deg, #b8322a, #8a2018);
+  color: #fff; overflow: hidden;
+}
+.szk-hero::before { content: ""; position: absolute; inset: 7px; border-radius: 16px 16px 12px 12px; border: 1.5px dashed rgba(246, 227, 176, 0.55); pointer-events: none; }
+.szk-hero::after {
+  content: ""; position: absolute; inset-inline-end: -30px; inset-block-start: -40px; inline-size: 210px; block-size: 210px; opacity: 0.12; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23f6e3b0' stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M60 104c0-30-24-44-42-30-14 12-6 34 14 28 12-4 12-20 0-20'/%3E%3Cpath d='M60 104c0-30 24-44 42-30 14 12 6 34-14 28-12-4-12-20 0-20'/%3E%3Cpath d='M60 104V60'/%3E%3Cpath d='M60 16l14 14-14 14-14-14z'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+.szk-hero-txt { position: relative; z-index: 1; display: grid; gap: 6px; min-inline-size: 0; }
+.szk-eyebrow { font-size: 13px; font-weight: 700; color: #f6e3b0; letter-spacing: 0.02em; }
+.szk-count { font-family: var(--head); font-weight: 700; font-size: clamp(20px, 2.6vw, 28px); line-height: 1.15; color: #fff; }
+.szk-beads { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 7px; }
+.szk-beads li {
+  display: grid; place-items: center; inline-size: 24px; block-size: 24px; border-radius: 50%; color: var(--szk-ink);
+  background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 0 0 1.5px rgba(246, 227, 176, 0.6);
+  transition: background 0.35s var(--szk-ease), box-shadow 0.35s, transform 0.35s var(--szk-ease);
+}
+.szk-beads li.on { background: var(--szk-gold); box-shadow: 0 2px 0 #9c6f0e, inset 0 0 0 1.5px #f6e3b0; animation: szk-bead 0.5s var(--szk-ease); }
+@keyframes szk-bead { 0% { transform: scale(0.5); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.szk-aqyl { position: relative; z-index: 1; flex: none; display: grid; place-items: center; inline-size: 104px; block-size: 104px; border-radius: 50%; background: #f6e3b0; box-shadow: inset 0 0 0 3px #fffdf7, 0 0 0 2px rgba(246, 227, 176, 0.5); }
+.szk-aqyl .qyran { margin-block-start: 6px; }
+.szk-table.done .szk-aqyl { animation: szk-hop 1.2s var(--szk-ease) 2; }
+@keyframes szk-hop { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-8px) rotate(-4deg); } 60% { transform: translateY(0) rotate(3deg); } }
+
+.szk-done {
+  position: relative; display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 12px 16px; border-radius: 14px;
+  background: #e6efe9; color: var(--szk-ok); font-weight: 700; box-shadow: inset 0 0 0 1.5px rgba(47, 107, 79, 0.45);
+  animation: szk-rise 0.5s var(--szk-ease) both;
+}
+.szk-tap { position: relative; display: flex; align-items: center; gap: 6px; margin: 0 4px 12px; font-size: 14px; font-weight: 600; color: var(--szk-muted); }
+
+/* Карта палубасы: желпуіш тәрізді аздап қисайтылған */
+.szk-deck { position: relative; list-style: none; margin: 0; padding: 4px 2px 6px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px 14px; }
+.szk-slot { --r: 0deg; position: relative; transform: rotate(var(--r)); animation: szk-deal 0.55s var(--szk-ease) both; animation-delay: calc(var(--i) * 45ms); }
+.szk-slot:nth-child(4n + 1) { --r: -1.6deg; }
+.szk-slot:nth-child(4n + 2) { --r: 1.1deg; }
+.szk-slot:nth-child(4n + 3) { --r: -0.6deg; }
+.szk-slot:nth-child(4n + 4) { --r: 1.8deg; }
+@keyframes szk-deal { from { opacity: 0; transform: translateY(18px) rotate(calc(var(--r) * -3)) scale(0.94); } to { opacity: 1; transform: rotate(var(--r)); } }
+
+.szk-card {
+  position: relative; display: block; block-size: 228px; perspective: 1100px; cursor: pointer; border-radius: 18px; outline: none;
+  -webkit-tap-highlight-color: transparent; transition: transform 0.3s var(--szk-ease);
+}
+.szk-card:focus-visible { box-shadow: 0 0 0 3px var(--szk-cream), 0 0 0 5px var(--szk-red); }
+@media (hover: hover) { .szk-card:hover { transform: translateY(-5px) rotate(calc(var(--r) * -1)); } }
+.szk-card.flip { animation: szk-lift-a 0.75s var(--szk-ease); }
+.szk-card.unflip { animation: szk-lift-b 0.75s var(--szk-ease); }
+@keyframes szk-lift-a { 0%, 100% { transform: none; } 45% { transform: translateY(-10px) scale(1.04); } }
+@keyframes szk-lift-b { 0%, 100% { transform: none; } 45% { transform: translateY(-10px) scale(1.04); } }
+
+/* Жерге түскен көлеңке: аудару кезінде жиырылып, қайта жайылады */
+.szk-shadow { position: absolute; inset-inline: 10%; inset-block-end: -8px; block-size: 18px; border-radius: 50%; background: rgba(60, 30, 10, 0.32); filter: blur(7px); opacity: 0.75; transition: opacity 0.3s; }
+.szk-card.flip .szk-shadow { animation: szk-sh-a 0.75s var(--szk-ease); }
+.szk-card.unflip .szk-shadow { animation: szk-sh-b 0.75s var(--szk-ease); }
+@keyframes szk-sh-a { 45% { transform: scaleX(0.55) translateY(8px); opacity: 0.35; } }
+@keyframes szk-sh-b { 45% { transform: scaleX(0.55) translateY(8px); opacity: 0.35; } }
+
+.szk-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.75s cubic-bezier(0.3, 1.25, 0.4, 1); will-change: transform; }
+.szk-card.flip .szk-inner { transform: rotateY(180deg); }
+.szk-card:active .szk-inner { transition-duration: 0.6s; }
+
+.szk-face {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 12px 12px 10px; border-radius: 18px;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.szk-front {
+  background: var(--szk-felt), var(--szk-surface); color: var(--szk-ink);
+  box-shadow: inset 0 5px 0 var(--tint, #d9d2c2), inset 0 0 0 1.5px var(--szk-sand-d), 0 2px 0 var(--szk-sand-d), 0 10px 22px -14px rgba(60, 40, 10, 0.5);
+}
+.szk-front::after, .szk-back::after { content: ""; position: absolute; inset: 6px; inset-block-start: 10px; border-radius: 13px; border: 1.3px dashed rgba(31, 36, 48, 0.14); pointer-events: none; }
+.szk-topic { max-inline-size: 100%; margin-block-start: 4px; font-size: 12px; font-weight: 700; color: var(--szk-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.szk-art { margin-block: 6px 4px; line-height: 0; transition: transform 0.4s var(--szk-ease); }
+.szk-art .topic-art { filter: drop-shadow(0 3px 0 rgba(60, 40, 10, 0.12)); }
+@media (hover: hover) { .szk-card:hover .szk-art { transform: rotate(-4deg) scale(1.05); } }
+.szk-front b { flex: 1; display: grid; place-items: center; font-family: var(--head); font-weight: 700; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.2; color: var(--szk-ink); overflow-wrap: anywhere; hyphens: auto; }
+.szk-foot { position: relative; z-index: 1; align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.szk-hint { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--szk-blue); min-inline-size: 0; }
+
+.szk-say {
+  flex: none; display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: 50%; border: 0; cursor: pointer;
+  background: #e3eef2; color: var(--szk-blue); box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.25);
+  transition: background 0.2s, transform 0.15s;
+}
+.szk-say:hover { background: #d3e5ec; }
+.szk-say:active { transform: scale(0.9); }
+.szk-say:focus-visible, .szk-know:focus-visible, .szk-del:focus-visible { outline: 3px solid var(--szk-red); outline-offset: 2px; }
+
+/* Арт жақ: көк киіз */
+.szk-back {
+  transform: rotateY(180deg); justify-content: space-between; color: #fff;
+  background: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.4px) 0 0 / 6px 6px, linear-gradient(165deg, #0f5e7a, #0a4a61);
+  box-shadow: inset 0 5px 0 var(--szk-gold), 0 2px 0 #08394b, 0 10px 22px -14px rgba(10, 40, 60, 0.6);
+}
+.szk-back::after { border-color: rgba(246, 227, 176, 0.4); }
+.szk-backtop { margin-block-start: 6px; max-inline-size: 100%; font-size: 13px; font-weight: 700; color: #f6e3b0; overflow-wrap: anywhere; }
+.szk-back b { flex: 1; display: grid; place-items: center; font-family: var(--head); font-weight: 700; font-size: clamp(16px, 1.6vw, 19px); line-height: 1.25; overflow-wrap: anywhere; }
+.szk-acts { position: relative; z-index: 1; align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.szk-back .szk-say { background: rgba(255, 255, 255, 0.14); color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3); }
+.szk-back .szk-say:hover { background: rgba(255, 255, 255, 0.24); }
+.szk-back .szk-say:focus-visible, .szk-back .szk-know:focus-visible { outline-color: #f6e3b0; }
+.szk-know {
+  display: inline-flex; align-items: center; gap: 5px; min-block-size: 40px; min-inline-size: 0; padding: 0 12px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--szk-gold); color: var(--szk-ink); font: inherit; font-size: 13px; font-weight: 800; white-space: nowrap;
+  box-shadow: 0 3px 0 #9c6f0e; transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.szk-know:hover { background: #e9b23a; }
+.szk-know:active { transform: translateY(2px); box-shadow: 0 1px 0 #9c6f0e; }
+.szk-know.on { background: #fff; color: var(--szk-ok); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25); }
+
+/* Үйренген: жасыл мөр «басылады» */
+.szk-card.known .szk-front { box-shadow: inset 0 5px 0 var(--szk-ok), inset 0 0 0 2px var(--szk-ok), 0 2px 0 var(--szk-ok), 0 10px 22px -14px rgba(60, 40, 10, 0.5); }
+.szk-seal {
+  position: absolute; z-index: 2; inset-block-start: -9px; inset-inline-end: -7px; display: grid; place-items: center; inline-size: 34px; block-size: 34px; border-radius: 50%;
+  color: #fff; background: var(--szk-ok); box-shadow: 0 0 0 2px var(--szk-surface), 0 0 0 3.5px var(--szk-ok), 0 4px 8px -2px rgba(20, 60, 40, 0.45);
+  transform: rotate(-12deg); animation: szk-stamp 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.szk-card.known .szk-topic { padding-inline: 14px; }
+.szk-hint.ok { color: var(--szk-ok); }
+@keyframes szk-stamp { 0% { opacity: 0; transform: rotate(-40deg) scale(2.4); } 55% { opacity: 1; transform: rotate(-8deg) scale(0.88); } 100% { opacity: 1; transform: rotate(-12deg) scale(1); } }
+
+.szk-foot-row { position: relative; display: flex; justify-content: center; margin-block-start: 18px; }
+
+/* ── Тест: көк киіз ойын үстелі ── */
+.szk-game {
+  position: relative; padding: 14px; border-radius: 22px;
+  background: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.4px) 0 0 / 6px 6px, linear-gradient(160deg, #0f5e7a, #0a4a61);
+  box-shadow: 0 3px 0 #08394b, 0 16px 30px -22px rgba(10, 40, 60, 0.7);
+}
+.szk-game::before { content: ""; position: absolute; inset: 6px; border-radius: 17px; border: 1.5px dashed rgba(246, 227, 176, 0.5); pointer-events: none; }
+.szk-game-in { position: relative; padding: clamp(16px, 3vw, 26px); border-radius: 16px; background: var(--szk-felt), var(--szk-surface); box-shadow: inset 0 0 0 1px var(--szk-sand-d); }
+.szk-game .qopt { min-block-size: 54px; }
+.szk-again { display: flex; justify-content: center; margin-block-start: 14px; }
+.szk-start { display: grid; justify-items: center; gap: 22px; padding: 12px 0 6px; }
+.szk-fan { position: relative; block-size: 176px; inline-size: min(100%, 420px); }
+.szk-fan span {
+  position: absolute; inset-block-end: 0; inset-inline-start: 50%; inline-size: 112px; block-size: 156px; margin-inline-start: -56px;
+  display: grid; justify-items: center; align-content: center; gap: 10px; padding: 10px; border-radius: 14px;
+  background: var(--szk-felt), var(--szk-surface); box-shadow: inset 0 5px 0 var(--tint), inset 0 0 0 1.5px var(--szk-sand-d), 0 10px 18px -12px rgba(60, 40, 10, 0.55);
+  transform-origin: 50% 120%; transform: translateX(calc(var(--k) * 56px)) rotate(calc(var(--k) * 9deg)) translateY(calc(var(--k) * var(--k) * 4px));
+  animation: szk-fan 0.6s var(--szk-ease) both; animation-delay: calc((var(--k) + 2) * 60ms);
+}
+.szk-fan i { display: block; inline-size: 62%; block-size: 6px; border-radius: 3px; background: var(--szk-sand-d); }
+.szk-fan i + i { inline-size: 40%; }
+.szk-start-h { margin: 0; font-size: clamp(18px, 2.2vw, 22px); text-align: center; }
+@keyframes szk-fan { from { opacity: 0; transform: translateY(20px) rotate(0); } }
+.szk-start-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.szk-chip { display: inline-flex; align-items: center; gap: 6px; min-block-size: 40px; padding: 0 14px; border-radius: 999px; font-weight: 800; color: var(--szk-blue); background: #e3eef2; box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.25); }
+
+/* ── Менің сөздерім: тақырып бойынша жиынтық ── */
+.szk-chest { padding: clamp(14px, 2.4vw, 22px); border-radius: 22px; background: var(--szk-surface); box-shadow: inset 0 0 0 1px var(--szk-sand-d), 0 1px 2px rgba(60, 40, 10, 0.06), 0 14px 30px -24px rgba(60, 40, 10, 0.45); }
+.szk-chest-top { display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; }
+.szk-search { flex: 1 1 260px; min-inline-size: 0; }
+.szk-search input { min-inline-size: 0; font-size: 16px; }
+.szk-total { margin: 0; font-weight: 700; color: var(--szk-muted); }
+.szk-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+.szk-filters button {
+  flex: none; display: inline-flex; align-items: center; gap: 6px; min-block-size: 40px; padding: 0 12px 0 8px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--szk-sand); color: var(--szk-ink); font: inherit; font-size: 14px; font-weight: 700; box-shadow: inset 0 0 0 1px var(--szk-sand-d); transition: background 0.2s, color 0.2s;
+}
+.szk-filters button:first-child { padding-inline-start: 14px; }
+.szk-filters button:hover { background: #ede2c9; }
+.szk-filters button.on { background: var(--szk-red); color: #fff; box-shadow: 0 2px 0 var(--szk-red-d); }
+.szk-filters em, .szk-group h2 em { font-style: normal; font-size: 12px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: rgba(31, 36, 48, 0.08); }
+.szk-filters button.on em { background: rgba(255, 255, 255, 0.2); }
+.szk-groups { columns: 2 320px; column-gap: 14px; margin-block-start: 14px; }
+.szk-group { break-inside: avoid; margin: 0 0 14px; padding: 12px; border-radius: 18px; background: var(--szk-felt), var(--szk-cream); box-shadow: inset 0 4px 0 var(--tint), inset 0 0 0 1px var(--szk-sand-d); animation: szk-rise 0.4s var(--szk-ease) both; }
+.szk-group h2 { display: flex; align-items: center; gap: 10px; margin: 2px 0 10px; font-size: 16px; }
+.szk-group h2 span { flex: 1; min-inline-size: 0; }
+.szk-group h2 .topic-art { flex: none; }
+.szk-words { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.szk-words li {
+  display: flex; align-items: center; gap: 6px; padding-block: 6px; padding-inline: 12px 6px; border-radius: 12px;
+  background: var(--szk-surface); box-shadow: inset 0 0 0 1px var(--szk-sand-d), 0 1px 0 var(--szk-sand-d);
+  transition: transform 0.2s var(--szk-ease), box-shadow 0.2s;
+}
+@media (hover: hover) { .szk-words li:hover { transform: translateY(-2px); } }
+.szk-w { flex: 1; display: grid; min-inline-size: 0; }
+.szk-w b { font-family: var(--head); font-size: 15px; font-weight: 700; overflow-wrap: anywhere; }
+.szk-w small { color: var(--szk-muted); font-weight: 600; font-size: 13px; overflow-wrap: anywhere; }
+.szk-del { flex: none; display: grid; place-items: center; inline-size: 40px; block-size: 40px; border: 0; border-radius: 12px; cursor: pointer; background: transparent; color: var(--szk-muted); transition: background 0.2s, color 0.2s; }
+.szk-del:hover { background: #f3e3e6; color: #6e1e2e; }
+@keyframes szk-rise { from { opacity: 0; transform: translateY(10px); } }
+
+/* ── Экран өлшемдері ── */
+@media (max-width: 1100px) { .szk-deck { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 820px) { .szk-deck { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .szk-tabs { gap: 4px; padding: 4px; }
+  .szk-tabs button { min-inline-size: 0; flex-wrap: wrap; padding: 6px 6px; font-size: 13px; line-height: 1.15; gap: 3px 5px; text-align: center; }
+  .szk-tabs button > svg { display: none; }
+  .szk-tabs em { padding: 1px 6px; font-size: 11px; }
+  .szk-table { padding: 0 10px 14px; border-radius: 18px; }
+  .szk-hero { margin: 0 -10px 14px; padding: 16px 16px 14px; border-radius: 18px 18px 14px 14px; }
+  .szk-hero { padding-inline: 14px 12px; gap: 8px; }
+  .szk-aqyl { inline-size: 70px; block-size: 70px; }
+  .szk-aqyl .qyran { inline-size: 62px; block-size: auto; }
+  .szk-beads { gap: 4px; flex-wrap: nowrap; }
+  .szk-beads li { flex: 0 1 18px; inline-size: auto; aspect-ratio: 1; block-size: auto; min-inline-size: 0; }
+  .szk-beads li svg { inline-size: 10px; block-size: 10px; }
+  .szk-deck { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
+  .szk-card { block-size: 212px; }
+  .szk-face { padding: 10px 8px 8px; }
+  .szk-art .topic-art { inline-size: 54px; block-size: 54px; }
+  .szk-hint { font-size: 11px; }
+  .szk-know { padding: 0 10px; font-size: 12px; gap: 3px; }
+  .szk-say { inline-size: 38px; block-size: 38px; }
+  .szk-game { padding: 10px; }
+  .szk-fan { block-size: 150px; }
+  .szk-fan span { inline-size: 84px; block-size: 122px; margin-inline-start: -42px; transform: translateX(calc(var(--k) * 38px)) rotate(calc(var(--k) * 9deg)) translateY(calc(var(--k) * var(--k) * 4px)); }
+  .szk-fan .topic-art { inline-size: 44px; block-size: 44px; }
+  .szk-filters { flex-wrap: nowrap; overflow-x: auto; padding-block-end: 4px; margin-inline: -4px; padding-inline: 4px; scrollbar-width: none; }
+  .szk-group { padding: 10px; }
+}
+@media (max-width: 420px) { .szk-tabs em { display: none; } }
+@media (max-width: 360px) { .szk-hint { display: none; } }
+
+/* ── Қозғалысты азайту: аудару орнына жұмсақ ауысу ── */
+@media (prefers-reduced-motion: reduce) {
+  .szk-slot, .szk-fan span, .szk-group, .szk-done { animation: none !important; }
+  .szk-card, .szk-card.flip, .szk-card.unflip, .szk-shadow, .szk-seal, .szk-beads li, .szk-aqyl { animation: none !important; transition: none !important; }
+  .szk-card:hover, .szk-card:hover .szk-art { transform: none !important; }
+  .szk-inner { transition: none; transform: none !important; }
+  .szk-face { transition: opacity 0.2s; }
+  .szk-back { transform: none; opacity: 0; }
+  .szk-card.flip .szk-back { opacity: 1; }
+  .szk-card.flip .szk-front { opacity: 0; }
+}

@@ -1,9 +1,12 @@
 "use client";
+import "../../sozdik.css";
 import { useEffect, useMemo, useState } from "react";
 import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
-import { NatEmpty, NatArt } from "../../components/NatArt";
+import { NatEmpty } from "../../components/NatArt";
 import LangPicker from "../../components/LangPicker";
+import TopicArt, { TOPIC_TINT } from "../../components/TopicArt";
+import Qyran from "../../components/Qyran";
 import { WORDS, WTR, TOPICS, setWordTr, tr } from "../../../lib/words";
 import { tx } from "../../../lib/tx";
 import { sayKk } from "../../../lib/speak";
@@ -30,71 +33,57 @@ function seeded(seed) {
   return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)), ((h >>> 0) % 100000) / 100000);
 }
 const uniq = WORDS.filter((w, i, a) => a.findIndex((z) => z.kk === w.kk) === i);
-
-// Қалам мен қағаз анимациясы
-function PenPaper() {
-  return (
-    <svg className="penpaper" viewBox="0 0 220 260" aria-hidden="true">
-      <defs>
-        <linearGradient id="ppg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fffdf5" /><stop offset="1" stopColor="#f4e8c8" /></linearGradient>
-      </defs>
-      <g transform="rotate(-4 110 130)">
-        <rect x="26" y="20" width="168" height="220" rx="8" fill="#d8bd86" transform="translate(5 6)" opacity=".5" />
-        <rect x="26" y="20" width="168" height="220" rx="8" fill="url(#ppg)" stroke="#b8822a" strokeWidth="2" />
-        <path d="M44 20 v220" stroke="#e0574a" strokeWidth="1.4" opacity=".55" />
-        <g stroke="#9db8c8" strokeWidth="1.2" opacity=".7">{[56, 80, 104, 128, 152, 176, 200].map((y) => <path key={y} d={`M32 ${y} H188`} />)}</g>
-        <g fill="none" stroke="#1d2f6e" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-          <path className="pp-w w1" d="M54 52 c6 -10 10 -10 10 0 s6 10 12 -2 s8 8 14 0 s8 -6 12 2 s8 6 14 -4 s8 8 14 0 s8 -4 10 0" />
-          <path className="pp-w w2" d="M54 76 c6 -9 10 -9 10 0 s6 9 12 -2 s10 8 16 -2 s10 4 14 -2 s8 8 14 0 s8 -4 14 0" />
-          <path className="pp-w w3" d="M54 100 c6 -10 10 -10 10 0 s6 10 12 -2 s8 8 14 0 s8 -6 12 2 s8 4 16 -2" />
-          <path className="pp-w w4" d="M54 124 c5 -9 9 -9 9 0 s6 9 12 -1 s10 7 14 -2 s10 4 14 0 s8 6 16 -2 s8 4 12 0" />
-        </g>
-      </g>
-      <g className="pp-pen">
-        <path d="M0 0 L9 -6 L120 -92 L132 -80 L18 7Z" fill="#b8322a" stroke="#4a1210" strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M10 -2 L120 -88" stroke="#ffd35a" strokeWidth="2.4" />
-        <path d="M0 0 L9 -6 L18 7Z" fill="#f2d9a0" stroke="#4a1210" strokeWidth="1.4" strokeLinejoin="round" />
-        <path d="M0 0 L4 -3 L6 3Z" fill="#1d2f6e" />
-        <path d="M120 -92 L132 -80 L150 -104 C146 -112 138 -110 130 -102Z" fill="#fff" stroke="#9a9a9a" strokeWidth="1.2" />
-      </g>
-    </svg>
-  );
-}
+const topicOf = (kk) => uniq.find((w) => w.kk === kk)?.t || "other";
 
 const TOPIC_NAME = (t, lang) => TOPICS[t]?.[lang === "kk" ? "kk" : lang === "ru" ? "ru" : "en"] || "";
 const HINT = { kk: "Аудармасы", ru: "Перевод", en: "Translation" };
 const BACK = { kk: "Сөзге оралу", ru: "Назад к слову", en: "Back to word" };
+const ALL = { kk: "Барлығы", ru: "Все", en: "All" };
+const OTHER = { kk: "Басқа", ru: "Другое", en: "Other" };
+const pick = (m, lang) => m[lang] || m.en;
+// Карточканың жоғарғы жиегі тақырып түсімен (ақ киіз түсі көрінбейді — сұр киіз)
+const tintOf = (t) => {
+  const bg = TOPIC_TINT[t]?.bg || "#D9D2C2";
+  return bg.toUpperCase() === "#FAF6EE" ? "#D9D2C2" : bg;
+};
 
 // Екі жақты карта: шын 3D аудару, бүкіл карта басылады, көрінбейтін жағы фокус алмайды
-function DayCard({ w, lang, explain, flipped, known, onFlip, onKnow }) {
+function DayCard({ w, i, lang, explain, flipped, back, known, knownLabel, onFlip, onKnow }) {
   const stop = (fn) => (e) => { e.stopPropagation(); fn(); };
   function key(e) { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onFlip(); } }
+  const topic = TOPIC_NAME(w.t, lang);
   return (
-    <div className={`sz-card ${flipped ? "flip" : ""} ${known ? "known" : ""}`} onClick={onFlip} onKeyDown={key}
-      role="button" tabIndex={0} aria-pressed={flipped} aria-label={flipped ? `${w.kk} — ${tr(w, explain)}` : w.kk}>
-      <div className="sz-inner">
-        <div className="sz-face sz-front" inert={flipped ? true : undefined} aria-hidden={flipped}>
-          <span className="sz-topic">{TOPIC_NAME(w.t, lang)}</span>
-          {known && <i className="sz-ok" aria-hidden="true"><Icon name="check" size={13} /></i>}
-          <b lang="kk">{w.kk}</b>
-          <span className="sz-foot">
-            <button type="button" className="sz-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={16} /></button>
-            <span className="sz-hint"><Icon name="refresh" size={13} /> {HINT[lang] || HINT.en}</span>
-          </span>
-        </div>
-        <div className="sz-face sz-back" inert={flipped ? undefined : true} aria-hidden={!flipped}>
-          <b>{tr(w, explain)}</b>
-          <small lang="kk">{w.kk}</small>
-          <span className="sz-acts">
-            <button type="button" className="sz-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={16} /></button>
-            <button type="button" className={`sz-know ${known ? "on" : ""}`} onClick={stop(onKnow)} aria-pressed={known}>
-              <Icon name="check" size={15} /> {tx(lang).szKnow}
-            </button>
-          </span>
-          <span className="sr-only">{BACK[lang] || BACK.en}</span>
+    <li className="szk-slot" style={{ "--i": i, "--tint": tintOf(w.t) }}>
+      <div className={`szk-card ${flipped ? "flip" : ""} ${back ? "unflip" : ""} ${known ? "known" : ""}`} onClick={onFlip} onKeyDown={key}
+        role="button" tabIndex={0} aria-pressed={flipped} aria-label={flipped ? `${w.kk} — ${tr(w, explain)}` : w.kk}>
+        <span className="szk-shadow" aria-hidden="true" />
+        <div className="szk-inner">
+          <div className="szk-face szk-front" inert={flipped ? true : undefined} aria-hidden={flipped}>
+            <span className="szk-topic">{topic}</span>
+            <span className="szk-art"><TopicArt topic={w.t} size={64} /></span>
+            <b lang="kk">{w.kk}</b>
+            {known && <span className="szk-seal" aria-hidden="true"><Icon name="check" size={18} stroke={3} /></span>}
+            <span className="szk-foot">
+              <button type="button" className="szk-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={17} /></button>
+              {known
+                ? <span className="szk-hint ok"><Icon name="check" size={13} stroke={3} /> {knownLabel}</span>
+                : <span className="szk-hint"><Icon name="refresh" size={13} /> {HINT[lang] || HINT.en}</span>}
+            </span>
+          </div>
+          <div className="szk-face szk-back" inert={flipped ? undefined : true} aria-hidden={!flipped}>
+            <span className="szk-backtop" lang="kk">{w.kk}</span>
+            <b>{tr(w, explain)}</b>
+            <span className="szk-acts">
+              <button type="button" className="szk-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={17} /></button>
+              <button type="button" className={`szk-know ${known ? "on" : ""}`} onClick={stop(onKnow)} aria-pressed={known}>
+                <Icon name="check" size={15} stroke={2.6} /> {tx(lang).szKnow}
+              </button>
+            </span>
+            <span className="sr-only">{BACK[lang] || BACK.en}</span>
+          </div>
         </div>
       </div>
-    </div>
+    </li>
   );
 }
 
@@ -104,6 +93,7 @@ export default function Sozdik() {
   const [tab, setTab] = useState("day");
   const [flip, setFlip] = useState({});
   const [q, setQ] = useState("");
+  const [ft, setFt] = useState("all");
   const [, bump] = useState(0);
   const [test, setTest] = useState(null);
   const [tres, setTres] = useState(null);
@@ -128,6 +118,7 @@ export default function Sozdik() {
 
   const words = useMemo(() => (sz.days?.[today] || []).map((k) => uniq.find((w) => w.kk === k)).filter(Boolean), [sz.days, today]);
   const known = words.filter((w) => sz.learned?.[w.kk]).length;
+  const allDone = known === 10 && words.length === 10;
 
   // Таңдалған тілде аудармасы жоқ сөздерді (сақталған сөздер де) ЖИ арқылы аударамыз
   useEffect(() => {
@@ -179,83 +170,150 @@ export default function Sozdik() {
     }
   }, [known, words.length, today]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const mine = (state.vocab || []).filter((v) => !q.trim() || [v.kk, v.ru, v.en].some((t) => (t || "").toLowerCase().includes(q.trim().toLowerCase())));
+  // Менің сөздерім: іздеу + тақырып сүзгісі + тақырып бойынша топтар
+  const vocab = state.vocab || [];
+  const found = vocab.filter((v) => !q.trim() || [v.kk, v.ru, v.en].some((t) => (t || "").toLowerCase().includes(q.trim().toLowerCase())));
+  const counts = useMemo(() => {
+    const m = new Map();
+    for (const v of vocab) { const t = topicOf(v.kk); m.set(t, (m.get(t) || 0) + 1); }
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  }, [vocab]);
+  const groups = useMemo(() => {
+    const m = new Map();
+    for (const v of found) {
+      const t = topicOf(v.kk);
+      if (ft !== "all" && t !== ft) continue;
+      if (!m.has(t)) m.set(t, []);
+      m.get(t).push(v);
+    }
+    return [...m.entries()].sort((a, b) => b[1].length - a[1].length);
+  }, [found, ft]);
+  const shown = groups.reduce((n, g) => n + g[1].length, 0);
+  const tname = (t) => (t === "other" ? pick(OTHER, lang) : TOPIC_NAME(t, lang) || pick(OTHER, lang));
+
+  const mood = allDone ? "cheer" : known >= 5 ? "happy" : known > 0 ? "support" : "idle";
+  const TABS = [["day", "sun", x.szDay], ["test", "target", T.test], ["mine", "book", x.szMine]];
 
   return (
-    <div className="sozdik" data-notap>
+    <div className="sozdik szk" data-notap>
       <header className="page-head">
         <div>
           <span className="kicker">{x.szKicker}</span>
           <h1>{x.szTitle}</h1>
           <p>{x.szSub}</p>
         </div>
-        <div className="head-tools"><LangPicker /><span className="chip gold"><Icon name="book" size={15} /> {state.vocab?.length || 0}</span></div>
+        <div className="head-tools"><LangPicker /><span className="chip gold"><Icon name="book" size={15} /> {vocab.length}</span></div>
       </header>
 
-      <div className="sz-grid">
-        <div className="sz-main">
-          <div className="shop-tabs">
-            <button className={`chip tab ${tab === "day" ? "on" : ""}`} onClick={() => setTab("day")}><Icon name="sun" size={15} /> {x.szDay}</button>
-            <button className={`chip tab ${tab === "test" ? "on" : ""}`} onClick={() => setTab("test")}><Icon name="target" size={15} /> {T.test}</button>
-            <button className={`chip tab ${tab === "mine" ? "on" : ""}`} onClick={() => setTab("mine")}><Icon name="book" size={15} /> {x.szMine}</button>
+      <div className="szk-tabs">
+        {TABS.map(([id, ic, label]) => (
+          <button key={id} type="button" className={tab === id ? "on" : ""} aria-pressed={tab === id} onClick={() => setTab(id)}>
+            <Icon name={ic} size={17} /> <span>{label}</span>
+            {id === "day" && words.length > 0 && <em>{known}/10</em>}
+            {id === "mine" && <em>{vocab.length}</em>}
+          </button>
+        ))}
+      </div>
+
+      {tab === "day" && (
+        <section className={`szk-table ${allDone ? "done" : ""}`}>
+          <div className="szk-hero">
+            <div className="szk-hero-txt">
+              <span className="szk-eyebrow">{x.szNew}</span>
+              <b className="szk-count">{x.szLearnedN(known)}</b>
+              <ol className="szk-beads" aria-hidden="true">
+                {(words.length ? words : Array.from({ length: 10 }, () => null)).map((w, i) => {
+                  const on = w && sz.learned?.[w.kk];
+                  return <li key={i} className={on ? "on" : ""} style={{ "--i": i }}>{on ? <Icon name="check" size={12} stroke={3} /> : null}</li>;
+                })}
+              </ol>
+            </div>
+            <div className="szk-aqyl"><Qyran mood={mood} size={92} /></div>
           </div>
 
-          {tab === "day" && (
-            <section className="card">
-              <div className="sz-bar">
-                <b>{x.szLearnedN(known)}</b>
-                <span className="sz-prog"><i style={{ width: `${known * 10}%` }} /></span>
-              </div>
-              <p className="muted small">{x.szTap}</p>
-              <div className="sz-cards">
-                {words.map((w) => (
-                  <DayCard key={w.kk} w={w} lang={lang} explain={explain} flipped={!!flip[w.kk]} known={!!sz.learned?.[w.kk]}
-                    onFlip={() => { setFlip((f) => ({ ...f, [w.kk]: !f[w.kk] })); }} onKnow={() => mark(w)} />
-                ))}
-              </div>
-              {known === 10 && words.length === 10 && <p className="alert ok"><Icon name="sparkle" size={16} /> {x.szDone}</p>}
-              <button className="btn ghost small" onClick={newSet}><Icon name="refresh" size={15} /> {T.newSet}</button>
-            </section>
-          )}
+          {allDone && <p className="szk-done" role="status"><Icon name="sparkle" size={18} /> {x.szDone}</p>}
 
-          {tab === "test" && (
-            <section className="card">
-              {test ? (
-                <>
-                  <Quiz key={round} questions={test} onDone={(r, t2) => { setTres({ r, t2 }); award(r >= t2 - 1 ? 15 : 5, r >= t2 - 1 ? 8 : 1); }} />
-                  {tres && <button className="btn gold" onClick={startTest}><Icon name="refresh" size={15} /> {T.again}</button>}
-                </>
-              ) : (
-                <div className="sz-testhero"><NatArt name="dombyra" size={110} /><button className="btn gold big" onClick={startTest} disabled={!words.length}>{T.start}</button></div>
-              )}
-            </section>
-          )}
+          <p className="szk-tap"><Icon name="refresh" size={14} /> {x.szTap}</p>
+          <ul className="szk-deck">
+            {words.map((w, i) => (
+              <DayCard key={w.kk} i={i} w={w} lang={lang} explain={explain} knownLabel={x.szKnown}
+                flipped={!!flip[w.kk]} back={flip[w.kk] === false} known={!!sz.learned?.[w.kk]}
+                onFlip={() => { setFlip((f) => ({ ...f, [w.kk]: !f[w.kk] })); }} onKnow={() => mark(w)} />
+            ))}
+          </ul>
+          <div className="szk-foot-row">
+            <button type="button" className="btn ghost small" onClick={newSet}><Icon name="refresh" size={15} /> {T.newSet}</button>
+          </div>
+        </section>
+      )}
 
-          {tab === "mine" && (
-            <section className="card">
-              <div className="search sz-search">
-                <Icon name="search" size={18} />
-                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={x.szSearch} aria-label={x.szSearch} />
+      {tab === "test" && (
+        <section className="szk-game">
+          <div className="szk-game-in">
+            {test ? (
+              <>
+                <Quiz key={round} questions={test} onDone={(r, t2) => { setTres({ r, t2 }); award(r >= t2 - 1 ? 15 : 5, r >= t2 - 1 ? 8 : 1); }} />
+                {tres && <div className="szk-again"><button type="button" className="btn gold" onClick={startTest}><Icon name="refresh" size={15} /> {T.again}</button></div>}
+              </>
+            ) : (
+              <div className="szk-start">
+                <h2 className="szk-start-h">{x.szDay}</h2>
+                <div className="szk-fan" aria-hidden="true">
+                  {words.slice(0, 5).map((w, i) => (
+                    <span key={w.kk} style={{ "--k": i - 2, "--tint": tintOf(w.t) }}><TopicArt topic={w.t} size={64} /><i /><i /></span>
+                  ))}
+                </div>
+                <div className="szk-start-row">
+                  <span className="szk-chip"><Icon name="target" size={15} /> {words.length}</span>
+                  <button type="button" className="btn gold big" onClick={startTest} disabled={!words.length}>{T.start}</button>
+                </div>
               </div>
-              <p className="muted small">{x.szTotal(state.vocab?.length || 0)}</p>
-              {mine.length === 0 ? (
-                <NatEmpty art="kobyz" size={120} text={x.szEmpty} lang={lang} />
-              ) : (
-                <ul className="sz-list">
-                  {mine.map((v) => (
+            )}
+          </div>
+        </section>
+      )}
+
+      {tab === "mine" && (
+        <section className="szk-chest">
+          <div className="szk-chest-top">
+            <div className="search szk-search">
+              <Icon name="search" size={18} />
+              <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={x.szSearch} aria-label={x.szSearch} />
+            </div>
+            <p className="szk-total">{x.szTotal(vocab.length)}</p>
+          </div>
+          {counts.length > 1 && (
+            <div className="szk-filters">
+              <button type="button" className={ft === "all" ? "on" : ""} aria-pressed={ft === "all"} onClick={() => setFt("all")}>
+                {pick(ALL, lang)} <em>{vocab.length}</em>
+              </button>
+              {counts.map(([t, n]) => (
+                <button key={t} type="button" className={ft === t ? "on" : ""} aria-pressed={ft === t} onClick={() => setFt(ft === t ? "all" : t)}>
+                  <TopicArt topic={t} size={22} /> {tname(t)} <em>{n}</em>
+                </button>
+              ))}
+            </div>
+          )}
+          {shown === 0 ? (
+            <NatEmpty art="kobyz" size={120} text={x.szEmpty} lang={lang} />
+          ) : (
+            <div className="szk-groups">{groups.map(([t, list]) => (
+              <section key={t} className="szk-group" style={{ "--tint": tintOf(t) }}>
+                <h2><TopicArt topic={t} size={40} /> <span>{tname(t)}</span> <em>{list.length}</em></h2>
+                <ul className="szk-words">
+                  {list.map((v) => (
                     <li key={v.kk}>
-                      <span className="sz-w"><b lang="kk">{v.kk}</b><small>{tr(v, explain)}</small></span>
-                      <button className="icon-btn" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={16} /></button>
-                      <button className="icon-btn" title={x.szDel} aria-label={x.szDel} onClick={() => update((s) => ({ ...s, vocab: s.vocab.filter((z) => z.kk !== v.kk) }))}><Icon name="x" size={16} /></button>
+                      <span className="szk-w"><b lang="kk">{v.kk}</b><small>{tr(v, explain)}</small></span>
+                      <button type="button" className="szk-say" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={17} /></button>
+                      <button type="button" className="szk-del" title={x.szDel} aria-label={x.szDel} onClick={() => update((s) => ({ ...s, vocab: s.vocab.filter((z) => z.kk !== v.kk) }))}><Icon name="x" size={15} /></button>
                     </li>
                   ))}
                 </ul>
-              )}
-            </section>
+              </section>
+            ))}</div>
           )}
-        </div>
-        <aside className="sz-side"><PenPaper /><p className="muted small">{x.szNew}</p></aside>
-      </div>
+        </section>
+      )}
     </div>
   );
 }
