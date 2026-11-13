@@ -1,7 +1,7 @@
 "use client";
+import "../../saiys.css";
 import Avatar from "../../components/Avatar";
 import Link from "next/link";
-import { NatEmpty, NatArt } from "../../components/NatArt";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -10,6 +10,8 @@ import { authed } from "../../../lib/auth";
 import { WORDS, tr } from "../../../lib/words";
 import { weekKey, prevWeekKey, weekEnd, prizeKind, COIN_PRIZES } from "../../../lib/week";
 import { tx } from "../../../lib/tx";
+import { SaiysHero, SaiysPrize, SaiysPodium, SaiysRace, SaiysRankList, SaiysLast, SaiysSkeleton, saiysStatus, sy } from "../../components/SaiysBoard";
+import { SaiysMedal } from "../../components/SaiysArt";
 
 const QN = 10;
 const Q_MS = 12000;
@@ -50,11 +52,13 @@ const left = (ms) => {
 export default function Saiys() {
   const { lang, explain, user, state, update, award, toast } = useApp();
   const x = tx(lang);
+  const t = sy(lang);
   const [tab, setTab] = useState("week");
   const [rows, setRows] = useState(null);
   const [last, setLast] = useState([]);
   const [setup, setSetup] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [up, setUp] = useState(0);
   const wk = weekKey();
   const kind = prizeKind(wk);
   const lastKind = prizeKind(prevWeekKey());
@@ -81,6 +85,18 @@ export default function Saiys() {
     loadWeek();
   }, [loadWeek]);
 
+  // Орын көтерілсе — хабаршы қуанады (соңғы көрген орын осы құрылғыда сақталады)
+  const myIdx = rows ? rows.findIndex((r) => r.user_id === user?.id) : -1;
+  useEffect(() => {
+    if (!rows || myIdx < 0) return;
+    const key = `qd_saiys_rank_${wk}`;
+    try {
+      const seen = Number(localStorage.getItem(key));
+      if (seen > 0 && seen > myIdx + 1) setUp(seen - myIdx - 1);
+      localStorage.setItem(key, String(myIdx + 1));
+    } catch {}
+  }, [rows, myIdx, wk]);
+
   // Өткен аптадағы монета жүлдесін алу
   const myPrev = last.findIndex((r) => r.user_id === user?.id);
   const claimed = state.saiys?.claimed?.[prevWeekKey()];
@@ -93,93 +109,66 @@ export default function Saiys() {
 
   if (!user)
     return (
-      <div className="saiys">
-        <Head x={x} />
-        <section className="card s-login">
-          <NatArt name="yurt" size={170} />
-          <p>{x.sLogin}</p>
-          <Link href="/login" className="btn gold big">{x.sLoginBtn}</Link>
+      <div className="saiys sy">
+        <SaiysHero x={x} t={t} mood="support" />
+        <section className="card sy-gate-card">
+          <SaiysPodium ghost x={x} t={t} />
+          <div className="sy-gate-text">
+            <Icon name="lock" size={22} />
+            <p>{x.sLogin}</p>
+            <Link href="/login" className="btn gold big">{x.sLoginBtn}</Link>
+          </div>
         </section>
       </div>
     );
 
+  const status = tab === "week" ? saiysStatus(rows, user.id, x, t, up) : null;
   return (
-    <div className="saiys">
-      <Head x={x} />
-      <div className="tz-tabs" role="tablist">
-        <button className={tab === "week" ? "on" : ""} onClick={() => setTab("week")}><Icon name="trophy" size={18} /> {x.sWeekly}</button>
-        <button className={tab === "room" ? "on" : ""} onClick={() => setTab("room")}><Icon name="target" size={18} /> {x.sRoom}</button>
+    <div className="saiys sy">
+      <SaiysHero x={x} t={t} status={status} up={up} mood={rows === null ? "think" : "idle"} />
+      <div className="sy-tabs" role="tablist">
+        <button role="tab" aria-selected={tab === "week"} className={tab === "week" ? "on" : ""} onClick={() => setTab("week")}><Icon name="trophy" size={18} /> {x.sWeekly}</button>
+        <button role="tab" aria-selected={tab === "room"} className={tab === "room" ? "on" : ""} onClick={() => setTab("room")}><Icon name="target" size={18} /> {x.sRoom}</button>
       </div>
-      {setup && <p className="alert">{x.sSetup}</p>}
+      {setup && <p className="alert sy-note"><Icon name="lock" size={18} /> <span>{x.sSetup}</span></p>}
 
       {tab === "week" && (
-        <>
-          <section className="card prize rise">
-            <span className="prize-e">{kind === "gift" ? "🎁" : "🪙"}</span>
-            <div>
-              <span className="badge">{x.sPrize}</span>
-              <p>{kind === "gift" ? x.sPrizeGift : x.sPrizeCoins}</p>
-              <small className="muted">{x.sEnds}: <b>{left(weekEnd() - now)}</b></small>
+        <div className="sy-week">
+          <div className="sy-wk">
+            <div className="sy-side">
+              <SaiysPrize x={x} t={t} kind={kind} ms={weekEnd() - now} label={left(weekEnd() - now)} />
+
+              {last.length > 0 && myPrev === 0 && lastKind === "gift" && <p className="alert ok sy-note"><Icon name="trophy" size={20} /> <span>{x.sWonGift}</span></p>}
+              {last.length > 0 && myPrev >= 0 && lastKind === "coins" && !claimed && (
+                <button className="btn gold big sy-claim" onClick={claim}><Icon name="coin" size={20} /> {x.sClaim}: {COIN_PRIZES[myPrev]}</button>
+              )}
+
+              {rows?.length > 0 && <SaiysRace rows={rows} userId={user.id} x={x} t={t} meAvatar={state.profile.avatar} />}
             </div>
-          </section>
 
-          {last.length > 0 && myPrev === 0 && lastKind === "gift" && <p className="alert ok">{x.sWonGift}</p>}
-          {last.length > 0 && myPrev >= 0 && lastKind === "coins" && !claimed && (
-            <button className="btn gold big" onClick={claim}>🪙 {x.sClaim}: {COIN_PRIZES[myPrev]}</button>
-          )}
-
-          <section className="card board">
-            {rows === null && <p className="muted">…</p>}
-            {rows?.length === 0 && <NatEmpty art="bowl" size={130} text={x.sEmpty} lang={lang} />}
-            {rows?.length > 0 && (
-              <>
-                <div className="podium">
-                  {[1, 0, 2].map((i) => rows[i] && (
-                    <div key={i} className={`pod p${i + 1} ${rows[i].user_id === user.id ? "me" : ""}`}>
-                      <span className="pod-av"><Avatar value={rows[i].avatar} size={52} /></span>
-                      <b>{rows[i].name}</b>
-                      <small>{rows[i].tasks} {x.sTasks}</small>
-                      <span className="pod-step">{["🥇", "🥈", "🥉"][i]}</span>
-                    </div>
-                  ))}
+            <section className="card sy-board">
+              {rows === null && <SaiysSkeleton />}
+              {rows?.length === 0 && (
+                <div className="sy-empty">
+                  <SaiysPodium ghost x={x} t={t} />
+                  <p>{x.sEmpty}</p>
                 </div>
-                <ol className="rank">
-                  {rows.map((r, i) => (
-                    <li key={r.user_id} className={r.user_id === user.id ? "me" : ""}>
-                      <span className="rk">{i + 1}</span>
-                      <span className="rk-av"><Avatar value={r.avatar} size={36} /></span>
-                      <span className="rk-name">{r.name}{r.user_id === user.id ? ` (${x.sYou})` : ""}</span>
-                      <b>{r.tasks}</b> <small>{x.sTasks}</small>
-                    </li>
-                  ))}
-                </ol>
-              </>
-            )}
-          </section>
-
-          {last.length > 0 && (
-            <section className="card last">
-              <h3>{x.sLast} · {lastKind === "gift" ? "🎁" : "🪙"}</h3>
-              <ul>{last.map((r, i) => <li key={r.user_id}>{["🥇", "🥈", "🥉"][i]} <Avatar value={r.avatar} size={22} /> {r.name} — {r.tasks} {x.sTasks}</li>)}</ul>
+              )}
+              {rows?.length > 0 && (
+                <>
+                  <SaiysPodium rows={rows} userId={user.id} x={x} t={t} />
+                  <SaiysRankList rows={rows} userId={user.id} x={x} />
+                </>
+              )}
             </section>
-          )}
-        </>
+
+            {last.length > 0 && <SaiysLast x={x} last={last} kind={lastKind} />}
+          </div>
+        </div>
       )}
 
       {tab === "room" && <Room x={x} user={user} state={state} explain={explain} award={award} />}
     </div>
-  );
-}
-
-function Head({ x }) {
-  return (
-    <header className="page-head">
-      <div>
-        <span className="kicker">{x.sKicker}</span>
-        <h1>{x.sTitle}</h1>
-        <p>{x.sSub}</p>
-      </div>
-    </header>
   );
 }
 
@@ -299,57 +288,62 @@ function Room({ x, user, state, explain, award }) {
 
   if (!code)
     return (
-      <section className="card room-join rise">
-        <div className="rj">
+      <section className="sy-join rise">
+        <div className="card sy-gate">
+          <span className="sy-gate-ic"><Icon name="plus" size={26} /></span>
           <h3>{x.sCreate}</h3>
           <button className="btn gold big" onClick={create}><Icon name="plus" size={18} /> {x.sCreate}</button>
         </div>
-        <div className="rj">
-          <h3>{x.sCode}</h3>
-          <div className="sp-custom-row">
-            <input className="input" value={input} onChange={(e) => setInput(e.target.value.toUpperCase())} placeholder={x.sCodePh} maxLength={6} />
+        <div className="card sy-gate">
+          <span className="sy-gate-ic blue"><Icon name="target" size={26} /></span>
+          <h3><label htmlFor="sy-code">{x.sCode}</label></h3>
+          <div className="sy-join-row">
+            <input id="sy-code" className="input sy-code-in" value={input} onChange={(e) => setInput(e.target.value.toUpperCase())} placeholder={x.sCodePh} maxLength={6} autoComplete="off" />
             <button className="btn blue" onClick={join}>{x.sJoin}</button>
           </div>
         </div>
-        {err && <p className="alert">{err}</p>}
+        {err && <p className="alert sy-note"><Icon name="x" size={18} /> <span>{err}</span></p>}
       </section>
     );
 
   const isHost = room?.host === user.id;
   return (
-    <section className="card room rise">
-      <div className="room-top">
+    <section className="card sy-room rise">
+      <div className="sy-room-top">
         <div>
           <small className="muted">{x.sShare}</small>
-          <div className="room-code">{code}</div>
+          <div className="sy-code" aria-label={code}>{code.split("").map((c, i) => <span key={i} aria-hidden="true">{c}</span>)}</div>
         </div>
-        <button className="btn ghost small" onClick={leave}>{x.sLeave}</button>
+        <button className="btn ghost small" onClick={leave}><Icon name="logout" size={16} /> {x.sLeave}</button>
       </div>
 
-      <h3>{x.sPlayers} {players.length}/8</h3>
-      <ul className="players">
+      <h3 className="sy-h">{x.sPlayers} <span className="sy-count">{players.length}/8</span></h3>
+      <ul className="sy-players">
         {players.map((p, i) => (
-          <li key={p.user_id} className={p.user_id === user.id ? "me" : ""}>
-            <span className="rk">{room?.status === "play" ? i + 1 : "•"}</span>
-            <span className="rk-av"><Avatar value={p.avatar} size={36} /></span>
-            <span className="rk-name">{p.name}{p.done ? " ✅" : ""}</span>
-            <b>{p.score}</b> <small>{x.sPoints}</small>
+          <li key={p.user_id} className={`${p.user_id === user.id ? "me" : ""} ${p.done ? "done" : ""}`}>
+            <span className="sy-rk">{room?.status === "play" ? (i < 3 ? <SaiysMedal place={i} size={22} /> : i + 1) : <Icon name="user" size={14} />}</span>
+            <Avatar value={p.avatar} size={36} />
+            <span className="sy-pl-name"><span>{p.name}</span>{p.done ? <Icon name="check" size={16} className="sy-done" /> : ""}</span>
+            <span className="sy-rk-score"><b>{p.score}</b> <small>{x.sPoints}</small></span>
           </li>
         ))}
       </ul>
 
       {room?.status === "lobby" && (isHost ? (
-        <button className="btn gold big" disabled={players.length < 2} onClick={start}>{x.sStart}</button>
+        <button className="btn gold big" disabled={players.length < 2} onClick={start}><Icon name="flame" size={18} /> {x.sStart}</button>
       ) : (
-        <p className="muted">{x.sWaitHost}</p>
+        <p className="sy-wait"><Qyran mood="think" size={54} /> <span>{x.sWaitHost}</span></p>
       ))}
 
       {playing && qs[qi] && (
-        <div className="room-q">
-          <span className="chip">{x.sQ(qi + 1, QN)}</span>
+        <div className="sy-q">
+          <div className="sy-q-top">
+            <span className="chip">{x.sQ(qi + 1, QN)}</span>
+            <span className="sy-q-steps" aria-hidden="true">{qs.map((_, k) => <i key={k} className={k < qi ? "on" : k === qi ? "cur" : ""} />)}</span>
+          </div>
           <p className="muted small">{x.sTrans}</p>
-          <h2 className="lv-q">{qs[qi].w.e} {qs[qi].w.kk}</h2>
-          <div className="lv-opts">
+          <h2 className="lv-q sy-q-word" key={qi}>{qs[qi].w.e} {qs[qi].w.kk}</h2>
+          <div className="lv-opts sy-opts">
             {qs[qi].options.map((o) => (
               <button key={o.kk} disabled={Boolean(picked)} className={`lv-opt ${picked && o.kk === qs[qi].w.kk ? "right" : ""} ${picked === o.kk && o.kk !== qs[qi].w.kk ? "bad" : ""}`} onClick={() => choose(o.kk)}>
                 <span>{tr(o, explain)}</span>
@@ -359,12 +353,12 @@ function Room({ x, user, state, explain, award }) {
         </div>
       )}
 
-      {done && !allDone && <p className="muted">{x.sWaitOthers}</p>}
+      {done && !allDone && <p className="sy-wait"><Qyran mood="think" size={54} /> <span>{x.sWaitOthers}</span></p>}
       {done && allDone && (
-        <div className="room-end">
-          <Qyran mood={rank === 0 ? "cheer" : "happy"} size={90} />
-          <h3>{x.sResults}: {["🥇", "🥈", "🥉"][rank] || `#${rank + 1}`}</h3>
-          <button className="btn gold" onClick={leave}>{x.sAgain}</button>
+        <div className="sy-end">
+          <Qyran mood={rank === 0 ? "cheer" : "happy"} size={110} />
+          <h3>{x.sResults}: {rank >= 0 && rank < 3 ? <SaiysMedal place={rank} size={34} /> : `#${rank + 1}`}</h3>
+          <button className="btn gold" onClick={leave}><Icon name="refresh" size={18} /> {x.sAgain}</button>
         </div>
       )}
     </section>
