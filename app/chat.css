@@ -1,0 +1,607 @@
+/* ════════════════════════════════════════════════════════════════════
+   Aqyl-men chat · «Дастарқан басында» — киіз үйдегі әңгіме
+   Тек /app/qyran бетінде жүктеледі (page.js импорттайды).
+   Барлық ереже .cx ішінде — басқа беттерге әсер етпейді.
+   ════════════════════════════════════════════════════════════════════ */
+.cx {
+  --cx-red: #b8322a;
+  --cx-red-2: #8a2018;
+  --cx-cream: #faf6ee;
+  --cx-surf: #fffdf7;
+  --cx-sand: #f4ecda;
+  --cx-ink: #1f2430;
+  --cx-muted: #4a5160;
+  --cx-gold: #e0a526;
+  --cx-gold-soft: #f6e3b0;
+  --cx-blue: #0f5e7a;
+  --cx-blue-2: #0a4a61;
+  --cx-rim: rgba(122, 86, 22, 0.22);
+  --cx-felt: 0 2px 0 rgba(122, 86, 22, 0.14), 0 10px 22px -18px rgba(60, 40, 10, 0.5);
+  --cx-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --cx-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 1120px;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* ── Каркас: жұмсақ киіз панель, толық биіктік ── */
+.cx .chat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 0;
+  height: calc(var(--cx-vh, 100dvh) - 132px);
+  min-height: 480px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 24px;
+  background: var(--cx-surf);
+  box-shadow: inset 0 0 0 1px var(--cx-rim), var(--cx-felt);
+}
+@supports not (height: 100dvh) { .cx .chat { height: calc(100vh - 132px); } }
+
+/* ── Тақырып: Aqyl-дың төрі ── */
+.cx .chat-head {
+  grid-row: 1;
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 12px 16px 14px;
+  border: 0;
+  box-shadow: none;
+  background:
+    var(--oyu-band) top / auto 10px repeat-x,
+    linear-gradient(var(--cx-sand), var(--cx-sand));
+  padding-block-start: 18px;
+  position: relative;
+  z-index: 2;
+}
+.cx .chat-head::after {
+  /* киіздің тігісі */
+  content: "";
+  position: absolute;
+  inset-inline: 14px;
+  bottom: 5px;
+  border-bottom: 2px dashed rgba(138, 32, 24, 0.22);
+}
+.cx .chat-head h1 { font-family: var(--head); font-size: 19px; line-height: 1.2; margin: 0; color: var(--cx-ink); letter-spacing: -0.01em; }
+.cx .chat-head p { margin: 3px 0 0; color: var(--cx-muted); font-size: 13.5px; line-height: 1.35; }
+.cx .cx-clear { margin: 0; background: var(--cx-surf); box-shadow: inset 0 0 0 1px var(--cx-rim); width: 44px; height: 44px; border-radius: 14px; color: var(--cx-ink); }
+.cx .cx-clear:hover { box-shadow: inset 0 0 0 1.5px var(--cx-red); }
+.cx .cx-side-cam, .cx .cx-prov { display: none; }
+
+/* Aqyl медальоны: қызыл шаңырақ дискісі + тірі көңіл-күй */
+.cx .cx-aq { position: relative; width: 58px; height: 58px; flex: none; display: grid; place-items: end center; }
+.cx .cx-disc { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cx .cx-aq .qyran { position: relative; width: 112%; height: auto; margin-bottom: -4px; transform-origin: 50% 100%; transition: transform 0.4s var(--cx-spring); }
+.cx .cx-halo { position: absolute; inset: -5px; border-radius: 50%; border: 2.5px dashed transparent; pointer-events: none; }
+.cx .cx-wow { position: absolute; inset: 0; pointer-events: none; }
+.cx .cx-wow i { position: absolute; width: 10px; height: 10px; background: var(--cx-gold); transform: rotate(45deg) scale(0); opacity: 0; border-radius: 2px; }
+.cx .cx-wow i:nth-child(1) { inset-inline-start: -6px; top: 8%; }
+.cx .cx-wow i:nth-child(2) { inset-inline-end: 0; top: -4%; width: 8px; height: 8px; }
+.cx .cx-wow i:nth-child(3) { inset-inline-end: 2px; top: 56%; width: 7px; height: 7px; background: var(--cx-gold-soft); }
+.cx .cx-disc-rays { transform-origin: 100px 100px; }
+
+.cx[data-mood="think"] .cx-halo { border-color: var(--cx-gold); animation: cxSpin 3.2s linear infinite; }
+.cx[data-mood="think"] .cx-disc-rays { animation: cxSpin 9s linear infinite; }
+.cx[data-mood="happy"] .cx-aq .qyran { animation: cxHop 2.6s var(--cx-ease) infinite; }
+.cx[data-mood="wow"] .cx-wow i { animation: cxTwinkle 1.8s var(--cx-ease) infinite; }
+.cx[data-mood="wow"] .cx-wow i:nth-child(2) { animation-delay: 0.3s; }
+.cx[data-mood="wow"] .cx-wow i:nth-child(3) { animation-delay: 0.6s; }
+.cx[data-mood="wow"] .cx-aq .qyran { transform: scale(1.06); }
+.cx[data-mood="support"] .cx-halo { border-style: solid; border-color: rgba(184, 50, 42, 0.55); animation: cxRing 1.4s ease-out infinite; }
+
+/* ── Әңгіме алаңы: керегенің көмескі торы ── */
+.cx .chat-list {
+  grid-row: 2;
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 16px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: 24px;
+  background-color: var(--cx-cream);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%237a5616' stroke-opacity='0.07' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M0 0l56 56M56 0L0 56'/%3E%3C/g%3E%3Cg fill='%237a5616' fill-opacity='0.09'%3E%3Ccircle cx='28' cy='28' r='2.4'/%3E%3Ccircle cx='0' cy='0' r='2.4'/%3E%3Ccircle cx='56' cy='0' r='2.4'/%3E%3Ccircle cx='0' cy='56' r='2.4'/%3E%3Ccircle cx='56' cy='56' r='2.4'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 56px 56px;
+}
+.cx .chat-list > .alert { margin: 0; align-self: center; max-width: 520px; }
+
+/* ── Хабарлар ── */
+.cx .msg { display: flex; gap: 10px; align-items: flex-start; max-width: min(92%, 680px); margin: 0; flex-direction: row; }
+.cx .msg.me { margin-inline-start: auto; margin-inline-end: 0; flex-direction: row; justify-content: flex-end; max-width: min(84%, 560px); }
+.cx .msg-av {
+  flex: none;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--cx-sand);
+  box-shadow: inset 0 0 0 1.5px var(--cx-rim);
+  display: grid; place-items: end center;
+  overflow: hidden;
+}
+.cx .msg-av .qyran { width: 36px; height: auto; margin-bottom: -3px; }
+
+.cx .msg-b {
+  position: relative;
+  min-width: 0;
+  padding: 12px 16px;
+  border-radius: 20px;
+  border-start-start-radius: 6px;
+  background: var(--cx-surf);
+  color: var(--cx-ink);
+  box-shadow: inset 0 0 0 1px var(--cx-rim), 0 2px 0 rgba(122, 86, 22, 0.12);
+  line-height: 1.55;
+  font-size: 15.5px;
+  overflow-wrap: anywhere;
+}
+/* киіз тігісі */
+.cx .msg-b::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 16px;
+  border-start-start-radius: 4px;
+  border: 1.5px dashed rgba(184, 50, 42, 0.16);
+  pointer-events: none;
+}
+.cx .msg.me .msg-b {
+  background: var(--cx-blue);
+  color: #fff;
+  border-radius: 20px;
+  border-start-end-radius: 6px;
+  box-shadow: 0 2px 0 var(--cx-blue-2);
+  white-space: pre-wrap;
+}
+.cx .msg.me .msg-b::after { border-color: rgba(255, 255, 255, 0.3); border-radius: 16px; border-start-end-radius: 4px; }
+
+/* Rich жауап: тақырып, тізім, кесте, қазақ сөздері */
+.cx .msg.bot .msg-b p { margin: 0 0 8px; }
+.cx .msg.bot .msg-b p:last-child { margin-bottom: 0; }
+.cx .msg.bot .msg-b h4 {
+  display: flex; align-items: center; gap: 8px;
+  margin: 14px 0 6px; font-family: var(--head); font-size: 14.5px; color: var(--cx-red-2);
+}
+.cx .msg.bot .msg-b h4::before { content: ""; flex: none; width: 9px; height: 9px; background: var(--cx-gold); transform: rotate(45deg); border-radius: 2px; }
+.cx .msg.bot .msg-b h4:first-child { margin-top: 2px; }
+.cx .msg.bot .msg-b:not(.msg-vision) b {
+  font-weight: 700;
+  background: linear-gradient(transparent 58%, rgba(224, 165, 38, 0.38) 58%);
+  padding-inline: 1px;
+  border-radius: 2px;
+}
+.cx .msg.bot .msg-b i { color: var(--cx-muted); }
+.cx .msg.bot .msg-b ul, .cx .msg.bot .msg-b ol { margin: 6px 0 10px; padding-inline-start: 22px; padding-left: 0; display: grid; gap: 5px; }
+.cx .msg.bot .msg-b ul { list-style: none; padding-inline-start: 20px; }
+.cx .msg.bot .msg-b ul li { position: relative; }
+.cx .msg.bot .msg-b ul li::before {
+  content: ""; position: absolute; inset-inline-start: -16px; top: 0.62em;
+  width: 7px; height: 7px; background: var(--cx-red); transform: rotate(45deg); border-radius: 1.5px;
+}
+.cx .msg.bot .msg-b ol li::marker { color: var(--cx-red-2); font-weight: 800; font-family: var(--head); font-size: 0.85em; }
+.cx .msg.bot .msg-b code { padding: 1px 6px; border-radius: 6px; background: var(--cx-sand); box-shadow: inset 0 0 0 1px var(--cx-rim); font-size: 0.92em; }
+.cx .msg.bot .msg-b .tbl { margin: 10px 0; overflow-x: auto; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--cx-rim); background: var(--cx-surf); }
+.cx .msg.bot .msg-b table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.cx .msg.bot .msg-b th, .cx .msg.bot .msg-b td { padding: 8px 12px; text-align: start; vertical-align: top; border-bottom: 1px solid rgba(31, 36, 48, 0.1); }
+.cx .msg.bot .msg-b th { background: var(--cx-sand); color: var(--cx-red-2); font-weight: 800; white-space: nowrap; font-size: 13.5px; }
+.cx .msg.bot .msg-b tr:last-child td { border-bottom: 0; }
+.cx .msg.bot .msg-b tbody tr:nth-child(even) td { background: rgba(244, 236, 218, 0.45); }
+
+/* Кіру қозғалысы: Aqyl сол жақтан, сен оң жақтан */
+.cx .cx-in { animation: cxInBot 0.5s var(--cx-ease) both; }
+.cx .msg.me.cx-in { animation-name: cxInMe; }
+.cx .cx-in .msg-av { animation: cxPop 0.5s var(--cx-spring) both; }
+
+/* ── Aqyl ойланып жатыр: үш киіз моншақ ── */
+.cx .msg-b.typing { display: flex; align-items: center; gap: 7px; padding: 15px 18px; min-height: 48px; }
+.cx .msg-b.typing i {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--cx-red);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  animation: cxBead 1.2s var(--cx-ease) infinite;
+}
+.cx .msg-b.typing i:nth-child(2) { background: var(--cx-gold); animation-delay: 0.16s; }
+.cx .msg-b.typing i:nth-child(3) { background: var(--cx-blue); animation-delay: 0.32s; }
+
+/* ── Бастау карталары (бос чат) ── */
+.cx .cx-starts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  padding: 4px 0 0;
+  margin-inline-start: 50px;
+  max-width: 640px;
+}
+.cx .cx-start {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 8px 14px 8px 8px;
+  padding-inline: 8px 14px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--cx-surf);
+  color: var(--cx-ink);
+  box-shadow: inset 0 0 0 1px var(--cx-rim), 0 3px 0 rgba(122, 86, 22, 0.14);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: start;
+  cursor: pointer;
+  transition: transform 0.25s var(--cx-spring), box-shadow 0.2s;
+  animation: cxInBot 0.5s var(--cx-ease) both;
+  animation-delay: var(--d, 0ms);
+}
+.cx .cx-start .topic-art, .cx .cx-start svg:first-child { border-radius: 14px; flex: none; }
+.cx .cx-start:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--cx-red), 0 5px 0 rgba(122, 86, 22, 0.16); }
+.cx .cx-start:active { transform: translateY(1px); box-shadow: inset 0 0 0 1.5px var(--cx-red), 0 1px 0 rgba(122, 86, 22, 0.16); }
+.cx .cx-start-t { min-width: 0; }
+.cx .cx-start-cam {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  background: var(--cx-blue);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--cx-blue-2);
+  font-family: var(--head);
+  font-size: 15px;
+  font-weight: 600;
+}
+.cx .cx-start-cam .cx-start-t { display: inline-flex; align-items: center; gap: 8px; }
+.cx .cx-start-cam .cx-start-t .ic { display: none; }
+.cx .cx-start-cam:hover { box-shadow: inset 0 0 0 2px var(--cx-gold), 0 5px 0 var(--cx-blue-2); }
+.cx .cx-start-cam:active { box-shadow: inset 0 0 0 2px var(--cx-gold), 0 1px 0 var(--cx-blue-2); }
+.cx .cx-start-go { transition: transform 0.25s var(--cx-spring); }
+.cx .cx-start-cam:hover .cx-start-go { transform: translateX(4px); }
+[dir="rtl"] .cx .cx-start-go { transform: scaleX(-1); }
+[dir="rtl"] .cx .cx-start-cam:hover .cx-start-go { transform: scaleX(-1) translateX(4px); }
+
+/* Мақал (дастарқан шетінде) */
+.cx .cx-prov-m { margin: 6px auto 0; padding: 0; }
+.cx .nat-empty { grid-auto-flow: column; justify-content: center; align-items: center; gap: 10px; padding: 8px 12px; text-align: start; }
+.cx .nat-empty small { font-size: 13.5px; color: var(--cx-muted); max-width: 300px; line-height: 1.4; }
+.cx .nat-empty .nat-art { width: 40px; height: auto; }
+
+/* ── Сурет хабары: жабыстырылған фото ── */
+.cx .msg-b.msg-photo {
+  display: grid; gap: 8px;
+  padding: 8px 8px 10px;
+  max-width: 260px;
+  background: var(--cx-blue);
+  transform: rotate(1.2deg);
+  transform-origin: 100% 0;
+}
+.cx .msg-b.msg-photo::after { display: none; }
+.cx .msg-photo img {
+  display: block; width: 100%; max-height: 240px; object-fit: cover;
+  border-radius: 10px;
+  border: 4px solid var(--cx-cream);
+  background: var(--cx-cream);
+}
+.cx .msg-photo::before {
+  /* алтын жапсырма */
+  content: ""; position: absolute; z-index: 1; top: -8px; left: 50%;
+  width: 64px; height: 18px; margin-left: -32px;
+  background: rgba(224, 165, 38, 0.82);
+  transform: rotate(-4deg);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(60, 40, 10, 0.2);
+}
+.cx .msg-photo > span { padding: 0 6px 2px; font-size: 14px; line-height: 1.4; color: #fff; }
+.cx .msg-photo .vz-gone { display: inline-flex; align-items: center; gap: 6px; padding: 12px 8px 2px; font-size: 13.5px; opacity: 1; color: var(--cx-gold-soft); }
+
+/* ── Aqyl Vision: «Ашылым» картасы ── */
+.cx .msg.is-vision { max-width: min(94%, 440px); }
+.cx .msg-b.msg-vision { padding: 0; overflow: visible; background: none; box-shadow: none; border-radius: 22px; }
+.cx .msg-b.msg-vision::after { display: none; }
+.cx .vz-card {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  min-width: min(300px, 68vw);
+  border: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--cx-surf);
+  box-shadow: inset 0 0 0 1px var(--cx-rim), 0 3px 0 rgba(122, 86, 22, 0.16), 0 18px 34px -24px rgba(60, 40, 10, 0.55);
+  animation: cxDiscover 0.7s var(--cx-spring) both;
+}
+.cx .vz-top {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 16px 18px 18px;
+  padding-inline: 18px 16px;
+  background:
+    radial-gradient(circle at 100% 100%, var(--cx-blue-2) 0 46%, transparent 46.5%),
+    var(--cx-blue);
+  color: var(--cx-cream);
+  overflow: hidden;
+}
+.cx .vz-top::after {
+  content: ""; position: absolute; inset: 6px; border-radius: 16px;
+  border: 1.5px dashed rgba(246, 227, 176, 0.38); pointer-events: none;
+}
+.cx .cx-badge {
+  position: absolute; top: 0; inset-inline-start: 18px;
+  display: grid; place-items: center;
+  width: 30px; height: 26px;
+  background: var(--cx-gold); color: var(--cx-ink);
+  border-radius: 0 0 8px 8px;
+}
+.cx .cx-word { min-width: 0; padding-top: 8px; }
+.cx .vz-kk { display: block; font-family: var(--head); font-weight: 800; font-size: 30px; line-height: 1.1; color: #fff; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.cx .vz-tl { display: block; margin-top: 4px; font-size: 14px; color: var(--cx-gold-soft); }
+.cx .vz-say {
+  position: relative; z-index: 1;
+  width: 52px; height: 52px; border-radius: 50%; border: 0;
+  background: var(--cx-gold); color: var(--cx-ink);
+  box-shadow: 0 3px 0 #a87710;
+  display: grid; place-items: center; cursor: pointer;
+  transition: transform 0.2s var(--cx-spring);
+}
+.cx .vz-say:hover { background: #ebb43a; transform: scale(1.05); }
+.cx .vz-say:active { transform: scale(0.92); box-shadow: 0 1px 0 #a87710; }
+.cx .vz-say:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.cx .cx-spark { position: absolute; inset: 0; pointer-events: none; }
+.cx .cx-spark i { position: absolute; width: 8px; height: 8px; background: var(--cx-gold-soft); border-radius: 1.5px; transform: rotate(45deg) scale(0); animation: cxTwinkle 1.6s var(--cx-ease) 0.4s 2 both; }
+.cx .cx-spark i:nth-child(1) { top: 16%; inset-inline-end: 30%; }
+.cx .cx-spark i:nth-child(2) { top: 64%; inset-inline-end: 24%; width: 6px; height: 6px; animation-delay: 0.6s; }
+.cx .cx-spark i:nth-child(3) { top: 30%; inset-inline-end: 6%; width: 5px; height: 5px; animation-delay: 0.8s; }
+.cx .cx-spark i:nth-child(4) { top: 78%; inset-inline-start: 46%; width: 6px; height: 6px; background: var(--cx-gold); animation-delay: 0.5s; }
+
+.cx .cx-vbody { display: grid; gap: 12px; padding: 16px 18px 18px; }
+.cx .vz-tr { font-size: 18px; font-weight: 700; color: var(--cx-ink); line-height: 1.3; }
+.cx .vz-ex {
+  display: grid; gap: 3px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--cx-sand);
+  box-shadow: inset 4px 0 0 var(--cx-red);
+}
+[dir="rtl"] .cx .vz-ex { box-shadow: inset -4px 0 0 var(--cx-red); }
+.cx .vz-ex small { font-size: 12px; font-weight: 700; color: var(--cx-red-2); text-transform: uppercase; letter-spacing: 0.06em; }
+.cx .vz-ex b { font-size: 16px; color: var(--cx-ink); }
+.cx .vz-ex span { font-size: 14px; color: var(--cx-muted); }
+.cx .vz-tip { margin: 0; font-size: 14px; line-height: 1.45; color: var(--cx-muted); padding: 0; padding-inline-start: 12px; border: 0; border-inline-start: 3px solid var(--cx-gold); }
+[dir="rtl"] .cx .vz-tip { border-right: 0; border-inline-start: 3px solid var(--cx-gold); padding-right: 12px; }
+.cx .vz-save {
+  justify-self: stretch;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 18px;
+  border: 0; border-radius: 14px;
+  background: var(--cx-red); color: #fff;
+  box-shadow: 0 3px 0 var(--cx-red-2);
+  font: inherit; font-weight: 700; font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.cx .vz-save:hover:not(:disabled) { background: #a32a23; }
+.cx .vz-save:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--cx-red-2); }
+.cx .vz-save.on { background: #e6f0ea; color: #2f6b4f; box-shadow: inset 0 0 0 1.5px rgba(47, 107, 79, 0.35); cursor: default; animation: cxPop 0.45s var(--cx-spring); }
+
+/* ── Камера: киіз жақтаулы көрініс тапқыш (әңгіменің үстінен) ── */
+.cx .vz-sheet {
+  grid-row: 2;
+  grid-column: 1;
+  align-self: end;
+  z-index: 3;
+  margin: 0 12px 12px;
+  padding: 14px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  border-radius: 22px;
+  background: var(--cx-blue-2);
+  color: #fff;
+  display: grid;
+  gap: 12px;
+  box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.35), 0 24px 44px -20px rgba(6, 30, 40, 0.6);
+  animation: cxSheet 0.45s var(--cx-ease) both;
+}
+.cx .vz-view { position: relative; width: 100%; aspect-ratio: 4 / 3; max-height: 46vh; border-radius: 16px; overflow: hidden; background: #062f3e; }
+.cx .vz-view video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cx .vz-view .c { position: absolute; width: 30px; height: 30px; border: 4px solid var(--cx-gold); animation: cxBreath 2.4s ease-in-out infinite; }
+.cx .vz-view .tl { top: 14px; left: 14px; border-right: 0; border-bottom: 0; border-radius: 10px 0 0 0; }
+.cx .vz-view .tr { top: 14px; right: 14px; border-left: 0; border-bottom: 0; border-radius: 0 10px 0 0; --sx: -1; }
+.cx .vz-view .bl { bottom: 14px; left: 14px; border-right: 0; border-top: 0; border-radius: 0 0 0 10px; }
+.cx .vz-view .br { bottom: 14px; right: 14px; border-left: 0; border-top: 0; border-radius: 0 0 10px 0; }
+.cx .cx-scan { position: absolute; inset: 0 10%; pointer-events: none; animation: cxScan 2.8s ease-in-out infinite; }
+.cx .cx-scan::before {
+  content: ""; position: absolute; inset-inline: 0; top: 0; height: 3px; border-radius: 3px;
+  background: linear-gradient(90deg, transparent, var(--cx-gold), transparent);
+  box-shadow: 0 0 14px 2px rgba(224, 165, 38, 0.5);
+}
+.cx .vz-hint { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); padding: 7px 14px; border-radius: 999px; background: rgba(6, 30, 40, 0.72); color: #fff; font-size: 13px; font-weight: 600; line-height: 1.3; text-align: center; width: max-content; max-width: calc(100% - 96px); }
+.cx .vz-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; justify-items: center; }
+.cx .vz-side { display: grid; justify-items: center; gap: 3px; min-width: 72px; min-height: 52px; padding: 6px; border: 0; border-radius: 14px; background: none; color: #fff; font: inherit; cursor: pointer; }
+.cx .vz-side:hover { background: rgba(255, 255, 255, 0.1); }
+.cx .vz-side small { font-size: 12.5px; font-weight: 600; }
+.cx .vz-shutter { width: 74px; height: 74px; border-radius: 50%; border: 4px solid #fff; background: none; padding: 5px; cursor: pointer; }
+.cx .vz-shutter i { display: block; width: 100%; height: 100%; border-radius: 50%; background: var(--cx-gold); box-shadow: inset 0 -4px 0 #a87710, inset 0 0 0 6px rgba(255, 255, 255, 0.18); transition: transform 0.15s; }
+.cx .vz-shutter:hover i { transform: scale(0.94); }
+.cx .vz-shutter:active i { transform: scale(0.82); }
+.cx .vz-shutter:focus-visible, .cx .vz-side:focus-visible { outline: 3px solid var(--cx-gold); outline-offset: 2px; }
+.cx .vz-privacy .ic { flex: none; }
+.cx .vz-privacy { margin: 0; justify-self: center; display: flex; align-items: center; gap: 6px; text-align: center; line-height: 1.4; font-size: 12.5px; color: var(--cx-gold-soft); opacity: 1; }
+
+/* ── Жазу алаңы: бір киіз «табақ» ── */
+.cx .composer {
+  grid-row: 3;
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 0;
+  box-shadow: 0 -1px 0 var(--cx-rim);
+  background: var(--cx-surf);
+  position: relative;
+  z-index: 2;
+}
+.cx .cx-tools { display: flex; gap: 4px; align-self: end; }
+.cx .composer .input {
+  min-height: 48px;
+  max-height: 140px;
+  padding: 12px 16px;
+  resize: none;
+  border: 0;
+  border-radius: 24px;
+  background: var(--cx-cream);
+  box-shadow: inset 0 0 0 1.5px var(--cx-rim);
+  color: var(--cx-ink);
+  font-size: 16px;
+  line-height: 1.45;
+}
+.cx .composer .input::placeholder { color: #6b6f78; }
+.cx .composer .input:focus { box-shadow: inset 0 0 0 2px var(--cx-red); background: #fff; outline: none; }
+.cx .composer .btn { min-width: 0; padding: 0; }
+.cx .composer .cx-tool {
+  position: relative;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--cx-sand);
+  color: var(--cx-ink);
+  box-shadow: inset 0 0 0 1px var(--cx-rim);
+  animation: none;
+}
+.cx .composer .cx-tool:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--cx-blue); color: var(--cx-blue); }
+.cx .composer .cx-tool.on { background: var(--cx-blue); color: #fff; box-shadow: none; }
+.cx .composer .cx-tool:disabled { opacity: 0.5; }
+.cx .composer .cx-mic.on { background: var(--cx-red); color: #fff; }
+.cx .composer .cx-mic.on::before, .cx .composer .cx-mic.on::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid var(--cx-red);
+  animation: cxRing 1.4s ease-out infinite;
+  pointer-events: none;
+}
+.cx .composer .cx-mic.on::after { animation-delay: 0.7s; }
+.cx .composer.is-rec .input { box-shadow: inset 0 0 0 2px var(--cx-red); }
+.cx .composer.is-stt .cx-mic { animation: cxBreath 1s ease-in-out infinite; }
+.cx .composer .cx-send {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--cx-red); color: #fff;
+  box-shadow: 0 3px 0 var(--cx-red-2);
+  transition: transform 0.25s var(--cx-spring), background 0.2s;
+}
+.cx .composer .cx-send:not(:disabled):hover { transform: translateY(-1px) rotate(-8deg); }
+.cx .composer .cx-send:not(:disabled):active { transform: translateY(2px); box-shadow: 0 1px 0 var(--cx-red-2); }
+[dir="rtl"] .cx .composer .cx-send .ic { transform: scaleX(-1); }
+
+/* ── Кең экран: сол жақта Aqyl-дың төрі, оң жақта әңгіме ── */
+@media (min-width: 1100px) {
+  .cx .chat {
+    grid-template-columns: 272px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: calc(var(--cx-vh, 100dvh) - 132px);
+    max-height: 860px;
+  }
+  .cx .chat-head {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    justify-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 38px 22px 22px;
+    background:
+      var(--oyu-band) top / auto 12px repeat-x,
+      linear-gradient(var(--cx-sand), var(--cx-sand));
+    box-shadow: inset -1px 0 0 var(--cx-rim);
+  }
+  [dir="rtl"] .cx .chat-head { box-shadow: inset 1px 0 0 var(--cx-rim); }
+  .cx .chat-head::after { inset-inline: auto 6px; inset-block: 18px 12px; bottom: 12px; border-bottom: 0; border-inline-end: 2px dashed rgba(138, 32, 24, 0.2); }
+  .cx .cx-aq { width: 172px; height: 172px; margin-top: auto; margin-bottom: 6px; }
+  .cx .cx-aq .qyran { width: 104%; margin-bottom: -10px; }
+  .cx .cx-halo { inset: -9px; border-width: 3px; }
+  .cx .cx-wow i { width: 16px; height: 16px; }
+  .cx .cx-wow i:nth-child(2), .cx .cx-wow i:nth-child(3) { width: 12px; height: 12px; }
+  .cx .chat-head h1 { font-size: 22px; }
+  .cx .chat-head p { font-size: 14px; max-width: 220px; margin-inline: auto; }
+  .cx .cx-clear { position: absolute; top: 20px; inset-inline-end: 16px; }
+  .cx .cx-side-cam {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; min-height: 48px; margin-top: 4px; padding: 0 16px;
+    border: 0; border-radius: 14px;
+    background: var(--cx-blue); color: #fff;
+    box-shadow: 0 3px 0 var(--cx-blue-2);
+    font: inherit; font-weight: 700; font-size: 14.5px;
+    cursor: pointer;
+  }
+  .cx .cx-side-cam:hover:not(:disabled) { background: var(--cx-blue-2); }
+  .cx .cx-side-cam:disabled { opacity: 0.55; cursor: default; }
+  .cx.is-empty .cx-side-cam { display: none; }
+  .cx .cx-prov { display: block; margin-top: auto; align-self: end; }
+  .cx .cx-prov .nat-empty { grid-auto-flow: row; justify-items: center; text-align: center; padding: 8px 0 0; }
+  .cx .cx-prov .nat-empty .nat-art { width: 54px; }
+  .cx .cx-prov-m { display: none; }
+  .cx .chat-head { display: flex; flex-direction: column; align-items: center; }
+  .cx .chat-list, .cx .vz-sheet, .cx .composer { grid-column: 2; }
+  .cx .chat-list { grid-row: 1; padding: 28px 28px 28px; }
+  .cx .vz-sheet { grid-row: 1; margin: 0 24px 16px; }
+  .cx .vz-view { max-height: 52vh; }
+  .cx .composer { grid-row: 2; padding: 12px 20px 16px; }
+  .cx .cx-starts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-inline-start: 50px; max-width: 660px; }
+  .cx .cx-start-cam { grid-column: 1 / -1; min-height: 76px; padding-inline-end: 20px; }
+  .cx .cx-start:not(.cx-start-cam) { grid-template-columns: minmax(0, 1fr); align-content: start; align-items: start; padding: 14px; min-height: 118px; }
+  .cx .cx-start:not(.cx-start-cam) svg { width: 52px; height: 52px; }
+}
+
+/* ── Телефон ── */
+@media (max-width: 960px) {
+  .cx .chat { height: calc(var(--cx-vh, 100dvh) - 190px); min-height: 400px; border-radius: 20px; }
+  @supports not (height: 100dvh) { .cx .chat { height: calc(100vh - 190px); } }
+}
+@media (max-width: 520px) {
+  .cx .chat-head { padding: 16px 12px 12px; gap: 2px 12px; }
+  .cx .chat-head h1 { font-size: 17px; }
+  .cx .chat-head p { font-size: 12.5px; }
+  .cx .chat-list { padding: 16px 10px 20px; gap: 12px; }
+  .cx .msg { max-width: 100%; gap: 8px; }
+  .cx .msg.me { max-width: 88%; }
+  .cx .msg-av { width: 34px; height: 34px; }
+  .cx .msg-av .qyran { width: 31px; }
+  .cx .msg-b { padding: 11px 14px; font-size: 15px; }
+  .cx .cx-starts { margin-inline-start: 0; }
+  .cx .cx-start { min-height: 60px; font-size: 14px; }
+  .cx .cx-start svg:first-child { width: 44px; height: 44px; }
+  .cx .vz-card { min-width: 0; }
+  .cx .vz-kk { font-size: 26px; }
+  .cx .composer { padding: 8px 8px 10px; gap: 5px; }
+  .cx .cx-tools { gap: 3px; }
+  .cx .composer .cx-tool, .cx .composer .cx-send { width: 44px; height: 44px; }
+  .cx .composer .input { min-height: 44px; padding: 10px 14px; }
+  .cx .vz-sheet { margin: 0 8px 8px; padding: 10px; }
+  .cx .vz-hint { font-size: 12px; }
+}
+
+/* ── Қозғалыс ── */
+@keyframes cxSpin { to { transform: rotate(360deg); } }
+@keyframes cxHop { 0%, 70%, 100% { transform: translateY(0); } 80% { transform: translateY(-6%); } 90% { transform: translateY(0) scaleY(0.97); } }
+@keyframes cxTwinkle { 0%, 100% { transform: rotate(45deg) scale(0); opacity: 0; } 40% { transform: rotate(45deg) scale(1.15); opacity: 1; } 70% { transform: rotate(45deg) scale(0.9); opacity: 0.9; } }
+@keyframes cxRing { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.45); opacity: 0; } }
+@keyframes cxInBot { from { opacity: 0; transform: translate(-14px, 10px) scale(0.97); } }
+@keyframes cxInMe { from { opacity: 0; transform: translate(14px, 10px) scale(0.97); } }
+@keyframes cxPop { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes cxBead { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-7px); } }
+@keyframes cxDiscover { 0% { opacity: 0; transform: translateY(16px) scale(0.92) rotate(-1.5deg); } 100% { opacity: 1; transform: none; } }
+@keyframes cxSheet { from { opacity: 0; transform: translateY(24px); } }
+@keyframes cxScan { 0%, 100% { transform: translateY(8%); opacity: 0.25; } 50% { transform: translateY(90%); opacity: 1; } }
+@keyframes cxBreath { 50% { transform: scale(0.92); opacity: 0.75; } }
+[dir="rtl"] .cx .cx-in { animation-name: cxInMe; }
+[dir="rtl"] .cx .msg.me.cx-in { animation-name: cxInBot; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cx *, .cx *::before, .cx *::after { animation: none !important; transition: none !important; }
+  .cx[data-mood="wow"] .cx-wow i { transform: rotate(45deg) scale(1); opacity: 1; }
+  .cx .cx-spark i { transform: rotate(45deg) scale(1); }
+  .cx .cx-scan { transform: translateY(50%); }
+}

@@ -1,6 +1,9 @@
 "use client";
+import "../../chat.css";
 import { useEffect, useRef, useState } from "react";
 import { NatEmpty } from "../../components/NatArt";
+import TopicArt from "../../components/TopicArt";
+import { ChatCamArt, ChatDisc } from "../../components/ChatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
@@ -41,27 +44,34 @@ function VisionCard({ v, t, saved, onSave }) {
   return (
     <div className="vz-card">
       <div className="vz-top">
-        <div>
+        <span className="cx-spark" aria-hidden="true"><i /><i /><i /><i /></span>
+        <span className="cx-badge" aria-hidden="true"><Icon name="sparkle" size={16} /></span>
+        <div className="cx-word">
           <b className="vz-kk" lang="kk">{v.kk}</b>
           {v.translit && <span className="vz-tl">[{v.translit}]</span>}
         </div>
-        <button type="button" className="vz-say" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={18} /></button>
+        <button type="button" className="vz-say" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={20} /></button>
       </div>
-      <div className="vz-tr">{v.translation}</div>
-      {v.example_kk && (
-        <div className="vz-ex">
-          <small>{t.example}</small>
-          <b lang="kk">{v.example_kk}</b>
-          {v.example_tr && <span>{v.example_tr}</span>}
-        </div>
-      )}
-      {v.tip && <p className="vz-tip">{v.tip}</p>}
-      <button type="button" className={`vz-save ${saved ? "on" : ""}`} onClick={onSave} disabled={saved}>
-        <Icon name={saved ? "check" : "plus"} size={16} /> {saved ? t.saved : t.saveWord}
-      </button>
+      <div className="cx-vbody">
+        <div className="vz-tr">{v.translation}</div>
+        {v.example_kk && (
+          <div className="vz-ex">
+            <small>{t.example}</small>
+            <b lang="kk">{v.example_kk}</b>
+            {v.example_tr && <span>{v.example_tr}</span>}
+          </div>
+        )}
+        {v.tip && <p className="vz-tip">{v.tip}</p>}
+        <button type="button" className={`vz-save ${saved ? "on" : ""}`} onClick={onSave} disabled={saved}>
+          <Icon name={saved ? "check" : "plus"} size={16} /> {saved ? t.saved : t.saveWord}
+        </button>
+      </div>
     </div>
   );
 }
+
+// Бос чаттағы бастау карталарының киіз суреттері (t.chatSuggest ретімен)
+const START_ART = ["numbers", "food", "school", "greet"];
 
 // Қауіпсіз форматтау (HTML енгізілмейді): **жуан**, *көлбеу*, `код`, ### тақырып, тізімдер, кесте
 function inline(str) {
@@ -137,6 +147,21 @@ export default function Chat() {
   const recRef = useRef(null);
   const listRef = useRef(null);
   const msgs = state.chat || [];
+  const pageRef = useRef(null);
+
+  // Aqyl-дың көңіл-күйі әңгімеге ілеседі
+  const last = msgs[msgs.length - 1];
+  const mood = busy ? "think" : rec === "rec" ? "support" : cam ? "wow" : err ? "support" : last?.kind === "vision" ? "wow" : last?.role === "assistant" ? "happy" : "idle";
+
+  // Телефон пернетақтасы ашылғанда чат көрінетін биіктікке сыйсын
+  useEffect(() => {
+    const vv = typeof window !== "undefined" && window.visualViewport;
+    if (!vv) return;
+    const fit = () => pageRef.current?.style.setProperty("--cx-vh", `${Math.round(vv.height)}px`);
+    fit();
+    vv.addEventListener("resize", fit);
+    return () => vv.removeEventListener("resize", fit);
+  }, []);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -272,35 +297,60 @@ export default function Chat() {
     setTimeout(() => r.state === "recording" && r.stop(), 20000);
   }
 
+  const empty = msgs.length === 0;
   return (
-    <div className="chat-page">
+    <div className={`chat-page cx ${empty ? "is-empty" : ""}`} data-mood={mood} ref={pageRef}>
       <section className="card chat">
         <header className="chat-head">
-          <Qyran mood={busy ? "think" : "happy"} size={58} />
-          <div>
+          <div className="cx-aq">
+            <ChatDisc />
+            <span className="cx-halo" aria-hidden="true" />
+            <span className="cx-wow" aria-hidden="true"><i /><i /><i /></span>
+            <Qyran mood={mood} size={150} />
+          </div>
+          <div className="cx-title">
             <h1>{t.chatTitle}</h1>
             <p className="muted small">{t.chatSub}</p>
           </div>
           {msgs.length > 0 && (
-            <button className="icon-btn" title={t.chatClear} aria-label={t.chatClear} onClick={() => update((s) => ({ ...s, chat: [] }))}>
+            <button className="icon-btn cx-clear" title={t.chatClear} aria-label={t.chatClear} onClick={() => update((s) => ({ ...s, chat: [] }))}>
               <Icon name="refresh" size={18} />
             </button>
           )}
+          <button type="button" className="cx-side-cam" onClick={() => (cam ? stopCam() : openCam())} disabled={busy}>
+            <Icon name="camera" size={18} /> {vl.cam}
+          </button>
+          <div className="cx-prov"><NatEmpty art="dombyra" size={64} lang={lang} proverb /></div>
         </header>
 
         <div className="chat-list" ref={listRef}>
-          <div className="msg bot">
+          <div className="msg bot cx-hi">
             <span className="msg-av">
               <Qyran size={34} />
             </span>
             <div className="msg-b">{t.chatHi}</div>
           </div>
-          {msgs.length === 0 && <div className="chat-empty"><NatEmpty art="dombyra" size={150} lang={lang} proverb /></div>}
+          {empty && !cam && (
+            <div className="suggest cx-starts">
+              <button type="button" className="cx-start cx-start-cam" onClick={openCam}>
+                <ChatCamArt size={60} />
+                <span className="cx-start-t"><Icon name="camera" size={16} /> {vl.cam}</span>
+                <Icon name="right" size={18} className="cx-start-go" />
+              </button>
+              {t.chatSuggest.map((s, k) => (
+                <button key={s} type="button" className="cx-start" onClick={() => send(s)} style={{ "--d": `${(k + 1) * 70}ms` }}>
+                  <TopicArt topic={START_ART[k % START_ART.length]} size={48} />
+                  <span className="cx-start-t">{s}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {empty && <div className="chat-empty cx-prov-m"><NatEmpty art="dombyra" size={64} lang={lang} proverb /></div>}
           {msgs.map((m, i) => (
-            <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"} rise`}>
+            <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"} cx-in${m.kind ? ` is-${m.kind}` : ""}`}>
               {m.role !== "user" && (
                 <span className="msg-av">
-                  <Qyran size={34} />
+                  <Qyran size={34} mood={m.kind === "vision" ? "wow" : "idle"} />
                 </span>
               )}
               {m.kind === "photo" ? (
@@ -316,7 +366,7 @@ export default function Chat() {
             </div>
           ))}
           {busy && (
-            <div className="msg bot">
+            <div className="msg bot cx-in cx-wait">
               <span className="msg-av">
                 <Qyran mood="think" size={34} />
               </span>
@@ -334,6 +384,7 @@ export default function Chat() {
           <div className="vz-sheet" role="dialog" aria-label={x.vTitle}>
             <div className="vz-view">
               <video ref={videoRef} playsInline muted />
+              <span className="cx-scan" aria-hidden="true" />
               <i className="c tl" /><i className="c tr" /><i className="c bl" /><i className="c br" />
               <span className="vz-hint">{x.vHint}</span>
             </div>
@@ -346,24 +397,22 @@ export default function Chat() {
           </div>
         )}
 
-        {msgs.length === 0 && !cam && (
-          <div className="suggest">
-            <button className="chip vz-chip" onClick={openCam}><Icon name="camera" size={15} /> {vl.cam}</button>
-            {t.chatSuggest.map((s) => (
-              <button key={s} className="chip" onClick={() => send(s)}>
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-
         <form
-          className="composer"
+          className={`composer ${rec === "rec" ? "is-rec" : ""} ${rec === "busy" ? "is-stt" : ""}`}
           onSubmit={(e) => {
             e.preventDefault();
             send();
           }}
         >
+          <div className="cx-tools">
+            <button type="button" className={`btn ghost mic-mini cx-tool ${cam ? "on" : ""}`} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-label={vl.cam} title={vl.cam} aria-pressed={cam}>
+              <Icon name="camera" size={20} />
+            </button>
+            <button type="button" className={`btn ghost mic-mini cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic" aria-pressed={rec === "rec"}>
+              <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
+            </button>
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
           <textarea
             className="input"
             rows={1}
@@ -378,15 +427,8 @@ export default function Chat() {
             placeholder={t.chatPh}
             maxLength={1500}
           />
-          <button type="button" className={`btn ghost mic-mini ${cam ? "on" : ""}`} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-label={vl.cam} title={vl.cam}>
-            <Icon name="camera" size={18} />
-          </button>
-          <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
-          <button type="button" className={`btn ghost mic-mini ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic">
-            <Icon name={rec === "rec" ? "stop" : "mic"} size={18} />
-          </button>
-          <button className="btn blue" disabled={busy || !text.trim()} aria-label={t.send}>
-            <Icon name="send" size={18} />
+          <button className="btn blue cx-send" disabled={busy || !text.trim()} aria-label={t.send}>
+            <Icon name="send" size={20} />
           </button>
         </form>
       </section>
