@@ -75,15 +75,16 @@ export async function POST(req) {
     return Response.json({ error: "Bad request" }, { status: 400 });
   }
   const text = String(body?.text || "").trim().slice(0, 1000);
-  const slow = Boolean(body?.slow);
   if (!text) return Response.json({ error: "Bad request" }, { status: 400 });
-  const ckey = `${slow ? "s" : "n"}|${text}`;
+  // Модельге ТЕК экрандағы мәтін жіберіледі — ешқандай нұсқаусыз.
+  // Нұсқау берілгенде модель кейде оны да дауыстап оқитын немесе артық сөз/дыбыс қосатын.
+  // Баяу режим клиентте ойнату жылдамдығымен жасалады (lib/speak.js), сондықтан бір мәтінге бір жазба.
+  const prompt = text
+    .replace(/[*_#`~]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const ckey = prompt;
   if (cache.has(ckey)) return Response.json({ audio: cache.get(ckey) });
-  // Нұсқаулық өте қысқа: модель тек қос нүктеден кейінгі мәтінді айтады, артық сөз қоспайды
-  const short = text.split(/\s+/).length <= 3;
-  const prompt = short
-    ? `Say in Kazakh, ${slow ? "slowly and very clearly" : "clearly"}: ${text}`
-    : `Read aloud in Kazakh, ${slow ? "slowly" : "at a calm pace"}: ${text}`;
 
   const models = [...new Set([...FALLBACK, ...(await ttsModels(key))])].slice(0, 5);
   let last = "";
