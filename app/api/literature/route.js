@@ -1,5 +1,5 @@
 // Әдебиет: Aqyl мәтінді оқығаннан кейін сол мәтін бойынша сұрақ қояды және жауап береді
-import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
+import { callGemini, GeminiError, LANG_NAMES, KK_STYLE, kkFixDeep, tidy } from "../../../lib/gemini";
 
 export const maxDuration = 60;
 
@@ -38,10 +38,12 @@ export async function POST(req) {
     const prompt = `Мына мәтін бойынша дәл 5 сұрақтан тұратын тест жаса. Шығарма: «${String(title).slice(0, 80)}», автор: ${String(author).slice(0, 80)}. Деңгей: ${String(level).slice(0, 6)}.
 Мәтін:
 """${text.slice(0, 2500)}"""
-Ережелер: сұрақтар тек осы мәтіннен тікелей жауап табылатындай болсын; әр сұрақта 4 нұсқа, біреуі ғана дұрыс; дұрыс жауап орны әр сұрақта әртүрлі болсын; сұрақ пен нұсқалар қазақша, қысқа және қарапайым; why — ${lang}.`;
+Ережелер: сұрақтар тек осы мәтіннен тікелей жауап табылатындай болсын; әр сұрақта 4 нұсқа, біреуі ғана дұрыс; дұрыс жауап орны әр сұрақта әртүрлі болсын; сұрақ пен нұсқалар қазақша, қысқа және қарапайым (деңгейге сай), нұсқалардың ұзындығы шамалас болсын; why — ${lang}, бір қысқа сөйлем.
+
+${KK_STYLE}`;
     try {
       const out = await callGemini([{ role: "user", parts: [{ text: prompt }] }], { schema, temperature: 0.5, fast: false, thinking: "low", maxTokens: 1800 });
-      const d = JSON.parse(out);
+      const d = kkFixDeep(JSON.parse(out));
       const qs = (d.questions || []).filter((x) => x?.q && Array.isArray(x.options) && x.options.length === 4 && x.answer >= 0 && x.answer <= 3).slice(0, 5);
       if (qs.length < 3) throw new GeminiError("Test could not be built", 502);
       return Response.json({ questions: qs });
@@ -59,7 +61,10 @@ export async function POST(req) {
 Тапсырма:
 - Оқушы мәтін, шығарма не автор туралы сұраса, мәтінге және белгілі шындыққа сүйеніп жауап бер. Сенімсіз болсаң — ашық айт, ештеңе ойдан шығарма.
 - Қазақша жазса, қатесін ақырын түзет.
-- Мысалдар қазақша болсын, түсіндірме ${lang} болсын. Жауап қысқа (150 сөзден аспасын), **жуан** және «- » тізімді қолдануға болады. Эмодзиді аз қолдан.`;
+- Мысалдар қазақша болсын, түсіндірме ${lang} болсын. Жауап қысқа (150 сөзден аспасын), **жуан** және «- » тізімді қолдануға болады. Эмодзиді аз қолдан.
+- Мәтіннен дәйексөз келтірсең, оны өзгертпей дәл келтір.
+
+${KK_STYLE}`;
 
   const contents = messages
     .slice(-14)
@@ -70,7 +75,7 @@ export async function POST(req) {
 
   try {
     const out = await callGemini(contents, { system, temperature: 0.4, fast: false, thinking: "low", maxTokens: 1200 });
-    return Response.json({ text: out });
+    return Response.json({ text: tidy(out, { markdown: true }) });
   } catch (e) {
     const status = e instanceof GeminiError ? e.status : 500;
     return Response.json({ error: e.message || "AI error" }, { status });

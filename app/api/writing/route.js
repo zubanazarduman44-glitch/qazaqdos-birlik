@@ -1,5 +1,5 @@
 // Жазу көмекшісі: қазақша мәтінді түзетіп, себебін түсіндіреді
-import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
+import { callGemini, GeminiError, LANG_NAMES, KK_STYLE, kkFixDeep } from "../../../lib/gemini";
 
 export const maxDuration = 60;
 
@@ -40,14 +40,17 @@ export async function POST(req) {
   const prompt = `Сен — қазақ тілінің мейірімді мұғалімі Aqylсің. Оқушы деңгейі: ${String(level).slice(0, 4)}.
 Төмендегі мәтінді тексер: емле, жалғаулар, септіктер, сөз тәртібі, үндестік заңы.
 Мағынасын өзгертпе, тек қателерді түзет. corrected мәтіні ТОЛЫҒЫМЕН қазақша болсын: егер мәтінде орысша немесе ағылшынша сөз (мысалы «сок», «juice») қалып қойса, оны қазақшаға аударып («шырын») ауыстыр және әрқайсысын changes тізіміне жаз. Қазақша сөздердің орнына шетел сөздерін қалдырма. Әр өзгерісті changes тізіміне бөлек жаз. Қате жоқ болса — changes бос болсын.
-Түсіндірмелердегі (why, tip, praise) мысалдар мен атаулар қазақша болсын; түсіндіру тілі: ${lang}.
+Түзетуде табиғи қазақша нұсқасын бер: орысшадан сөзбе-сөз аударылған (калька) құрылымды қазақтың өз айтылымымен ауыстыр, бірақ оқушы деңгейінен күрделі сөз қоспа.
+Түсіндірмелердегі (why, tip, praise) мысалдар мен атаулар қазақша болсын; түсіндіру тілі: ${lang}. why — бір қысқа сөйлем (ереже атымен: септік, жіктік жалғау, үндестік заңы т.б.). Markdown қолданба.
+
+${KK_STYLE}
 
 Мәтін:
 """${text.slice(0, 2000)}"""`;
 
   try {
     const out = await callGemini([{ role: "user", parts: [{ text: prompt }] }], { schema: SCHEMA, temperature: 0.2, fast: true, thinking: "low" });
-    return Response.json(JSON.parse(out));
+    return Response.json(kkFixDeep(JSON.parse(out)));
   } catch (e) {
     const status = e instanceof GeminiError ? e.status : 500;
     return Response.json({ error: e.message || "AI error" }, { status });

@@ -7,6 +7,8 @@ import TopicArt from "../../components/TopicArt";
 import { ChatCamArt, ChatDisc } from "../../components/ChatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
+import { AqylSays, aqylMood } from "../../components/Aqyl";
+import { aqylL } from "../../components/AqylL10n";
 import Icon from "../../components/Icon";
 import { toWav } from "../../../lib/audio";
 import { sayKk } from "../../../lib/speak";
@@ -132,6 +134,30 @@ function Rich({ text }) {
   return out;
 }
 
+// Жауаптағы **жуан** қазақша сөздер — «тыңдау» түймелері үшін (ең көбі 4)
+const KK_ONLY = /[әғқңөұүһі]/i;
+function kazakhBits(text, explain) {
+  const out = [];
+  for (const m of String(text || "").matchAll(/\*\*([^*\n]{1,40})\*\*/g)) {
+    const w = m[1].replace(/[«»"“”:;,.!?()]/g, "").trim();
+    if (!w || !/[\u0400-\u04FF]/.test(w) || /[A-Za-z]/.test(w)) continue;
+    if (!KK_ONLY.test(w) && explain === "ru") continue; // орысша түсіндірмеде ерекше әріпсіз сөз орысша болуы мүмкін
+    if (w.split(/\s+/).length > 4 || out.includes(w)) continue;
+    out.push(w);
+    if (out.length >= 4) break;
+  }
+  return out;
+}
+const plain = (t) => String(t || "").replace(/\*\*|`|^#+\s*/gm, "").replace(/^\s*\|?[\s:|-]+\|[\s:|-]*$/gm, "").trim();
+function CopyGlyph() {
+  return (
+    <svg className="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="11" height="11" rx="2.5" />
+      <path d="M5 15V6a2 2 0 0 1 2-2h8" />
+    </svg>
+  );
+}
+
 export default function Chat() {
   const { t, lang, state, update, explain, award, lvl, saveWord } = useApp();
   // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
@@ -152,9 +178,38 @@ export default function Chat() {
   const msgs = state.chat || [];
   const pageRef = useRef(null);
 
+  const AL = aqylL(lang);
+  const taRef = useRef(null);
+  const [copied, setCopied] = useState(-1);
+  // Жаңа жауап келгенде Aqyl біраз «сөйлейді» (talking), сосын түсіндіру не қуаныш қалпына өтеді
+  const [talkTick, setTalkTick] = useState(0);
+  const [talking, setTalking] = useState(false);
+  useEffect(() => {
+    if (!talkTick) return undefined;
+    setTalking(true);
+    const tm = setTimeout(() => setTalking(false), 2600);
+    return () => clearTimeout(tm);
+  }, [talkTick]);
+
   // Aqyl-дың көңіл-күйі әңгімеге ілеседі
   const last = msgs[msgs.length - 1];
-  const mood = busy ? "think" : rec === "rec" ? "support" : cam ? "wow" : err ? "support" : last?.kind === "vision" ? "wow" : last?.role === "assistant" ? "happy" : "idle";
+  const rich = last?.role === "assistant" && !last.kind && /(^|\n)\s*(#{1,4}\s|\|.*\||\d+[.)]\s|[-*•]\s)/.test(last.text || "");
+  const aqState = busy ? "thinking" : rec === "rec" ? "listening" : cam ? "looking" : err ? "oops" : talking ? "talking" : rich ? "explaining" : last?.role === "assistant" ? "happy" : "idle";
+  const mood = { thinking: "think", listening: "support", looking: "wow", oops: "support", talking: "happy", explaining: "happy", happy: "happy", idle: "idle" }[aqState];
+  function copy(textIn, i) {
+    try {
+      navigator.clipboard?.writeText(plain(textIn));
+      setCopied(i);
+      setTimeout(() => setCopied((c) => (c === i ? -1 : c)), 1600);
+    } catch {}
+  }
+  // Жазу алаңы мәтінге қарай биіктейді (ең көбі ~5 жол)
+  useEffect(() => {
+    const ta = taRef.current;
+    if (!ta) return;
+    ta.style.height = "auto";
+    ta.style.height = `${Math.min(ta.scrollHeight, 140)}px`;
+  }, [text]);
 
   // Телефон пернетақтасы ашылғанда чат көрінетін биіктікке сыйсын
   useEffect(() => {
@@ -187,6 +242,7 @@ export default function Chat() {
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
       update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", text: d.text }].slice(-40) }));
+      setTalkTick((n) => n + 1);
       award(2, 1);
     } catch (e) {
       setErr(e.message || t.errGeneric);
@@ -251,6 +307,7 @@ export default function Chat() {
       const text = d.found ? `${d.kk} — ${d.translation}.${d.example_kk ? ` ${d.example_kk}` : ""}` : d.translation || vl.none;
       const v = d.found ? { kk: d.kk, translit: d.translit, translation: d.translation, example_kk: d.example_kk, example_tr: d.example_tr, tip: d.tip } : null;
       update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", kind: v ? "vision" : undefined, v, text }].slice(-40) }));
+      setTalkTick((n) => n + 1);
       award(2, 1);
     } catch (e) {
       setErr(e.message || t.errGeneric);
@@ -301,79 +358,123 @@ export default function Chat() {
   }
 
   const empty = msgs.length === 0;
+  const prompts = [...(t.chatSuggest || []), ...AL.chat.more];
+  const status = AL.chat[aqState] || AL.chat.idle;
+  const lastBot = (() => { for (let k = msgs.length - 1; k >= 0; k--) if (msgs[k].role === "assistant") return k; return -1; })();
+
+  const camBtn = (cls, withLabel) => (
+    <button type="button" className={cls} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-pressed={cam} aria-label={vl.cam} title={vl.cam}>
+      <Icon name="camera" size={withLabel ? 18 : 20} /> {withLabel && <span>{vl.cam}</span>}
+    </button>
+  );
+
   return (
-    <div className={`chat-page cx ${empty ? "is-empty" : ""}`} data-mood={mood} ref={pageRef}>
-      <section className="card chat">
-        <header ref={gHead} className="chat-head">
+    <div className={`chat-page cx ${empty ? "is-empty" : ""}`} data-mood={mood} data-aq={aqState} ref={pageRef}>
+      {/* ── Aqyl-дың сахнасы: кейіпкер, көңіл-күйі, ұсыныстар ── */}
+      <aside ref={gHead} className="cx-stage" aria-label="Aqyl">
+        <div className="cx-stage-head">
+          <span className="cx-kicker">Aqyl · {AL.chat.role}</span>
+          <h1>{t.chatTitle}</h1>
+          <p className="cx-sub">{t.chatSub}</p>
+        </div>
+        <div className="cx-hero">
+          <p className="cx-status" role="status" aria-live="polite"><span key={aqState}>{status}</span></p>
           <div className="cx-aq">
             <ChatDisc />
             <span className="cx-halo" aria-hidden="true" />
             <span className="cx-wow" aria-hidden="true"><i /><i /><i /></span>
-            <Qyran mood={mood} size={150} />
+            <Qyran mood={aqylMood(aqState === "listening" ? "support" : aqState === "looking" ? "wow" : aqState === "oops" ? "support" : aqState)} size={180} />
           </div>
-          <div className="cx-title">
-            <h1>{t.chatTitle}</h1>
-            <p className="muted small">{t.chatSub}</p>
+        </div>
+        <div className="cx-topics">
+          <b className="cx-topics-t">{AL.chat.tryAsk}</b>
+          <div className="cx-topics-list">
+            {prompts.map((q) => (
+              <button key={q} type="button" className="cx-topic" onClick={() => send(q)} disabled={busy}>
+                <span>{q}</span>
+                <Icon name="right" size={16} />
+              </button>
+            ))}
           </div>
+        </div>
+        <div className="cx-stage-tools">
+          {camBtn("cx-side-cam", true)}
           {msgs.length > 0 && (
-            <button className="icon-btn cx-clear" title={t.chatClear} aria-label={t.chatClear} onClick={() => update((s) => ({ ...s, chat: [] }))}>
+            <button type="button" className="cx-clear" title={t.chatClear} aria-label={t.chatClear} onClick={() => update((s) => ({ ...s, chat: [] }))}>
               <Icon name="refresh" size={18} />
             </button>
           )}
-          <button type="button" className="cx-side-cam" onClick={() => (cam ? stopCam() : openCam())} disabled={busy}>
-            <Icon name="camera" size={18} /> {vl.cam}
-          </button>
-          <div className="cx-prov"><NatEmpty art="dombyra" size={64} lang={lang} proverb /></div>
-        </header>
+        </div>
+      </aside>
 
+      {/* ── Әңгіме ── */}
+      <section className="chat" aria-label={t.chatTitle}>
         <div className="chat-list" ref={listRef}>
-          <div className="msg bot cx-hi">
-            <span className="msg-av">
-              <Qyran size={34} />
-            </span>
-            <div className="msg-b">{t.chatHi}</div>
+          <div className="cx-welcome">
+            <AqylSays mood={empty ? "talking" : "happy"} size={72} title="Aqyl">
+              <p>{t.chatHi}</p>
+            </AqylSays>
           </div>
           {empty && !cam && (
-            <div className="suggest cx-starts">
+            <div className="cx-starts">
               <button type="button" className="cx-start cx-start-cam" onClick={openCam}>
-                <ChatCamArt size={60} />
-                <span className="cx-start-t"><Icon name="camera" size={16} /> {vl.cam}</span>
+                <ChatCamArt size={56} />
+                <span className="cx-start-t">{vl.cam}</span>
                 <Icon name="right" size={18} className="cx-start-go" />
               </button>
-              {t.chatSuggest.map((s, k) => (
-                <button key={s} type="button" className="cx-start" onClick={() => send(s)} style={{ "--d": `${(k + 1) * 70}ms` }}>
-                  <TopicArt topic={START_ART[k % START_ART.length]} size={48} />
-                  <span className="cx-start-t">{s}</span>
+              {(t.chatSuggest || []).map((q, k) => (
+                <button key={q} type="button" className="cx-start" onClick={() => send(q)} style={{ "--d": `${(k + 1) * 70}ms` }}>
+                  <TopicArt topic={START_ART[k % START_ART.length]} size={44} />
+                  <span className="cx-start-t">{q}</span>
                 </button>
               ))}
             </div>
           )}
-          {empty && <div className="chat-empty cx-prov-m"><NatEmpty art="dombyra" size={64} lang={lang} proverb /></div>}
-          {msgs.map((m, i) => (
-            <div key={i} className={`msg ${m.role === "user" ? "me" : "bot"} cx-in${m.kind ? ` is-${m.kind}` : ""}`}>
-              {m.role !== "user" && (
-                <span className="msg-av">
-                  <Qyran size={34} mood={m.kind === "vision" ? "wow" : "idle"} />
-                </span>
-              )}
-              {m.kind === "photo" ? (
-                <div className="msg-b msg-photo">
-                  {imgs[m.id] ? <img src={imgs[m.id]} alt={vl.photo} /> : <span className="vz-gone"><Icon name="camera" size={18} /> {vl.gone}</span>}
-                  <span>{m.text}</span>
-                </div>
-              ) : m.kind === "vision" && m.v ? (
-                <div className="msg-b msg-vision"><VisionCard v={m.v} t={t} saved={!!state.vision?.some((z) => z.kk === m.v.kk)} onSave={() => keep(m.v)} /></div>
-              ) : (
-                <div className="msg-b">{m.role === "user" ? m.text : <Rich text={m.text} />}</div>
-              )}
-            </div>
-          ))}
+          {empty && <div className="chat-empty cx-prov-m"><NatEmpty art="dombyra" size={56} lang={lang} proverb /></div>}
+          {msgs.map((m, i) => {
+            const bot = m.role !== "user";
+            const isLast = i === lastBot;
+            const kkWords = bot && !m.kind ? kazakhBits(m.text, explain) : [];
+            return (
+              <div key={i} className={`msg ${bot ? "bot" : "me"} cx-in${m.kind ? ` is-${m.kind}` : ""}${isLast ? " is-last" : ""}`}>
+                {bot && (
+                  <span className="msg-av" aria-hidden="true">
+                    <Qyran size={40} mood={isLast ? aqylMood(aqState === "thinking" ? "happy" : aqState === "talking" ? "talking" : aqState === "explaining" ? "explaining" : "happy") : m.kind === "vision" ? "wow" : "idle"} />
+                  </span>
+                )}
+                {m.kind === "photo" ? (
+                  <div className="msg-b msg-photo">
+                    {imgs[m.id] ? <img src={imgs[m.id]} alt={vl.photo} /> : <span className="vz-gone"><Icon name="camera" size={18} /> {vl.gone}</span>}
+                    <span>{m.text}</span>
+                  </div>
+                ) : m.kind === "vision" && m.v ? (
+                  <div className="msg-b msg-vision"><VisionCard v={m.v} t={t} saved={!!state.vision?.some((z) => z.kk === m.v.kk)} onSave={() => keep(m.v)} /></div>
+                ) : bot ? (
+                  <div className="msg-col">
+                    <div className="msg-b"><Rich text={m.text} /></div>
+                    <div className="msg-acts">
+                      {kkWords.map((w) => (
+                        <button key={w} type="button" className="cx-say" onClick={() => sayKk(w)} lang="kk" aria-label={`${AL.chat.listen}: ${w}`}>
+                          <Icon name="volume" size={14} /> {w}
+                        </button>
+                      ))}
+                      <button type="button" className={`cx-copy ${copied === i ? "on" : ""}`} onClick={() => copy(m.text, i)} aria-label={AL.chat.copy}>
+                        {copied === i ? <Icon name="check" size={14} /> : <CopyGlyph />} <span>{copied === i ? AL.chat.copied : AL.chat.copy}</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="msg-b">{m.text}</div>
+                )}
+              </div>
+            );
+          })}
           {busy && (
             <div className="msg bot cx-in cx-wait">
-              <span className="msg-av">
-                <Qyran mood="think" size={34} />
+              <span className="msg-av" aria-hidden="true">
+                <Qyran mood="think" size={40} />
               </span>
-              <div className="msg-b typing">
+              <div className="msg-b typing" aria-label={AL.chat.thinking}>
                 <i />
                 <i />
                 <i />
@@ -400,6 +501,14 @@ export default function Chat() {
           </div>
         )}
 
+        {!empty && !cam && (
+          <div className="cx-chips" role="group" aria-label={AL.chat.tryAsk}>
+            {prompts.map((q) => (
+              <button key={q} type="button" className="cx-chip" onClick={() => send(q)} disabled={busy}>{q}</button>
+            ))}
+          </div>
+        )}
+
         <form
           className={`composer ${rec === "rec" ? "is-rec" : ""} ${rec === "busy" ? "is-stt" : ""}`}
           onSubmit={(e) => {
@@ -408,15 +517,14 @@ export default function Chat() {
           }}
         >
           <div className="cx-tools">
-            <button type="button" className={`btn ghost mic-mini cx-tool ${cam ? "on" : ""}`} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-label={vl.cam} title={vl.cam} aria-pressed={cam}>
-              <Icon name="camera" size={20} />
-            </button>
-            <button type="button" className={`btn ghost mic-mini cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic" aria-pressed={rec === "rec"}>
+            {camBtn(`cx-tool ${cam ? "on" : ""}`, false)}
+            <button type="button" className={`cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic" aria-pressed={rec === "rec"}>
               <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
             </button>
           </div>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
           <textarea
+            ref={taRef}
             className="input"
             rows={1}
             value={text}
@@ -428,9 +536,11 @@ export default function Chat() {
               }
             }}
             placeholder={t.chatPh}
+            aria-label={t.chatPh}
             maxLength={1500}
+            enterKeyHint="send"
           />
-          <button className="btn blue cx-send" disabled={busy || !text.trim()} aria-label={t.send}>
+          <button className="cx-send" disabled={busy || !text.trim()} aria-label={t.send}>
             <Icon name="send" size={20} />
           </button>
         </form>

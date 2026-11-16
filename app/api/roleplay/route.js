@@ -1,6 +1,6 @@
 // «VR Әлем» еркін сөйлесу: Aqyl жағдаяттағы кейіпкердің рөлін ойнайды (тек қазақша, деңгейге сай),
 // оқушы қателессе — соңында «✎ » деп басталатын бір қысқа түзету жолы (түсіндіру тілінде).
-import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
+import { callGemini, GeminiError, LANG_NAMES, KK_STYLE, tidy } from "../../../lib/gemini";
 import { PLACES, SCENES } from "../../../lib/vr/scenes";
 
 export const maxDuration = 60;
@@ -31,7 +31,10 @@ Rules:
 - If the learner writes in another language, reply in role in simple Kazakh, and in the ✎ line show how to say their message in Kazakh.
 - Never break character except in the ✎ line. Do not say you are an AI. No grammar lectures, no translations of your own lines, no transliteration, no emoji, no markdown.
 - If the learner brings up unsafe, sexual, violent, hateful or otherwise inappropriate topics, decline politely in character in simple Kazakh and steer back to the situation. Children use this site; always be kind and respectful.
-- When the scene starts, greet the learner in role and open the situation with one question.`;
+- When the scene starts, greet the learner in role and open the situation with one question.
+- Sound like a real person in Kazakhstan: natural everyday Kazakh with polite forms (Сіз, Қайырлы күн, Рақмет, Кешіріңіз) where the situation calls for them.
+
+${KK_STYLE}`;
 }
 
 export async function POST(req) {
@@ -69,10 +72,7 @@ export async function POST(req) {
       maxTokens: 600,
       perCallMs: 14_000,
     });
-    const text = String(raw || "")
-      .replace(/\*\*|__|`/g, "")
-      .replace(/^\s*[-*]\s+/gm, "")
-      .trim();
+    const text = tidy(String(raw || ""), { markdown: false });
     if (!text) return Response.json({ error: "Empty reply" }, { status: 502 });
     return Response.json({ text });
   } catch (e) {

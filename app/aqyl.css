@@ -56,3 +56,143 @@
   .qyran.aq .bk-eyes, .qyran.aq .aq-uki, .qyran.aq .bk-arm-l, .qyran.aq .bk-arm-r, .qyran.aq .aq-dots > *,
   .qyran.aq .aq-confetti > *, .qyran.aq .bk-zzz path { animation: none !important; }
 }
+
+/* talk: тұмсық ашылып-жабылады (сөйлеп тұр) */
+.qyran.aq .aq-talk-o { animation: aqTalkO 0.52s steps(1, end) infinite; }
+.qyran.aq .aq-talk-c { opacity: 0; animation: aqTalkC 0.52s steps(1, end) infinite; }
+@keyframes aqTalkO { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes aqTalkC { 0% { opacity: 0; } 50% { opacity: 1; } }
+/* explain: көтерілген қанат ақырын «көрсетеді», идея жұлдызшалары жыпылықтайды */
+.qyran.aq.bk-explain .bk-arm-r { animation: aqPoint 1.8s ease-in-out infinite; }
+@keyframes aqPoint { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-9deg); } }
+.qyran.aq .aq-idea > * { animation: aqDot 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 50%; }
+.qyran.aq .aq-idea > :nth-child(2) { animation-delay: 0.3s; }
+.qyran.aq .aq-idea > :nth-child(3) { animation-delay: 0.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .qyran.aq .aq-talk-o { animation: none !important; opacity: 0; }
+  .qyran.aq .aq-talk-c { animation: none !important; opacity: 1; }
+  .qyran.aq .aq-idea > * { animation: none !important; }
+}
+
+/* ═════ Aqyl — мұғалім-кейіпкер компоненттері (Aqyl.js, AqylExplain.js, AqylGuide.js) ═════
+   Әдебиет қағаз стилі: кілегей қағаз, жіңішке алтын жиек, бір екпін. Қате — шарап түсі (#6E1E2E), қызыл емес. */
+.aq-says {
+  --aq-paper: #fffdf7; --aq-rim: rgba(122, 86, 22, 0.22); --aq-ink: #1f2430; --aq-muted: #4a5160;
+  --aq-red: #b8322a; --aq-red-d: #8a2018; --aq-gold: #e0a526; --aq-gold-soft: #f6e3b0;
+  display: flex; align-items: flex-end; gap: 10px; min-width: 0; text-align: start; color: var(--aq-ink);
+}
+.aq-says-av { flex: none; display: grid; place-items: end center; line-height: 0; }
+.aq-says-av .qyran { display: block; height: auto; }
+.aq-says-b {
+  position: relative; flex: 1; min-width: 0; display: grid; gap: 6px;
+  padding: 12px 16px 14px; border-radius: 18px; border-end-start-radius: 6px;
+  background: var(--aq-paper); box-shadow: inset 0 0 0 1px var(--aq-rim), 0 1px 2px rgba(60, 40, 10, 0.06), 0 10px 24px -18px rgba(60, 40, 10, 0.35);
+  font-size: 15.5px; line-height: 1.5;
+}
+/* сөз бұлтының «құйрығы» Aqyl-ға қарайды */
+.aq-says-b::before {
+  content: ""; position: absolute; bottom: 10px; inset-inline-start: -7px; width: 14px; height: 14px;
+  background: inherit; transform: rotate(45deg); box-shadow: -1px 1px 0 var(--aq-rim);
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+[dir="rtl"] .aq-says-b::before { box-shadow: 1px 1px 0 var(--aq-rim); clip-path: polygon(100% 0, 0 100%, 100% 100%); }
+.aq-says-b p { margin: 0; }
+.aq-says-t { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--aq-red-d); }
+.aq-says-t::before { content: ""; width: 18px; height: 3px; border-radius: 3px; background: var(--aq-gold); }
+.aq-says-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.aq-says.tone-gold .aq-says-b { background: #fff8e6; box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.55), 0 10px 24px -18px rgba(60, 40, 10, 0.35); }
+.aq-says.tone-ok .aq-says-b { background: #eef5f0; box-shadow: inset 0 0 0 1.5px rgba(47, 107, 79, 0.35); }
+.aq-says.tone-bad .aq-says-b { background: #f3e3e6; box-shadow: none; outline: 1.5px dashed #6e1e2e; outline-offset: -1.5px; }
+.aq-says.tone-bad .aq-says-b::before { box-shadow: none; }
+.aq-says.tone-bad .aq-says-t { color: #6e1e2e; }
+
+.aq-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 0 16px;
+  border: 0; border-radius: 12px; background: var(--aq-red, #b8322a); color: #fffdf7; box-shadow: 0 2px 0 var(--aq-red-d, #8a2018);
+  font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer; transition: transform 0.15s;
+}
+.aq-btn:hover:not(:disabled) { background: #a32a23; }
+.aq-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.aq-btn:disabled { opacity: 0.6; cursor: default; }
+.aq-btn:focus-visible { outline: 3px solid var(--aq-gold, #e0a526); outline-offset: 2px; }
+.aq-btn.ghost { background: transparent; color: var(--aq-ink, #1f2430); box-shadow: inset 0 0 0 1.5px var(--aq-rim, rgba(122, 86, 22, 0.22)); }
+.aq-btn.ghost:hover { background: rgba(244, 236, 218, 0.7); }
+
+.aq-ex-word { font-size: 17px; }
+.aq-ex-word b { font-size: 19px; color: var(--aq-red-d); }
+.aq-ex-line { color: var(--aq-ink); }
+.aq-forms { list-style: none; margin: 2px 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.aq-form {
+  display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 8px; min-height: 44px; padding: 6px 12px;
+  border: 0; border-radius: 12px; background: var(--aq-paper); box-shadow: inset 0 0 0 1px var(--aq-rim); color: var(--aq-ink);
+  font: inherit; text-align: start; cursor: pointer;
+}
+.aq-form b { font-size: 16px; }
+.aq-form small { grid-column: 1; font-size: 12.5px; color: var(--aq-muted); line-height: 1.25; }
+.aq-form .ic { grid-row: 1 / span 2; grid-column: 2; color: #0f5e7a; }
+.aq-form:hover { box-shadow: inset 0 0 0 1.5px #0f5e7a; }
+.aq-letters { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 14.5px; color: var(--aq-muted); }
+.aq-letters li { position: relative; padding-inline-start: 16px; }
+.aq-letters li::before { content: ""; position: absolute; inset-inline-start: 2px; top: 0.6em; width: 6px; height: 6px; background: var(--aq-gold); transform: rotate(45deg); border-radius: 1px; }
+.aq-ai { padding-inline-start: 12px; border-inline-start: 3px solid var(--aq-gold); color: var(--aq-ink); white-space: pre-line; }
+.aq-ai-busy, .aq-ai-err { color: var(--aq-muted); display: flex; align-items: center; gap: 8px; }
+.aq-dots { display: inline-flex; gap: 4px; }
+.aq-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--aq-red); animation: aqBead 1.1s ease-in-out infinite; }
+.aq-dots i:nth-child(2) { background: var(--aq-gold); animation-delay: 0.15s; }
+.aq-dots i:nth-child(3) { background: #0f5e7a; animation-delay: 0.3s; }
+@keyframes aqBead { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+.aq-says.is-compact .aq-says-b { padding: 10px 14px 12px; font-size: 15px; }
+
+/* ── Мақтау сәті: бұрышта, бөгемейді ── */
+.aq-praise-slot { position: fixed; z-index: 150; inset-inline-end: 18px; bottom: 22px; pointer-events: none; }
+.aq-praise {
+  display: flex; align-items: center; gap: 8px; max-width: min(340px, calc(100vw - 32px)); padding: 6px 16px 6px 6px;
+  border-radius: 20px; background: #fffdf7; color: #1f2430;
+  box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.6), 0 2px 4px rgba(60, 40, 10, 0.07), 0 22px 44px -24px rgba(60, 40, 10, 0.45);
+  animation: aqPraise 2.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.aq-praise-av { flex: none; line-height: 0; margin-top: -18px; }
+.aq-praise-t { display: grid; gap: 2px; font-weight: 700; font-size: 15px; line-height: 1.35; }
+.aq-praise-badge { justify-self: start; padding: 1px 8px; border-radius: 99px; background: #f6e3b0; color: #6b4a06; font-size: 13px; }
+@keyframes aqPraise {
+  0% { opacity: 0; transform: translateY(16px) scale(0.92); }
+  10%, 86% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(8px); }
+}
+@media (max-width: 960px) { .aq-praise-slot { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); inset-inline-end: 12px; } }
+
+/* ── Басты бет: Aqyl кеңесі ── */
+.aq-guide {
+  display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding: 14px 20px 14px 14px; padding-inline: 14px 20px;
+  border-radius: 24px; background: #fffdf7; box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.22), 0 1px 2px rgba(60, 40, 10, 0.06), 0 10px 24px -18px rgba(60, 40, 10, 0.35);
+}
+.aq-guide .aq-says { flex: 1 1 340px; }
+.aq-guide .aq-says-b { background: #f8f1e1; box-shadow: none; }
+.aq-guide-say { font-size: 16.5px; font-weight: 600; line-height: 1.45; }
+.aq-guide-go { flex: none; display: inline-flex; align-items: center; gap: 8px; }
+[dir="rtl"] .aq-guide-arrow { transform: scaleX(-1); }
+@media (max-width: 640px) {
+  .aq-guide { padding: 12px; border-radius: 20px; }
+  .aq-guide .aq-says-av .qyran { width: 64px; }
+  .aq-guide-say { font-size: 15.5px; }
+  .aq-guide-go { width: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aq-praise { animation: none; }
+  .aq-dots i { animation: none; }
+}
+
+/* ── Тест (Quiz.js): Aqyl түсіндірмесі мен мақтауы ── */
+.quiz-aqyl { margin-top: 12px; }
+.quiz-praise { margin: 4px 0 0; max-width: 34ch; text-align: center; font-weight: 600; color: var(--muted, #4a5160); line-height: 1.45; }
+.aq-forms { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.aq-form { width: 100%; }
+@media (max-width: 560px) {
+  .aq-says.aq-explain { flex-direction: column; align-items: stretch; gap: 0; }
+  .aq-says.aq-explain .aq-says-av { align-self: flex-start; margin: 0 0 -8px; margin-inline-start: 14px; position: relative; z-index: 1; }
+  .aq-says.aq-explain .aq-says-av .qyran { width: 58px; }
+  .aq-says.aq-explain .aq-says-b { border-radius: 18px; border-start-start-radius: 6px; }
+  .aq-says.aq-explain .aq-says-b::before { display: none; }
+}

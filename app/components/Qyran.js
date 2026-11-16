@@ -1,6 +1,7 @@
 // Aqyl — «Qyzyl til» кейіпкері: жас алтын қыран (бүркіт), алдынан қарап, бұтақта отыр.
 // Киіз-аппликация стилі: тегіс қабаттар, ою-өрнекті қызыл орамал (қошқар мүйіз), басында үкі.
-// mood: idle | happy | think | wow | support | cheer | sleep
+// mood: idle | happy | think | wow | support | cheer | sleep | talk (сөйлеп тұр) | explain (қанатымен көрсетіп түсіндіреді)
+// Семантикалық атаулар да қабылданады: thinking → think, talking → talk, explaining → explain.
 import { useId } from "react";
 import { useSkin } from "../../lib/skin";
 import { AnimalArt } from "./Animals";
@@ -74,31 +75,37 @@ function Eye({ cx, cy, mood, side, look, lid }) {
   );
 }
 
-export default function Qyran({ mood = "idle", size = 160, className = "", title = "Aqyl", skin: skinProp }) {
+const ALIAS = { thinking: "think", talking: "talk", explaining: "explain", praise: "cheer" };
+// Басқа кейіпкерлерде (Animals) жоқ қалыптар — ең жақын қалыпқа
+const ANIMAL_MOOD = { talk: "happy", explain: "support" };
+
+export default function Qyran({ mood: moodIn = "idle", size = 160, className = "", title = "Aqyl", skin: skinProp }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const cur = useSkin();
   const skin = skinProp || cur;
+  const mood = ALIAS[moodIn] || moodIn;
   if (skin !== "eagle") {
+    const am = ANIMAL_MOOD[mood] || mood;
     return (
-      <svg className={`qyran bk-${mood} ${className}`} viewBox="0 0 200 230" width={size} height={(size * 230) / 200} role="img" aria-label={title}>
+      <svg className={`qyran bk-${am} ${className}`} viewBox="0 0 200 230" width={size} height={(size * 230) / 200} role="img" aria-label={title}>
         <ellipse className="bk-shadow" cx="100" cy="226" rx="56" ry="5" fill="#2a1708" opacity=".16" />
         <g className="bk-float">
-          <AnimalArt id={skin} mood={mood} uid={uid} />
+          <AnimalArt id={skin} mood={am} uid={uid} />
         </g>
-        {mood === "think" && (
+        {am === "think" && (
           <g className="bk-fx">
             <circle cx="170" cy="30" r="4.5" fill="#fff" stroke="#e0b56a" strokeWidth="2" />
             <circle cx="180" cy="14" r="9" fill="#fff" stroke="#e0b56a" strokeWidth="2" />
             <text x="180" y="19" textAnchor="middle" fontSize="13" fontWeight="800" fill="#a8601b">?</text>
           </g>
         )}
-        {(mood === "wow" || mood === "cheer") && (
+        {(am === "wow" || am === "cheer") && (
           <g className="bk-fx bk-sparkle" fill="#ffc83d">
             <path d="M24 70 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" />
             <path d="M172 24 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" />
           </g>
         )}
-        {mood === "sleep" && (
+        {am === "sleep" && (
           <g className="bk-fx bk-zzz" fill="#a8601b" fontWeight="800">
             <text x="150" y="36" fontSize="18">z</text><text x="164" y="20" fontSize="14">z</text>
           </g>
@@ -116,6 +123,8 @@ export default function Qyran({ mood = "idle", size = 160, className = "", title
     support: { l: 4, r: -48, look: { x: 0, y: 1.6 }, lid: 4, beak: "smile", blush: true },
     cheer: { l: 140, r: 140, look: { x: 0, y: 0 }, lid: 0, beak: "open", blush: true },
     sleep: { l: 0, r: 0, look: { x: 0, y: 0 }, lid: 0, beak: "closed", blush: false },
+    talk: { l: 4, r: 4, look: { x: 0.5, y: 0.8 }, lid: 0, beak: "talk", blush: true },
+    explain: { l: 4, r: 112, look: { x: 3.4, y: -1.6 }, lid: 0, beak: "talk", blush: false },
   }[mood] || null;
   const p = P || { l: 4, r: 4, look: { x: 0, y: 0 }, lid: 0, beak: "smile", blush: false };
   const EL = { x: 80, y: 60 }, ER = { x: 120, y: 60 };
@@ -129,6 +138,8 @@ export default function Qyran({ mood = "idle", size = 160, className = "", title
     think: [[48, 48], [39, 35]],
     support: [[40, 46], [40, 46]],
     sleep: [[49, 48], [49, 48]],
+    talk: [[43, 44], [43, 44]],
+    explain: [[45, 46], [39, 36]],
   }[mood] || [[49, 46], [49, 46]];
   const brow = (cx, side, [yi, yo]) => {
     const xi = cx - side * 12, xo = cx + side * 15;
@@ -267,6 +278,13 @@ export default function Qyran({ mood = "idle", size = 160, className = "", title
 
           {/* Тұмсық: алтын ілгек, қою ұшы */}
           <g className="aq-beak">
+            {p.beak === "talk" && (
+              <g className="aq-talk-o">
+                <path d="M80 82 Q100 92 120 82 Q118 100 100 106 Q82 100 80 82Z" fill={MOUTH} />
+                <path d="M89 99 Q100 94 111 99 Q106 105 100 106 Q94 105 89 99Z" fill={TONGUE} />
+              </g>
+            )}
+            {p.beak === "talk" && <path className="aq-talk-c" d="M75 80 Q100 102 125 80" stroke={BEAK_D} strokeWidth="3.2" fill="none" strokeLinecap="round" />}
             {p.beak === "open" && (
               <g>
                 <path d="M77 80 Q100 92 123 80 Q121 104 100 111 Q79 104 77 80Z" fill={MOUTH} />
@@ -312,6 +330,13 @@ export default function Qyran({ mood = "idle", size = 160, className = "", title
           <path d="M22 62 l3.6 9 9 3.6 -9 3.6 -3.6 9 -3.6 -9 -9 -3.6 9 -3.6z" />
           <path d="M176 30 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" />
           <path d="M164 4 l2.2 5.4 5.4 2.2 -5.4 2.2 -2.2 5.4 -2.2 -5.4 -5.4 -2.2 5.4 -2.2z" fill={RED} />
+        </g>
+      )}
+      {mood === "explain" && (
+        <g className="bk-fx aq-idea">
+          <path d="M184 52 l3.2 8 8 3.2 -8 3.2 -3.2 8 -3.2 -8 -8 -3.2 8 -3.2z" fill={GOLD} />
+          <path d="M170 34 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill={RED} />
+          <circle cx="192" cy="34" r="2.6" fill="#0F5E7A" />
         </g>
       )}
       {mood === "cheer" && (

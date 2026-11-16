@@ -1,5 +1,5 @@
 // Aqyl Vision: суреттегі затты тауып, қазақша атауын үйретеді. Сурет сақталмайды.
-import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
+import { callGemini, GeminiError, LANG_NAMES, kkFixDeep } from "../../../lib/gemini";
 
 export const maxDuration = 60;
 
@@ -32,7 +32,8 @@ export async function POST(req) {
   const lang = LANG_NAMES[explain] || LANG_NAMES.ru;
 
   const prompt = `Суреттің ортасындағы негізгі затты тез анықта, қысқа жауап бер.
-Түсіндіру тілі: ${lang}. Қазақша сөздер мен сөйлемдер — кириллицамен, грамматикасы дұрыс, бастауыш деңгейге түсінікті болсын.
+Түсіндіру тілі: ${lang}. Қазақша сөздер мен сөйлемдер — тек кириллицамен (ә ғ қ ң ө ұ ү һ і әріптері дұрыс), қазіргі әдеби тілде, грамматикасы мен үндестігі дұрыс, бастауыш деңгейге түсінікті болсын.
+kk — күнделікті қолданылатын қазақша атауы (орысша сөз емес, мысалы «тоңазытқыш», «холодильник» емес). example_kk — 4–7 сөзден тұратын табиғи сөйлем, етістік соңында.
 Егер суретте адамның беті, құжат немесе жеке ақпарат болса — оны сипаттама, found=false қой.
 Зат анық көрінбесе found=false қойып, translation өрісіне қысқаша «затты жақынырақ түсір» деген кеңес жаз.`;
 
@@ -41,7 +42,8 @@ export async function POST(req) {
       [{ role: "user", parts: [{ text: prompt }, { inline_data: { mime_type: meta.slice(5, meta.indexOf(";")), data: base64 } }] }],
       { schema: SCHEMA, temperature: 0.2, fast: true, thinking: "minimal", mediaResolution: "MEDIA_RESOLUTION_LOW", maxTokens: 400 }
     );
-    const data = JSON.parse(text);
+    const data = kkFixDeep(JSON.parse(text));
+    if (typeof data.kk === "string") data.kk = data.kk.trim().replace(/[.!?]+$/, "");
     return Response.json(data);
   } catch (e) {
     const status = e instanceof GeminiError ? e.status : 500;

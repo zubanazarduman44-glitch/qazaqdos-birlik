@@ -3,11 +3,16 @@
 // Дүкенге (useApp) тәуелді емес: бәрі props арқылы келеді. Логика — lib/lessonPlan.js ішінде.
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Icon from "./Icon";
+import Qyran from "./Qyran";
+import { AqylPraise } from "./Aqyl";
+import { AqylExplainPanel, AqylWhy } from "./AqylExplain";
+import { aqylL } from "./AqylL10n";
 import { sayKk, prefetchKk, stopKk } from "../../lib/speak";
 import {
   buildPlan, checkBuild, checkChoice, explainLang, hashSeed, initMatch, initSession, lessonItems, matchDone, matchTap,
   norm, seededRng, sessionProgress, sessionReducer, sessionResult,
 } from "../../lib/lessonPlan";
+import { LEVELS } from "../../lib/course";
 
 const TXT = {
   close: ["Сабақты жабу", "Закрыть урок", "Close lesson"],
@@ -166,7 +171,7 @@ function usePick(step, { answered, onAnswer, keys, preset }, isRight) {
   const pick = (key) => {
     if (done || picked != null) return;
     setPicked(key);
-    onAnswer(isRight(key));
+    onAnswer(isRight(key), undefined, { picked: key });
   };
   useEffect(() => {
     const list = step.type === "truefalse" ? ["true", "false"] : step.options.map((o) => o.key);
@@ -345,7 +350,8 @@ function BuildStep({ step, T, answered, onAnswer, keys, preset }) {
   const take = (id) => { if (!done) setPlaced((p) => p.filter((x) => x !== id)); };
   const check = () => {
     if (done || !ready) return;
-    onAnswer(checkBuild(placed.map((id) => by[id].ch), step.answer, step.mode));
+    const parts = placed.map((id) => by[id].ch);
+    onAnswer(checkBuild(parts, step.answer, step.mode), undefined, { built: parts.join(letters ? "" : " ") });
   };
   useEffect(() => {
     keys.current = {
@@ -397,8 +403,10 @@ function BuildStep({ step, T, answered, onAnswer, keys, preset }) {
 const STEPS = { choose: ChooseStep, listen: ListenStep, truefalse: TrueFalseStep, gap: GapStep, match: MatchStep, build: BuildStep, order: BuildStep };
 
 /* ── Танысу ── */
-function Intro({ item, idx, total, phrases, T, snd, say }) {
+function Intro({ item, idx, total, phrases, T, snd, say, aq }) {
   const err = snd.st === "error" && snd.key.endsWith("|" + item.kk);
+  const [open, setOpen] = useState(false);
+  const AL = aqylL(aq.lang);
   return (
     <div className={`lp-intro ${phrases ? "lp-intro-phrase" : ""}`}>
       <p className="lp-kicker">{phrases ? T("meetPhrases") : T("meetWords")} <span className="lp-kicker-n">{idx + 1} / {total}</span></p>
@@ -410,18 +418,33 @@ function Intro({ item, idx, total, phrases, T, snd, say }) {
         <SayButtons text={item.kk} snd={snd} say={say} T={T} />
         {err && <p className="lp-note" role="status">{T("noSound")}</p>}
       </div>
+      {open ? (
+        <AqylExplainPanel item={item} lang={aq.lang} explain={aq.explain} level={aq.level} topic={aq.topic} kind={aq.kind} onClose={() => setOpen(false)} />
+      ) : (
+        <button type="button" className="lp-aqyl-ask" onClick={() => setOpen(true)} aria-expanded="false">
+          <span className="lp-aqyl-av" aria-hidden="true"><Qyran mood="explain" size={40} /></span>
+          <span>{AL.explains}</span>
+          <Icon name="right" size={18} />
+        </button>
+      )}
     </div>
   );
 }
 
 /* ── Қорытынды ── */
-function Summary({ items, result, phrases, T }) {
+export function praiseFor(pct, lang) {
+  const P = aqylL(lang).praise;
+  return pct >= 100 ? P.perfect : pct >= 80 ? P.great : pct >= 60 ? P.good : P.keep;
+}
+
+function Summary({ items, result, phrases, T, lang }) {
   const pct = result.total ? Math.round((result.right / result.total) * 100) : 100;
   const bad = new Set(result.mistakes);
   return (
     <div className="lp-sum">
       <div className="lp-sum-head">
-        <span className="lp-sum-badge" aria-hidden="true"><Icon name="check" size={30} stroke={3} /></span>
+        <span className="lp-sum-aqyl" aria-hidden="true"><Qyran mood={pct >= 60 ? "cheer" : "support"} size={104} /></span>
+        <p className="lp-sum-praise">{praiseFor(pct, lang)}</p>
         <h2 tabIndex={-1}>{T("done")}</h2>
         <p className="lp-sum-score"><b>{pct}%</b><span>{result.right} / {result.total} · {T("firstTry")}</span></p>
       </div>
@@ -442,7 +465,7 @@ function Summary({ items, result, phrases, T }) {
   );
 }
 
-export default function LessonPlayer({ lesson, lang, explain, onFinish, onClose, debugStep }) {
+export default function LessonPlayer({ lesson, lang, explain, level, onFinish, onClose, debugStep }) {
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
   const T = (k) => TXT[k][li];
   const ex = explainLang(explain);
@@ -465,6 +488,11 @@ export default function LessonPlayer({ lesson, lang, explain, onFinish, onClose,
   const rootRef = useRef(null);
   const ctaRef = useRef(null);
   const [snd, say] = useSpeak();
+  // Aqyl: соңғы жауаптың егжей-тегжейі (қатені түсіндіру үшін) және қатарынан дұрыс жауаптар (мақтау үшін)
+  const [detail, setDetail] = useState(null);
+  const [run, setRun] = useState({ n: 0, cue: 0, text: "" });
+  const AL = aqylL(lang);
+  const aq = { lang, explain, level: level || LEVELS.find((v) => v.units.includes(lesson.topic))?.id || "A1", topic: lesson.topic, kind: lesson.kind };
 
   useEffect(() => {
     if (debug) return undefined;
@@ -481,6 +509,8 @@ export default function LessonPlayer({ lesson, lang, explain, onFinish, onClose,
   useEffect(() => {
     if (s.phase !== "summary" || finished.current || debug) return;
     finished.current = true;
+    // Aqyl есте сақтайды: қате кеткен сөздер басты беттегі кеңеске керек (тек осы браузерде)
+    try { localStorage.setItem("qd_aqyl_weak", JSON.stringify({ at: Date.now(), lesson: lesson.id, words: result.mistakes.slice(0, 12) })); } catch {}
     if (onFinish) onFinish(result);
   }, [s.phase]); // eslint-disable-line
 
@@ -526,7 +556,29 @@ export default function LessonPlayer({ lesson, lang, explain, onFinish, onClose,
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const onAnswer = (correct, wrong) => dispatch({ type: "answer", correct, wrong, seed: Math.random() });
+  const onAnswer = (correct, wrong, info) => {
+    setDetail(info || (wrong ? { wrong } : null));
+    setRun((r) => {
+      const n = correct ? r.n + 1 : 0;
+      const hit = n === 3 || n === 5 || (n > 5 && n % 5 === 0);
+      return hit ? { n, cue: r.cue + 1, text: n >= 5 ? AL.praise.s5 : AL.praise.s3 } : { ...r, n };
+    });
+    dispatch({ type: "answer", correct, wrong, seed: Math.random() });
+  };
+  // Қате жауаптың мәнмәтіні (debug алдын ала орнатылған күйде — бірінші қате нұсқа)
+  const whyCtx = (() => {
+    if (!step || !s.answered || s.answered.correct) return null;
+    const d = detail || {};
+    let picked = d.picked;
+    if (picked == null && presetRef.current === "bad" && step.options) picked = step.options.find((o) => norm(o.key) !== norm(step.answer))?.key;
+    const opt = step.options?.find((o) => o.key === picked);
+    const wl = d.wrong || s.mistakes || [];
+    const wrongPairs = step.type === "match" ? (step.pairs || []).filter((p) => wl.includes(p.kk)).slice(0, 3) : null;
+    return {
+      type: step.type, dir: step.dir, item: step.item || {}, picked, pickedLabel: opt && opt.label !== picked ? opt.label : null,
+      built: d.built, answer: step.answer, shown: step.shown, truth: step.type === "truefalse" ? step.answer : undefined, wrongPairs,
+    };
+  })();
   const prog = sessionProgress(s);
   const Step = step ? STEPS[step.type] : null;
   const fb = s.answered;
@@ -543,9 +595,9 @@ export default function LessonPlayer({ lesson, lang, explain, onFinish, onClose,
       </header>
 
       <div className="lp-stage" ref={stageRef} tabIndex={-1} key={viewKey}>
-        {s.phase === "intro" && items[s.introIdx] && <Intro item={items[s.introIdx]} idx={s.introIdx} total={s.introN} phrases={phrases} T={T} snd={snd} say={say} />}
+        {s.phase === "intro" && items[s.introIdx] && <Intro item={items[s.introIdx]} idx={s.introIdx} total={s.introN} phrases={phrases} T={T} snd={snd} say={say} aq={aq} />}
         {Step && <Step step={step} T={T} answered={s.answered} onAnswer={onAnswer} keys={keys} snd={snd} say={say} preset={presetRef.current} live={!debug} />}
-        {s.phase === "summary" && <Summary items={items} result={result} phrases={phrases} T={T} />}
+        {s.phase === "summary" && <Summary items={items} result={result} phrases={phrases} T={T} lang={lang} />}
       </div>
 
       {s.phase === "intro" && (
@@ -564,7 +616,10 @@ export default function LessonPlayer({ lesson, lang, explain, onFinish, onClose,
       {s.phase === "steps" && fb && (
         <footer className={`lp-foot lp-fb ${fb.correct ? "is-ok" : "is-bad"}`}>
           <div className="lp-fb-body" role="status" aria-live="polite">
-            <span className="lp-fb-ic" aria-hidden="true"><Icon name={fb.correct ? "check" : "x"} size={22} stroke={3} /></span>
+            <span className="lp-fb-ic lp-fb-aqyl" aria-hidden="true">
+              <Qyran mood={fb.correct ? "happy" : "support"} size={52} />
+              <i className="lp-fb-dot"><Icon name={fb.correct ? "check" : "x"} size={14} stroke={3} /></i>
+            </span>
             <div className="lp-fb-txt">
               <b>{fb.correct ? T("right") : step.type === "match" ? T("slips") : T("wrong")}</b>
               {step.item && (
@@ -577,11 +632,13 @@ export default function LessonPlayer({ lesson, lang, explain, onFinish, onClose,
               {!fb.correct && fb.requeued && <p className="lp-fb-note">{T("willReturn")}</p>}
             </div>
           </div>
+          {whyCtx && <AqylWhy ctx={whyCtx} lang={lang} explain={explain} level={aq.level} compact />}
           <button type="button" ref={ctaRef} className="btn primary big lp-cta" onClick={() => dispatch({ type: "continue" })}>
             {T("cont")} <Icon name="right" size={20} />
           </button>
         </footer>
       )}
+      <AqylPraise cue={run.cue} text={run.text} mood="cheer" />
     </section>
   );
 }

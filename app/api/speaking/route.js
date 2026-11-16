@@ -1,5 +1,5 @@
 // Aitylym: дыбыс пен мақсатты фразаны салыстырып, айтылымды бағалайды. Дыбыс сақталмайды.
-import { callGemini, GeminiError, LANG_NAMES } from "../../../lib/gemini";
+import { callGemini, GeminiError, LANG_NAMES, kkFixDeep } from "../../../lib/gemini";
 
 export const maxDuration = 60;
 
@@ -34,14 +34,14 @@ export async function POST(req) {
 2) score — 0-100 ұпай: сөздердің дұрыс айтылуы, ерекше қазақ дыбыстары (ә, ө, ү, ұ, қ, ғ, ң, һ, і), екпін мен айқындық. Фразаның жартысы айтылмаса 50-ден аспасын; тыныштық/шу болса 0-10.
 3) tips — ең маңызды 1-3 нақты кеңес (қай сөз, қай дыбыс қате болды).
 4) verdict — бір қысқа мейірімді баға.
-Кеңестер мен баға ${lang} жазылсын, қазақша сөздер — кириллицамен.`;
+Кеңестер мен баға ${lang} жазылсын, қысқа әрі мейірімді болсын; қазақша сөздер мен дыбыстар — тек кириллицамен (ә ғ қ ң ө ұ ү һ і әріптерін дұрыс жаз, латын әрпін араластырма). Markdown қолданба.`;
 
   try {
     const text = await callGemini(
       [{ role: "user", parts: [{ text: prompt }, { inline_data: { mime_type: mime, data: audio } }] }],
       { schema: SCHEMA, temperature: 0.1, fast: false, thinking: "low", maxTokens: 600 }
     );
-    const d = JSON.parse(text);
+    const d = kkFixDeep(JSON.parse(text));
     d.score = Math.max(0, Math.min(100, Math.round(Number(d.score) || 0)));
     return Response.json(d);
   } catch (e) {

@@ -4,7 +4,7 @@
    ════════════════════════════════════════════════════════════════════ */
 .lp {
   --lp-ok-soft: color-mix(in srgb, var(--ok, #2f6b4f) 12%, var(--surface, #fffdf7));
-  --lp-bad-soft: color-mix(in srgb, var(--qyzyl, #a63a2b) 9%, var(--surface, #fffdf7));
+  --lp-bad-soft: #f3e3e6;
   --lp-kok-soft: color-mix(in srgb, var(--kok, #0f5e7a) 9%, var(--surface, #fffdf7));
   display: flex; flex-direction: column; gap: 20px;
   width: 100%; max-width: 640px; margin: 0 auto; padding: 4px 0 8px;
@@ -102,8 +102,8 @@
 .lp-opt.is-right { background: var(--ok); color: #fff; box-shadow: 0 2px 0 #1f4a36; animation: lp-pop 0.22s ease-out; }
 .lp-opt.is-right .lp-mark { background: #fff; color: var(--ok); }
 .lp-opt.is-right .lp-key { color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6); }
-.lp-opt.is-wrong { background: var(--lp-bad-soft); color: var(--ink); box-shadow: inset 0 0 0 2.5px var(--qyzyl); }
-.lp-opt.is-wrong .lp-mark { background: var(--qyzyl); color: #fff; }
+.lp-opt.is-wrong { background: var(--lp-bad-soft); color: var(--ink); box-shadow: inset 0 0 0 2.5px #6e1e2e; }
+.lp-opt.is-wrong .lp-mark { background: #6e1e2e; color: #fff; }
 .lp-opt.is-dim { color: var(--faint); box-shadow: inset 0 0 0 1.5px var(--line); }
 @media (hover: hover) and (pointer: fine) { .lp-key { display: grid; } }
 @media (min-width: 560px) {
@@ -150,10 +150,10 @@
 .lp-pair.is-locked { background: var(--lp-ok-soft); color: var(--ok); box-shadow: inset 0 0 0 1.5px var(--ok); animation: lp-pop 0.22s ease-out; }
 .lp-pair .lp-mark { position: absolute; top: -7px; right: -7px; width: 24px; height: 24px; box-shadow: 0 0 0 2px var(--bg); }
 .lp-pair.is-locked .lp-mark { background: var(--ok); color: #fff; }
-.lp-pair.is-miss { background: var(--lp-bad-soft); box-shadow: inset 0 0 0 2.5px var(--qyzyl); animation: lp-shake 0.28s ease-in-out; }
-.lp-pair.is-miss .lp-mark { background: var(--qyzyl); color: #fff; }
+.lp-pair.is-miss { background: var(--lp-bad-soft); box-shadow: inset 0 0 0 2.5px #6e1e2e; animation: lp-shake 0.28s ease-in-out; }
+.lp-pair.is-miss .lp-mark { background: #6e1e2e; color: #fff; }
 .lp-status { margin: 0; min-height: 28px; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.lp-status.is-miss { color: var(--qyzyl); }
+.lp-status.is-miss { color: #6e1e2e; }
 
 .lp-slots {
   position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 76px; padding: 12px;
@@ -166,8 +166,8 @@
 .lp-slots .lp-mark { position: absolute; right: -8px; top: -10px; color: #fff; box-shadow: 0 0 0 2px var(--bg); }
 .lp-slots.is-right { background: var(--lp-ok-soft); box-shadow: inset 0 0 0 2px var(--ok); }
 .lp-slots.is-right .lp-mark { background: var(--ok); }
-.lp-slots.is-wrong { background: var(--lp-bad-soft); box-shadow: inset 0 0 0 2.5px var(--qyzyl); }
-.lp-slots.is-wrong .lp-mark { background: var(--qyzyl); }
+.lp-slots.is-wrong { background: var(--lp-bad-soft); box-shadow: inset 0 0 0 2.5px #6e1e2e; }
+.lp-slots.is-wrong .lp-mark { background: #6e1e2e; }
 .lp-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 4px 0; }
 .lp-chip.is-placed { animation: lp-snap 0.16s ease-out; }
 .lp-chip:disabled.is-placed { color: var(--ink); }
@@ -183,15 +183,15 @@
 .lp .btn:disabled { opacity: 1; background: var(--surface-2); color: var(--faint); box-shadow: inset 0 0 0 1.5px var(--line); cursor: not-allowed; }
 .lp-fb { padding: 16px; border-radius: var(--r); animation: lp-rise 0.18s ease-out; }
 .lp-fb.is-ok { background: var(--lp-ok-soft); box-shadow: inset 0 0 0 1.5px var(--ok); }
-.lp-fb.is-bad { background: var(--lp-bad-soft); box-shadow: inset 0 0 0 1.5px var(--qyzyl); }
+.lp-fb.is-bad { background: var(--lp-bad-soft); box-shadow: inset 0 0 0 1.5px #6e1e2e; }
 .lp-fb-body { display: flex; align-items: flex-start; gap: 12px; }
 .lp-fb-ic { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; color: #fff; }
 .lp-fb.is-ok .lp-fb-ic { background: var(--ok); }
-.lp-fb.is-bad .lp-fb-ic { background: var(--qyzyl); }
+.lp-fb.is-bad .lp-fb-ic { background: #6e1e2e; }
 .lp-fb-txt { min-width: 0; display: grid; gap: 4px; }
 .lp-fb-txt b { font-size: 19px; line-height: 1.3; padding-top: 6px; }
 .lp-fb.is-ok .lp-fb-txt b { color: var(--ok); }
-.lp-fb.is-bad .lp-fb-txt b { color: var(--qyzyl); }
+.lp-fb.is-bad .lp-fb-txt b { color: #6e1e2e; }
 .lp-fb-ans { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; font-size: 17px; }
 .lp-fb-cap { flex-basis: 100%; color: var(--muted); font-size: 16px; }
 .lp-fb-kk { font-weight: 700; overflow-wrap: anywhere; }
@@ -233,3 +233,36 @@
   .lp-stage { gap: 22px; }
   .lp-ask h2 { font-size: 22px; }
 }
+
+/* ── Aqyl мұғалім: танысудағы «Aqyl түсіндіреді», жауаптан кейінгі пікір, қорытындыдағы мақтау ── */
+.lp-aqyl-ask {
+  align-self: center; display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 4px 16px 4px 6px; padding-inline: 6px 16px;
+  border: 0; border-radius: 999px; background: #fff8e6; color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.55); font-size: 16px; font-weight: 700;
+}
+.lp-aqyl-ask:hover { box-shadow: inset 0 0 0 2px var(--altyn, #e0a526); }
+.lp-aqyl-ask:focus-visible { outline: 3px solid var(--kok, #0f5e7a); outline-offset: 2px; }
+.lp-aqyl-av { width: 44px; height: 44px; border-radius: 50%; background: #f6e3b0; display: grid; place-items: end center; overflow: hidden; line-height: 0; }
+.lp-aqyl-av .qyran { width: 42px; height: auto; margin-bottom: -3px; }
+[dir="rtl"] .lp-aqyl-ask .ic:last-child { transform: scaleX(-1); }
+.lp-intro .aq-explain { margin-top: 4px; }
+
+.lp-fb .lp-fb-aqyl { position: relative; width: 56px; height: 56px; background: none !important; border-radius: 0; place-items: end center; line-height: 0; }
+.lp-fb-aqyl .qyran { width: 56px; height: auto; }
+.lp-fb-dot { position: absolute; bottom: -2px; inset-inline-end: -4px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: #fff; box-shadow: 0 0 0 2px var(--surface, #fffdf7); }
+.lp-fb.is-ok .lp-fb-dot { background: var(--ok, #2f6b4f); }
+.lp-fb.is-bad .lp-fb-dot { background: #6e1e2e; }
+/* Қате — шарап түсі, үзік жиек (брендтің қызылы емес) */
+.lp-fb.is-bad { background: #f3e3e6; box-shadow: none; outline: 1.5px dashed #6e1e2e; outline-offset: -1.5px; }
+.lp-fb.is-bad .lp-fb-txt b { color: #6e1e2e; }
+.lp-fb .aq-why .aq-says-av { display: none; }
+.lp-fb .aq-why.tone-bad .aq-says-b { background: #fffdf7; outline: 0; box-shadow: inset 0 0 0 1px rgba(110, 30, 46, 0.25); border-radius: 14px; }
+.lp-fb .aq-why .aq-says-b::before { display: none; }
+
+.lp-sum-aqyl { line-height: 0; margin-bottom: -2px; }
+.lp-sum-aqyl .qyran { width: 104px; height: auto; }
+.lp-sum-praise {
+  position: relative; margin: 0 0 4px; max-width: 32ch; padding: 10px 16px; border-radius: 16px;
+  background: #fff8e6; box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.55); font-weight: 700; line-height: 1.4;
+}
+.lp-sum-praise::before { content: ""; position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; background: #fff8e6; transform: rotate(45deg); box-shadow: -1.5px -1.5px 0 rgba(224, 165, 38, 0.55); }

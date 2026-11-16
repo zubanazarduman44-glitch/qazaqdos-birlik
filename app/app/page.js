@@ -18,6 +18,8 @@ import { useAnimGate } from "../components/AnimGate";
 import { REGIONS } from "../../lib/regions";
 import { tr } from "../../lib/wordTools";
 import { L } from "../../lib/i18n";
+import { lessonTitle } from "../../lib/courseIndex";
+import AqylGuide from "../components/AqylGuide";
 
 // Дәстүр карточкасының суреті (TRADITIONS ретімен): киіз үй, қонақжайлылық, Наурыз, домбыра, бүркітші, тұсау кесу, көкпар, шапан
 const TRAD_ART = [
@@ -112,13 +114,19 @@ export default function Home() {
         <TorLesson tor={tor} />
       </section>
 
-      {!state.cefr && (
-        <Link href="/app/level" className="hm-level hm-in" style={{ "--i": 1 }}>
-          <Qyran mood="wow" size={56} />
-          <b>{tx(lang).lvlBanner}</b>
-          <span className="hm-level-go"><Icon name="right" size={18} /></span>
-        </Link>
-      )}
+      {/* ── Aqyl кеңесі: келесі қадам (деңгей тесті, ошақ, қате сөздер, сабақ, VR) ── */}
+      <div className="hm-in" style={{ "--i": 1 }}>
+        <AqylGuide
+          state={state}
+          lang={lang}
+          today={today}
+          todayXp={todayXp}
+          goal={DAILY_GOAL}
+          next={tor.next}
+          nextTitle={tor.next ? lessonTitle(tor.next, lang) : ""}
+          hour={now ? now.getHours() : 12}
+        />
+      </div>
 
       {/* ── 2 · Күн: ошақ, тапсырмалар, есеп ── */}
       <div ref={gDay} className="hm-bento hm-day">
