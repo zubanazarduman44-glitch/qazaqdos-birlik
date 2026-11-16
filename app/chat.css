@@ -51,10 +51,8 @@
   padding: 12px 16px 14px;
   border: 0;
   box-shadow: none;
-  background:
-    var(--oyu-band) top / auto 10px repeat-x,
-    linear-gradient(var(--cx-sand), var(--cx-sand));
-  padding-block-start: 18px;
+  background: var(--cx-sand);
+  padding-block-start: 14px;
   position: relative;
   z-index: 2;
 }
@@ -512,9 +510,7 @@
     text-align: center;
     gap: 14px;
     padding: 38px 22px 22px;
-    background:
-      var(--oyu-band) top / auto 12px repeat-x,
-      linear-gradient(var(--cx-sand), var(--cx-sand));
+    background: var(--cx-sand);
     box-shadow: inset -1px 0 0 var(--cx-rim);
   }
   [dir="rtl"] .cx .chat-head { box-shadow: inset 1px 0 0 var(--cx-rim); }

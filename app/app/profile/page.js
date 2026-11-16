@@ -143,7 +143,6 @@ export default function Profile() {
 
       {/* ── Шежіре беті: тұмар-таңба, есім, деңгей мөрі ── */}
       <section className="pf-hero" aria-labelledby="pf-name">
-        <div className="pf-hero-band" aria-hidden="true" />
         <div className="pf-crest">
           <ProfileTumar avatar={state.profile.avatar} />
         </div>

@@ -1,0 +1,95 @@
+/* ════════════════════════════════════════════════════════════════════
+   Qyzyl til · «Қағаз бен киіз» — ортақ дизайн тілі (Әдебиет бөлімінен алынған)
+   layout.js ішінде shell.css-тен КЕЙІН, rtl.css-тен БҰРЫН қосылады:
+     import "./paper.css";
+   Қағидалар:
+   • Беттер — кілегей қағаз (#fffdf7) + жіңішке алтын жиек + жұмсақ көлеңке.
+   • Бет тақырыбы: белгі (алтын сызықша) → үлкен тақырып → тыныш түсініктеме → құралдар.
+     Астында ою жолағы ЖОҚ — бөлімдер арасы бос орынмен не жіңішке сызықпен бөлінеді.
+   • Ою жолағы тек бүйір мәзір мен жоғарғы жолақты қоршайды.
+   • Бір ғана екпін түсі — бөлім реңі (--sec); қалғаны бейтарап қағаз/киіз.
+   ════════════════════════════════════════════════════════════════════ */
+
+:root, :root[data-theme="light"] {
+  /* Түстер — Әдебиеттің қағаз/киіз палитрасы */
+  --pp-paper: #fffdf7;
+  --pp-felt: #f4ecda;
+  --pp-felt-2: #e6d9bc;
+  --pp-ink: #1f2430;
+  --pp-muted: #4a5160;
+  --pp-gold: #e0a526;
+  --pp-gold-soft: #f6e3b0;
+  --pp-red: #b8322a;
+  --pp-red-d: #8a2018;
+  --pp-wood: #7a4a22;
+  --pp-wood-d: #4f2e14;
+  --pp-rim: rgba(122, 86, 22, 0.22);
+  --pp-hair: rgba(122, 86, 22, 0.16);
+  /* Көлеңкелер: 1 — шағын элемент, 2 — карточка, 3 — көтерілген/hover */
+  --pp-sh-1: 0 1px 2px rgba(60, 40, 10, 0.06), 0 6px 14px -12px rgba(60, 40, 10, 0.4);
+  --pp-sh-2: 0 1px 2px rgba(60, 40, 10, 0.06), 0 10px 24px -18px rgba(60, 40, 10, 0.35);
+  --pp-sh-3: 0 2px 4px rgba(60, 40, 10, 0.07), 0 22px 44px -24px rgba(60, 40, 10, 0.45);
+  /* Радиустар */
+  --pp-r-xs: 10px; --pp-r-sm: 12px; --pp-r: 18px; --pp-r-lg: 24px;
+  /* Ырғақ */
+  --pp-gap: 22px; --pp-pad: 22px;
+  /* Типография */
+  --pp-h1: clamp(30px, 4.2vw, 48px);
+  --pp-h2: clamp(17px, 2vw, 21px);
+  --pp-lead: 15.5px;
+  /* Ортақ қағаз беті */
+  --pp-card: inset 0 0 0 1px var(--pp-rim), var(--pp-sh-2);
+}
+
+/* ══════════ Бет тақырыбы: белгі + тақырып + түсініктеме + құралдар ══════════ */
+.page-head {
+  display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap;
+  gap: 14px 24px; margin: 6px 0 26px; padding: 0 2px;
+}
+.page-head::after, .page-head::before { content: none; display: none; }
+.page-head h1 {
+  margin: 2px 0 8px; font-family: var(--head); font-size: var(--pp-h1); line-height: 1.08;
+  letter-spacing: -0.02em; color: var(--pp-ink); text-wrap: balance;
+}
+.page-head p { margin: 0; max-width: 62ch; font-size: var(--pp-lead); line-height: 1.6; color: var(--pp-muted); }
+.page-head .head-tools { gap: 10px; }
+/* Белгі (eyebrow) .kicker — Әдебиеттегі «алтын сызықша + қою анар мәтін» (app.css + qyzyl.css) өзгеріссіз қалады. */
+
+/* ══════════ Қағаз карточка ══════════ */
+.card, .lv-intro, .lv-res, .proverb, .tradition {
+  background: var(--pp-paper); background-image: none;
+  border-radius: var(--pp-r-lg);
+  box-shadow: var(--pp-card);
+}
+.card::after { display: none; }
+.proverb, .tradition { background-image: none; }
+
+/* Бөлім кіріспесі (Tilbil, Tuzel): тыныш қағаз жазба, бір екпін */
+.sec-intro {
+  gap: 16px; margin: 0 0 var(--pp-gap); padding: 18px 22px; border: 0; border-radius: var(--pp-r-lg);
+  background: var(--pp-paper); box-shadow: var(--pp-card);
+}
+.sec-intro-ic { width: 44px; height: 44px; border-radius: var(--pp-r-sm); background: var(--sec-soft, var(--pp-felt)); color: var(--sec-deep, var(--pp-red-d)); }
+.sec-intro-body b { font-weight: 600; font-size: var(--pp-h2); letter-spacing: -0.01em; color: var(--pp-ink); }
+.sec-intro-body p { line-height: 1.6; color: var(--pp-muted); }
+.sec-intro-body li { font-weight: 600; color: var(--pp-ink); }
+.sec-intro-body li svg { color: var(--ok, #2f6b4f); }
+
+/* ══════════ Түймелер: үш өлшем, бір радиус ══════════ */
+.btn { min-height: 44px; border-radius: var(--pp-r-sm); }
+.btn.small { min-height: 44px; border-radius: var(--pp-r-xs); }
+.btn.big { min-height: 54px; border-radius: 14px; }
+.btn.ghost { background: var(--pp-paper); box-shadow: inset 0 0 0 1.5px var(--pp-rim); }
+
+/* ══════════ Бөлім тақырыптары мен бөлгіштер ══════════ */
+.pp-sec { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; font-family: var(--head); font-size: var(--pp-h2); font-weight: 600; color: var(--pp-ink); }
+.pp-sec::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--pp-felt-2) 0 6px, transparent 6px 11px); }
+hr, .pp-hr { height: 0; margin: var(--pp-gap) 0; border: 0; border-top: 1px solid var(--pp-hair); background: none; }
+
+/* Мобиль: тақырып ықшам, құралдар толық ен */
+@media (max-width: 640px) {
+  .page-head { margin: 2px 0 20px; gap: 12px; }
+  .page-head h1 { font-size: clamp(26px, 8vw, 32px); margin-bottom: 6px; }
+  .page-head p { font-size: 15px; }
+  .sec-intro { padding: 14px 16px; border-radius: var(--pp-r); }
+}

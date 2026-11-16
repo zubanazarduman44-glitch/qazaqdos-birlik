@@ -99,10 +99,9 @@ a { color: var(--kok); }
 .badge { background: var(--altyn-soft); color: #5a3d00; }
 .alert { border-radius: var(--r-sm); }
 
-/* ── Бет тақырыбы: бір өлшем, астында жіңішке жиек-ою ── */
+/* ── Бет тақырыбы: бір өлшем (ою жолағы жоқ — paper.css) ── */
 .page-head h1 { font-size: clamp(26px, 3.2vw, 36px); margin: 4px 0 6px; }
 .page-head p { color: var(--muted); max-width: 68ch; }
-.page-head::after { height: 12px; margin-top: 12px; background-size: auto 12px; border-radius: 3px; box-shadow: none; opacity: 0.95; }
 .kicker { color: var(--qyzyl); font-weight: 700; letter-spacing: 0; text-transform: none; }
 
 /* ── Бүйір мәзір: топталған, белсенді бөлімде қошқар мүйіз белгісі ── */

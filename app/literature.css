@@ -4,20 +4,21 @@
    және авторлар уақыт сызығымен). Оқу: ашық кітап — сол жақта мұқабаның
    іші (белгі, атау, Aqyl), оң жақта мәтін беті. Қозғалыс тек transform/opacity.
    ════════════════════════════════════════════════════════════════════ */
+/* Ортақ токендер paper.css-ке көшті (--pp-*); мәндері өзгермеген. */
 .literature.lit-lib, .literature.lit-read {
-  --lit-paper: #fffdf7;
-  --lit-felt: #f4ecda;
-  --lit-felt-2: #e6d9bc;
-  --lit-wood: #7a4a22;
-  --lit-wood-d: #4f2e14;
-  --lit-gold: #e0a526;
-  --lit-gold-soft: #f6e3b0;
-  --lit-red: #b8322a;
-  --lit-red-d: #8a2018;
+  --lit-paper: var(--pp-paper, #fffdf7);
+  --lit-felt: var(--pp-felt, #f4ecda);
+  --lit-felt-2: var(--pp-felt-2, #e6d9bc);
+  --lit-wood: var(--pp-wood, #7a4a22);
+  --lit-wood-d: var(--pp-wood-d, #4f2e14);
+  --lit-gold: var(--pp-gold, #e0a526);
+  --lit-gold-soft: var(--pp-gold-soft, #f6e3b0);
+  --lit-red: var(--pp-red, #b8322a);
+  --lit-red-d: var(--pp-red-d, #8a2018);
   --lit-blue: #0f5e7a;
   --lit-blue-d: #0a4a61;
-  --lit-ink: #1f2430;
-  --lit-muted: #4a5160;
+  --lit-ink: var(--pp-ink, #1f2430);
+  --lit-muted: var(--pp-muted, #4a5160);
   --lit-stipple: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.6px);
   max-width: 1080px; gap: 22px;
 }

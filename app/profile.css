@@ -29,7 +29,6 @@
     radial-gradient(360px 260px at 100% 100%, rgba(224, 165, 38, 0.13), transparent 70%);
 }
 [dir="rtl"] .pf-hero::before { transform: scaleX(-1); }
-.pf-hero-band { position: absolute; inset: 0 0 auto 0; height: 14px; background: var(--oyu-band, var(--pf-deep)) center / auto 14px repeat-x; }
 .pf-crest { align-self: start; }
 .pf-tumar { display: block; width: 100%; height: auto; max-width: 210px; margin-inline: auto; filter: drop-shadow(0 10px 8px rgba(58, 34, 16, 0.22)); transform-origin: 50% 0; animation: pf-sway 6s ease-in-out infinite; }
 .pf-drop { transform-box: fill-box; transform-origin: 50% 0; animation: pf-swing 3.2s ease-in-out infinite; animation-delay: calc(var(--k) * -0.5s); }

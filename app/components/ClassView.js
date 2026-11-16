@@ -8,7 +8,7 @@ import LangPicker from "./LangPicker";
 import Avatar from "./Avatar";
 import Icon from "./Icon";
 import Qyran from "./Qyran";
-import { ClassBand, ClassMedallion, ClassCushion, ClassSeal, ClassKindGlyph, ClassThreadRing, ClassHourglass, ClassEmptyCircle, ClassHorn } from "./ClassArt";
+import { ClassMedallion, ClassCushion, ClassSeal, ClassKindGlyph, ClassThreadRing, ClassHourglass, ClassEmptyCircle, ClassHorn } from "./ClassArt";
 import { GAMES } from "../../lib/games";
 import { ALL_LESSONS, lessonTitle } from "../../lib/courseIndex";
 import { L } from "../../lib/i18n";
@@ -335,7 +335,6 @@ export default function ClassView(p) {
 
   return (
     <div className="class-page cl">
-      <ClassBand id="cl-band-top" className="cl-band-top" />
       <header className="page-head cl-head">
         <div>
           <span className="kicker">{T("kicker")}</span>

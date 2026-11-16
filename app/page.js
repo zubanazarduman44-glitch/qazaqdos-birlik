@@ -6,7 +6,7 @@ import { useApp } from "./components/Store";
 import Qyran from "./components/Qyran";
 import Icon from "./components/Icon";
 import QyzylMark from "./components/QyzylMark";
-import { LangSeg, Logo, Orn } from "./components/Shell";
+import { LangSeg, Logo } from "./components/Shell";
 import SightArt, { RegionScene } from "./components/SightArt";
 import { GameScene } from "./components/games/GameArt";
 import { LandingRibbon, LandingSwoosh, LandingTyped, LandingChatArt, LandingVisionArt, useLandingFx } from "./components/LandingArt";
@@ -154,8 +154,6 @@ export default function Landing() {
         <LandingRibbon words={words} />
       </section>
 
-      <Orn className="ld-orn" />
-
       {/* ═════ Төрт әлем: бір жіппен тігілген әңгіме ═════ */}
       <section ref={gFeat} className="ld-sec ld-wrap">
         <h2 className="ld-h2" data-reveal>
@@ -275,7 +273,6 @@ export default function Landing() {
       </section>
 
       <footer className="ld-foot ld-wrap">
-        <Orn />
         <p className="small">© <FootYear /> Qyzyl til · Aqyl</p>
       </footer>
     </div>

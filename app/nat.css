@@ -45,11 +45,6 @@ body::after {
 /* Тақырыптар: қалың, дәстүрлі ырғақ */
 h1, h2, h3 { color: #14263f; }
 .page-head h1 { position: relative; }
-.page-head::after {
-  content: ""; flex-basis: 100%; height: 20px; margin-top: 10px; border-radius: 4px; opacity: 1;
-  background: var(--oyu-band) repeat-x left center; background-size: auto 20px;
-  box-shadow: 0 0 0 1px rgba(184, 130, 30, 0.45);
-}
 
 /* Бүйір мәзір: киіз түсі + оюлы жиек */
 .side {
@@ -112,7 +107,8 @@ h1, h2, h3 { color: #14263f; }
   box-shadow: inset 0 0 0 2px #fff7e2, inset 0 0 0 3px rgba(184, 130, 30, 0.55), var(--shadow);
   padding: 24px 6px; border-radius: 10px;
 }
-.kzmap-wrap.sky::before, .kzmap-wrap.sky::after { content: ""; position: absolute; left: 0; right: 0; height: 20px; z-index: 2; pointer-events: none; background: var(--oyu-band) repeat-x left center / auto 20px; animation: none; inset: auto 0 auto 0; transform: none; }
+/* Картаның үсті/асты ою жолағы алынды — карта қағаз жақтауда тұрады */
+.kzmap-wrap.sky::before, .kzmap-wrap.sky::after { content: none; }
 .kzmap-wrap.sky::before { top: 0; }
 .kzmap-wrap.sky::after { bottom: 0; }
 .sky-stars { background: var(--oyu-tile) 0 0 / 96px 96px; opacity: 0.09; animation: none; }
