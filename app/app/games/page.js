@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
-import { GameScene, Muiz } from "../../components/games/Frame";
+import { GameScene, Muiz } from "../../components/games/GameArt";
 import { GAMES } from "../../../lib/games";
 import { L } from "../../../lib/i18n";
 

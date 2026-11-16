@@ -82,7 +82,6 @@
 .card.region { overflow: hidden; }
 .region-hero { position: relative; height: clamp(300px, 31vw, 420px); background: #e9dfc6; overflow: hidden; }
 .region-hero .sa { position: absolute; inset: 0; animation: raZoom 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.region-hero .region-e { display: none; }
 /* Қараңғы реңк тек тақырып тұрған төменгі сол жақта */
 .region-shade {
   position: absolute; inset: 0; pointer-events: none;

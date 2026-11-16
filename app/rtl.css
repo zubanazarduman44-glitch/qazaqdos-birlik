@@ -13,7 +13,6 @@
 /* kiiz.css/nat.css: оюлы жиек оң жақта → сол жаққа */
 [dir="rtl"] .side { border-right: 0; border-left: 14px solid transparent; border-image: var(--oyu-band) 0 0 0 20 / 0 0 0 14px repeat; }
 [dir="rtl"] .side-link.on::after { right: auto; left: 10px; }
-[dir="rtl"] .side-more,
 [dir="rtl"] .sheet-link { text-align: right; }
 @media (min-width: 861px) {
   [dir="rtl"] .sheet { left: auto; right: 268px; }
@@ -28,34 +27,23 @@
 [dir="rtl"] .word-chip,
 [dir="rtl"] .search-pop button,
 [dir="rtl"] .suggest .chip,
-[dir="rtl"] .vword .fact,
 [dir="rtl"] .msg-b th,
 [dir="rtl"] .msg-b td,
 [dir="rtl"] .work,
 [dir="rtl"] .reg-list button,
 [dir="rtl"] .hm-treasures button,
-[dir="rtl"] .role-card,
 [dir="rtl"] .adm-table th,
 [dir="rtl"] .g-ready-how,
 [dir="rtl"] .lp-pair,
 [dir="rtl"] .lp-opt { text-align: right; }
 [dir="rtl"] .q-num { text-align: left; }
-[dir="rtl"] .atlas-center { right: auto; left: 14px; text-align: left; }
-@media (max-width: 900px) { [dir="rtl"] .prof-top { text-align: right; } }
-
-/* ── Бұрыштағы белгілер (✓, нөмір) ── */
-[dir="rtl"] .opt-ok,
-[dir="rtl"] .work-ok,
-[dir="rtl"] .sz-ok { right: auto; left: 10px; }
 [dir="rtl"] .aul-body h3 { padding-right: 0; padding-left: 44px; }
 [dir="rtl"] .aul-n { right: auto; left: 0; }
 
 /* ── Чат ── */
 [dir="rtl"] .chat-head .icon-btn { margin-left: 0; margin-right: auto; }
 [dir="rtl"] .msg.me { margin-left: 0; margin-right: auto; }
-[dir="rtl"] .msg-b ul, [dir="rtl"] .msg-b ol,
-[dir="rtl"] .sp-res-body ul { padding-left: 0; padding-right: 22px; }
-[dir="rtl"] .sp-log em { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .msg-b ul, [dir="rtl"] .msg-b ol { padding-left: 0; padding-right: 22px; }
 
 /* ── Ішкі шегіністер мен жиектер ── */
 [dir="rtl"] .lit-list { padding-right: 0; padding-left: 4px; }
@@ -64,10 +52,8 @@
 [dir="rtl"] .gl-how { padding-left: 0; border-left: 0; padding-right: 10px; }
 [dir="rtl"] .vz-tip { border-right: 3px solid #E0A526; }
 [dir="rtl"] .gl-how { border-right: 3px solid color-mix(in srgb, var(--gc) 60%, transparent); }
-[dir="rtl"] .crs-actions { margin-left: 0; margin-right: 10px; }
 @media (min-width: 761px) { [dir="rtl"] .g-ready-art { border-right: 0; border-left: 4px solid var(--gc); } }
-[dir="rtl"] .snt.now,
-[dir="rtl"] .v2-tr { background-image: linear-gradient(270deg, rgba(255, 210, 90, 0.55), rgba(255, 210, 90, 0.2)); }
+[dir="rtl"] .snt.now { background-image: linear-gradient(270deg, rgba(255, 210, 90, 0.55), rgba(255, 210, 90, 0.2)); }
 
 /* ── Бағытты белгішелер: «→», «←», жіберу, шығу ── */
 [dir="rtl"] .ic:has(> path[d^="M5 12h14"]),
@@ -80,7 +66,7 @@
 /* ── Ойын алаңдары кеңістіктік: айналмайды ── */
 [dir="rtl"] .tug-field, [dir="rtl"] .tug-rope, [dir="rtl"] .power,
 [dir="rtl"] .lane-run, [dir="rtl"] .kk-field, [dir="rtl"] .tenge-field,
-[dir="rtl"] .asyk-ring, [dir="rtl"] .side-row, [dir="rtl"] svg.ring, [dir="rtl"] .kazans, [dir="rtl"] .river-wave { direction: ltr; }
+[dir="rtl"] .asyk-ring, [dir="rtl"] svg.ring, [dir="rtl"] .river-wave { direction: ltr; }
 
 /* ── CJK: корей тілінде сөзді ортасынан бөлмейміз ── */
 :root[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }

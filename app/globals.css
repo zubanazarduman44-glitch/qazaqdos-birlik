@@ -130,32 +130,7 @@ p { margin: 0 0 0.8em; }
 .small { font-size: 14px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 8px; }
-
-/* ═════ Фон: баяу қозғалатын түсті шамдар + астында түнгі жұлдыздар + дән ═════ */
-.sky-fx { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.sky-fx .cloud {
-  position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, var(--o) 0%, transparent 66%);
-  opacity: var(--o-op); animation: orb 40s ease-in-out infinite alternate; will-change: transform;
-}
-.sky-fx .cloud:nth-child(1) { --o: var(--o1); top: -24vmax; left: -16vmax; }
-.sky-fx .cloud:nth-child(2) { --o: var(--o2); width: 52vmax; height: 52vmax; right: -20vmax; top: 6vh; animation-duration: 48s; animation-delay: -14s; }
-.sky-fx .cloud:nth-child(3) { --o: var(--o3); left: 16vw; bottom: -32vmax; animation-duration: 56s; animation-delay: -26s; }
 @keyframes orb { to { transform: translate3d(9vmax, 6vmax, 0) scale(1.14); } }
-.sky-fx::after {
-  content: ""; position: absolute; inset: 0; opacity: 0.09; mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
-.sky-fx .stars { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s; background-image:
-  radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent), radial-gradient(1px 1px at 32% 8%, #fff, transparent),
-  radial-gradient(1.5px 1.5px at 52% 22%, #fff, transparent), radial-gradient(1px 1px at 72% 12%, #fff, transparent),
-  radial-gradient(2px 2px at 88% 30%, #ffe9a8, transparent), radial-gradient(1px 1px at 22% 40%, #fff, transparent),
-  radial-gradient(1.5px 1.5px at 64% 46%, #fff, transparent), radial-gradient(1px 1px at 8% 62%, #fff, transparent),
-  radial-gradient(1px 1px at 44% 70%, #fff, transparent), radial-gradient(1.5px 1.5px at 92% 66%, #fff, transparent); }
-:root[data-theme="dark"] .sky-fx .stars { opacity: 1; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .sky-fx .stars { opacity: 1; }
-}
 
 /* ═════ Шыны панель: қырауланған бет + жарық түсетін жұқа жиек ═════ */
 .card {
@@ -177,9 +152,6 @@ p { margin: 0 0 0.8em; }
 }
 :root[data-theme="dark"] .card::after { opacity: 0.45; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card::after { opacity: 0.45; } }
-.card.tight { padding: 16px; }
-.card.hover { transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease); }
-.card.hover:hover { transform: translateY(-5px); box-shadow: inset 0 1px 0 var(--edge), var(--shadow-lg); }
 
 /* Батырмалар: түсті шыны */
 .btn {
@@ -246,7 +218,7 @@ textarea.input { min-height: 120px; resize: vertical; line-height: 1.5; }
 @keyframes bkZ { 0% { opacity: 0; transform: translateY(6px); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px); } }
 .bk-sleep .bk-float { animation-duration: 5s; }
 @media (prefers-reduced-motion: reduce) {
-  .bk-float, .bk-shadow, .bk-eyes, .bk-arm-r, .bk-arm-l, .bk-sparkle, .bk-zzz text, .sky-fx .cloud { animation: none !important; }
+  .bk-float, .bk-shadow, .bk-eyes, .bk-arm-r, .bk-arm-l, .bk-sparkle, .bk-zzz text { animation: none !important; }
 }
 
 /* Сөйлеу бұлты (шыны) */

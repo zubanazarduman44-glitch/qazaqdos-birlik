@@ -48,7 +48,6 @@
 html { background: var(--bg); }
 body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
 body::after { opacity: 0.05; }
-.sky-fx { display: none; }
 * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 h1, h2, h3, h4 { color: var(--ink); letter-spacing: -0.01em; }
 h1 { font-family: var(--head); font-weight: 800; line-height: 1.12; }
@@ -66,11 +65,10 @@ a { color: var(--kok); }
 }
 
 /* ── Панельдер ── */
-.card, .game-card, .quick-card, .lv-intro, .lv-res, .crs-unit, .cls-head, .prof-top, .proverb, .tradition {
+.card, .lv-intro, .lv-res, .proverb, .tradition {
   background: var(--surface); border-radius: var(--r);
   box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
 }
-.card.hover:hover, .game-card:hover, .quick-card:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px rgba(15, 94, 122, 0.45), var(--shadow-lg); }
 .card::after { display: none; }
 
 /* ── Түймелер: бір негізгі, бір екінші, бір бейтарап ── */
@@ -137,51 +135,17 @@ a { color: var(--kok); }
 
 /* ── Төр: бүгінгі сабақ, ошақ, күндік тапсырмалар ── */
 .tor { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; margin: 14px 0; }
-.tor-lesson { position: relative; display: grid; align-content: start; gap: 10px; padding: 22px; border-radius: var(--r); background: var(--kok); color: #fff; overflow: hidden; }
-.tor-lesson::before { /* сырмақ тәсілі: бір ою, екі реңк */
-  content: ""; position: absolute; right: -34px; bottom: -40px; width: 230px; height: 230px; opacity: 0.16;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23fff' stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M60 104c0-30-24-44-42-30-14 12-6 34 14 28 12-4 12-20 0-20'/%3E%3Cpath d='M60 104c0-30 24-44 42-30 14 12 6 34-14 28-12-4-12-20 0-20'/%3E%3Cpath d='M60 104V60'/%3E%3Cpath d='M60 16l14 14-14 14-14-14z'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
-}
-.tor-cap { font-size: 13px; font-weight: 700; color: #f6e3b0; }
-.tor-lesson h2 { margin: 0; color: #fff; font-size: clamp(20px, 2.4vw, 28px); }
-.tor-meta { margin: 0; color: #d7e8ee; font-size: 14px; }
-.tor-cta { justify-self: start; margin-top: 6px; background: var(--altyn) !important; color: var(--gold-ink) !important; box-shadow: 0 3px 0 #9c6d0c !important; position: relative; }
 /* Домбыра пернелері — бөлім ішіндегі сабақтар шкаласы */
 .frets { display: flex; gap: 4px; max-width: 420px; }
 .frets i { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.24); }
 .frets i.on { background: var(--altyn); } .frets i.cur { background: #fff; }
-.tor-side { display: grid; gap: 14px; }
-.tor-hearth, .tor-quests { padding: 16px 18px; border-radius: var(--r); background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim), var(--shadow); }
-.tor-hearth { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 14px; }
-.tor-h-txt { display: grid; } .tor-h-txt b { font-family: var(--head); font-size: 26px; line-height: 1.1; } .tor-h-txt b small { font-family: var(--body); font-size: 14px; font-weight: 600; color: var(--muted); }
-.tor-h-txt span { font-size: 14px; color: var(--muted); }
-.hearth .h-flame { fill: #d9d2c2; } .hearth .h-core { fill: #efe9db; } .hearth .h-pot { fill: #3a3f4a; } .hearth .h-rim { stroke: #1f2430; stroke-width: 4; stroke-linecap: round; fill: none; }
-.hearth.lit .h-flame { fill: var(--qyzyl); transform-origin: 50% 70%; animation: flick 1.6s ease-in-out infinite; } .hearth.lit .h-core { fill: var(--altyn); }
-@keyframes flick { 50% { transform: scale(1.06, 0.95); } }
-.tor-embers { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 8px; border-top: 1px solid var(--line); }
-.tor-embers span { display: inline-flex; gap: 5px; } .tor-embers i { width: 14px; height: 14px; border-radius: 50% 50% 50% 4px; transform: rotate(-45deg); background: #e4dccb; } .tor-embers i.on { background: var(--qyzyl); box-shadow: 0 0 0 3px rgba(224, 165, 38, 0.35); }
-.tor-quests h3 { margin: 0 0 8px; font-size: 16px; }
-.tor-quests ul { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
-.tor-quests li { display: grid; grid-template-columns: 22px minmax(0, 1fr) 70px 34px; align-items: center; gap: 8px; font-size: 14.5px; }
 .q-mark { width: 20px; height: 20px; border-radius: 6px; box-shadow: inset 0 0 0 1.5px var(--rim); display: grid; place-items: center; color: #fff; }
 li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { color: var(--muted); text-decoration: line-through; }
 .q-bar { height: 7px; border-radius: 4px; background: var(--surface-2); overflow: hidden; } .q-bar i { display: block; height: 100%; background: var(--kok); } li.done .q-bar i { background: var(--ok); }
 .q-num { font-size: 13px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 860px) { .tor { grid-template-columns: minmax(0, 1fr); } }
-
-/* ── Курс: сабақ түйіндері бір-біріне шықпайды ── */
-.crs-path { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 12px 10px; padding: 6px 2px 8px; }
-.crs-node { width: 48px; height: 48px; transform: none; justify-self: center; background: var(--altyn-soft); color: #5a3d00; box-shadow: 0 3px 0 #c9992c, inset 0 0 0 1.5px #e0a526; font-family: var(--body); font-weight: 700; }
-.crs-node:hover:not(:disabled) { transform: translateY(-2px); }
-.crs-node.done { background: var(--ok); color: #fff; box-shadow: 0 3px 0 #1f4a36; }
-.crs-node.lock { background: #ebe5d6; color: #5f6470; box-shadow: inset 0 0 0 1.5px #cfc6b0; }
-.crs-lv.on { background: var(--kok); color: #fff; }
-
-/* ── Жеңіл түзетулер ── */
-.game-card::before { height: 4px; }
-.game-card:hover { transform: translateY(-3px); rotate: 0deg; }
 .side-link .ic, .bottom-nav .ic { flex: none; }
-.hh-bubble, .bubble { background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim); }
+.bubble { background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim); }
 @media (max-width: 860px) {
   .topbar { margin: 8px 10px 2px; }
   .page-head h1 { font-size: 24px; }
@@ -284,7 +248,6 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .vz-shutter i { display: block; width: 100%; height: 100%; border-radius: 50%; background: #E0A526; transition: transform 0.15s; }
 .vz-shutter:active i { transform: scale(0.86); }
 .vz-privacy { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
-.vz-chip { background: #0F5E7A !important; color: #fff !important; }
 .mic-mini.on { background: #0F5E7A; color: #fff; }
 @keyframes vzIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes vzUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

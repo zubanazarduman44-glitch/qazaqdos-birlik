@@ -24,23 +24,21 @@
 /* ── Негіз: фокус сақинасы, тақырып белгісі ── */
 :focus-visible { outline-color: var(--anar); }
 .gl-card:focus-visible { outline-color: var(--anar); }
-.sz-card:focus-visible { box-shadow: 0 0 0 3px var(--bg, #faf6ee), 0 0 0 5px var(--anar); }
 .kicker, .lp-kicker, .ra-kicker { color: var(--anar-2); }
-.card.hover:hover, .game-card:hover, .quick-card:hover { box-shadow: inset 0 0 0 1px rgba(184, 50, 42, 0.4), var(--shadow-lg); }
 
 /* ── Түймелер: негізгі = анар; екінші (көк) сақталады ── */
 .btn.blue, .btn.primary { background: var(--anar); color: #fff; box-shadow: 0 3px 0 var(--anar-2); }
 .btn.blue:hover:not(:disabled), .btn.primary:hover:not(:disabled) { background: var(--anar-hover); }
 .btn.blue:active:not(:disabled), .btn.primary:active:not(:disabled) { background: var(--anar-2); box-shadow: none; }
 /* Өшірулі негізгі түйме қызғылт болып «қате» сияқты көрінбесін — бейтарап */
-.btn.blue:disabled, .btn.primary:disabled, .tor-cta:disabled { opacity: 1; background: var(--surface-2) !important; color: var(--faint) !important; box-shadow: inset 0 0 0 1.5px var(--line) !important; }
+.btn.blue:disabled, .btn.primary:disabled { opacity: 1; background: var(--surface-2) !important; color: var(--faint) !important; box-shadow: inset 0 0 0 1.5px var(--line) !important; }
 .btn.ghost:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--anar); }
 .link-btn { color: var(--anar-2); }
 .input:focus { box-shadow: inset 0 0 0 2px var(--anar); }
 .icon-btn:hover { box-shadow: inset 0 0 0 1.5px var(--anar); }
 
 /* ── Белсенді күйлер: чип, сегмент, мәзір ── */
-.chip.on, .chip.tab.on, .seg button.on, .sp-lv.on, .tz-tabs button.on, .lp-menu button.on, .reg-list button.on, .crs-lv.on, .sheet-link.on {
+.chip.on, .chip.tab.on, .seg button.on, .tz-tabs button.on, .lp-menu button.on, .reg-list button.on, .sheet-link.on {
   background: var(--anar); color: #fff; box-shadow: none;
 }
 .side-link.on { background: var(--anar); color: #fff; box-shadow: none; }
@@ -48,21 +46,6 @@
 .bottom-nav a.on, .bottom-nav button.on { color: var(--anar); }
 .bottom-nav a.on::before { background: var(--anar); height: 4px; }
 .side-me.on { box-shadow: inset 0 0 0 2px var(--anar); }
-
-/* ── Жоғарғы жолақ: ою жиегі қою анар (--oyu-band арқылы) ── */
-
-/* ── Төр: «Бүгінгі сабақ» — ақ киіз карточка, қызыл тек түйме мен прогресте ── */
-.tor-lesson { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rim), inset 0 4px 0 var(--anar), var(--shadow); }
-.tor-lesson::before {
-  opacity: 0.07;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23b8322a' stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M60 104c0-30-24-44-42-30-14 12-6 34 14 28 12-4 12-20 0-20'/%3E%3Cpath d='M60 104c0-30 24-44 42-30 14 12 6 34-14 28-12-4-12-20 0-20'/%3E%3Cpath d='M60 104V60'/%3E%3Cpath d='M60 16l14 14-14 14-14-14z'/%3E%3C/g%3E%3C/svg%3E");
-}
-.tor-cap { color: var(--anar-2); }
-.tor-lesson h2 { color: var(--ink); }
-.tor-meta { color: var(--muted); }
-.tor-cta { background: var(--anar) !important; color: #fff !important; box-shadow: 0 3px 0 var(--anar-2) !important; }
-.tor-cta:hover:not(:disabled) { background: var(--anar-hover) !important; }
-.tor-cta:active:not(:disabled) { background: var(--anar-2) !important; box-shadow: none !important; }
 .frets i { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--rim); }
 .frets i.on { background: var(--anar); box-shadow: none; }
 .frets i.cur { background: var(--altyn); box-shadow: inset 0 0 0 1px #b07c10; }
@@ -114,5 +97,3 @@
 .tenge-field .coin.bad { background: #e3c3ca; }
 .stone.miss .stone-face { background: var(--wine-soft); box-shadow: inset 0 0 0 3px var(--wine); }
 .kk-score .chip.bad { background: var(--wine-soft); color: var(--wine); }
-.sp-log .sc { background: var(--wine-soft); color: var(--wine); }
-.sp-log .sc.good { background: var(--ok-soft); color: var(--ok); }

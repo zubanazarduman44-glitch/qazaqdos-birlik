@@ -1,5 +1,5 @@
 // Saiys — «Бәйге алаңы» иллюстрациялары: киіз-аппликация стилі (тегіс қабат + тігіс сызығы).
-import { Horse } from "./games/Frame";
+import { Horse } from "./games/GameArt";
 
 const RED = "#B8322A", RED_D = "#8A2018", GOLD = "#E0A526", GOLD_L = "#F6E3B0", CREAM = "#FFFDF7", INK = "#1F2430", BLUE = "#0F5E7A";
 

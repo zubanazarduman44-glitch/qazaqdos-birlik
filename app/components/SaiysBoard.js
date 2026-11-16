@@ -2,7 +2,7 @@
 import Avatar from "./Avatar";
 import Icon from "./Icon";
 import Qyran from "./Qyran";
-import { Horse } from "./games/Frame";
+import { Horse } from "./games/GameArt";
 import { SaiysArena, SaiysMedal, SaiysPlume, SaiysOrn, SaiysPrizeArt } from "./SaiysArt";
 
 // Жаңа шағын мәтіндер — барлық 11 тілде

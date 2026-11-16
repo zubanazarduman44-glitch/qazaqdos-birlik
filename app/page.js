@@ -8,7 +8,7 @@ import Icon from "./components/Icon";
 import QyzylMark from "./components/QyzylMark";
 import { LangSeg, Logo, Orn } from "./components/Shell";
 import SightArt, { RegionScene } from "./components/SightArt";
-import { GameScene } from "./components/games/Frame";
+import { GameScene } from "./components/games/GameArt";
 import { LandingRibbon, LandingSwoosh, LandingTyped, LandingChatArt, LandingVisionArt, useLandingFx } from "./components/LandingArt";
 import { REGIONS } from "../lib/regions";
 import { L } from "../lib/i18n";

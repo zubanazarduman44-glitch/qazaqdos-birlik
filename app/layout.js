@@ -17,6 +17,8 @@ export const metadata = {
     "Qyzyl til: «Өнер алды — қызыл тіл». Қазақстанды аралап, ұлттық ойындар ойнап, Aqyl атты виртуалды доспен сөйлесе отырып қазақ тілін үйрен. Учите казахский язык в путешествии и в игре.",
   applicationName: "Qyzyl til",
   icons: { icon: "/icon.svg" },
+  metadataBase: new URL("https://tilim-kz.vercel.app"),
+  openGraph: { type: "website", siteName: "Qyzyl til", locale: "kk_KZ", title: "Qyzyl til — қазақ тілін Aqyl-мен бірге үйрен", url: "/" },
 };
 
 export const viewport = {
