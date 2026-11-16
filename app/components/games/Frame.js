@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAnimGate } from "../AnimGate";
 import { useApp } from "../Store";
 import Qyran from "../Qyran";
 import Icon from "../Icon";
@@ -149,9 +150,10 @@ export function TopicPicker({ topic, setTopic, disabled }) {
 /* Дайындық экраны — барлық ойынға ортақ */
 export function Ready({ game, topic, setTopic, onStart, level, setLevel, extra = null }) {
   const { t, lang } = useApp();
+  const gArt = useAnimGate(); // экраннан тыс — анимация кідіреді
   return (
     <section className="card g-ready" style={{ "--gc": game.color }}>
-      <div className="g-ready-art">
+      <div ref={gArt} className="g-ready-art">
         <GameScene id={game.id} className="live" />
       </div>
       <div className="g-ready-body">

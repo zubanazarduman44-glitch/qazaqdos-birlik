@@ -3,19 +3,19 @@
 // HomeYurt  — киіз үйдің іші («төр»): шаңырақтағы аспан тәуліктің уақытын көрсетеді,
 //             уықтар бүгінгі XP-мен алтынға боялады, ошақ оты — серия, тұс киіздегі жамаулар — мөрлер.
 // HomeFlame — ошақ (серия карточкасы). HomeChest — сандық (тапсырма сыйлығы).
-import { useEffect, useId, useState } from "react";
+import { useId } from "react";
 import { Dombyra } from "./NatArt";
+import { useClientDate } from "../../lib/useClientDate";
 
 const WOOD = "#8A5326", WOOD_D = "#6B3B1C", GOLD = "#E0A526", PGOLD = "#F6E3B0", RED = "#B8322A", RED_D = "#8A2018", BLUE = "#0F5E7A", CREAM = "#FFFDF7";
 
-// Тәулік бөлігі: SSR-де «күн», клиентте нақты сағатпен ауысады (гидрация қатесіз)
+// Тәулік бөлігі: SSR мен гидрация рендерінде «күн», клиентте нақты сағатпен (гидрация қатесіз;
+// клиенттегі ауысуда бірден дұрыс — жыпылықтамайды)
 export function useDayPhase() {
-  const [phase, setPhase] = useState("day");
-  useEffect(() => {
-    const h = new Date().getHours();
-    setPhase(h >= 5 && h < 10 ? "morning" : h >= 10 && h < 17 ? "day" : h >= 17 && h < 21 ? "evening" : "night");
-  }, []);
-  return phase;
+  const now = useClientDate();
+  if (!now) return "day";
+  const h = now.getHours();
+  return h >= 5 && h < 10 ? "morning" : h >= 10 && h < 17 ? "day" : h >= 17 && h < 21 ? "evening" : "night";
 }
 
 const SKIES = {

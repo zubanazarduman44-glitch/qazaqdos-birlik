@@ -10,15 +10,20 @@ import Icon from "./Icon";
 import Qyran from "./Qyran";
 import { ClassBand, ClassMedallion, ClassCushion, ClassSeal, ClassKindGlyph, ClassThreadRing, ClassHourglass, ClassEmptyCircle, ClassHorn } from "./ClassArt";
 import { GAMES } from "../../lib/games";
-import { ALL_LESSONS, lessonTitle } from "../../lib/course";
+import { ALL_LESSONS, lessonTitle } from "../../lib/courseIndex";
 import { L } from "../../lib/i18n";
+import { useClientDate } from "../../lib/useClientDate";
+import { useAnimGate } from "./AnimGate";
 
-const todayISO = () => new Date().toISOString().slice(0, 10);
+// Ағымдағы уақыт (мс): негізгі компонент әр рендерде useClientDate арқылы қояды (VI сияқты).
+// Сервер/гидрация рендерінде null — «бүгін/кешікті/жақын» белгілері бейтарап, гидрациядан кейін қойылады.
+let NOW = null;
+const todayISO = () => (NOW == null ? "" : new Date(NOW).toISOString().slice(0, 10));
 const KINDS = ["lesson", "game", "custom"];
 const kindKey = { lesson: "kLesson", game: "kGame", custom: "kCustom" };
 const DAY = 86400000;
-const daysSince = (iso) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / DAY) : Infinity);
-const daysTo = (d) => Math.round((new Date(d + "T00:00:00Z").getTime() - new Date(todayISO() + "T00:00:00Z").getTime()) / DAY);
+const daysSince = (iso) => (iso && NOW != null ? Math.floor((NOW - new Date(iso).getTime()) / DAY) : Infinity);
+const daysTo = (d) => (NOW == null ? Infinity : Math.round((new Date(d + "T00:00:00Z").getTime() - new Date(todayISO() + "T00:00:00Z").getTime()) / DAY));
 
 /* Тек осы көрініске қажет жазулар — 11 тілде (V_LANGS ретімен). */
 const V_LANGS = ["kk", "ru", "en", "zh", "es", "de", "fr", "tr", "ar", "ko", "ja"];
@@ -296,9 +301,10 @@ function SecHead({ title, count, children }) {
 
 /* ── Бос алқа (кіру / баптау / сынып жоқ) ── */
 function EmptyCircle({ mood, children, cls = "" }) {
+  const gArt = useAnimGate(); // экраннан тыс — анимация кідіреді
   return (
     <section className={`cl-empty ${cls}`}>
-      <div className="cl-empty-art" aria-hidden="true">
+      <div ref={gArt} className="cl-empty-art" aria-hidden="true">
         <ClassEmptyCircle />
         <span className="cl-empty-q"><Qyran mood={mood} size={112} /></span>
       </div>
@@ -311,6 +317,9 @@ export default function ClassView(p) {
   const { T, li, lang, user, authReady, teacher, setup, err, classes, cur, setCur, isOwner, members, tasks, subs, my, doneCount, ago,
     name, setName, code, setCode, busy, copied, onCopy, tf, setTf, onMake, onEnter, onAddTask, onMark, onDropClass, onRemoveMember, onDeleteTask } = p;
   VI = V_LANGS.indexOf(lang); if (VI < 0) VI = 2;
+  const now = useClientDate();
+  NOW = now ? now.getTime() : null;
+  const gAlqa = useAnimGate(), gQuiet = useAnimGate(); // экраннан тыс суреттер — анимация кідіреді
 
   const ranked = useMemo(() => [...members].sort((a, b) => (b.week_xp || 0) - (a.week_xp || 0)), [members]);
   const [mode, setMode] = useState(null);
@@ -401,7 +410,7 @@ export default function ClassView(p) {
                   </SecHead>
                   {members.length === 0 ? (
                     <div className="cl-quiet is-circle">
-                      <div className="cl-quiet-art" aria-hidden="true"><ClassEmptyCircle /><span className="cl-empty-q"><Qyran mood="sleep" size={84} /></span></div>
+                      <div ref={gQuiet} className="cl-quiet-art" aria-hidden="true"><ClassEmptyCircle /><span className="cl-empty-q"><Qyran mood="sleep" size={84} /></span></div>
                       <div>
                         <p>{T("noStudents")}</p>
                         <span className="cl-mini-code" translate="no">{cur.code}</span>
@@ -409,7 +418,7 @@ export default function ClassView(p) {
                     </div>
                   ) : view === "circle" ? (
                     <>
-                      <div className="cl-alqa-wrap">
+                      <div ref={gAlqa} className="cl-alqa-wrap">
                         <ClassCircle members={ranked} T={T} li={li} ago={ago} sel={sel?.user_id} onSel={setSel} myAvatar={p.myAvatar} />
                         <ClassSeatCard m={sel} T={T} li={li} ago={ago} done={sel ? doneBy(sel.user_id) : 0} total={tasks.length}
                           rank={sel ? ranked.indexOf(sel) + 1 : 0} onRemove={() => onRemoveMember(sel)} />

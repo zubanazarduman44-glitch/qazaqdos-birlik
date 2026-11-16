@@ -3,6 +3,7 @@
 // чат пен Vision суреттері және айналдырғанда пайда болу. Мәтін қоспайды — тек
 // lib/i18n.js пен lib/regions.js деректерін көрсетеді.
 import { useEffect, useId, useRef, useState } from "react";
+import { useAnimGate } from "./AnimGate";
 import TopicArt from "./TopicArt";
 
 const R = "#B8322A", RD = "#8A2018", G = "#E0A526", PG = "#F6E3B0", C = "#FFFDF7", K = "#0F5E7A", I = "#1F2430";
@@ -81,6 +82,7 @@ export function LandingRibbon({ words }) {
   const tp = useRef(null);
   const txt = useRef(null);
   const wrap = useRef(null);
+  const wrapRef = useAnimGate(wrap); // CSS-анимациялар үшін; жүгірме жолдың өзі (rAF) төмендегі IO арқылы тоқтайды
   useEffect(() => {
     if (reduced() || !tp.current || !txt.current) return;
     let raf = 0, last = 0, off = 0, on = true, hold = false, period = 0;
@@ -131,7 +133,7 @@ export function LandingRibbon({ words }) {
       </tspan>
     ));
   return (
-    <div className="ld-rib" ref={wrap} aria-hidden="true">
+    <div className="ld-rib" ref={wrapRef} aria-hidden="true">
       <svg viewBox="0 0 2400 180" preserveAspectRatio="xMidYMid slice" focusable="false">
         <defs>
           <path id={`${raw}p`} d={RIB} />

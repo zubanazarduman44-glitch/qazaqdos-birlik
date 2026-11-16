@@ -3,11 +3,11 @@
 // Басты бет (app/app/page.js) бөліктерді бенто-торға бөлек қояды: useTor + TorLesson / TorHearth / TorQuests.
 import Link from "next/link";
 import { useApp, dayKey } from "./Store";
+import { useClientDate } from "../../lib/useClientDate";
 import Icon from "./Icon";
 import TopicArt from "./TopicArt";
 import { HomeFlame, HomeChest } from "./HomeArt";
-import { ALL_LESSONS, LEVELS, UNITS, lessonTitle } from "../../lib/course";
-import { TOPICS } from "../../lib/words";
+import { ALL_LESSONS, LEVELS, UNITS, TOPICS, lessonTitle } from "../../lib/courseIndex";
 
 const X = {
   today: ["Бүгінгі сабақ", "Сегодняшний урок", "Today's lesson"],
@@ -43,12 +43,14 @@ export function useTor() {
   const unit = next && UNITS[next.topic];
   const unitDone = unit ? unit.lessons.filter((l) => done[l.id]).length : 0;
 
-  const today = dayKey();
-  const isToday = state.today?.date === today;
+  // Сервер/гидрация рендерінде күн белгісіз (null) — «бүгінгі» есептер бос; гидрациядан кейін толады
+  const now = useClientDate();
+  const today = now ? dayKey(now) : null;
+  const isToday = !!today && state.today?.date === today;
   const xpToday = isToday ? state.today.xp || 0 : 0;
   const tasksToday = isToday ? state.today.tasks || 0 : 0;
-  const lessonsToday = Object.values(done).filter((d) => d?.at && dayKey(new Date(d.at)) === today).length;
-  const lit = state.lastDay === today;
+  const lessonsToday = today ? Object.values(done).filter((d) => d?.at && dayKey(new Date(d.at)) === today).length : 0;
+  const lit = !!today && state.lastDay === today;
   const embers = state.embers || 0;
   const coins = state.coins || 0;
 
@@ -58,7 +60,7 @@ export function useTor() {
     { k: "q3", v: Math.min(tasksToday, 3), max: 3 },
   ];
   const allDone = quests.every((q) => q.v >= q.max);
-  const claimed = state.quests?.date === today && state.quests.claimed;
+  const claimed = !!today && state.quests?.date === today && state.quests.claimed;
 
   const buyEmber = () => update((s) => ((s.coins || 0) >= 20 && (s.embers || 0) < 2 ? { ...s, coins: s.coins - 20, embers: (s.embers || 0) + 1 } : s));
   const claim = () => { update((s) => ({ ...s, coins: (s.coins || 0) + 15, quests: { date: today, claimed: true } })); toast("+15 🪙"); };

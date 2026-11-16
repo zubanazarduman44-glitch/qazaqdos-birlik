@@ -1,0 +1,13 @@
+/* Экраннан тыс (AnimGate: data-offscreen) не жасырын вкладкадағы (html[data-tab-hidden]) анимацияларды кідірту.
+   Экранда тұрған элементтерге әсері жоқ. */
+[data-offscreen],
+[data-offscreen] *,
+[data-tab-hidden] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after,
+[data-offscreen]::before,
+[data-offscreen]::after,
+[data-tab-hidden] *::before,
+[data-tab-hidden] *::after {
+  animation-play-state: paused !important;
+}

@@ -1,6 +1,7 @@
 "use client";
 import "../../chat.css";
 import { useEffect, useRef, useState } from "react";
+import { useAnimGate } from "../../components/AnimGate";
 import { NatEmpty } from "../../components/NatArt";
 import TopicArt from "../../components/TopicArt";
 import { ChatCamArt, ChatDisc } from "../../components/ChatArt";
@@ -133,6 +134,8 @@ function Rich({ text }) {
 
 export default function Chat() {
   const { t, lang, state, update, explain, award, lvl, saveWord } = useApp();
+  // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
+  const gHead = useAnimGate();
   const x = tx(lang);
   const vl = VL[lang] || VL.en;
   const [cam, setCam] = useState(false);
@@ -301,7 +304,7 @@ export default function Chat() {
   return (
     <div className={`chat-page cx ${empty ? "is-empty" : ""}`} data-mood={mood} ref={pageRef}>
       <section className="card chat">
-        <header className="chat-head">
+        <header ref={gHead} className="chat-head">
           <div className="cx-aq">
             <ChatDisc />
             <span className="cx-halo" aria-hidden="true" />

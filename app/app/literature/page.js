@@ -3,6 +3,7 @@ import "../../literature.css";
 import LangPicker from "../../components/LangPicker";
 import { NatEmpty } from "../../components/NatArt";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useAnimGate } from "../../components/AnimGate";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
@@ -47,6 +48,8 @@ export default function Literature() {
   const run = useRef(0);
   const timer = useRef(null);
   const listRef = useRef(null);
+  // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
+  const gHero = useAnimGate();
   const work = WORKS.find((w) => w.id === id);
   const lit = state.lit || {};
   const sentences = useMemo(() => (work ? work.text.split(/(?<=[.!?])\s+/).filter(Boolean) : []), [work]);
@@ -307,7 +310,7 @@ export default function Literature() {
     });
     return (
       <div className="literature lit-lib">
-        <header className="lit-hero">
+        <header ref={gHero} className="lit-hero">
           <div className="lit-hero-txt">
             <span className="kicker">{x.litKicker}</span>
             <h1>{x.litTitle}</h1>

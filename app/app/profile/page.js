@@ -17,7 +17,7 @@ import { profileL10n } from "../../components/ProfileL10n";
 import { AVATARS, EXPLAIN_LANGS } from "../../../lib/i18n";
 import { REGIONS } from "../../../lib/regions";
 import { SITES } from "../../../lib/history";
-import { ALL_LESSONS } from "../../../lib/course";
+import { ALL_LESSONS } from "../../../lib/courseIndex";
 import { WORKS } from "../../../lib/literature";
 
 const GOAL_ICON = { travel: "map", study: "book", work: "chart", life: "sun" };

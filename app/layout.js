@@ -8,6 +8,7 @@ import "./travel.css";
 import "./aqyl.css";
 import "./qyzyl.css"; // Qyzyl til қызыл палитрасы — осы жолды өшірсең, бұрынғы көк «Ақ киіз» түстері қайтады
 import "./shell.css";
+import "./anim.css";
 import "./rtl.css";
 import { AppProvider } from "./components/Store";
 

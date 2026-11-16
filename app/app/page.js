@@ -4,8 +4,9 @@ import { tx } from "../../lib/tx";
 import { PROVERBS, TRADITIONS } from "../../lib/culture";
 import Link from "next/link";
 import { useTor, TorLesson, TorHearth, TorQuests } from "../components/Tor";
-import { useMemo } from "react";
-import { DAILY_GOAL, dayKey, localDayIndex, useApp } from "../components/Store";
+import { useEffect, useMemo, useState } from "react";
+import { DAILY_GOAL, dayKey, useApp } from "../components/Store";
+import { useClientDate, utcDayIndex, localDayIndexOf } from "../../lib/useClientDate";
 import Qyran from "../components/Qyran";
 import Icon from "../components/Icon";
 import Avatar from "../components/Avatar";
@@ -13,8 +14,9 @@ import TopicArt from "../components/TopicArt";
 import { NatArt } from "../components/NatArt";
 import { RegionScene } from "../components/SightArt";
 import HomeYurt, { useDayPhase } from "../components/HomeArt";
+import { useAnimGate } from "../components/AnimGate";
 import { REGIONS } from "../../lib/regions";
-import { WORDS, tr } from "../../lib/words";
+import { tr } from "../../lib/wordTools";
 import { L } from "../../lib/i18n";
 
 // Дәстүр карточкасының суреті (TRADITIONS ретімен): киіз үй, қонақжайлылық, Наурыз, домбыра, бүркітші, тұсау кесу, көкпар, шапан
@@ -29,21 +31,39 @@ function TradArt({ i }) {
   return <NatArt name={a.nat} size={120} />;
 }
 
+// «Күн сөзі» жүктелгенше орын ұстайтын бейтарап сөз (көрінбейді)
+const WORD0 = { t: "greet", kk: "Сәлеметсіз бе", ru: "Здравствуйте", en: "Hello" };
+
 export default function Home() {
   const { t, lang, explain, state, saveWord, award } = useApp();
   const tor = useTor();
+  // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
+  const gHero = useAnimGate(), gDay = useAnimGate(), gDisc = useAnimGate(), gCult = useAnimGate(), gQuick = useAnimGate();
   const phase = useDayPhase();
   const x0 = tx(lang);
-  const dayN = Math.floor(Date.now() / 86400000);
+  // Күнге тәуелді мазмұн: сервер мен гидрация рендерінде now = null → бейтарап (0-индекс, көрінбейді),
+  // гидрациядан кейін нақты күн қойылады (бірдей өлшем, орын ығыспайды)
+  const now = useClientDate();
+  const hide = now ? undefined : { visibility: "hidden" };
+  const dayN = now ? utcDayIndex(now) : 0;
   const PROV = PROVERBS[dayN % PROVERBS.length];
   const tradI = dayN % TRADITIONS.length;
   const TRAD = TRADITIONS[tradI];
-  const today = dayKey();
-  const todayXp = state.today?.date === today ? state.today.xp : 0;
+  const today = now ? dayKey(now) : null;
+  const todayXp = today && state.today?.date === today ? state.today.xp : 0;
   const stampCount = Object.keys(state.stamps || {}).length;
   const next = REGIONS.find((r) => !state.stamps?.[r.id]);
-  const dayIdx = localDayIndex();
-  const word = WORDS[dayIdx % WORDS.length];
+  const dayIdx = now ? localDayIndexOf(now) : 0;
+  // Сөз қоры (~110 KB) — тек «күн сөзі» үшін: гидрациядан кейін бөлек жүктеледі (бастапқы JS жеңіл).
+  // Жүктелгенше карточка орнын бейтарап көрінбейтін сөз ұстап тұрады.
+  const [WORDS, setWords] = useState(null);
+  useEffect(() => {
+    let on = true;
+    import("../../lib/words").then((m) => on && setWords(m.WORDS));
+    return () => { on = false; };
+  }, []);
+  const word = WORDS ? WORDS[dayIdx % WORDS.length] : WORD0;
+  const wodHide = now && WORDS ? undefined : { visibility: "hidden" };
   const tip = t.qyranTip[dayIdx % t.qyranTip.length];
   const savedToday = state.vocab?.some((v) => v.kk === word.kk);
   const mood = todayXp >= DAILY_GOAL ? "cheer" : todayXp > 0 ? "happy" : "idle";
@@ -69,7 +89,7 @@ export default function Home() {
   return (
     <div className="hm">
       {/* ── 1 · Төр: сәлем, бүгінгі сабақ және киіз үйдің іші ── */}
-      <section className="hm-hero hm-in" style={{ "--i": 0 }}>
+      <section ref={gHero} className="hm-hero hm-in" style={{ "--i": 0 }}>
         <div className="hm-greet">
           <Avatar value={state.profile.avatar} size={48} />
           <div>
@@ -86,7 +106,7 @@ export default function Home() {
             <span className="hm-goal-bar" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, todayXp / DAILY_GOAL)})` }} /></span>
           </div>
           <div className="hm-aqyl" aria-hidden="true"><Qyran mood={mood} size={120} /></div>
-          <p className="hm-tip">{tip}</p>
+          <p className="hm-tip" style={hide}>{tip}</p>
         </div>
 
         <TorLesson tor={tor} />
@@ -101,7 +121,7 @@ export default function Home() {
       )}
 
       {/* ── 2 · Күн: ошақ, тапсырмалар, есеп ── */}
-      <div className="hm-bento hm-day">
+      <div ref={gDay} className="hm-bento hm-day">
         <div className="hm-in" style={{ "--i": 2 }}><TorHearth tor={tor} /></div>
         <div className="hm-in" style={{ "--i": 3 }}><TorQuests tor={tor} /></div>
         <ul className="hm-stats hm-in" style={{ "--i": 4 }}>
@@ -116,7 +136,7 @@ export default function Home() {
       </div>
 
       {/* ── 3 · Жол мен сөз ── */}
-      <div className="hm-bento hm-discover">
+      <div ref={gDisc} className="hm-bento hm-discover">
         {next ? (
           <Link href={`/app/travel?r=${next.id}`} className="hm-tile hm-next hm-in" style={{ "--i": 5 }}>
             <span className="hm-next-art"><RegionScene region={next} /></span>
@@ -143,7 +163,7 @@ export default function Home() {
 
         <section className="hm-tile hm-wod hm-in" style={{ "--i": 6 }} aria-label={t.wordOfDay}>
           <span className="hm-kicker">{t.wordOfDay}</span>
-          <div className="hm-wod-word">
+          <div className="hm-wod-word" style={wodHide}>
             <TopicArt topic={word.t} size={72} />
             <div>
               <b lang="kk">{word.kk}</b>
@@ -153,7 +173,8 @@ export default function Home() {
           <button
             type="button"
             className="btn ghost small hm-wod-save"
-            disabled={savedToday}
+            disabled={savedToday || !now || !WORDS}
+            style={wodHide}
             onClick={() => {
               saveWord({ kk: word.kk, tr: tr(word, explain), e: word.e, src: "day" });
               award(2, 1);
@@ -174,25 +195,25 @@ export default function Home() {
       </div>
 
       {/* ── 4 · Мәдениет ── */}
-      <div className="hm-bento hm-culture">
+      <div ref={gCult} className="hm-bento hm-culture">
         <article className="hm-tile hm-proverb hm-in" style={{ "--i": 7 }}>
           <span className="hm-kicker">{x0.proverb}</span>
-          <blockquote lang="kk">{PROV.kk}</blockquote>
-          <p>{lang === "kk" ? (explain === "ru" ? PROV.ru : PROV.en) : lang === "ru" ? PROV.ru : PROV.en}</p>
+          <blockquote lang="kk" style={hide}>{PROV.kk}</blockquote>
+          <p style={hide}>{lang === "kk" ? (explain === "ru" ? PROV.ru : PROV.en) : lang === "ru" ? PROV.ru : PROV.en}</p>
         </article>
         <article className="hm-tile hm-trad hm-in" style={{ "--i": 8 }}>
-          <span className="hm-trad-art" aria-hidden="true"><TradArt i={tradI} /></span>
+          <span className="hm-trad-art" aria-hidden="true" style={hide}><TradArt i={tradI} /></span>
           <div>
             <span className="hm-kicker">{x0.tradition}</span>
-            <h3>{L(TRAD.t, lang)}</h3>
-            <p>{L(TRAD.d, lang)}</p>
+            <h3 style={hide}>{L(TRAD.t, lang)}</h3>
+            <p style={hide}>{L(TRAD.d, lang)}</p>
           </div>
         </article>
       </div>
 
       {/* ── 5 · Жылдам өту ── */}
       <h3 className="hm-sec hm-in" style={{ "--i": 9 }}>{t.quick}</h3>
-      <nav className="hm-quick hm-in" style={{ "--i": 10 }} aria-label={t.quick}>
+      <nav ref={gQuick} className="hm-quick hm-in" style={{ "--i": 10 }} aria-label={t.quick}>
         {quick.map((q, i) => (
           <Link key={q.href} href={q.href} className={`hm-qcard tint-${i}`}>
             <span className="hm-qart"><NatArt name={q.art} size={96} /></span>

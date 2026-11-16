@@ -12,6 +12,7 @@ import { tx } from "../../../lib/tx";
 import { sayKk } from "../../../lib/speak";
 import Quiz from "../../components/Quiz";
 import { shuffle } from "../../../lib/words";
+import { useMounted } from "../../../lib/useClientDate";
 
 // Әр рет басқаша сұрақтар: түрі де, нұсқалары да кездейсоқ
 function mkTest(words, explain) {
@@ -100,12 +101,13 @@ export default function Sozdik() {
   const [round, setRound] = useState(0);
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
   const T = { test: ["Тест", "Тест", "Quiz"][li], newSet: ["Жаңа 10 сөз", "Новые 10 слов", "New 10 words"][li], again: ["Қайта тапсыру (жаңа сұрақтар)", "Пройти заново (новые вопросы)", "Retake (new questions)"][li], start: ["Тестті бастау", "Начать тест", "Start the quiz"][li] };
-  const today = dayKey();
+  // Күн кілті тек клиентте (гидрациядан кейін): сервер/гидрация рендерінде "" — бүгінгі 10 сөз әлі жоқ
+  const today = useMounted() ? dayKey() : "";
   const sz = state.sozdik || { days: {}, learned: {}, done: {} };
 
   // Бүгінгі 10 сөзді бір рет таңдап сақтаймыз (үйренген сөздер қайталанбайды)
   useEffect(() => {
-    if (sz.days?.[today]) return;
+    if (!today || sz.days?.[today]) return;
     update((s) => {
       const cur = s.sozdik || { days: {}, learned: {}, done: {} };
       if (cur.days?.[today]) return s;
@@ -164,7 +166,7 @@ export default function Sozdik() {
     saveWord({ kk: w.kk, ru: w.ru, en: w.en, e: w.e });
   }
   useEffect(() => {
-    if (words.length === 10 && known === 10 && !sz.done?.[today]) {
+    if (today && words.length === 10 && known === 10 && !sz.done?.[today]) {
       update((s) => ({ ...s, sozdik: { ...(s.sozdik || {}), done: { ...(s.sozdik?.done || {}), [today]: true } } }));
       award(40, 20, x.szDone);
     }

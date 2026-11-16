@@ -12,6 +12,8 @@ import { GameScene } from "./components/games/GameArt";
 import { LandingRibbon, LandingSwoosh, LandingTyped, LandingChatArt, LandingVisionArt, useLandingFx } from "./components/LandingArt";
 import { REGIONS } from "../lib/regions";
 import { L } from "../lib/i18n";
+import { useClientDate } from "../lib/useClientDate";
+import { useAnimGate } from "./components/AnimGate";
 
 // «Қызыл тіл» лентасындағы сөздер — өңірлер сөздігінен (lib/regions.js)
 const RIBBON_KK = ["сөз", "тау", "көл", "дала", "жылқы", "алма", "өлең", "жол", "керуен", "теңіз", "қызғалдақ", "киіз үй", "ақын", "су", "қар", "бал", "жайлау", "шың", "құм", "түйе", "кітап", "жел", "өзен"];
@@ -23,12 +25,20 @@ const WORD_IDX = (() => {
 // Төрт әлемнің суреті (t.feats ретімен: саяхат, ойындар, чат, Vision)
 const FEAT_ART = ["travel", "games", "chat", "vision"];
 
+// Жыл — клиентте (гидрациядан кейін); сервер/гидрация рендерінде орны сақталған көрінбейтін белгі
+function FootYear() {
+  const now = useClientDate();
+  return now ? now.getFullYear() : <span style={{ visibility: "hidden" }}>0000</span>;
+}
+
 export default function Landing() {
   const { t, lang, user, state } = useApp();
   const startHref = user || state.profile.onboarded ? "/app" : "/register";
   const shown = REGIONS.filter((r) => r.photo);
   const root = useRef(null);
   useLandingFx(root);
+  // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
+  const gHero = useAnimGate(), gFeat = useAnimGate(), gFinal = useAnimGate();
 
   // Аударма тілі: орыс/ағылшын интерфейсінде — сол тіл; қазақшада — орысша
   const trLang = lang === "en" ? "en" : lang === "kk" || lang === "ru" ? "ru" : "en";
@@ -68,7 +78,7 @@ export default function Landing() {
       </header>
 
       {/* ═════ HERO: сөз — қызыл тіл ═════ */}
-      <section className="ld-hero">
+      <section ref={gHero} className="ld-hero">
         <div className="ld-hero-in ld-wrap">
           <div className="ld-copy">
             <p className="ld-proverb">
@@ -147,7 +157,7 @@ export default function Landing() {
       <Orn className="ld-orn" />
 
       {/* ═════ Төрт әлем: бір жіппен тігілген әңгіме ═════ */}
-      <section className="ld-sec ld-wrap">
+      <section ref={gFeat} className="ld-sec ld-wrap">
         <h2 className="ld-h2" data-reveal>
           {t.featTitle}
         </h2>
@@ -250,7 +260,7 @@ export default function Landing() {
       </section>
 
       {/* ═════ Соңғы шақыру: қызыл киіз ═════ */}
-      <section className="ld-wrap">
+      <section ref={gFinal} className="ld-wrap">
         <div className="ld-final" data-reveal>
           <div className="ld-final-aqyl">
             <Qyran mood="cheer" size={150} />
@@ -266,7 +276,7 @@ export default function Landing() {
 
       <footer className="ld-foot ld-wrap">
         <Orn />
-        <p className="small">© {new Date().getFullYear()} Qyzyl til · Aqyl</p>
+        <p className="small">© <FootYear /> Qyzyl til · Aqyl</p>
       </footer>
     </div>
   );

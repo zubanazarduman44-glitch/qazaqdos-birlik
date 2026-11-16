@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ClassView from "../../components/ClassView";
 import { useApp } from "../../components/Store";
 import { GAMES } from "../../../lib/games";
-import { ALL_LESSONS, lessonTitle } from "../../../lib/course";
+import { ALL_LESSONS, lessonTitle } from "../../../lib/courseIndex";
 import { L } from "../../../lib/i18n";
+import { useClientDate } from "../../../lib/useClientDate";
 import { createClass, createTask, deleteClass, deleteTask, isSetupError, joinClass, joinedClasses, leaveClass, listMembers, listSubs, listTasks, ownedClasses, removeMember, upsertSub } from "../../../lib/classes";
 
 const X = {
@@ -54,14 +55,18 @@ const X = {
   daysAgo: ["күн бұрын", "дн. назад", "d ago"],
 };
 
-function ago(iso, li) {
+// now — useClientDate()-тан (мс); сервер/гидрация рендерінде null → бейтарап «—»
+function ago(iso, li, now) {
   if (!iso) return X.never[li];
-  const d = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  if (now == null) return "—";
+  const d = Math.floor((now - new Date(iso).getTime()) / 86400000);
   return d <= 0 ? X.today[li] : `${d} ${X.daysAgo[li]}`;
 }
 
 export default function ClassPage() {
   const { lang, user, state, authReady } = useApp();
+  const nowD = useClientDate();
+  const nowMs = nowD ? nowD.getTime() : null;
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
   const T = (k) => X[k][li];
   const teacher = state.profile?.role === "teacher";
@@ -141,7 +146,7 @@ export default function ClassPage() {
     <ClassView
       T={T} li={li} lang={lang} user={user} authReady={authReady} teacher={teacher} setup={setup} err={err}
       classes={classes} cur={cur} setCur={setCur} isOwner={isOwner} members={members} tasks={tasks} subs={subs}
-      my={my} doneCount={doneCount} ago={ago} myAvatar={state.profile?.avatar}
+      my={my} doneCount={doneCount} ago={(iso, l) => ago(iso, l, nowMs)} myAvatar={state.profile?.avatar}
       name={name} setName={setName} code={code} setCode={setCode} busy={busy} copied={copied} onCopy={copyCode}
       tf={tf} setTf={setTf} onMake={make} onEnter={enter} onAddTask={addTask} onMark={mark}
       onDropClass={dropClass} onRemoveMember={dropMember} onDeleteTask={dropTask}

@@ -1,5 +1,6 @@
 // Saiys — «Бәйге алаңы»: тұғыр, бәйге жолы, рейтинг, жүлде, кері санақ (тек көрініс; дерек page.js-те).
 import Avatar from "./Avatar";
+import { useAnimGate } from "./AnimGate";
 import Icon from "./Icon";
 import Qyran from "./Qyran";
 import { Horse } from "./games/GameArt";
@@ -40,8 +41,9 @@ export function saiysStatus(rows, userId, x, t, up = 0) {
 
 /* Тақырып: мәтін + бәйге алаңы + мәре бағанындағы хабаршы Aqyl */
 export function SaiysHero({ x, mood = "idle", status, up = 0, t }) {
+  const gHero = useAnimGate(); // бәйге алаңы экраннан тыс болса — анимация кідіреді
   return (
-    <header className="sy-hero">
+    <header ref={gHero} className="sy-hero">
       <div className="sy-hero-text">
         <span className="kicker">{x.sKicker}</span>
         <h1>{x.sTitle}</h1>
@@ -68,8 +70,9 @@ export function SaiysHero({ x, mood = "idle", status, up = 0, t }) {
 export function SaiysPrize({ x, t, kind, ms, label }) {
   const s = Math.max(0, Math.floor(ms / 1000));
   const parts = [Math.floor(s / 86400), Math.floor((s % 86400) / 3600), Math.floor((s % 3600) / 60)];
+  const gPrize = useAnimGate();
   return (
-    <section className={`card sy-prize ${kind}`}>
+    <section ref={gPrize} className={`card sy-prize ${kind}`}>
       <div className="sy-prize-disc"><SaiysPrizeArt kind={kind} size={92} /></div>
       <div className="sy-prize-body">
         <span className="sy-tag">{x.sPrize}</span>

@@ -1,6 +1,7 @@
 // Қазақтың ұлттық аспаптары мен бұйымдары: бос жерлерді безендіру үшін SVG суреттер.
 import { PROVERBS } from "../../lib/culture";
 import { L } from "../../lib/i18n";
+import { useClientDate, utcDayIndex } from "../../lib/useClientDate";
 
 const GOLD = "#e8a400", RED = "#b8322a", TEAL = "#0a7f99", WOOD = "#8a5326", DARK = "#4a2c12", CREAM = "#fff3d4";
 
@@ -124,13 +125,15 @@ export function NatArt({ name = "dombyra", size = 120, className = "" }) {
 
 // Бос орынға: сурет + қысқа мәтін (мақал не өз мәтіні)
 export function NatEmpty({ art = "dombyra", text, lang = "kk", size = 120, proverb = false, children }) {
-  const day = Math.floor(Date.now() / 86400000);
+  // Күн мақалы: сервер мен гидрация рендерінде бейтарап (көрінбейтін) нұсқа, кейін — бүгінгі мақал
+  const now = useClientDate();
+  const day = now ? utcDayIndex(now) : 0;
   const p = PROVERBS[(day + art.length) % PROVERBS.length];
   return (
     <div className="nat-empty">
       <NatArt name={art} size={size} />
       {text && <p>{text}</p>}
-      {proverb && <small className="muted">«{L(p, lang)}»</small>}
+      {proverb && <small className="muted" style={now ? undefined : { visibility: "hidden" }}>«{L(p, lang)}»</small>}
       {children}
     </div>
   );

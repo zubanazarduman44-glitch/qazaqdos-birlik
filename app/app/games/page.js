@@ -5,14 +5,17 @@ import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import { GameScene, Muiz } from "../../components/games/GameArt";
+import { useAnimGate } from "../../components/AnimGate";
 import { GAMES } from "../../../lib/games";
 import { L } from "../../../lib/i18n";
 
 export default function Games() {
   const { t, lang, state } = useApp();
+  // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
+  const gHead = useAnimGate();
   return (
     <div className="games">
-      <header className="page-head games-head">
+      <header ref={gHead} className="page-head games-head">
         <div>
           <span className="kicker">{t.gamesKicker}</span>
           <h1>{t.gamesTitle}</h1>
