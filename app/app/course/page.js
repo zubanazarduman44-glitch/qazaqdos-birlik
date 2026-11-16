@@ -1,18 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import SectionIntro from "../../components/SectionIntro";
-import LangPicker from "../../components/LangPicker";
 import Icon from "../../components/Icon";
 import dynamic from "next/dynamic";
 import TopicArt from "../../components/TopicArt";
 import { useApp } from "../../components/Store";
-import { ALL_LESSONS, LEVELS, UNITS, levelStats, lessonTitle } from "../../../lib/course";
-import { TOPICS } from "../../../lib/words";
+// Жол картасына тек жеңіл индекс керек (сабақ id-лері, тақырып атаулары); сөздер мен сөйлемдер (lib/course.js) сабақ ашылғанда жүктеледі
+import { ALL_LESSONS, LEVELS, UNITS, TOPICS, levelStats, lessonTitle } from "../../../lib/courseIndex";
 import { L } from "../../../lib/i18n";
 import { whenIdle } from "../../../lib/idle";
 
 // Сабақ ойнатқышы (сабақ жоспары, дыбыс) тек сабақ ашылғанда керек: бөлек чанк, жол беті ашылған соң алдын ала жүктеледі
 const loadPlayer = () => import("../../components/LessonPlayer");
+const loadCourse = () => import("../../../lib/course");
 const LessonPlayer = dynamic(() => import("../../components/LessonPlayer"), { loading: () => <section className="lp" aria-busy="true" /> });
 
 const INTRO = {
@@ -62,6 +62,13 @@ function Player({ lesson, onClose, onNext, hasNext }) {
   const T = (k) => TXT[k][li];
   const [res, setRes] = useState(null);
   const [round, setRound] = useState(0);
+  // Сабақтың толық мазмұны (сөздер/сөйлемдер)
+  const [full, setFull] = useState(null);
+  useEffect(() => {
+    let on = true;
+    loadCourse().then((m) => on && setFull(m.lessonById(lesson.id) || null)).catch(() => {});
+    return () => { on = false; };
+  }, [lesson.id]);
 
   function finish({ right, total }) {
     const ok = total > 0 && right / total >= 0.7;
@@ -71,12 +78,14 @@ function Player({ lesson, onClose, onNext, hasNext }) {
     update((s) => ({ ...s, course: { ...(s.course || {}), done: { ...(s.course?.done || {}), [lesson.id]: { score: Math.round((right / total) * 100), at: Date.now() } } } }));
     if (first) award(15, 8);
     else award(3, 1);
-    if (lesson.kind === "words") lesson.words.forEach((w) => saveWord({ kk: w.kk, ru: w.ru, en: w.en, e: w.e, src: "course" }));
+    if (full?.kind === "words") full.words.forEach((w) => saveWord({ kk: w.kk, ru: w.ru, en: w.en, e: w.e, src: "course" }));
   }
+
+  if (!full) return <section className="crs-play"><section className="lp" aria-busy="true" /></section>;
 
   return (
     <section className="crs-play">
-      <LessonPlayer key={`${lesson.id}-${round}`} lesson={lesson} lang={lang} explain={explain} onFinish={finish} onClose={onClose} />
+      <LessonPlayer key={`${lesson.id}-${round}`} lesson={full} lang={lang} explain={explain} onFinish={finish} onClose={onClose} />
       {res && (
         <div className={`crs-after ${res.ok ? "ok" : "no"}`} role="status">
           <b>{res.ok ? T("passed") : T("failed")}</b>
@@ -99,7 +108,7 @@ export default function Course() {
   const done = state.course?.done || {};
   const [lv, setLv] = useState(state.cefr && LEVELS.some((l) => l.id === state.cefr) ? state.cefr : "A1");
   const [open, setOpen] = useState(null);
-  useEffect(() => whenIdle(loadPlayer), []);
+  useEffect(() => whenIdle(() => Promise.all([loadPlayer(), loadCourse()])), []);
   useEffect(() => {
     try {
       const id = new URLSearchParams(window.location.search).get("l");
@@ -124,7 +133,6 @@ export default function Course() {
           <span className="kicker">{T("kicker")}</span>
           <h1>{T("title")}</h1>
         </div>
-        <div className="head-tools"><LangPicker /></div>
       </header>
       <SectionIntro icon="map" {...(INTRO[lang] || INTRO.en)} />
 

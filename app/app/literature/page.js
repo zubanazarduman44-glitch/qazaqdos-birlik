@@ -1,6 +1,5 @@
 "use client";
 import "../../literature.css";
-import LangPicker from "../../components/LangPicker";
 import { NatEmpty } from "../../components/NatArt";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAnimGate } from "../../components/AnimGate";
@@ -12,8 +11,11 @@ import { LitEmblem, LitCorner, LitHeroArt, LIT_COVER, LIT_YEAR } from "../../com
 import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
 import { shuffle } from "../../../lib/wordTools";
 import { WORKS } from "../../../lib/literature";
-import { LIT_TR } from "../../../lib/litTr";
-const staticTr = (id, to) => (to === "ru" ? LIT_TR[id]?.[0] : to === "en" ? LIT_TR[id]?.[1] : null);
+// Дайын орысша/ағылшынша аудармалар (lib/litTr.js) бетпен бірге емес, керек кезде жүктеледі
+let LIT_TR = null;
+let litTrP = null;
+const loadLitTr = (to) => (to === "ru" || to === "en" ? (litTrP ||= import("../../../lib/litTr").then((m) => (LIT_TR = m.LIT_TR)).catch(() => (litTrP = null))) : Promise.resolve());
+const staticTr = (id, to) => (!LIT_TR ? null : to === "ru" ? LIT_TR[id]?.[0] : to === "en" ? LIT_TR[id]?.[1] : null);
 import { tx } from "../../../lib/tx";
 import { L } from "../../../lib/i18n";
 
@@ -168,33 +170,40 @@ export default function Literature() {
   // Мәтінді ашқанда аударма фонда әзірленеді: батырманы басқанда лезде шығады
   const ready = useRef({});
   useEffect(() => {
-    if (!work || explain === "kk" || staticTr(work.id, explain)) return;
-    const key = `qd_lt_${work.id}_${explain}`;
-    try {
-      const hit = localStorage.getItem(key);
-      if (hit) {
-        ready.current[key] = hit;
-        return;
-      }
-    } catch {}
-    if (ready.current[key]) return;
-    ready.current[key] = fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) })
-      .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
-      .then(({ ok, d }) => {
-        if (!ok || !d.text) throw new Error("err");
-        ready.current[key] = d.text;
-        try {
-          localStorage.setItem(key, d.text);
-        } catch {}
-        return d.text;
-      })
-      .catch(() => {
-        delete ready.current[key];
-        return null;
-      });
+    if (!work || explain === "kk") return;
+    let on = true;
+    loadLitTr(explain).then(() => on && prep());
+    return () => { on = false; };
+    function prep() {
+      if (staticTr(work.id, explain)) return;
+      const key = `qd_lt_${work.id}_${explain}`;
+      try {
+        const hit = localStorage.getItem(key);
+        if (hit) {
+          ready.current[key] = hit;
+          return;
+        }
+      } catch {}
+      if (ready.current[key]) return;
+      ready.current[key] = fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+        .then(({ ok, d }) => {
+          if (!ok || !d.text) throw new Error("err");
+          ready.current[key] = d.text;
+          try {
+            localStorage.setItem(key, d.text);
+          } catch {}
+          return d.text;
+        })
+        .catch(() => {
+          delete ready.current[key];
+          return null;
+        });
+    }
   }, [id, explain]);
   async function translate() {
     if (trans) return setTrans(null);
+    await loadLitTr(explain);
     const st = staticTr(work.id, explain);
     if (st) return setTrans(st);
     const key = `qd_lt_${work.id}_${explain}`;
@@ -317,7 +326,6 @@ export default function Literature() {
             <p className="lit-epi" lang="kk" dir="ltr">«Өнер алды — қызыл тіл»</p>
             <p className="lit-sub">{x.litSub}</p>
             <div className="head-tools">
-              <LangPicker />
               <span className="chip gold lit-count"><Icon name="book" size={16} /> {readN}/{WORKS.length}</span>
             </div>
             <div className="lit-spines" aria-hidden="true">

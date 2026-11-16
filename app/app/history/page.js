@@ -1,6 +1,5 @@
 "use client";
 import "../../history.css";
-import LangPicker from "../../components/LangPicker";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
@@ -58,6 +57,14 @@ const ERAS = [
 const SILK = ["taraz", "otrar", "turkistan", "sauran", "syganak"];
 
 const SORTED = [...SITES].sort((a, b) => a.year - b.year);
+const ORDER = [...REGIONS.filter((r) => !r.city), ...REGIONS.filter((r) => r.city)];
+const HAS_SITE = new Set(SITES.map((q) => q.region));
+const pos = (st) => {
+  const r = REGIONS.find((q) => q.id === st.region);
+  const c = (r && KZ_CENTERS[r.map]) || [500, 280];
+  return [c[0] + (st.dx || 0), c[1] + (st.dy || 0)];
+};
+const SILK_D = SILK.map((id) => SITES.find((q) => q.id === id)).filter(Boolean).map(pos).reduce((d, p, i, a) => (i ? `${d} Q${(p[0] + a[i - 1][0]) / 2} ${(p[1] + a[i - 1][1]) / 2 - 26} ${p[0]} ${p[1]}` : `M${p[0]} ${p[1]}`), "");
 
 const trW = tr;
 
@@ -150,15 +157,45 @@ export default function History() {
   const [era, setEra] = useState("all");
   const eraF = ERAS.find((e) => e.id === era);
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
-  const DECOR = useMemo(() => buildDecor(), []);
-  const order = useMemo(() => [...REGIONS.filter((r) => !r.city), ...REGIONS.filter((r) => r.city)], []);
-  const pos = (st) => {
-    const r = REGIONS.find((q) => q.id === st.region);
-    const c = (r && KZ_CENTERS[r.map]) || [500, 280];
-    return [c[0] + (st.dx || 0), c[1] + (st.dy || 0)];
-  };
-  const silkD = SILK.map((id) => SITES.find((q) => q.id === id)).filter(Boolean).map(pos).reduce((d, p, i, a) => (i ? `${d} Q${(p[0] + a[i - 1][0]) / 2} ${(p[1] + a[i - 1][1]) / 2 - 26} ${p[0]} ${p[1]}` : `M${p[0]} ${p[1]}`), "");
-  const hasSite = useMemo(() => new Set(SITES.map((q) => q.region)), []);
+  const order = ORDER;
+  // Картаның өзгермейтін қабаттары бір рет салынады (шекара деректері DOM-да бір рет, қалғаны <use>)
+  const MAP_DEFS = useMemo(() => (
+    <defs>
+      <linearGradient id="tfSteppe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#d9c78a" /><stop offset="1" stopColor="#b9a25f" /></linearGradient>
+      <linearGradient id="tfForest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c9c77a" /><stop offset="1" stopColor="#9aa25a" /></linearGradient>
+      <linearGradient id="tfDesert" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f0dc9e" /><stop offset="1" stopColor="#dcb465" /></linearGradient>
+      <linearGradient id="tfMountain" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c8b98a" /><stop offset="1" stopColor="#a08b5e" /></linearGradient>
+      <filter id="softSh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="2.4" floodColor="#2a1708" floodOpacity=".35" /></filter>
+      <g id="hkzLand">{ORDER.map((r, i) => <path key={r.id} id={`hkz${i}`} d={KZ_PATHS[r.map]} />)}</g>
+      <clipPath id="landClip">{ORDER.map((r, i) => <use key={r.id} href={`#hkz${i}`} />)}</clipPath>
+      <KzSymbols />
+      <HistSymbols />
+    </defs>
+  ), []);
+  const MAP_BASE = useMemo(() => {
+    const decor = buildDecor();
+    return (
+      <>
+        <g aria-hidden="true">
+          <use href="#hkzLand" className="kz-foam" />
+          <use href="#hkzLand" className="kz-cliff2" transform="translate(0 15)" />
+          <use href="#hkzLand" className="kz-cliff1" transform="translate(0 7)" />
+        </g>
+        {ORDER.map((r) => (
+          <path key={r.id} d={KZ_PATHS[r.map]} className={`reg tf-${TERRAIN[r.map] || "steppe"} ${HAS_SITE.has(r.id) ? "hs" : ""}`} />
+        ))}
+        <g pointerEvents="none">
+          {LAKES.map((d, i) => <path key={i} d={d} className="kz-lake" />)}
+          <g clipPath="url(#landClip)">{RIVERS.map((d, i) => <path key={i} d={d} className="kz-river" />)}{RIVERS.map((d, i) => <path key={`f${i}`} d={d} className="kz-river-flow" />)}</g>
+          {decor.map((it, i) => {
+            const h = it.k === "mountain" ? it.w * 0.75 : it.k === "pine" ? it.w * 1.38 : it.k === "yurt" ? it.w * 0.82 : it.k === "dune" ? it.w * 0.37 : it.k === "camelS" ? it.w * 0.82 : it.w * 0.67;
+            return <use key={i} href={`#ks-${it.k}`} x={it.x - it.w / 2} y={it.y - h} width={it.w} height={h} opacity=".85" />;
+          })}
+          <path d={SILK_D} className="silk-road" />
+        </g>
+      </>
+    );
+  }, []);
 
   useEffect(() => {
     const el = riverRef.current?.querySelector(".tl-node.on");
@@ -182,11 +219,7 @@ export default function History() {
 
   return (
     <div className="history" style={{ "--h": 18 + idx * 34 }}>
-      <div className="h-bg" aria-hidden>
-        {Array.from({ length: 22 }).map((_, i) => (
-          <i key={i} style={{ left: `${(i * 47) % 100}%`, animationDelay: `${(i % 9) * 0.9}s`, animationDuration: `${9 + (i % 5) * 2}s`, "--s": 0.5 + (i % 4) * 0.35 }} />
-        ))}
-      </div>
+      <div className="h-bg" aria-hidden />
       <header className="page-head hist-head">
         <div className="hist-head-t">
           <span className="kicker">{t.histKicker}</span>
@@ -194,7 +227,6 @@ export default function History() {
           <p>{t.histSub}</p>
         </div>
         <div className="head-tools">
-          <LangPicker />
           <span className="chip gold"><Icon name="scroll" size={16} /> {t.sitesDone(count, SITES.length)}</span>
         </div>
         <HistSeals done={done} label={t.sitesDone(count, SITES.length)} />
@@ -217,32 +249,8 @@ export default function History() {
           <div className="sky-stars" aria-hidden />
           <div className="map-sun" aria-hidden />
           <svg className="kzmap kz3d" viewBox={KZ_VIEW} role="img" aria-label={t.histTitle}>
-            <defs>
-              <linearGradient id="tfSteppe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#d9c78a" /><stop offset="1" stopColor="#b9a25f" /></linearGradient>
-              <linearGradient id="tfForest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c9c77a" /><stop offset="1" stopColor="#9aa25a" /></linearGradient>
-              <linearGradient id="tfDesert" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f0dc9e" /><stop offset="1" stopColor="#dcb465" /></linearGradient>
-              <linearGradient id="tfMountain" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c8b98a" /><stop offset="1" stopColor="#a08b5e" /></linearGradient>
-              <filter id="softSh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="2.4" floodColor="#2a1708" floodOpacity=".35" /></filter>
-              <filter id="glowF" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-              <clipPath id="landClip">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} />)}</clipPath>
-              <KzSymbols />
-              <HistSymbols />
-            </defs>
-            <g className="kz-foam" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} />)}</g>
-            <g className="kz-cliff2" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} transform="translate(0 15)" />)}</g>
-            <g className="kz-cliff1" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} transform="translate(0 7)" />)}</g>
-            {order.map((r) => (
-              <path key={r.id} d={KZ_PATHS[r.map]} className={`reg tf-${TERRAIN[r.map] || "steppe"} ${hasSite.has(r.id) ? "hs" : ""}`} />
-            ))}
-            <g pointerEvents="none">
-              {LAKES.map((d, i) => <path key={i} d={d} className="kz-lake" />)}
-              <g clipPath="url(#landClip)">{RIVERS.map((d, i) => (<g key={i}><path d={d} className="kz-river" /><path d={d} className="kz-river-flow" /></g>))}</g>
-              {DECOR.map((it, i) => {
-                const h = it.k === "mountain" ? it.w * 0.75 : it.k === "pine" ? it.w * 1.38 : it.k === "yurt" ? it.w * 0.82 : it.k === "dune" ? it.w * 0.37 : it.k === "camelS" ? it.w * 0.82 : it.w * 0.67;
-                return <use key={i} href={`#ks-${it.k}`} x={it.x - it.w / 2} y={it.y - h} width={it.w} height={h} opacity=".85" />;
-              })}
-              <path d={silkD} className="silk-road" />
-            </g>
+            {MAP_DEFS}
+            {MAP_BASE}
             {SITES.map((st) => {
               const [cx, cy] = pos(st);
               const on = eraF.f(st.year);

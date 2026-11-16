@@ -115,7 +115,46 @@ function Ear({ x, flip, kind, p }) {
 
 const KIND = { wolf: "point", fox: "point", cat: "point", bear: "round", tiger: "round", leopard: "round", squirrel: "round", camel: "round", rabbit: "long", horse: "horse", deer: "horse", saiga: "horse", sheep: "side", owl: "tuft" };
 
-export function AnimalArt({ id, mood = "idle", uid }) {
+// Тік тұрған аяқтар (киім үйі үшін): дене астынан шыққан балтыр + табан, тұяқты аңдарда — тұяқ
+const HOOF = ["horse", "camel", "deer", "saiga", "sheep"];
+function StandLegs({ id, p }) {
+  return (
+    <g>
+      {[77, 123].map((x) => <rect key={x} x={x - 12} y="196" width="24" height="36" rx="11" fill={id === "sheep" ? p.d : p.m} stroke={p.d} strokeWidth="1.5" />)}
+    </g>
+  );
+}
+function StandPaws({ id, p }) {
+  const hoof = HOOF.includes(id), owl = id === "owl";
+  return (
+    <g className="an-feet">
+      {[77, 123].map((x, i) => {
+        const dx = i ? 2 : -2;
+        if (owl) return (
+          <g key={x} stroke="#c07a00" strokeWidth="4.2" strokeLinecap="round" fill="none">
+            <path d={`M${x + dx} 226 V236 M${x + dx} 234 l-8 6 M${x + dx} 234 l8 6 M${x + dx} 234 v8`} />
+          </g>
+        );
+        if (hoof) return (
+          <g key={x}>
+            <path d={`M${x - 14 + dx} 240 C${x - 14 + dx} 228 ${x - 10 + dx} 224 ${x + dx} 224 C${x + 10 + dx} 224 ${x + 14 + dx} 228 ${x + 14 + dx} 240 Z`} fill={id === "sheep" ? "#241c18" : "#4a3020"} stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
+            <path d={`M${x + dx} 231 V240`} stroke="#000" strokeOpacity=".45" strokeWidth="1.6" strokeLinecap="round" />
+            <path d={`M${x - 9 + dx} 229 Q${x + dx} 226 ${x + 9 + dx} 229`} stroke="#fff" strokeOpacity=".25" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+          </g>
+        );
+        return (
+          <g key={x}>
+            <ellipse cx={x + dx} cy="233" rx="18" ry="9" fill={p.m} stroke={p.d} strokeWidth="1.6" />
+            <ellipse cx={x + dx} cy="230.5" rx="11" ry="4" fill={p.l} opacity=".5" />
+            <path d={`M${x - 7 + dx} 236.5 v3.5 M${x + dx} 237.5 v3.5 M${x + 7 + dx} 236.5 v3.5`} stroke={p.d} strokeWidth="1.6" strokeLinecap="round" opacity=".6" />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+export function AnimalArt({ id, mood = "idle", uid, stand = false }) {
   const p = PAL[id];
   const up = mood === "happy" || mood === "cheer";
   const gm = `gm${uid}`;
@@ -160,6 +199,8 @@ export function AnimalArt({ id, mood = "idle", uid }) {
       {KIND[id] && id !== "sheep" ? (<><Ear x={100} flip={false} kind={KIND[id]} p={p} /><Ear x={100} flip kind={KIND[id]} p={p} /></>) : null}
       {id === "sheep" && (<><Ear x={100} kind="side" p={{ ...p, m: p.m }} /><Ear x={100} flip kind="side" p={{ ...p, m: p.m }} /></>)}
 
+      {stand && <StandLegs id={id} p={p} />}
+
       {/* Дене */}
       <g className="an-body">
       <ellipse cx="100" cy="176" rx="50" ry="50" fill={id === "sheep" ? p.l : `url(#${gm})`} />
@@ -173,8 +214,12 @@ export function AnimalArt({ id, mood = "idle", uid }) {
 
       </g>
       {/* Аяқ */}
-      <ellipse cx="76" cy="224" rx="19" ry="8" fill={id === "sheep" ? p.d : p.m} stroke={p.d} strokeWidth="1.5" />
-      <ellipse cx="124" cy="224" rx="19" ry="8" fill={id === "sheep" ? p.d : p.m} stroke={p.d} strokeWidth="1.5" />
+      {stand ? <StandPaws id={id} p={p} /> : (
+        <>
+          <ellipse cx="76" cy="224" rx="19" ry="8" fill={id === "sheep" ? p.d : p.m} stroke={p.d} strokeWidth="1.5" />
+          <ellipse cx="124" cy="224" rx="19" ry="8" fill={id === "sheep" ? p.d : p.m} stroke={p.d} strokeWidth="1.5" />
+        </>
+      )}
 
       {/* Қол */}
       <g className="bk-arm-l" style={{ transformOrigin: "56px 150px" }}>

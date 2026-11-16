@@ -217,6 +217,11 @@ textarea.input { min-height: 120px; resize: vertical; line-height: 1.5; }
 .bk-zzz text:nth-child(3) { animation-delay: 0.8s; }
 @keyframes bkZ { 0% { opacity: 0; transform: translateY(6px); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px); } }
 .bk-sleep .bk-float { animation-duration: 5s; }
+/* Киім үйіндегі кейіпкер: табаны кілемде тұрады, тек денесі тыныс алып, сәл тербеледі */
+.qyran.dress-svg .bk-float { animation: dressIdle 4.8s ease-in-out infinite; transform-origin: 100px 240px; }
+.qyran.dress-svg .bk-shadow { animation: dressShadow 4.8s ease-in-out infinite; transform-origin: 100px 240px; }
+@keyframes dressIdle { 0%, 100% { transform: none; } 25% { transform: rotate(-1.4deg) scale(0.996, 1.012); } 50% { transform: scale(0.99, 1.022); } 75% { transform: rotate(1.4deg) scale(0.996, 1.012); } }
+@keyframes dressShadow { 50% { transform: scaleX(0.94); } }
 @media (prefers-reduced-motion: reduce) {
   .bk-float, .bk-shadow, .bk-eyes, .bk-arm-r, .bk-arm-l, .bk-sparkle, .bk-zzz text { animation: none !important; }
 }

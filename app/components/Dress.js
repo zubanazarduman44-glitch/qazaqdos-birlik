@@ -1,5 +1,5 @@
 // Кию үлгісі: кейіпкер (алдынан қарап тұрған бүркіт не жануар) + ұлттық киімдер SVG қабаттары.
-// Барлығы бір координат жүйесінде (200×230): бас орталығы (100,100), дене (100,176), аяқ y≈224.
+// Барлығы бір координат жүйесінде (200×248): бас орталығы (100,100), дене (100,176), табан y≈242 (кілемге тиеді).
 import { useId } from "react";
 import { AnimalArt } from "./Animals";
 import { Dombyra, Kobyz, Kamshy } from "./NatArt";
@@ -231,7 +231,7 @@ function Necklace() {
   );
 }
 function Boots({ eagle, c = "#6b3a16", band = RED }) {
-  const y = eagle ? 0 : 2;
+  const y = eagle ? 0 : 6;
   return (
     <g>
       {[1, -1].map((f) => { const x = 66; return (
@@ -287,10 +287,10 @@ export default function DressUp({ skin = "eagle", wear = {}, size = 220, mood = 
   const beltOn = wear.acc === "beldik";
   const koi = wear.body === "koilek";
   return (
-    <svg className={`qyran dress-svg bk-${mood}`} viewBox="-4 -12 208 252" width={size} height={(size * 252) / 208} role="img" aria-label="Aqyl">
-      <ellipse className="bk-shadow" cx="100" cy="236" rx="62" ry="5" fill="#2a1708" opacity=".18" />
+    <svg className={`qyran dress-svg bk-${mood}`} viewBox="-4 -12 208 260" width={size} height={(size * 260) / 208} role="img" aria-label="Aqyl">
+      <ellipse className="bk-shadow" cx="100" cy={eagle ? 236 : 241} rx="66" ry="6" fill="#2a1708" opacity=".2" />
       <g className="bk-float">
-        {eagle ? <EagleFront uid={uid} /> : <AnimalArt id={skin} mood="idle" uid={uid} />}
+        {eagle ? <EagleFront uid={uid} /> : <AnimalArt id={skin} mood="idle" uid={uid} stand />}
         {body && body()}
         {beltOn && (koi ? <Belt x1={64} x2={136} y={160} /> : <Belt x1={50} x2={150} y={184} />)}
         {wear.acc === "algha" && <Necklace />}

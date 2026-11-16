@@ -1,11 +1,9 @@
 "use client";
 import "../../travelpage.css";
-import LangPicker from "../../components/LangPicker";
 import KzSymbols from "../../components/KzSymbols";
 import { buildDecor, TERRAIN, LANDMARK, RIVERS, LAKES } from "../../../lib/kzscene";
 import dynamic from "next/dynamic";
 import SightArt, { kindOf, RegionScene } from "../../components/SightArt";
-import { REGION_ABOUT } from "../../../lib/regionAbout";
 import { whenIdle } from "../../../lib/idle";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -25,6 +23,8 @@ const loadAtlas = () => import("../../components/RegionAtlas");
 const RegionAtlas = dynamic(() => import("../../components/RegionAtlas"), { loading: () => <section className="ra" aria-busy="true" style={{ minHeight: 420 }} /> });
 
 const CITY_IDS = ["astana", "almaty-city", "shymkent"];
+// Карта: облыстар алдымен, қалалар үстінде
+const ORDER = [...REGIONS.filter((r) => !r.city), ...REGIONS.filter((r) => r.city)];
 
 const trW = tr;
 
@@ -109,6 +109,14 @@ function Travel() {
   const [trail, setTrail] = useState(null);
 
   useEffect(() => whenIdle(loadAtlas), []);
+  // «Өңір туралы» мәтіндері ауыр: өңір таңдалғанда ғана жүктеледі (атлас чанкімен бірге алдын ала да келеді)
+  const [about, setAbout] = useState(null);
+  useEffect(() => {
+    if (!sel || about) return;
+    let on = true;
+    import("../../../lib/regionAbout").then((m) => on && setAbout(m.REGION_ABOUT)).catch(() => {});
+    return () => { on = false; };
+  }, [sel, about]);
 
   useEffect(() => {
     const id = params.get("r");
@@ -169,7 +177,42 @@ function Travel() {
   const hovR = hov && REGIONS.find((r) => r.id === hov);
   const x = tx(lang);
   const lastR = REGIONS.filter((r) => stamps[r.id]).sort((a, b) => stamps[b.id] - stamps[a.id])[0] || REGIONS.find((r) => r.id === "astana") || REGIONS[0];
-  const DECOR = useMemo(() => buildDecor(), []);
+  // Картаның өзгермейтін қабаттары бір рет салынады: hover/таңдау кезінде React оларды қайта салыстырмайды.
+  // Шекара сызықтары DOM-да бір-ақ рет (defs) тұрады, жағалау/жартас қабаттары <use> арқылы көшіріледі.
+  const MAP_DEFS = useMemo(() => (
+    <defs>
+      <linearGradient id="tfSteppe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c4de64" /><stop offset="1" stopColor="#8fc23f" /></linearGradient>
+      <linearGradient id="tfForest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7cc04e" /><stop offset="1" stopColor="#4a9a3a" /></linearGradient>
+      <linearGradient id="tfDesert" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f4dd96" /><stop offset="1" stopColor="#e2b85f" /></linearGradient>
+      <linearGradient id="tfMountain" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a9c76a" /><stop offset="1" stopColor="#7ea653" /></linearGradient>
+      <linearGradient id="stampG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffe48a" /><stop offset="1" stopColor="#e39b00" /></linearGradient>
+      <linearGradient id="selG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#4fd3e4" /><stop offset="1" stopColor="#0a7f99" /></linearGradient>
+      <filter id="softSh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="2.4" floodColor="#2a1708" floodOpacity=".35" /></filter>
+      <g id="tkzLand">{ORDER.map((r, i) => <path key={r.id} id={`tkz${i}`} d={KZ_PATHS[r.map]} />)}</g>
+      <clipPath id="landClip">{ORDER.map((r, i) => <use key={r.id} href={`#tkz${i}`} />)}</clipPath>
+      <KzSymbols />
+    </defs>
+  ), []);
+  const MAP_BASE = useMemo(() => (
+    <g aria-hidden="true">
+      <use href="#tkzLand" className="kz-foam" />
+      <use href="#tkzLand" className="kz-cliff2" transform="translate(0 15)" />
+      <use href="#tkzLand" className="kz-cliff1" transform="translate(0 7)" />
+    </g>
+  ), []);
+  const MAP_DECOR = useMemo(() => {
+    const decor = buildDecor();
+    return (
+      <>
+        {LAKES.map((d, i) => <path key={i} d={d} className="kz-lake" />)}
+        <g clipPath="url(#landClip)">{RIVERS.map((d, i) => <path key={i} d={d} className="kz-river" />)}{RIVERS.map((d, i) => <path key={`f${i}`} d={d} className="kz-river-flow" />)}</g>
+        {decor.map((it, i) => {
+          const h = it.k === "mountain" ? it.w * 0.75 : it.k === "pine" ? it.w * 1.38 : it.k === "yurt" ? it.w * 0.82 : it.k === "dune" ? it.w * 0.37 : it.k === "camelS" ? it.w * 0.82 : it.w * 0.67;
+          return <use key={i} href={`#ks-${it.k}`} x={it.x - it.w / 2} y={it.y - h} width={it.w} height={h} />;
+        })}
+      </>
+    );
+  }, []);
 
   const matches = q.trim()
     ? REGIONS.filter((r) => `${r.name.kk} ${r.name.ru} ${r.name.en} ${r.center.kk} ${r.center.ru} ${r.center.en}`.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 6)
@@ -185,8 +228,7 @@ function Travel() {
     else award(2, 0);
   }
 
-  // Карта: облыстар алдымен, қалалар үстінде
-  const order = [...REGIONS.filter((r) => !r.city), ...REGIONS.filter((r) => r.city)];
+  const order = ORDER;
 
   return (
     <div className="travel">
@@ -197,7 +239,6 @@ function Travel() {
           <p>{t.travelSub}</p>
         </div>
         <div className="head-tools">
-          <LangPicker />
           <span className="chip gold"><Icon name="stamp" size={16} /> {t.stamps(count, REGIONS.length)}</span>
         </div>
         <TripWindow region={lastR} lang={lang} got={Boolean(stamps[lastR.id])} t={t} />
@@ -209,25 +250,9 @@ function Travel() {
           <div className="sky-stars" aria-hidden />
           <div className="map-sun" aria-hidden />
           <svg className="kzmap kz3d" viewBox={KZ_VIEW} role="img" aria-label={t.travelTitle}>
-            <defs>
-              <linearGradient id="tfSteppe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#c4de64" /><stop offset="1" stopColor="#8fc23f" /></linearGradient>
-              <linearGradient id="tfForest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7cc04e" /><stop offset="1" stopColor="#4a9a3a" /></linearGradient>
-              <linearGradient id="tfDesert" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f4dd96" /><stop offset="1" stopColor="#e2b85f" /></linearGradient>
-              <linearGradient id="tfMountain" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a9c76a" /><stop offset="1" stopColor="#7ea653" /></linearGradient>
-              <linearGradient id="stampG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffe48a" /><stop offset="1" stopColor="#e39b00" /></linearGradient>
-              <linearGradient id="selG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#4fd3e4" /><stop offset="1" stopColor="#0a7f99" /></linearGradient>
-              <filter id="glowF" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="3" result="b" />
-                <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-              </filter>
-              <filter id="softSh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="2.4" floodColor="#2a1708" floodOpacity=".35" /></filter>
-              <clipPath id="landClip">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} />)}</clipPath>
-              <KzSymbols />
-            </defs>
+            {MAP_DEFS}
             {/* Жағалау көбігі және жартас (3D) */}
-            <g className="kz-foam" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} />)}</g>
-            <g className="kz-cliff2" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} transform="translate(0 15)" />)}</g>
-            <g className="kz-cliff1" aria-hidden="true">{order.map((r) => <path key={r.id} d={KZ_PATHS[r.map]} transform="translate(0 7)" />)}</g>
+            {MAP_BASE}
             {order.map((r, i) => (
               <path
                 key={r.id}
@@ -244,13 +269,8 @@ function Travel() {
               />
             ))}
             <g pointerEvents="none">
-              {LAKES.map((d, i) => <path key={i} d={d} className="kz-lake" />)}
-              <g clipPath="url(#landClip)">{RIVERS.map((d, i) => (<g key={i}><path d={d} className="kz-river" /><path d={d} className="kz-river-flow" /></g>))}</g>
-              {DECOR.map((it, i) => {
-                const h = it.k === "mountain" ? it.w * 0.75 : it.k === "pine" ? it.w * 1.38 : it.k === "yurt" ? it.w * 0.82 : it.k === "dune" ? it.w * 0.37 : it.k === "camelS" ? it.w * 0.82 : it.w * 0.67;
-                return <use key={i} href={`#ks-${it.k}`} x={it.x - it.w / 2} y={it.y - h} width={it.w} height={h} />;
-              })}
-              {routeD && <path d={routeD} className="journey" filter="url(#glowF)" />}
+              {MAP_DECOR}
+              {routeD && <path d={routeD} className="journey" />}
               {trail && <path key={trail.k} className="flight" d={`M${trail.from[0]} ${trail.from[1]} Q${(trail.from[0] + trail.to[0]) / 2} ${(trail.from[1] + trail.to[1]) / 2 - 60} ${trail.to[0]} ${trail.to[1]}`} />}
             </g>
             {/* Өңірлердің үлкен белгілері */}
@@ -351,7 +371,7 @@ function Travel() {
               <span>
                 {t.regionCenter}: <b>{L(region.center, lang)}</b>
               </span>
-              {REGION_ABOUT[region.id] && <p className="region-tease">{teaser(L(REGION_ABOUT[region.id], lang))}</p>}
+              {about?.[region.id] && <p className="region-tease">{teaser(L(about[region.id], lang))}</p>}
             </div>
             {stamps[region.id] && <span className="stamp-mark pop"><Icon name="stamp" size={16} /> {t.visited}</span>}
           </div>

@@ -3,7 +3,7 @@
 // <SightArt kind="canyon" />        — карточка (360×200)
 // <SightArt kind="canyon" wide />   — кең баннер (hero)
 // <SightArt kind="canyon" mini />   — 40px белгіше (тек басты нысан, анимациясыз)
-import { useEffect, useId, useRef } from "react";
+import { memo, useEffect, useId, useRef } from "react";
 // Тек түр картасы (мәтіндері бар lib/sights.js бұл бетке жүктелмейді)
 import { SIGHT_KINDS, SIGHT_KIND } from "../../lib/sightKinds";
 
@@ -998,7 +998,7 @@ function mk(raw) {
 }
 const HERO_VB = "-250 0 620 200";
 
-export default function SightArt({ kind, mini = false, wide = false, className = "", title }) {
+function SightArt({ kind, mini = false, wide = false, className = "", title }) {
   const raw = useId().replace(/[^a-zA-Z0-9]/g, "");
   const ref = useRef(null);
   useLive(ref, !mini);
@@ -1094,7 +1094,7 @@ const HERO = {
   "east-kz": { sky: "cold", acc: ["eagle"] },
 };
 
-export function RegionScene({ region, className = "" }) {
+function RegionSceneImpl({ region, className = "" }) {
   const raw = useId().replace(/[^a-zA-Z0-9]/g, "");
   const ref = useRef(null);
   useLive(ref, true);
@@ -1175,3 +1175,7 @@ export function RegionScene({ region, className = "" }) {
     </div>
   );
 }
+
+// Сахналар ауыр (жүздеген SVG элемент): пропсы өзгермесе қайта салынбайды (картада hover кезінде 40 кішкентай сахна бар)
+export default memo(SightArt);
+export const RegionScene = memo(RegionSceneImpl);

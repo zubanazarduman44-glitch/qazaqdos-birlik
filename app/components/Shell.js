@@ -11,6 +11,7 @@ import QyzylMark from "./QyzylMark";
 import ShellGlyph from "./ShellGlyph";
 import WordTap from "./WordTap";
 import { authed } from "../../lib/auth";
+import { whenIdle } from "../../lib/idle";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
 import { SECTIONS, sectionOf, secVars } from "../../lib/sections";
 
@@ -136,7 +137,8 @@ export default function Shell({ children }) {
   const [admin, setAdmin] = useState(false);
   useEffect(() => {
     if (!user) return setAdmin(false);
-    authed("/rest/v1/rpc/admin_overview", { method: "POST", body: "{}" }).then(() => setAdmin(true)).catch(() => setAdmin(false));
+    // Әкімші тексерісі бетті ашуға кедергі болмасын: браузер бос кезде
+    return whenIdle(() => authed("/rest/v1/rpc/admin_overview", { method: "POST", body: "{}" }).then(() => setAdmin(true)).catch(() => setAdmin(false)));
   }, [user?.id]); // eslint-disable-line
 
   useEffect(() => {
@@ -223,9 +225,6 @@ export default function Shell({ children }) {
             </span>
             <span className="me-go"><ShellGlyph name="tumar" size={16} /></span>
           </Link>
-          <div className="side-tools">
-            <LangSeg />
-          </div>
         </div>
       </aside>
 
@@ -281,9 +280,6 @@ export default function Shell({ children }) {
                 </div>
               </div>
             ))}
-            <div className="sheet-tools">
-              <LangSeg />
-            </div>
           </div>
         </div>
       )}

@@ -198,6 +198,10 @@
 .pf-goal.on { color: #fff; background: var(--pf-red); box-shadow: 0 3px 0 var(--pf-deep); }
 .pf-goal.on .ic { color: #fff; }
 
+/* Интерфейс тілі (Қаз/Рус/Eng): тек осы жерде ауыстырылады — үлкен, анық сегмент */
+.pf-field .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; max-width: 420px; gap: 4px; padding: 4px; border-radius: 14px; background: var(--pf-cream); box-shadow: inset 0 0 0 1px var(--pf-line); }
+.pf-field .seg button { min-height: 44px; border: 0; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; color: var(--pf-ink); background: transparent; }
+.pf-field .seg button.on { color: #fff; background: var(--pf-red); box-shadow: 0 2px 0 #8a2018; }
 .pf-langs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
 .pf-lng { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; min-height: 56px; padding: 8px 12px 8px 8px; border: 0; border-radius: 14px; cursor: pointer; font: inherit; text-align: start; color: var(--pf-ink); background: var(--pf-cream); box-shadow: inset 0 0 0 1px var(--pf-line); transition: transform 0.2s var(--pf-ease); }
 [dir="rtl"] .pf-lng { padding: 8px 8px 8px 12px; }

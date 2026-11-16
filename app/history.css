@@ -277,3 +277,10 @@
   .history .hm-treasures button, .history .word-chip, .history .qopt, .history .qopt::before, .hist-tamga::before { transition: none; }
   .history .hm-treasures button:hover, .history .word-chip:hover, .history .qopt:not(:disabled):hover { transform: none; }
 }
+
+/* ── Өнімділік ──
+   Карта — бір үлкен SVG: ішіндегі тоқтаусыз анимациялар (белгі тербелісі, өзен ағысы, Жібек жолы, қазына жарқылы)
+   бүкіл картаны әр кадрда қайта салдыратын. Енді олар тыныш; қозғалыс тек hover/таңдау кезінде. */
+.history .kz-lm-art, .history .kz-river-flow, .history .kz-badge, .history .silk-road, .history .hm-halo, .history .rw { animation: none; }
+/* Телефонда өңір сілтемесі де ыңғайлы басылатындай */
+.history .site-reg { min-height: 44px; }

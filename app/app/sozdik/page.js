@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
 import { NatEmpty } from "../../components/NatArt";
-import LangPicker from "../../components/LangPicker";
 import TopicArt, { TOPIC_TINT } from "../../components/TopicArt";
 import Qyran from "../../components/Qyran";
 import { WORDS, WTR, TOPICS, setWordTr, tr } from "../../../lib/words";
@@ -204,7 +203,7 @@ export default function Sozdik() {
           <h1>{x.szTitle}</h1>
           <p>{x.szSub}</p>
         </div>
-        <div className="head-tools"><LangPicker /><span className="chip gold"><Icon name="book" size={15} /> {vocab.length}</span></div>
+        <div className="head-tools"><span className="chip gold"><Icon name="book" size={15} /> {vocab.length}</span></div>
       </header>
 
       <div className="szk-tabs">

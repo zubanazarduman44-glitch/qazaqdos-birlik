@@ -79,7 +79,7 @@
 .sh-tassel.s1 { inset-inline-start: 22px; } .sh-tassel.s2 { inset-inline-end: 22px; animation-delay: -2s; }
 .sh-model { position: relative; display: grid; justify-items: center; width: 100%; }
 .sh-rug { position: absolute; bottom: -4px; left: 50%; width: 252px; height: auto; transform: translateX(-50%); }
-.sh-model-fig { position: relative; z-index: 1; margin-bottom: 4px; }
+.sh-model-fig { position: relative; z-index: 1; margin-bottom: 20px; }
 .sh-model-fig .dress-svg { display: block; overflow: visible; }
 .sh-stitch { position: absolute; z-index: 0; left: 50%; top: 46%; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; border: 3px dashed var(--sh-gold); opacity: 0; pointer-events: none; }
 .sh-mirror.sewn .sh-stitch { animation: shStitch 1.2s 0.5s var(--ease) both; }
@@ -292,6 +292,7 @@
   .sh-glass { min-height: 262px; border-width: 10px; padding-top: 30px; }
   .sh-tassel { top: 48px; height: 34px; }
   .sh-model-fig svg { width: 160px; height: auto; }
+  .sh-model-fig { margin-bottom: 15px; }
   .sh-rug { width: 200px; }
   .sh-slot { min-height: 50px; }
   .sh-slot-art { width: 38px; height: 38px; }

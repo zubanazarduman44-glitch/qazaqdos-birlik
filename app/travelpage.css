@@ -281,3 +281,11 @@
   .travel .trip-cards button:hover, .travel .flip:hover .flip-in { transform: none; }
   .travel .trip-passport .stamp:not(.got):hover { transform: none; }
 }
+
+/* ── Өнімділік ──
+   Карта — бір үлкен SVG: оның ішіндегі кез келген тоқтаусыз анимация бүкіл картаны әр кадрда қайта салдырады.
+   Сондықтан белгілер, өзендер, мөр белгілері, жол сызығы және бүркіт тыныш тұрады; қозғалыс тек әрекетте (hover, таңдау, ұшу). */
+.travel .kz-lm-art, .travel .kz-river-flow, .travel .kz-lm.got .kz-badge, .travel .journey, .travel .eagle-ring,
+.travel .eagle:not(.flying) .eagle-fly, .travel .eagle-fly *, .travel .tc-needle { animation: none; }
+/* Экраннан тыс бөлімдер (паспорт) тек көрінгенде салынады */
+.travel .trip-passport { content-visibility: auto; contain-intrinsic-size: auto 560px; }

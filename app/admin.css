@@ -1,0 +1,212 @@
+/* ════════════════════════════════════════════════════════════════════
+   Әкімші тақтасы — «қағаз» стилінде (paper.css токендері), тыныш сұр-шифер екпін (--sec).
+   Барлық ереже .adm ішінде: nat.css-тегі ескі .adm-* ережелерінен күштірек болсын.
+   ════════════════════════════════════════════════════════════════════ */
+.adm {
+  --a-ink: var(--pp-ink, #1f2430);
+  --a-muted: var(--pp-muted, #4a5160);
+  --a-felt: var(--pp-felt, #f4ecda);
+  --a-hair: var(--pp-hair, rgba(122, 86, 22, 0.16));
+  --a-red: var(--pp-red, #b8322a);
+  --a-red-d: var(--pp-red-d, #8a2018);
+  --a-blue: #0f5e7a;
+  --a-ok: #2f6b4f;
+  color: var(--a-ink);
+}
+.adm .card { padding: 20px; }
+.adm .adm-flip { transition: none; }
+[dir="rtl"] .adm .adm-flip { transform: scaleX(-1); }
+
+/* Бет тақырыбы құралдары */
+.adm .adm-tools-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.adm .adm-upd { font-size: 13px; color: var(--a-muted); }
+.adm .adm-spin { animation: adm-spin 0.9s linear infinite; }
+@keyframes adm-spin { to { transform: rotate(360deg); } }
+.adm .adm-alert { align-items: center; margin-bottom: 16px; }
+.adm .adm-alert span { flex: 1; }
+
+/* Жүктелу қаңқасы */
+.adm .adm-skel { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.adm .adm-skel i { display: block; height: 104px; border-radius: var(--pp-r, 18px); background: var(--pp-paper, #fffdf7); box-shadow: var(--pp-card); animation: adm-pulse 1.4s ease-in-out infinite; }
+@keyframes adm-pulse { 50% { opacity: 0.55; } }
+
+/* Күй картасы: кіру / рұқсат жоқ / баптау / қате */
+.adm .adm-state { display: grid; grid-template-columns: minmax(160px, 240px) 1fr; align-items: center; gap: 12px 28px; max-width: 760px; padding: 26px; }
+.adm .adm-state-art { width: 100%; height: auto; display: block; }
+.adm .adm-state h2 { margin: 0 0 8px; font-family: var(--head); font-size: clamp(19px, 2.4vw, 24px); font-weight: 600; letter-spacing: -0.01em; }
+.adm .adm-state p { margin: 0 0 16px; line-height: 1.6; color: var(--a-muted); overflow-wrap: anywhere; }
+
+/* Қойындылар */
+.adm .adm-tabs { display: inline-grid; grid-auto-flow: column; gap: 4px; margin-bottom: 18px; padding: 4px; border-radius: 16px; background: var(--a-felt); }
+.adm .adm-tabs button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 8px 18px; border: 0; border-radius: 12px; background: none;
+  color: var(--a-muted); font: inherit; font-weight: 800; font-size: 15px; cursor: pointer;
+}
+.adm .adm-tabs button.is-on { background: var(--pp-paper, #fffdf7); color: var(--a-ink); box-shadow: var(--pp-sh-1); }
+.adm .adm-tabs button.is-on svg { color: var(--a-red); }
+.adm .adm-count { display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 8px; border-radius: 99px; background: rgba(255, 255, 255, 0.75); color: var(--a-muted); font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.adm .card .adm-count { background: var(--a-felt); }
+
+/* Шолу торы */
+.adm .adm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.adm .adm-kpis, .adm .adm-mini-kpis { grid-column: 1 / -1; }
+.adm .adm-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.adm .adm-stat { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+.adm .adm-stat.is-big { padding: 18px; border-radius: var(--pp-r-lg, 24px); background: var(--pp-paper, #fffdf7); box-shadow: var(--pp-card); }
+.adm .adm-kic { flex: none; }
+.adm .adm-stat-t { display: grid; min-width: 0; }
+.adm .adm-stat-t b { font-family: var(--head); font-size: 22px; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.adm .adm-stat.is-big .adm-stat-t b { font-size: clamp(26px, 3vw, 34px); }
+.adm .adm-stat-t span { font-size: 13.5px; font-weight: 700; color: var(--a-muted); line-height: 1.3; }
+.adm .adm-stat-t small { margin-top: 4px; font-size: 12.5px; color: var(--a-muted); }
+.adm .adm-mini-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; padding: 16px 20px; }
+.adm .adm-mini-kpis .adm-stat { align-items: center; }
+.adm .adm-mini-kpis .adm-stat + .adm-stat { padding-inline-start: 14px; border-inline-start: 1px solid var(--a-hair); }
+
+.adm .adm-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.adm .adm-h h2 { margin: 0; font-family: var(--head); font-size: var(--pp-h2, 19px); font-weight: 600; letter-spacing: -0.01em; }
+.adm .adm-h .adm-link { margin-inline-start: auto; }
+.adm .adm-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 6px 8px; border: 0; background: none; color: var(--a-blue); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.adm .adm-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* 14 күндік бағаналар */
+.adm .adm-bars { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); align-items: end; gap: 6px; height: 170px; margin: 0; }
+.adm .adm-bar { display: grid; grid-template-rows: 16px 1fr 16px; height: 100%; gap: 4px; justify-items: center; flex: initial; }
+.adm .adm-bar b { font-size: 11.5px; font-weight: 800; color: var(--a-muted); font-variant-numeric: tabular-nums; }
+.adm .adm-bar-col { position: relative; width: 100%; max-width: 30px; height: 100%; border-radius: 8px; background: var(--a-felt); overflow: hidden; }
+.adm .adm-bar-col i { position: absolute; inset: auto 0 0; min-height: 0; border-radius: 8px; background: #d9a542; }
+.adm .adm-bar.is-today .adm-bar-col i { background: var(--a-red); }
+.adm .adm-bar small { font-size: 11px; color: var(--a-muted); font-variant-numeric: tabular-nums; }
+
+/* Оқу жолы */
+.adm .adm-funnel ol { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.adm .adm-funnel li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "l v p" "b b b"; align-items: baseline; gap: 6px 10px; }
+.adm .adm-fn-l { grid-area: l; font-size: 14px; font-weight: 700; }
+.adm .adm-funnel b { grid-area: v; font-variant-numeric: tabular-nums; }
+.adm .adm-funnel small { grid-area: p; min-width: 40px; text-align: end; font-size: 13px; color: var(--a-muted); font-variant-numeric: tabular-nums; }
+.adm .adm-fn-bar { grid-area: b; display: block; height: 12px; border-radius: 99px; background: var(--a-felt); overflow: hidden; }
+.adm .adm-fn-bar i { display: block; width: var(--w); height: 100%; border-radius: inherit; background: var(--a-blue); opacity: calc(1 - var(--i) * 0.14); }
+
+/* Адамдар тізімі (шолу) */
+.adm .adm-people { display: grid; margin: 0 -8px; padding: 0; list-style: none; }
+.adm .adm-people li { display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 12px; }
+.adm .adm-people li + li { box-shadow: 0 -1px 0 var(--a-hair); }
+.adm .adm-n { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--a-felt); font-size: 13px; font-weight: 800; color: var(--a-muted); }
+.adm .adm-people li:first-child .adm-n { background: #f6e3b0; color: #6f4d03; }
+.adm .adm-v { margin-inline-start: auto; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.adm .adm-v small { font-size: 12px; color: var(--a-muted); }
+.adm .adm-v.is-date { font-size: 13px; color: var(--a-muted); }
+.adm .adm-empty-line { margin: 0; color: var(--a-muted); }
+
+/* Қолданушы түймесі (аты + email) */
+.adm .adm-who { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 48px; padding: 4px 0; border: 0; background: none; font: inherit; color: inherit; text-align: start; cursor: pointer; }
+.adm .adm-who:hover b { color: var(--a-red-d); text-decoration: underline; text-underline-offset: 3px; }
+.adm .adm-ava { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #e2edf1; color: var(--a-blue); font-weight: 800; font-size: 15px; }
+.adm .adm-ava.is-t { background: #f6e4df; color: var(--a-red-d); }
+.adm .adm-ava.is-lg { width: 52px; height: 52px; font-size: 22px; }
+.adm .adm-who-t { display: grid; min-width: 0; }
+.adm .adm-who-t b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm .adm-who-t small { font-size: 12.5px; color: var(--a-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Қолданушылар: сүзгілер */
+.adm .adm-filters { display: grid; grid-template-columns: minmax(220px, 1.6fr) repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.adm .adm-search { position: relative; display: block; }
+.adm .adm-search svg { position: absolute; inset-inline-start: 14px; top: 50%; transform: translateY(-50%); color: var(--a-muted); pointer-events: none; }
+.adm .adm-search .input { padding-inline-start: 42px; }
+.adm .adm-sel { display: grid; gap: 4px; min-width: 0; }
+.adm .adm-sel span { font-size: 12.5px; font-weight: 700; color: var(--a-muted); }
+.adm .adm-filters .input { min-height: 46px; }
+.adm .adm-bar-row { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin: 14px 0 6px; }
+.adm .adm-shown { font-size: 13.5px; color: var(--a-muted); }
+.adm .adm-shown b { color: var(--a-ink); }
+.adm .adm-csv { margin-inline-start: auto; }
+.adm .adm-down { transform: rotate(180deg); }
+
+/* Кесте */
+.adm .adm-table { width: 100%; border-collapse: collapse; font-size: 14px; white-space: normal; }
+.adm .adm-table th { position: static; padding: 10px; background: none; border-bottom: 1.5px solid var(--a-hair); text-align: start; font-size: 12.5px; font-weight: 800; color: var(--a-muted); white-space: nowrap; }
+.adm .adm-table td { padding: 6px 10px; border-top: 1px solid var(--a-hair); vertical-align: middle; }
+.adm .adm-table tbody tr:hover { background: rgba(244, 236, 218, 0.45); }
+.adm .adm-table .num { text-align: end; font-variant-numeric: tabular-nums; }
+.adm .adm-td-who { max-width: 320px; }
+.adm .adm-role { display: inline-block; padding: 2px 10px; border-radius: 99px; background: var(--a-felt); color: var(--a-muted); font-size: 12.5px; font-weight: 800; white-space: nowrap; }
+.adm .adm-role.is-t { background: #f6e4df; color: var(--a-red-d); }
+.adm .adm-date { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--a-muted); white-space: nowrap; }
+.adm .adm-dot { width: 9px; height: 9px; border-radius: 50%; background: #c9c2b2; }
+.adm .adm-dot.on { background: #3f9a5e; }
+.adm .adm-more { display: flex; margin: 14px auto 0; }
+
+/* Бос нәтиже */
+.adm .adm-none { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 24px 8px; flex-wrap: wrap; text-align: start; }
+.adm .adm-none-art { width: 180px; height: auto; }
+.adm .adm-none h3 { margin: 0 0 6px; font-family: var(--head); font-size: 18px; font-weight: 600; }
+.adm .adm-none p { margin: 0 0 12px; color: var(--a-muted); }
+
+/* Қолданушы картасы (модаль) */
+.adm .adm-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; background: rgba(31, 36, 48, 0.42); animation: adm-fade 0.18s ease both; }
+.adm .adm-dialog { width: min(480px, 100%); max-height: calc(100dvh - 32px); overflow: auto; padding: 22px; border-radius: var(--pp-r-lg, 24px); background: var(--pp-paper, #fffdf7); box-shadow: var(--pp-sh-3), inset 0 0 0 1px var(--pp-rim); animation: adm-pop 0.22s var(--ease, ease) both; }
+.adm .adm-dialog-head { display: flex; align-items: center; gap: 14px; }
+.adm .adm-dialog-who { flex: 1; min-width: 0; }
+.adm .adm-dialog-who h2 { margin: 4px 0 0; font-family: var(--head); font-size: 21px; font-weight: 600; overflow-wrap: anywhere; }
+.adm .adm-x { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 12px; background: var(--a-felt); color: var(--a-ink); cursor: pointer; }
+.adm .adm-copyrow { display: flex; align-items: center; gap: 10px; margin: 16px 0; padding: 8px 8px 8px 14px; border-radius: 14px; background: var(--a-felt); }
+.adm .adm-copyrow span { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.adm .adm-dialog-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; padding: 0; list-style: none; }
+.adm .adm-dialog-stats li { display: grid; justify-items: center; gap: 2px; padding: 12px 6px; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--a-hair); text-align: center; }
+.adm .adm-dialog-stats b { font-family: var(--head); font-size: 20px; font-weight: 600; }
+.adm .adm-dialog-stats span { font-size: 12.5px; color: var(--a-muted); font-weight: 700; }
+.adm .adm-dl { display: grid; margin: 0; }
+.adm .adm-dl > div { display: grid; grid-template-columns: 150px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--a-hair); }
+.adm .adm-dl dt { font-size: 13px; font-weight: 700; color: var(--a-muted); }
+.adm .adm-dl dd { margin: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+.adm .adm-dl dd small { color: var(--a-muted); }
+.adm .adm-id { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.adm .adm-id code { min-width: 0; font-size: 12px; overflow-wrap: anywhere; color: var(--a-muted); }
+.adm .adm-mini { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 10px; background: var(--a-felt); color: var(--a-ink); cursor: pointer; }
+@keyframes adm-fade { from { opacity: 0; } }
+@keyframes adm-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+
+/* Планшет */
+@media (max-width: 980px) {
+  .adm .adm-kpis, .adm .adm-skel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .adm .adm-mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .adm .adm-mini-kpis .adm-stat + .adm-stat { padding-inline-start: 0; border-inline-start: 0; }
+  .adm .adm-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .adm .adm-search { grid-column: 1 / -1; }
+}
+
+/* Телефон: кесте → карталар */
+@media (max-width: 760px) {
+  .adm .adm-grid { grid-template-columns: 1fr; }
+  .adm .adm-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+  .adm .adm-table, .adm .adm-table tbody { display: block; }
+  .adm .adm-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .adm .adm-table tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 10px; margin-top: 10px; padding: 10px 14px 14px; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--a-hair); }
+  .adm .adm-table td { display: grid; gap: 2px; padding: 0; border: 0; text-align: start !important; }
+  .adm .adm-table td[data-l]::before { content: attr(data-l); font-size: 11.5px; font-weight: 700; color: var(--a-muted); }
+  .adm .adm-table td.adm-td-who { grid-column: 1 / -1; max-width: none; padding-bottom: 6px; border-bottom: 1px solid var(--a-hair); }
+  .adm .adm-table td:nth-child(2) { grid-column: 1 / -1; display: flex; }
+  .adm .adm-table td:nth-child(2)::before { display: none; }
+  .adm .adm-table td:nth-child(6), .adm .adm-table td:nth-child(7) { grid-column: span 3; display: flex; justify-content: space-between; align-items: center; }
+}
+@media (max-width: 640px) {
+  .adm .card { padding: 16px; }
+  .adm .adm-state { grid-template-columns: 1fr; justify-items: center; text-align: center; padding: 20px 16px; }
+  .adm .adm-state-art { max-width: 220px; }
+  .adm .adm-kpis { gap: 10px; }
+  .adm .adm-stat.is-big { flex-direction: column; gap: 8px; padding: 14px; }
+  .adm .adm-filters { grid-template-columns: 1fr 1fr; }
+  .adm .adm-filters .adm-sel:last-child { grid-column: 1 / -1; }
+  .adm .adm-bars { gap: 3px; height: 150px; }
+  .adm .adm-bar small { font-size: 10px; }
+  .adm .adm-tools-top { width: 100%; justify-content: space-between; }
+  .adm .adm-dl > div { grid-template-columns: 1fr; gap: 2px; }
+  .adm .adm-none { flex-direction: column; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm .adm-skel i, .adm .adm-spin, .adm .adm-modal, .adm .adm-dialog { animation: none; }
+}
+.adm .adm-tabs svg, .adm .adm-link svg, .adm .btn svg { flex: none; }
+.adm .adm-link { white-space: nowrap; }
+@media (max-width: 640px) { .adm .adm-tabs button { padding: 8px 10px; font-size: 14px; } }

@@ -9,16 +9,24 @@ import { useApp, DAILY_GOAL, dayKey } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Avatar from "../../components/Avatar";
 import DressUp from "../../components/Dress";
-import LangPicker from "../../components/LangPicker";
 import Icon from "../../components/Icon";
 import { LangSeg } from "../../components/Shell";
 import { ProfileTumar, ProfileSeal, ProfileTree, ProfileEmber } from "../../components/ProfileArt";
 import { profileL10n } from "../../components/ProfileL10n";
 import { AVATARS, EXPLAIN_LANGS } from "../../../lib/i18n";
-import { REGIONS } from "../../../lib/regions";
-import { SITES } from "../../../lib/history";
-import { ALL_LESSONS } from "../../../lib/courseIndex";
-import { WORKS } from "../../../lib/literature";
+
+// Бөлімдердің жалпы саны үшін ауыр деректер модульдері (өңірлер, тарих, сабақтар, шығармалар) бет ашылған соң жүктеледі.
+// Оған дейін соңғы белгілі сандар көрсетіледі — жүктелгенде нақты мәнмен ауысады.
+const TOTALS0 = { course: 282, travel: 20, history: 11, lit: 15, works: null };
+let totalsCache = null;
+const loadTotals = () =>
+  (totalsCache ||= Promise.all([import("../../../lib/courseIndex"), import("../../../lib/regions"), import("../../../lib/history"), import("../../../lib/literature")]).then(([c, r, h, l]) => ({
+    course: c.ALL_LESSONS.length,
+    travel: r.REGIONS.length,
+    history: h.SITES.length,
+    lit: l.WORKS.length,
+    works: l.WORKS.map((w) => w.id),
+  })));
 
 const GOAL_ICON = { travel: "map", study: "book", work: "chart", life: "sun" };
 const WEEKS = 8;
@@ -80,14 +88,20 @@ export default function Profile() {
   const wordsN = Object.keys(state.sozdik?.learned || {}).length;
   const stampsN = Object.keys(state.stamps || {}).length;
   const sitesN = Object.keys(state.sites || {}).length;
-  const worksN = WORKS.filter((w) => state.lit?.[w.id]).length;
+  const [tot, setTot] = useState(TOTALS0);
+  useEffect(() => {
+    let on = true;
+    loadTotals().then((v) => on && setTot(v)).catch(() => {});
+    return () => { on = false; };
+  }, []);
+  const worksN = tot.works ? tot.works.filter((id) => state.lit?.[id]).length : Math.min(tot.lit, Object.keys(state.lit || {}).length);
   const branches = [
-    { id: "course", icon: "book", href: "/app/course", name: t.nav.course, v: lessonsN, total: ALL_LESSONS.length, unit: P("uLessons") },
+    { id: "course", icon: "book", href: "/app/course", name: t.nav.course, v: lessonsN, total: tot.course, unit: P("uLessons") },
     { id: "sozdik", icon: "pen", href: "/app/sozdik", name: t.nav.sozdik, v: wordsN, unit: P("uWords") },
     { id: "games", icon: "trophy", href: "/app/games", name: t.nav.games, v: wins, unit: P("uWins") },
-    { id: "travel", icon: "stamp", href: "/app/travel", name: t.nav.travel, v: stampsN, total: REGIONS.length, unit: P("uStamps") },
-    { id: "history", icon: "scroll", href: "/app/history", name: t.nav.history, v: sitesN, total: SITES.length, unit: P("uPlaces") },
-    { id: "lit", icon: "sparkle", href: "/app/literature", name: t.nav.lit, v: worksN, total: WORKS.length, unit: P("uWorks") },
+    { id: "travel", icon: "stamp", href: "/app/travel", name: t.nav.travel, v: stampsN, total: tot.travel, unit: P("uStamps") },
+    { id: "history", icon: "scroll", href: "/app/history", name: t.nav.history, v: sitesN, total: tot.history, unit: P("uPlaces") },
+    { id: "lit", icon: "sparkle", href: "/app/literature", name: t.nav.lit, v: worksN, total: tot.lit, unit: P("uWorks") },
   ].map((b) => ({ ...b, leaves: leavesOf(b.v, b.total), full: !!b.total && b.v >= b.total }));
 
   const cal = useMemo(() => {
@@ -138,7 +152,6 @@ export default function Profile() {
           <h1>{t.profileTitle}</h1>
           <p>{P("sub")}</p>
         </div>
-        <div className="head-tools"><LangPicker /></div>
       </header>
 
       {/* ── Шежіре беті: тұмар-таңба, есім, деңгей мөрі ── */}

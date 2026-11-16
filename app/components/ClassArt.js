@@ -1,13 +1,14 @@
-// «Менің сыныбым» — «Алқа-қотан» суреттері (тек inline SVG, градиентсіз — id қақтығысы болмасын).
-// ClassBand       — тұскиіз жиегі: қошқар мүйіз өрнегі бар алтын кесте жолағы.
-// ClassMedallion  — алқаның ортасындағы ою-розетка (төрт қошқар мүйіз).
-// ClassCushion    — көрпеше/жастық: оқушыға қызыл, төрдегі мұғалімге алтын кестелі.
-// ClassSeal       — тапсырма түрінің балауыз мөрі (сабақ — кітап, ойын — асық, өз тапсырмам — қаламұш); done — мөр басылды.
-// ClassKindGlyph  — сол белгілердің мөрсіз нұсқасы. ClassThreadRing — алтын жіп сақина-прогресс.
-// ClassEmptyCircle — бос алқа-қотан: төр мен айнала бос көрпешелер. ClassHourglass — мерзім белгісі.
+// «Менің сыныбым» суреттері — тегіс иллюстрация (тек inline SVG, градиентсіз, id жоқ — қақтығыс болмасын).
+// Әдебиет/«қағаз бен киіз» стиліне сай: кілегей фон, ағаш, алтын, бір-екі екпін түсі. Тыныш, бірақ «жанды».
+// ClassScene       — бос күй суреттері: тақта + парта + кітап; kind: login | setup | teacher | student | desks | tasks | done
+// ClassEmblem      — сынып белгісі (қызыл киіз тақта, алтын қошқар мүйіз)
+// ClassKindTile    — тапсырма түрінің түсті тақтайшасы (сабақ/ойын/өз тапсырмам)
+// ClassKindGlyph   — сол белгілердің сызықтық нұсқасы. ClassRank — 1–3 орын медальдары.
+// ClassThreadRing  — алтын жіп сақина-прогресс. ClassHourglass — мерзім белгісі. ClassHorn — қошқар мүйіз.
 
-const GOLD = "#F2C14E", GOLD_D = "#E0A526", CREAM = "#FFF6DC", RED = "#B8322A", RED_D = "#8A2018", RED_DD = "#6E1712", WINE_DK = "#4E0E0B";
-const r1 = (v) => Math.round(v * 10) / 10;
+const GOLD = "#F2C14E", GOLD_D = "#E0A526", CREAM = "#FFF6DC", RED = "#B8322A", RED_D = "#8A2018";
+const PAPER = "#FFFDF7", FELT = "#F4ECDA", FELT2 = "#E6D9BC", WOOD = "#7A4A22", WOOD_D = "#4F2E14", WOOD_L = "#A8703C";
+const BOARD = "#1F4E5A", BOARD_D = "#163A43", INK = "#1F2430", BLUE = "#0F5E7A", GREEN = "#3A7440";
 
 /* Қошқар мүйіз: бағаны (20,23)-те, екі иірім жоғарыда. 40×24 аумақ. */
 export const HORN = "M20 23V13C20 7.5 15 4.5 11 6.2C7.6 7.7 8.2 12.4 11.6 12.4C13.6 12.4 14.2 10 12.6 9.3M20 13C20 7.5 25 4.5 29 6.2C32.4 7.7 31.8 12.4 28.4 12.4C26.4 12.4 25.8 10 27.4 9.3M15 23H25";
@@ -20,54 +21,16 @@ export function ClassHorn({ size = 40, className = "" }) {
   );
 }
 
-export function ClassBand({ id = "cl-band", className = "" }) {
+/* Сынып белгісі: 56×56 — қызыл киіз, алтын тігіс, ортада қошқар мүйіз. */
+export function ClassEmblem({ size = 56, className = "" }) {
   return (
-    <svg className={`cl-band ${className}`} width="100%" height="28" aria-hidden="true" focusable="false">
-      <defs>
-        <pattern id={id} width="48" height="28" patternUnits="userSpaceOnUse">
-          <path d="M0 1.5H48M0 26.5H48" stroke={GOLD_D} strokeWidth="1.2" strokeDasharray="3 2.5" fill="none" />
-          <g transform="translate(4 1)"><path d={HORN} fill="none" stroke={GOLD} strokeWidth="1.7" strokeLinecap="round" /></g>
-          <path d="M0 10.5l3.5 3.5L0 17.5M48 10.5l-3.5 3.5 3.5 3.5" fill={GOLD_D} stroke="none" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="28" fill={`url(#${id})`} />
-    </svg>
-  );
-}
-
-export function ClassMedallion({ size = 110, className = "" }) {
-  const horns = [0, 90, 180, 270];
-  return (
-    <svg className={`cl-medal ${className}`} width={size} height={size} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      <circle cx="50" cy="50" r="47" fill={RED_DD} stroke={GOLD_D} strokeWidth="1.4" />
-      <circle cx="50" cy="50" r="42" fill="none" stroke={GOLD} strokeWidth="1.1" strokeDasharray="2.4 2.6" />
-      {horns.map((a) => (
-        <g key={a} transform={`translate(50 50) rotate(${a}) translate(0 -5) scale(1.35) translate(-20 -23)`}>
-          <path d={HORN} fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round" />
-        </g>
-      ))}
-      {[45, 135, 225, 315].map((a) => (
-        <circle key={a} cx={r1(50 + Math.cos((a * Math.PI) / 180) * 28)} cy={r1(50 + Math.sin((a * Math.PI) / 180) * 28)} r="2.2" fill={GOLD_D} />
-      ))}
-      <path d="M50 43l7 7-7 7-7-7z" fill={RED} stroke={GOLD} strokeWidth="1.3" />
-    </svg>
-  );
-}
-
-/* Көрпеше: 80×26. tor — алтын, ою жиекті. */
-export function ClassCushion({ tor = false, empty = false, className = "" }) {
-  const body = tor ? GOLD_D : empty ? "#7E1B15" : "#C2382D";
-  const top = tor ? GOLD : empty ? "#8E231B" : "#D0463A";
-  const trim = tor ? RED_D : GOLD;
-  return (
-    <svg className={`cl-cushion ${tor ? "is-tor" : ""} ${className}`} viewBox="0 0 80 26" aria-hidden="true" focusable="false">
-      <ellipse cx="40" cy="15" rx="38" ry="10" fill={WINE_DK} opacity="0.55" />
-      <ellipse cx="40" cy="12.5" rx="37" ry="10" fill={body} />
-      <ellipse cx="40" cy="11" rx="34" ry="8" fill={top} />
-      <ellipse cx="40" cy="11" rx="27" ry="5.4" fill="none" stroke={trim} strokeWidth="1.2" strokeDasharray={empty ? "2 3" : "3 2"} opacity={empty ? 0.6 : 1} />
-      {tor && <path d="M33 11l3.5-3 3.5 3 3.5-3 3.5 3M33 11l3.5 3 3.5-3 3.5 3 3.5-3" fill="none" stroke={RED_D} strokeWidth="1.2" />}
-      <circle cx="3.5" cy="12.5" r="2.4" fill={tor ? RED : GOLD_D} />
-      <circle cx="76.5" cy="12.5" r="2.4" fill={tor ? RED : GOLD_D} />
+    <svg className={`cl-emblem ${className}`} width={size} height={size} viewBox="0 0 56 56" aria-hidden="true" focusable="false">
+      <rect x="2" y="4" width="52" height="50" rx="14" fill={RED_D} />
+      <rect x="2" y="2" width="52" height="50" rx="14" fill={RED} />
+      <rect x="7" y="7" width="42" height="40" rx="10" fill="none" stroke={GOLD} strokeWidth="1.3" strokeDasharray="3 2.4" strokeOpacity="0.85" />
+      <g transform="translate(10 12) scale(0.9)"><path d={HORN} fill="none" stroke={GOLD} strokeWidth="2.6" strokeLinecap="round" /></g>
+      <path d="M24 39h8l-4 4z" fill={GOLD_D} />
+      <path d="M10 9.5c3-2.4 6.5-3.4 10-3.4" fill="none" stroke="#fff" strokeOpacity="0.3" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -95,6 +58,9 @@ function KindPath({ kind }) {
   );
 }
 
+/* Тапсырма түрлерінің түсі — бөлім реңдерімен үйлес (Тілбіл — жасыл, Ойындар — сарғыш, өз тапсырма — сия көгі) */
+export const KIND_TONE = { lesson: ["#3A7440", "#E7EDE1"], game: ["#B4510E", "#F6E8DB"], custom: ["#1F4E8C", "#E4E8EA"] };
+
 export function ClassKindGlyph({ kind, size = 26, className = "" }) {
   return (
     <svg className={`cl-kglyph ${className}`} width={size} height={size} viewBox="8 8 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
@@ -103,30 +69,37 @@ export function ClassKindGlyph({ kind, size = 26, className = "" }) {
   );
 }
 
-/* Балауыз мөр: тұрақты «толқынды» жиек. */
-const BLOB = (() => {
-  const W = [1, 0.94, 1.03, 0.97, 1.05, 0.95, 1.02, 0.93, 1.04, 0.98, 1.01, 0.95, 1.04, 0.96];
-  const n = W.length;
-  const pts = W.map((w, i) => { const a = (i / n) * Math.PI * 2; return [20 + Math.cos(a) * 18.4 * w, 20 + Math.sin(a) * 18.4 * w]; });
-  let d = `M${r1(pts[0][0])} ${r1(pts[0][1])}`;
-  for (let i = 0; i < n; i++) {
-    const p = pts[(i + 1) % n], q = pts[i];
-    const mx = (q[0] + p[0]) / 2, my = (q[1] + p[1]) / 2;
-    const k = 1.06; // сыртқа сәл дөңес
-    d += ` Q${r1(20 + (mx - 20) * k * 1.04)} ${r1(20 + (my - 20) * k * 1.04)} ${r1(p[0])} ${r1(p[1])}`;
-  }
-  return d + "Z";
-})();
-
-export function ClassSeal({ kind, done = false, size = 52, className = "" }) {
+/* Түсті тақтайша 48×48: жұмсақ фон, түсті белгі, done — алтын құсбелгі мөрі. */
+export function ClassKindTile({ kind, done = false, size = 48, className = "" }) {
+  const [tone, soft] = KIND_TONE[kind] || KIND_TONE.custom;
   return (
-    <svg className={`cl-seal k-${kind} ${done ? "is-done" : ""} ${className}`} width={size} height={size} viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-      <path d={BLOB} fill={RED_D} transform="translate(0.8 1.4)" />
-      <path d={BLOB} fill={done ? RED_D : RED} />
-      <circle cx="20" cy="20" r="13" fill="none" stroke={CREAM} strokeOpacity="0.55" strokeWidth="1" strokeDasharray={done ? "none" : "1.6 1.8"} />
-      <g fill="none" stroke={CREAM} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity={done ? 0.35 : 1}><KindPath kind={kind} /></g>
-      {done && <path d="M13 20.5l4.6 4.6L27.5 15" fill="none" stroke={GOLD} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />}
-      <path d="M10.5 9.5c2.5-2 5.5-3 8.5-3" fill="none" stroke="#fff" strokeOpacity="0.28" strokeWidth="1.6" strokeLinecap="round" />
+    <svg className={`cl-ktile ${className}`} width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <rect x="1" y="1" width="46" height="46" rx="13" fill={done ? FELT : soft} />
+      <rect x="1" y="1" width="46" height="46" rx="13" fill="none" stroke={tone} strokeOpacity="0.18" />
+      <g transform="translate(4 4)" fill="none" stroke={done ? "#8C8577" : tone} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><KindPath kind={kind} /></g>
+      {done && (
+        <g>
+          <circle cx="36" cy="36" r="9.5" fill={GREEN} stroke={PAPER} strokeWidth="2" />
+          <path d="M31.8 36.2l2.9 2.9 5.4-5.6" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
+/* 1–3 орын: таспалы медаль. Басқа орындар — жай сан (CSS). */
+const MEDAL = { 1: [GOLD, GOLD_D, "#7A5208"], 2: ["#D9DCE0", "#AEB4BC", "#4A5160"], 3: ["#E3A26E", "#B8743E", "#5E3218"] };
+export function ClassRank({ rank, size = 34 }) {
+  const m = MEDAL[rank];
+  if (!m) return <span className="cl-rank-n" aria-hidden="true">{rank}</span>;
+  return (
+    <svg className="cl-rank-m" width={size} height={size} viewBox="0 0 34 34" aria-hidden="true" focusable="false">
+      <path d="M10 2h6l3 10h-6zM24 2h-6l-3 10h6z" fill={rank === 1 ? RED : rank === 2 ? BLUE : GREEN} />
+      <path d="M10 2h6l3 10h-6z" fill="#000" fillOpacity="0.15" />
+      <circle cx="17" cy="21" r="11" fill={m[1]} />
+      <circle cx="17" cy="20" r="11" fill={m[0]} />
+      <circle cx="17" cy="20" r="7.6" fill="none" stroke={m[1]} strokeWidth="1.4" />
+      <text x="17" y="24.2" textAnchor="middle" fontSize="11.5" fontWeight="800" fontFamily="Nunito, system-ui, sans-serif" fill={m[2]}>{rank}</text>
     </svg>
   );
 }
@@ -153,34 +126,123 @@ export function ClassHourglass({ size = 14 }) {
   );
 }
 
-/* Бос алқа-қотан: 320×230. Төрде алтын көрпеше, айнала 8 бос көрпеше, ортасында розетка. */
-export function ClassEmptyCircle({ className = "" }) {
-  const cx = 160, cy = 122, rx = 132, ry = 84;
-  const seats = [-58, -26, 6, 38, 142, 174, 206, 238];
-  const cush = (x, y, s, tor, k) => (
-    <g key={k} transform={`translate(${r1(x - 40 * s)} ${r1(y - 13 * s)}) scale(${s})`}>
-      <ellipse cx="40" cy="15" rx="38" ry="10" fill={WINE_DK} opacity="0.55" />
-      <ellipse cx="40" cy="12.5" rx="37" ry="10" fill={tor ? GOLD_D : "#7E1B15"} />
-      <ellipse cx="40" cy="11" rx="34" ry="8" fill={tor ? GOLD : "#962A21"} />
-      <ellipse cx="40" cy="11" rx="27" ry="5.4" fill="none" stroke={tor ? RED_D : GOLD} strokeWidth="1.2" strokeDasharray="2 3" opacity={tor ? 1 : 0.7} />
-      <circle cx="3.5" cy="12.5" r="2.4" fill={tor ? RED : GOLD_D} /><circle cx="76.5" cy="12.5" r="2.4" fill={tor ? RED : GOLD_D} />
+export function ClassHourglass({ size = 14 }) {
+  return (
+    <svg className="cl-hg" width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="M4 2h8M4 14h8M5 2c0 3.2 6 4 6 6s-6 2.8-6 6M11 2c0 3.2-6 4-6 6s6 2.8 6 6" />
+    </svg>
+  );
+}
+
+/* ── Бос күй суреті: 260×170. Киіз қабырға, ағаш жақтаулы тақта, парта, кітап.
+   kind тақтадағы «бор жазуын» және алдыңғы бөлшекті өзгертеді. ── */
+function Board({ kind }) {
+  const chalk = { fill: "none", stroke: CREAM, strokeWidth: 2.4, strokeLinecap: "round", strokeLinejoin: "round" };
+  if (kind === "login") return (
+    <g {...chalk}>
+      <rect x="114" y="52" width="32" height="26" rx="5" />
+      <path d="M120 52v-7a10 10 0 0 1 20 0v7" />
+      <path d="M130 62v6" strokeWidth="3" />
     </g>
   );
+  if (kind === "setup") return (
+    <g {...chalk}>
+      <circle cx="122" cy="58" r="9" />
+      <path d="M122 43v5M122 68v5M107 58h5M132 58h5M111.5 47.5l3.5 3.5M129 65l3.5 3.5M111.5 68.5l3.5-3.5M129 51l3.5-3.5" />
+      <path d="M140 74l12-12M149 59a5 5 0 1 0 6 6" />
+    </g>
+  );
+  if (kind === "student") return (
+    <g>
+      {[0, 1, 2, 3, 4, 5].map((i) => <rect key={i} x={96 + i * 12} y="52" width="9" height="13" rx="2.5" fill="none" stroke={CREAM} strokeWidth="1.8" strokeOpacity={i < 3 ? 1 : 0.45} />)}
+      {["Q", "Z", "7"].map((c, i) => <text key={i} x={100.5 + i * 12} y="62.4" textAnchor="middle" fontSize="9" fontWeight="800" fontFamily="Nunito, system-ui, sans-serif" fill={GOLD}>{c}</text>)}
+      <path d="M100 76h52" stroke={CREAM} strokeWidth="2" strokeLinecap="round" strokeOpacity="0.5" strokeDasharray="5 5" />
+    </g>
+  );
+  if (kind === "tasks" || kind === "done") return (
+    <g {...chalk}>
+      {[0, 1, 2].map((i) => (
+        <g key={i}>
+          <rect x="100" y={46 + i * 12} width="8" height="8" rx="2" strokeWidth="1.8" />
+          {(kind === "done" || i === 0) && <path d={`M101.5 ${50 + i * 12}l2 2 3.5-4`} stroke={GOLD} strokeWidth="2" />}
+          <path d={`M114 ${50 + i * 12}h${[38, 30, 34][i]}`} strokeOpacity="0.75" />
+        </g>
+      ))}
+    </g>
+  );
+  if (kind === "desks") return (
+    <g {...chalk}>
+      <circle cx="112" cy="56" r="5" /><path d="M104 72c0-5 3.6-8 8-8s8 3 8 8" />
+      <circle cx="148" cy="56" r="5" strokeOpacity="0.5" strokeDasharray="3 3" /><path d="M140 72c0-5 3.6-8 8-8s8 3 8 8" strokeOpacity="0.5" strokeDasharray="3 3" />
+      <path d="M128 60h6M131 57v6" stroke={GOLD} />
+    </g>
+  );
+  /* teacher: «Сәлем!» орнына әліпби мен қосу белгісі */
   return (
-    <svg className={`cl-emptyc ${className}`} viewBox="0 0 320 230" aria-hidden="true" focusable="false">
-      <ellipse cx={cx} cy={cy + 4} rx={rx + 14} ry={ry + 12} fill={WINE_DK} opacity="0.35" />
-      <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill="none" stroke={GOLD} strokeOpacity="0.55" strokeWidth="1.3" strokeDasharray="4 4" />
-      <ellipse cx={cx} cy={cy} rx={rx - 30} ry={ry - 22} fill={RED_DD} opacity="0.6" />
-      <g transform={`translate(${cx - 26} ${cy - 26}) scale(0.52)`}>
-        <circle cx="50" cy="50" r="42" fill="none" stroke={GOLD} strokeWidth="1.6" strokeDasharray="2.4 2.6" />
-        {[0, 90, 180, 270].map((a) => (
-          <g key={a} transform={`translate(50 50) rotate(${a}) translate(0 -5) scale(1.35) translate(-20 -23)`}>
-            <path d={HORN} fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" />
-          </g>
-        ))}
+    <g>
+      <text x="112" y="68" textAnchor="middle" fontSize="20" fontWeight="800" fontFamily="Unbounded, Nunito, system-ui, sans-serif" fill={CREAM}>Әә</text>
+      <path d="M138 61h14M145 54v14" stroke={GOLD} strokeWidth="3" strokeLinecap="round" />
+    </g>
+  );
+}
+
+export function ClassScene({ kind = "teacher", className = "" }) {
+  return (
+    <svg className={`cl-scene k-${kind} ${className}`} viewBox="0 0 260 170" aria-hidden="true" focusable="false">
+      {/* фон: киіз дақ */}
+      <path d="M22 96C14 52 52 16 112 14c58-2 116 16 126 62 9 44-22 78-96 82C70 162 30 140 22 96Z" fill={FELT} />
+      <path d="M40 40c6-8 15-13 25-15" fill="none" stroke={FELT2} strokeWidth="3" strokeLinecap="round" />
+      {/* тақта ілгіші + қошқар мүйіз ою */}
+      <path d="M130 18v10" stroke={WOOD} strokeWidth="2" />
+      <g transform="translate(118 8) scale(0.6)"><path d={HORN} fill="none" stroke={GOLD_D} strokeWidth="3" strokeLinecap="round" /></g>
+      {/* тақта */}
+      <rect x="78" y="30" width="104" height="66" rx="8" fill={WOOD_D} />
+      <rect x="78" y="28" width="104" height="66" rx="8" fill={WOOD} />
+      <rect x="84" y="34" width="92" height="54" rx="4" fill={BOARD} />
+      <path d="M84 80h92v4a4 4 0 0 1-4 4H88a4 4 0 0 1-4-4z" fill={BOARD_D} />
+      <Board kind={kind} />
+      <rect x="150" y="90" width="16" height="4" rx="2" fill={CREAM} />
+      {/* парта */}
+      <ellipse cx="132" cy="154" rx="86" ry="6" fill={INK} opacity="0.08" />
+      <rect x="62" y="122" width="140" height="10" rx="4" fill={WOOD_L} />
+      <rect x="62" y="122" width="140" height="4" rx="2" fill="#C08750" />
+      <path d="M74 132v20M190 132v20" stroke={WOOD} strokeWidth="6" strokeLinecap="round" />
+      {/* ашық кітап */}
+      <g transform="translate(78 104)">
+        <path d="M0 18 L22 14 L44 18 L44 2 L22 -2 L0 2Z" fill={RED_D} />
+        <path d="M2 16 L22 12 L22 -1 L2 3Z" fill={PAPER} />
+        <path d="M42 16 L22 12 L22 -1 L42 3Z" fill="#F7EFDD" />
+        <path d="M6 6l12-2.4M6 10l12-2.4M26 3.6l12 2.4M26 7.6l12 2.4" stroke={FELT2} strokeWidth="1.4" strokeLinecap="round" />
       </g>
-      {cush(cx, cy - ry, 0.78, true, "tor")}
-      {seats.map((d, i) => { const a = (d * Math.PI) / 180; return cush(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry, 0.56, false, i); })}
+      {/* оң жақ бөлшек: түріне қарай */}
+      {kind === "login" ? (
+        <g transform="translate(150 98)">
+          <circle cx="10" cy="12" r="8" fill="none" stroke={GOLD_D} strokeWidth="4" />
+          <path d="M18 12h22M33 12v7M39 12v5" stroke={GOLD_D} strokeWidth="4" strokeLinecap="round" />
+        </g>
+      ) : kind === "student" ? (
+        <g transform="translate(146 100)">
+          <rect x="0" y="0" width="44" height="22" rx="5" fill={RED} />
+          <circle cx="0" cy="11" r="4" fill={FELT} /><circle cx="44" cy="11" r="4" fill={FELT} />
+          <path d="M10 8h24M10 14h16" stroke={CREAM} strokeWidth="2" strokeLinecap="round" />
+        </g>
+      ) : kind === "done" ? (
+        <g transform="translate(160 92)">
+          <circle cx="14" cy="14" r="14" fill={GREEN} />
+          <path d="M7.5 14.5l4.5 4.5 9-9.5" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+      ) : (
+        <g transform="translate(150 96)">
+          <rect x="0" y="6" width="20" height="20" rx="4" fill={BLUE} />
+          <path d="M5 6V3h10v3" fill="none" stroke={BLUE} strokeWidth="2" />
+          <path d="M26 24l14-22" stroke={GOLD_D} strokeWidth="4" strokeLinecap="round" />
+          <path d="M38.2 4.8l1.8-2.8" stroke={INK} strokeWidth="4" strokeLinecap="round" />
+        </g>
+      )}
+      {/* жұлдызша ұшқындар */}
+      <path d="M40 70l2.4 5 5 2.4-5 2.4-2.4 5-2.4-5-5-2.4 5-2.4z" fill={GOLD} />
+      <path d="M214 46l1.6 3.4 3.4 1.6-3.4 1.6-1.6 3.4-1.6-3.4-3.4-1.6 3.4-1.6z" fill={RED} opacity="0.7" />
+      <circle cx="206" cy="104" r="3" fill={BLUE} opacity="0.5" />
     </svg>
   );
 }
