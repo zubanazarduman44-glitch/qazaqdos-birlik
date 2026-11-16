@@ -8,7 +8,7 @@ import { ChatCamArt, ChatDisc } from "../../components/ChatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import { AqylSays, aqylMood } from "../../components/Aqyl";
-import { aqylL } from "../../components/AqylL10n";
+import { aqylL, useAqylL } from "../../components/AqylL10n";
 import Icon from "../../components/Icon";
 import { toWav } from "../../../lib/audio";
 import { sayKk } from "../../../lib/speak";
@@ -178,7 +178,7 @@ export default function Chat() {
   const msgs = state.chat || [];
   const pageRef = useRef(null);
 
-  const AL = aqylL(lang);
+  const AL = useAqylL(lang);
   const taRef = useRef(null);
   const [copied, setCopied] = useState(-1);
   // Жаңа жауап келгенде Aqyl біраз «сөйлейді» (talking), сосын түсіндіру не қуаныш қалпына өтеді

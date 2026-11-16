@@ -6,7 +6,7 @@ import Icon from "./Icon";
 import Qyran from "./Qyran";
 import { AqylPraise } from "./Aqyl";
 import { AqylExplainPanel, AqylWhy } from "./AqylExplain";
-import { aqylL } from "./AqylL10n";
+import { aqylL, useAqylL } from "./AqylL10n";
 import { sayKk, prefetchKk, stopKk } from "../../lib/speak";
 import {
   buildPlan, checkBuild, checkChoice, explainLang, hashSeed, initMatch, initSession, lessonItems, matchDone, matchTap,
@@ -406,7 +406,7 @@ const STEPS = { choose: ChooseStep, listen: ListenStep, truefalse: TrueFalseStep
 function Intro({ item, idx, total, phrases, T, snd, say, aq }) {
   const err = snd.st === "error" && snd.key.endsWith("|" + item.kk);
   const [open, setOpen] = useState(false);
-  const AL = aqylL(aq.lang);
+  const AL = useAqylL(aq.lang);
   return (
     <div className={`lp-intro ${phrases ? "lp-intro-phrase" : ""}`}>
       <p className="lp-kicker">{phrases ? T("meetPhrases") : T("meetWords")} <span className="lp-kicker-n">{idx + 1} / {total}</span></p>
@@ -491,7 +491,7 @@ export default function LessonPlayer({ lesson, lang, explain, level, onFinish, o
   // Aqyl: соңғы жауаптың егжей-тегжейі (қатені түсіндіру үшін) және қатарынан дұрыс жауаптар (мақтау үшін)
   const [detail, setDetail] = useState(null);
   const [run, setRun] = useState({ n: 0, cue: 0, text: "" });
-  const AL = aqylL(lang);
+  const AL = useAqylL(lang);
   const aq = { lang, explain, level: level || LEVELS.find((v) => v.units.includes(lesson.topic))?.id || "A1", topic: lesson.topic, kind: lesson.kind };
 
   useEffect(() => {

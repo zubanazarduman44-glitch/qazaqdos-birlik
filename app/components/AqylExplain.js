@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
 import { AqylSays } from "./Aqyl";
-import { aqylL } from "./AqylL10n";
+import { aqylL, useAqylL } from "./AqylL10n";
 import { sayKk } from "../../lib/speak";
 
 /* ══════════ Статикалық талдау ══════════ */
@@ -167,7 +167,7 @@ function AiBlock({ st, L }) {
 
 /* ══════════ «Aqyl түсіндіреді» панелі (сабақтағы танысу картасы) ══════════ */
 export function AqylExplainPanel({ item, lang, explain, level, topic, kind, onClose }) {
-  const L = aqylL(lang);
+  const L = useAqylL(lang);
   const info = explainItem(item, { lang, topic, kind });
   const [st, run] = useAsk();
   const mood = st.busy ? "thinking" : st.text ? "talking" : "explaining";
@@ -222,7 +222,7 @@ export function AqylExplainPanel({ item, lang, explain, level, topic, kind, onCl
 
 /* ══════════ Қате жауаптан кейін: «Неге?» ══════════ */
 export function AqylWhy({ ctx, lang, explain, level, task, question, compact = false, extra = [] }) {
-  const L = aqylL(lang);
+  const L = useAqylL(lang);
   const lines = [...whyLines(ctx, lang), ...extra.filter(Boolean)];
   const [st, run] = useAsk();
   const kk = ctx?.item?.kk || ctx?.answer || "";

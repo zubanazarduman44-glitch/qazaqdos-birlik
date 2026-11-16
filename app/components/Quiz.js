@@ -5,12 +5,12 @@ import Qyran from "./Qyran";
 import Icon from "./Icon";
 import { AqylSays } from "./Aqyl";
 import { AqylWhy } from "./AqylExplain";
-import { aqylL } from "./AqylL10n";
+import { aqylL, useAqylL } from "./AqylL10n";
 
 // Жалпы тест: questions = [{ prompt, options: [{key,label,e}], answer }]
 export default function Quiz({ questions, onDone, pass = Math.ceil(questions.length * 0.8) }) {
   const { t, lang, explain, state } = useApp();
-  const AL = aqylL(lang);
+  const AL = useAqylL(lang);
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState(null);
   const [right, setRight] = useState(0);

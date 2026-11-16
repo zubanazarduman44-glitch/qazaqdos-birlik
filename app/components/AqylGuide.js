@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
 import { AqylSays } from "./Aqyl";
-import { aqylL } from "./AqylL10n";
+import { aqylL, useAqylL } from "./AqylL10n";
 
 function readWeak() {
   try {
@@ -20,7 +20,7 @@ function readWeak() {
  * props: state, lang, today (dayKey немесе null — гидрацияға дейін), todayXp, goal, next (келесі сабақ), nextTitle, hour
  */
 export default function AqylGuide({ state, lang, today, todayXp = 0, goal = 50, next, nextTitle, hour = 12 }) {
-  const L = aqylL(lang).guide;
+  const L = useAqylL(lang).guide;
   const [weak, setWeak] = useState(null);
   useEffect(() => { setWeak(readWeak()); }, []);
 
