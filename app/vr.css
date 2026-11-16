@@ -1,0 +1,383 @@
+/* ════════════════════════════════════════════════════════════════════
+   VR Әлем · «Ішіне кір де сөйле»
+   Хаб: киіз қала-дала тақтасы (ғимарат — нағыз түйме), деңгей сүзгісі, жағдаят карталары.
+   Сахна: бірінші жақтан көрінетін сурет + кейіпкер, сөз көпіршігі, жауап карталары, мақсат, сөздер.
+   Бөлім реңі Shell береді: --sec / --sec-deep / --sec-soft. Тек осы бет: .vr / vr-.
+   ════════════════════════════════════════════════════════════════════ */
+.vr {
+  --vr-red: #b8322a; --vr-deep: #8a2018; --vr-cream: #faf6ee; --vr-surf: #fffdf7; --vr-felt: #f4ecda;
+  --vr-ink: #1f2430; --vr-muted: #4a5160; --vr-gold: #e0a526; --vr-gold-ink: #6b4500; --vr-blue: #0f5e7a;
+  --vr-ok: #2f6b4f; --vr-ok-soft: #e3efe7; --vr-wine: #6e1e2e; --vr-wine-soft: #f3e3e6; --vr-thread: #3a2210;
+  --vr-line: rgba(31, 36, 48, 0.12); --vr-rim: rgba(122, 86, 22, 0.22);
+  --vr-sec: var(--sec, #5b3fa8); --vr-sec-deep: var(--sec-deep, #432c80); --vr-sec-soft: var(--sec-soft, #ebe6f3);
+  position: relative; color: var(--vr-ink);
+}
+.vr * { min-width: 0; }
+.vr button { font: inherit; color: inherit; }
+.vr h1, .vr h2 { margin: 0; }
+.vr-kicker { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--vr-sec-deep); }
+.vr-flip { flex: none; }
+[dir="rtl"] .vr .vr-flip { transform: scaleX(-1); }
+.vr-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--vr-surf); box-shadow: inset 0 0 0 1px var(--vr-rim); font-size: 13px; font-weight: 700; color: var(--vr-muted); }
+.vr-chip.gold { background: #fbefd0; color: var(--vr-gold-ink); box-shadow: inset 0 0 0 1px rgba(224, 165, 38, 0.5); }
+.vr-lv { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.02em; color: #fff; background: var(--vr-ok); }
+.vr-lv.lv-A2 { background: var(--vr-blue); }
+.vr-lv.lv-B1 { background: var(--vr-sec); }
+.vr-lv.lv-B2 { background: var(--vr-deep); }
+.vr :focus-visible { outline: 3px solid var(--vr-blue); outline-offset: 2px; }
+
+/* ── Хаб тақырыбы ── */
+.vr-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 28px; margin: 6px 0 18px; }
+.vr-head-t { flex: 1 1 360px; }
+.vr-head h1 { margin: 4px 0 6px; font-family: var(--head); font-size: clamp(30px, 4.4vw, 46px); line-height: 1.04; letter-spacing: -0.01em; }
+.vr-head p { margin: 0 0 10px; color: var(--vr-muted); max-width: 56ch; }
+.vr-talk-cta {
+  display: flex; align-items: center; gap: 12px; text-align: start; cursor: pointer;
+  padding: 12px 14px; border: 0; border-radius: 16px; background: var(--vr-sec-soft); color: var(--vr-ink);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--vr-sec) 35%, transparent), 0 3px 0 color-mix(in srgb, var(--vr-sec) 30%, transparent);
+  transition: transform 0.18s var(--ease, ease), box-shadow 0.18s;
+}
+.vr-talk-cta.big { flex: 0 1 400px; }
+.vr-talk-cta:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--vr-sec), 0 5px 0 color-mix(in srgb, var(--vr-sec) 35%, transparent); }
+.vr-talk-cta:active { transform: translateY(1px); }
+.vr-talk-cta > span:nth-child(2) { flex: 1; display: grid; gap: 2px; }
+.vr-talk-cta b { font-size: 16px; color: var(--vr-sec-deep); }
+.vr-talk-cta small { font-size: 13px; color: var(--vr-muted); line-height: 1.35; }
+.vr-talk-ic { --gl2: #ffd98a; display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 14px; background: var(--vr-sec); color: #fff; box-shadow: 0 2px 0 var(--vr-sec-deep); }
+
+/* ── Қала-дала тақтасы ── */
+.vr-map { padding: 16px; margin-bottom: 22px; overflow: hidden; }
+.vr-map-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 0 4px 12px; }
+.vr-map-h h2 { font-size: 20px; }
+.vr-map-h small { color: var(--vr-muted); font-size: 14px; }
+.vr-board { position: relative; aspect-ratio: 16 / 9.2; border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 2px var(--vr-rim); }
+.vr-board::after { content: ""; position: absolute; inset: 7px; border-radius: 9px; border: 1.5px dashed rgba(122, 86, 22, 0.35); pointer-events: none; }
+.vr-town-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.vr-pin {
+  position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -100%); /* карта айналмайды — физикалық left */
+  display: grid; justify-items: center; gap: 2px; padding: 4px 4px 2px; border: 0; background: none; cursor: pointer; border-radius: 14px;
+  width: clamp(76px, 10.5vw, 128px); z-index: 1;
+}
+.vr-pin .vr-bld { width: 100%; height: auto; display: block; transition: transform 0.22s var(--ease, ease); transform-origin: 50% 100%; }
+.vr-pin:hover .vr-bld, .vr-pin:focus-visible .vr-bld { transform: translateY(-4px) scale(1.04); }
+.vr-pin-n {
+  max-width: 100%; padding: 2px 9px; border-radius: 999px; background: var(--vr-surf); color: var(--vr-ink);
+  font-size: 13px; font-weight: 800; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 2px 0 rgba(58, 34, 16, 0.18), inset 0 0 0 1px var(--vr-rim);
+}
+.vr-pin-c { position: absolute; top: 0; inset-inline-end: 4px; padding: 1px 6px; border-radius: 999px; font-size: 11px; font-weight: 800; background: var(--vr-ok); color: #fff; }
+.vr-pin.on .vr-pin-n { background: var(--vr-sec); color: #fff; box-shadow: 0 2px 0 var(--vr-sec-deep); }
+.vr-pin.on .vr-bld { transform: translateY(-4px) scale(1.06); }
+.vr-pin.on::before { content: ""; position: absolute; inset-inline: 10%; bottom: 18px; height: 14px; border-radius: 50%; background: color-mix(in srgb, var(--vr-sec) 40%, transparent); z-index: -1; }
+.vr-pin:focus-visible { outline-offset: 0; }
+
+/* ── Сүзгі мен тізім ── */
+.vr-list { scroll-margin-top: 80px; }
+.vr-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-bottom: 14px; }
+.vr-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: var(--vr-surf); box-shadow: inset 0 0 0 1px var(--vr-rim); }
+.vr-seg button { min-height: 36px; min-width: 44px; padding: 6px 12px; border: 0; border-radius: 10px; background: transparent; font-weight: 800; font-size: 14px; cursor: pointer; color: var(--vr-muted); }
+.vr-seg button:hover { background: var(--vr-felt); color: var(--vr-ink); }
+.vr-seg button.on { background: var(--vr-sec); color: #fff; box-shadow: 0 2px 0 var(--vr-sec-deep); }
+.vr-place-chip { cursor: pointer; border: 0; color: #fff; background: var(--vr-sec); box-shadow: 0 2px 0 var(--vr-sec-deep); min-height: 36px; }
+.vr-place-chip:hover { filter: brightness(1.08); }
+.vr-count { margin-inline-start: auto; color: var(--vr-muted); font-weight: 700; }
+.vr-empty { padding: 28px; text-align: center; color: var(--vr-muted); background: var(--vr-surf); border-radius: 16px; border: 1.5px dashed var(--vr-rim); }
+.vr-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.vr-grid > li { animation: vr-rise 0.4s var(--ease, ease) both; animation-delay: var(--d, 0ms); }
+.vr-card {
+  width: 100%; height: 100%; display: flex; flex-direction: column; text-align: start; padding: 0; border: 0; cursor: pointer;
+  background: var(--vr-surf); border-radius: 16px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--vr-rim), 0 1px 2px rgba(60, 40, 10, 0.06), 0 10px 24px -18px rgba(60, 40, 10, 0.35);
+  transition: transform 0.2s var(--ease, ease), box-shadow 0.2s;
+  content-visibility: auto; contain-intrinsic-size: auto 300px;
+}
+.vr-card:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1.5px var(--vr-sec), 0 16px 30px -18px rgba(60, 40, 10, 0.45); }
+.vr-card:active { transform: translateY(0); }
+.vr-card-art { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--vr-felt); overflow: hidden; }
+.vr-card-art .vr-art { width: 100%; height: 100%; display: block; }
+.vr-card-art .vr-art * { animation: none !important; }
+.vr-card-art .vr-lv { position: absolute; top: 10px; inset-inline-start: 10px; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); }
+.vr-card-done { position: absolute; top: 8px; inset-inline-end: 8px; padding: 3px 7px; border-radius: 999px; background: var(--vr-surf); box-shadow: 0 2px 0 rgba(58, 34, 16, 0.2); }
+.vr-card-b { display: grid; gap: 3px; padding: 12px 14px 4px; flex: 1; }
+.vr-card-b > small { font-size: 12px; font-weight: 800; color: var(--vr-sec-deep); letter-spacing: 0.04em; text-transform: uppercase; }
+.vr-card-b > b { font-size: 17px; line-height: 1.25; font-family: var(--head); font-weight: 600; }
+.vr-card-tr { color: var(--vr-muted); font-size: 14px; }
+.vr-card-npc { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 13px; color: var(--vr-muted); }
+.vr-card-npc .sx-g { color: var(--vr-sec); flex: none; }
+.vr-card-go { display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding: 6px 14px 12px; font-weight: 800; font-size: 14px; color: var(--vr-sec-deep); }
+.vr-card.done .vr-card-go { color: var(--vr-ok); }
+.vr-stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+.vr-stars svg { fill: #e4dccb; }
+.vr-stars svg.on { fill: var(--vr-gold); }
+
+/* ── Сахна ── */
+.vr-bar { display: flex; align-items: center; gap: 12px; margin: 4px 0 8px; }
+.vr-bar-t { flex: 1; display: grid; line-height: 1.25; }
+.vr-bar-t small { display: flex; align-items: center; gap: 6px; color: var(--vr-muted); font-weight: 700; font-size: 13px; }
+.vr-bar-t b { font-family: var(--head); font-weight: 600; font-size: clamp(17px, 2vw, 22px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vr-bar-r { display: flex; align-items: center; gap: 8px; }
+.vr-step { font-size: 13px; font-weight: 800; color: var(--vr-sec-deep); background: var(--vr-sec-soft); padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+.vr-back { flex: none; }
+.vr-progress { height: 6px; border-radius: 6px; background: var(--vr-felt); overflow: hidden; margin-bottom: 12px; box-shadow: inset 0 0 0 1px var(--vr-line); }
+.vr-progress i { display: block; height: 100%; background: var(--vr-sec); border-radius: inherit; transition: width 0.5s var(--ease, ease); }
+[dir="rtl"] .vr-progress i { margin-inline-start: 0; }
+
+.vr-stage {
+  --px: 0; --py: 0;
+  position: relative; border-radius: 20px; overflow: hidden; background: var(--vr-felt);
+  aspect-ratio: 16 / 9; max-height: min(52vh, 520px); width: 100%;
+  box-shadow: inset 0 0 0 2px var(--vr-rim), 0 18px 36px -24px rgba(60, 40, 10, 0.55);
+  touch-action: pan-y;
+}
+.vr-stage .vr-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.vr-vignette { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 0 10px rgba(255, 253, 247, 0.0), inset 0 -60px 80px -60px rgba(31, 20, 10, 0.35); }
+.vr-lay { transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.vr-stage .vr-l0 { transform: translate(calc(var(--px) * -4px), calc(var(--py) * -3px)); }
+.vr-stage .vr-l1 { transform: translate(calc(var(--px) * -8px), calc(var(--py) * -5px)); }
+.vr-stage .vr-ln { transform: translate(calc(var(--px) * -13px), calc(var(--py) * -7px)); }
+.vr-stage .vr-l2 { transform: translate(calc(var(--px) * -20px), calc(var(--py) * -10px)); }
+
+/* Сөз көпіршігі: үлкен экранда — суреттің бос жағында, телефонда — суреттің астында */
+.vr-scene { position: relative; }
+.vr-bubble {
+  position: absolute; top: 5%; left: 3%; width: min(44%, 460px); z-index: 1;
+  padding: 14px 16px 10px; border-radius: 18px; background: var(--vr-surf); color: var(--vr-ink);
+  box-shadow: 0 3px 0 rgba(58, 34, 16, 0.18), 0 14px 30px -16px rgba(31, 20, 10, 0.5), inset 0 0 0 1.5px var(--vr-rim);
+  animation: vr-pop 0.35s var(--ease, ease) both;
+}
+.vr-bubble::after { content: ""; position: absolute; top: 34px; right: -11px; width: 22px; height: 22px; background: var(--vr-surf); transform: rotate(45deg); box-shadow: 1.5px -1.5px 0 0 var(--vr-rim); border-radius: 3px; }
+.vr-scene.side-left .vr-bubble { left: auto; right: 3%; }
+.vr-scene.side-left .vr-bubble::after { right: auto; left: -11px; box-shadow: -1.5px 1.5px 0 0 var(--vr-rim); }
+.vr-bubble-who { display: block; font-size: 13px; color: var(--vr-muted); margin-bottom: 4px; }
+.vr-bubble-who b { color: var(--vr-sec-deep); }
+.vr-bubble-kk { margin: 0; font-family: var(--head); font-weight: 600; font-size: clamp(19px, 2.1vw, 26px); line-height: 1.3; letter-spacing: -0.005em; }
+.vr-bubble-tr { margin: 6px 0 0; color: var(--vr-muted); font-size: 15px; }
+.vr-bubble-tools { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 8px; border-top: 1.5px dashed var(--vr-line); }
+.vr-tool {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 10px; border: 0; border-radius: 10px; cursor: pointer;
+  background: #e2eef2; color: var(--vr-blue); font-weight: 700; font-size: 13px;
+}
+.vr-tool:hover { background: #d3e6ec; }
+.vr-tool.on { background: var(--vr-blue); color: #fff; }
+.vr-tool.sm { min-height: 30px; padding: 4px 8px; }
+.vr-audio-err { display: block; margin-top: 6px; color: var(--vr-muted); font-size: 12px; }
+
+/* Кейіпкер тірлігі */
+.vr-art .vr-eyes { transform-box: fill-box; transform-origin: 50% 50%; animation: vr-blinkeye 5.2s infinite; }
+.vr-art .vr-mouth { transform-box: fill-box; transform-origin: 50% 50%; opacity: 0; }
+.vr-art .is-talk .vr-mouth { opacity: 1; animation: vr-talk 0.32s ease-in-out infinite alternate; }
+.vr-art .is-talk .vr-smile { opacity: 0; }
+.vr-art .vr-body { animation: vr-breathe 4s ease-in-out infinite; }
+.vr-art .vr-arm { transform-box: fill-box; transform-origin: 90% 0%; }
+.vr-art .is-talk .vr-arm { animation: vr-gesture 1.6s ease-in-out infinite; }
+/* Орын тірлігі */
+.vr-art .vr-sway { transform-box: fill-box; transform-origin: 50% 0; animation: vr-sway 4.5s ease-in-out infinite; }
+.vr-art .vr-sway.up { transform-origin: 50% 100%; animation-duration: 5.5s; }
+.vr-art .vr-steam { animation: vr-steam 3.2s ease-out infinite; }
+.vr-art .vr-pass { animation: vr-pass 16s linear infinite; }
+.vr-art .vr-pass.slow { animation-duration: 34s; }
+.vr-art .vr-blink { animation: vr-blinkl 2.4s steps(1) infinite; }
+.vr-art .vr-blink.b2 { animation-delay: -1.2s; }
+.vr-art .vr-spin { transform-box: fill-box; transform-origin: 50% 100%; animation: vr-spin 60s linear infinite; }
+.vr-art .vr-glow { transform-box: fill-box; transform-origin: 50% 50%; animation: vr-glow 3s ease-in-out infinite; }
+.vr-art .vr-ring { animation: vr-ring 1.4s ease-out infinite; }
+.vr-art .vr-fly { animation: vr-fly 22s linear infinite; }
+.vr-art .vr-flutter { transform-box: fill-box; transform-origin: 50% 0; animation: vr-flutter 3.6s ease-in-out infinite; }
+
+/* ── Жауаптар ── */
+.vr-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: 18px; margin-top: 16px; align-items: start; }
+.vr-replies-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 10px; }
+.vr-replies-h h2 { font-size: 18px; }
+.vr-hint { color: var(--vr-muted); font-size: 13px; }
+@media (hover: none) { .vr-hint { display: none; } }
+.vr-replies { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.vr-reply {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: start; cursor: pointer;
+  min-height: 60px; padding: 12px 14px; border: 0; border-radius: 14px; background: var(--vr-surf);
+  box-shadow: inset 0 0 0 1.5px var(--vr-rim), 0 3px 0 rgba(58, 34, 16, 0.12);
+  transition: transform 0.16s var(--ease, ease), box-shadow 0.16s, background 0.16s;
+  animation: vr-rise 0.35s var(--ease, ease) both; animation-delay: var(--d, 0ms);
+}
+.vr-reply:hover:not(:disabled) { transform: translateY(-2px); box-shadow: inset 0 0 0 2px var(--vr-sec), 0 5px 0 color-mix(in srgb, var(--vr-sec) 30%, transparent); }
+.vr-reply:active:not(:disabled) { transform: translateY(1px); }
+.vr-reply:disabled { cursor: default; }
+.vr-key { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--vr-felt); font-weight: 800; font-size: 14px; color: var(--vr-muted); box-shadow: inset 0 0 0 1px var(--vr-rim); }
+.vr-reply-t { flex: 1; display: grid; gap: 2px; }
+.vr-reply-t b { font-size: 17px; font-weight: 700; line-height: 1.35; }
+.vr-reply-t small { color: var(--vr-muted); font-size: 14px; }
+.vr-reply.ok { background: var(--vr-ok-soft); box-shadow: inset 0 0 0 2px var(--vr-ok); color: var(--vr-ok); }
+.vr-reply.ok .vr-key { background: var(--vr-ok); color: #fff; box-shadow: none; }
+.vr-reply.ok .vr-reply-t b { color: #1d4a35; }
+.vr-reply.bad { background: var(--vr-wine-soft); box-shadow: none; outline: 2px dashed var(--vr-wine); outline-offset: -2px; color: var(--vr-wine); }
+.vr-reply.bad .vr-key { background: var(--vr-wine); color: #fff; box-shadow: none; }
+.vr-reply.bad .vr-reply-t b { color: var(--vr-wine); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.vr-reply.bad .vr-reply-t small { color: #5a2430; }
+.vr-reply.ok, .vr-reply.bad { animation: none; }
+.vr-reply.bad:not(:disabled), .vr-reply.bad:focus-visible { animation: vr-shake 0.36s; }
+.vr-reply:disabled:not(.ok):not(.bad) { opacity: 0.55; }
+
+.vr-fb { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; margin-top: 12px; padding: 12px 14px; border-radius: 14px; animation: vr-pop 0.3s var(--ease, ease) both; }
+.vr-fb.ok { background: var(--vr-ok-soft); color: #1d4a35; box-shadow: inset 0 0 0 1.5px var(--vr-ok); }
+.vr-fb.ok b { font-size: 17px; }
+.vr-fb.bad { background: var(--vr-wine-soft); color: var(--vr-wine); border: 2px dashed var(--vr-wine); }
+.vr-fb.bad p { margin: 2px 0 0; color: #4d1420; }
+.vr-fb.bad small { font-weight: 700; }
+
+.vr-voice { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+.vr-mic {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #e2eef2; color: var(--vr-blue); font-weight: 800; font-size: 14px; box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.3);
+}
+.vr-mic:hover:not(:disabled) { background: #d3e6ec; }
+.vr-mic.on { background: var(--vr-red); color: #fff; box-shadow: 0 0 0 0 rgba(184, 50, 42, 0.5); animation: vr-recpulse 1.4s infinite; }
+.vr-mic:disabled { opacity: 0.55; cursor: default; }
+.vr-mic.sq { width: 46px; height: 46px; padding: 0; justify-content: center; border-radius: 14px; flex: none; }
+.vr-heard { margin: 0; font-size: 14px; color: var(--vr-muted); }
+.vr-heard b { color: var(--vr-ink); }
+.vr-heard.miss span { color: var(--vr-wine); font-weight: 700; }
+
+/* ── Бүйір: мақсат, әңгіме ── */
+.vr-side { display: grid; gap: 12px; }
+.vr-goal { display: flex; gap: 12px; padding: 14px; border-radius: 16px; background: #fbefd0; box-shadow: inset 0 0 0 1px rgba(224, 165, 38, 0.5); }
+.vr-goal-ic { --gl2: #fff3cf; display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 12px; background: var(--vr-gold); color: var(--vr-deep); }
+.vr-goal small { font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; color: var(--vr-gold-ink); }
+.vr-goal p { margin: 2px 0 0; font-size: 15px; line-height: 1.45; }
+.vr-goal .vr-goal-kk { margin-top: 6px; font-size: 14px; color: var(--vr-gold-ink); }
+.vr-log { border-radius: 14px; background: var(--vr-surf); box-shadow: inset 0 0 0 1px var(--vr-rim); }
+.vr-log summary { cursor: pointer; padding: 12px 14px; font-weight: 800; font-size: 14px; color: var(--vr-sec-deep); border-radius: 14px; }
+.vr-log ol { list-style: none; margin: 0; padding: 0 14px 12px; display: grid; gap: 8px; max-height: 280px; overflow: auto; }
+.vr-log li { display: grid; gap: 1px; padding-inline-start: 10px; border-inline-start: 3px solid var(--vr-sec-soft); font-size: 14px; }
+.vr-log li.me { border-inline-start-color: var(--vr-ok); }
+.vr-log small { color: var(--vr-muted); font-size: 12px; font-weight: 700; }
+
+/* ── Нәтиже ── */
+.vr-result { padding: 20px; display: grid; gap: 14px; animation: vr-pop 0.4s var(--ease, ease) both; }
+.vr-res-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.vr-res-top h2 { font-size: clamp(20px, 2.4vw, 26px); }
+.vr-res-top p { margin: 4px 0 0; color: var(--vr-muted); }
+.vr-res-top .vr-stars svg { animation: vr-star 0.5s var(--ease, ease) both; }
+.vr-res-top .vr-stars svg:nth-child(2) { animation-delay: 0.12s; }
+.vr-res-top .vr-stars svg:nth-child(3) { animation-delay: 0.24s; }
+.vr-res-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.vr-res-meta small { color: var(--vr-muted); }
+.vr-res-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ── Сөздер (dialog) ── */
+.vr-drawer { padding: 0; border: 0; border-radius: 20px; background: var(--vr-surf, #fffdf7); color: #1f2430; width: min(440px, calc(100vw - 24px)); max-height: min(80vh, 640px); margin-inline-end: 16px; margin-block: auto; box-shadow: 0 30px 60px -20px rgba(31, 20, 10, 0.5); }
+.vr-drawer[open] { animation: vr-slide 0.3s var(--ease, ease) both; }
+.vr-drawer::backdrop { background: rgba(31, 36, 48, 0.42); }
+.vr-drawer-in { padding: 16px 16px 18px; }
+.vr-drawer header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.vr-drawer h2 { margin: 0; font-size: 19px; }
+.vr-drawer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.vr-drawer li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: #faf6ee; box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.18); }
+.vr-w-say { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border: 0; border-radius: 10px; background: #e2eef2; color: #0f5e7a; cursor: pointer; }
+.vr-w-say:hover { background: #d3e6ec; }
+.vr-w-t { flex: 1; display: grid; }
+.vr-w-t b { font-size: 16px; }
+.vr-w-t small { color: #4a5160; font-size: 13px; }
+
+/* ── Еркін сөйлесу ── */
+.vr-talk { padding: 0; overflow: hidden; display: flex; flex-direction: column; min-height: min(78vh, 760px); }
+.vr-talk-head { display: grid; grid-template-columns: 220px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 14px; border-bottom: 1.5px dashed var(--vr-line); background: var(--vr-felt); }
+.vr-talk-stage { position: relative; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 2px var(--vr-rim); background: var(--vr-surf); }
+.vr-talk-stage .vr-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vr-talk-t h2 { font-size: 20px; margin: 2px 0 2px; }
+.vr-talk-t h2 small { font-family: var(--body); font-weight: 600; font-size: 14px; color: var(--vr-muted); }
+.vr-talk-t > p { margin: 0 0 8px; font-size: 14px; }
+.vr-talk-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.vr-sel { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--vr-muted); }
+.vr-sel select { min-height: 36px; padding: 4px 10px; border-radius: 10px; border: 0; background: var(--vr-surf); box-shadow: inset 0 0 0 1px var(--vr-rim); font: inherit; font-weight: 700; color: var(--vr-ink); }
+.vr-talk-x { display: flex; align-items: center; gap: 8px; align-self: start; }
+.vr-talk-list { flex: 1; overflow: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 56vh; min-height: 260px; }
+.vr-msg { display: flex; gap: 10px; align-items: flex-end; max-width: 86%; animation: vr-rise 0.3s var(--ease, ease) both; }
+.vr-msg.me { align-self: flex-end; }
+.vr-msg.me p { margin: 0; padding: 10px 14px; border-radius: 16px; border-end-end-radius: 6px; background: var(--vr-sec); color: #fff; font-size: 16px; }
+.vr-msg-av { flex: none; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 1.5px var(--vr-rim); background: var(--vr-felt); }
+.vr-msg-av .vr-face { display: block; }
+.vr-msg-b { position: relative; padding: 10px 14px 8px; border-radius: 16px; border-end-start-radius: 6px; background: var(--vr-surf); box-shadow: inset 0 0 0 1.5px var(--vr-rim); display: grid; gap: 6px; }
+.vr-msg-b > p { margin: 0; font-size: 17px; line-height: 1.45; }
+.vr-msg-b .vr-tool { justify-self: start; }
+.vr-fix { display: grid; gap: 2px; padding: 8px 10px; border-radius: 10px; background: #fbefd0; border-inline-start: 4px solid var(--vr-gold); font-size: 14px !important; color: #3a2a00; }
+.vr-fix-l { --gl2: var(--vr-deep); display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--vr-gold-ink); }
+.vr-typing { display: flex; gap: 5px; padding: 14px 16px; }
+.vr-typing i { width: 8px; height: 8px; border-radius: 50%; background: var(--vr-muted); animation: vr-dot 1s infinite; }
+.vr-typing i:nth-child(2) { animation-delay: 0.15s; }
+.vr-typing i:nth-child(3) { animation-delay: 0.3s; }
+.vr-err { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--vr-wine-soft); color: var(--vr-wine); border: 2px dashed var(--vr-wine); }
+.vr-compose { display: flex; align-items: flex-end; gap: 8px; padding: 12px 14px; border-top: 1.5px dashed var(--vr-line); background: var(--vr-surf); }
+.vr-compose textarea { flex: 1; min-height: 46px; max-height: 140px; resize: none; padding: 11px 14px; border-radius: 14px; border: 0; background: var(--vr-cream); box-shadow: inset 0 0 0 1.5px var(--vr-rim); font: inherit; font-size: 16px; color: var(--vr-ink); }
+.vr-compose textarea:focus-visible { outline: 3px solid var(--vr-blue); outline-offset: 1px; }
+.vr-send { width: 46px; height: 46px; min-height: 46px; padding: 0; border-radius: 14px; flex: none; }
+
+.vr-hide-s { display: inline; }
+
+/* ── Телефон ── */
+@media (max-width: 860px) {
+  .vr-body { grid-template-columns: 1fr; }
+  .vr-talk-head { grid-template-columns: 120px minmax(0, 1fr); }
+  .vr-talk-x { grid-column: 1 / -1; grid-row: 1; justify-self: end; margin-bottom: -8px; }
+}
+@media (max-width: 720px) {
+  .vr-stage { aspect-ratio: auto; height: clamp(260px, 74vw, 360px); max-height: none; }
+  .vr-bubble, .vr-scene.side-left .vr-bubble { position: relative; top: auto; left: auto; right: auto; width: auto; margin: -22px 10px 0; }
+  .vr-bubble::after, .vr-scene.side-left .vr-bubble::after { top: -10px; left: 50%; right: auto; margin-left: -11px; box-shadow: -1.5px -1.5px 0 0 var(--vr-rim); }
+}
+@media (max-width: 640px) {
+  .vr-head { margin-bottom: 14px; }
+  .vr-talk-cta.big { flex: 1 1 100%; }
+  .vr-map { padding: 10px; }
+  .vr-board { aspect-ratio: 1 / 1.22; }
+  .vr-pin { left: var(--mx); top: var(--my); width: 23.5%; }
+  .vr-pin-n { font-size: 11px; padding: 1px 5px; letter-spacing: -0.01em; }
+  .vr-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .vr-card-b { padding: 10px 10px 2px; }
+  .vr-card-b > b { font-size: 15px; }
+  .vr-card-tr, .vr-card-npc { font-size: 12.5px; }
+  .vr-card-go { padding: 4px 10px 10px; font-size: 13px; }
+  .vr-bar { gap: 8px; }
+  .vr-back span, .vr-hide-s { display: none; }
+  .vr-step { padding: 4px 8px; font-size: 12px; }
+  .vr-bubble-kk { font-size: 20px; }
+  .vr-tool span { display: none; }
+  .vr-tool.on span, .vr-tool:last-child span { display: inline; }
+  .vr-reply-t b { font-size: 16px; }
+  .vr-res-btns .btn { flex: 1 1 100%; justify-content: center; }
+  .vr-talk-head { grid-template-columns: 1fr; }
+  .vr-talk-stage { aspect-ratio: 16 / 7; }
+  .vr-talk-list { max-height: none; min-height: 300px; padding: 12px; }
+  .vr-msg { max-width: 94%; }
+  .vr-drawer { margin: auto 0 0; width: 100vw; max-width: 100vw; border-radius: 20px 20px 0 0; max-height: 80vh; }
+}
+@media (max-width: 380px) {
+  .vr-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Анимациялар ── */
+@keyframes vr-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes vr-pop { from { opacity: 0; transform: scale(0.96) translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes vr-slide { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes vr-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-5px); } 50% { transform: translateX(4px); } 75% { transform: translateX(-2px); } }
+@keyframes vr-star { from { opacity: 0; transform: scale(0.4) rotate(-30deg); } to { opacity: 1; transform: none; } }
+@keyframes vr-blinkeye { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+@keyframes vr-talk { from { transform: scaleY(0.45); } to { transform: scaleY(1.25); } }
+@keyframes vr-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes vr-gesture { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-7deg); } }
+@keyframes vr-sway { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+@keyframes vr-steam { 0% { opacity: 0; transform: translateY(6px); } 30% { opacity: 0.9; } 100% { opacity: 0; transform: translateY(-22px); } }
+@keyframes vr-pass { from { transform: translateX(0); } to { transform: translateX(1300px); } }
+@keyframes vr-blinkl { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes vr-spin { to { transform: rotate(360deg); } }
+@keyframes vr-glow { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.06); opacity: 0.85; } }
+@keyframes vr-ring { 0% { opacity: 0; transform: translateX(-6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateX(10px); } }
+@keyframes vr-fly { from { transform: translate(-360px, 30px); } to { transform: translate(900px, -20px); } }
+@keyframes vr-flutter { 0%, 100% { transform: skewX(0deg); } 50% { transform: skewX(-1.5deg); } }
+@keyframes vr-recpulse { 0% { box-shadow: 0 0 0 0 rgba(184, 50, 42, 0.45); } 100% { box-shadow: 0 0 0 14px rgba(184, 50, 42, 0); } }
+@keyframes vr-dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .vr *, .vr *::before, .vr *::after { animation: none !important; transition: none !important; }
+  .vr-art .vr-mouth { opacity: 0; }
+  .vr-art .is-talk .vr-smile { opacity: 1; }
+  .vr-stage .vr-lay { transform: none !important; }
+}

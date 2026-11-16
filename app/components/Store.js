@@ -101,6 +101,9 @@ function merge(a, b) {
     streak: Math.max(a.streak || 0, b.streak || 0),
     stamps: { ...(b.stamps || {}), ...(a.stamps || {}) },
     sites: { ...(b.sites || {}), ...(a.sites || {}) },
+    // Өтілген сабақтар мен VR жағдайлары екі құрылғыдан да жиналады (тек соңғысы емес)
+    course: { ...(newer.course || {}), done: { ...(b.course?.done || {}), ...(a.course?.done || {}) } },
+    vr: { ...(newer.vr || {}), done: { ...(b.vr?.done || {}), ...(a.vr?.done || {}) } },
     games,
     vocab: byKk(a.vocab, b.vocab),
     vision: byKk(a.vision, b.vision),

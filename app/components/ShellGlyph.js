@@ -42,6 +42,15 @@ const G = {
       <path d="M11 13.2h3.6M13.4 10.6h3" stroke={A} strokeWidth="1.6" strokeLinecap="round" />
     </>
   ),
+  // Киіз үй есігі — басқа әлемге кіретін «портал» (VR Әлем)
+  portal: (
+    <>
+      <path d="M4.2 21V11.4a7.8 7.8 0 0 1 15.6 0V21Z" fill="currentColor" />
+      <path d="M8.3 21v-8.6a3.7 3.7 0 0 1 7.4 0V21Z" fill={A} />
+      <path d="M12 12.4 13.8 14.8 12 17.2 10.2 14.8Z" fill="currentColor" />
+      <circle cx="12" cy="5.6" r="1.3" fill={A} />
+    </>
+  ),
   // Қалам ұшы (Tuzel)
   nib: (
     <>

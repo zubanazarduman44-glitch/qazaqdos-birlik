@@ -1,0 +1,507 @@
+"use client";
+// «VR Әлем» сахнасы: бірінші жақтан көрінетін орын, кейіпкердің сөзі (дыбыспен), жауап таңдау немесе дауыспен айту,
+// мақсат картасы, негізгі сөздер және соңындағы нәтиже (жұлдыз, XP).
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useApp } from "./Store";
+import Icon from "./Icon";
+import ShellGlyph from "./ShellGlyph";
+import { VrScene, npcSide } from "./VrArt";
+import { vrL, vf } from "./VrL10n";
+import { L } from "../../lib/i18n";
+import { sayKk, stopKk } from "../../lib/speak";
+import { toWav } from "../../lib/audio";
+
+// Түсіндірме: орысша түсіндірме — ru, қалғаны — en (сахна деректері kk/ru/en ғана)
+export const trLang = (explain) => (explain === "ru" ? "ru" : "en");
+export const wordTr = (w, explain) => (explain === "ru" ? w[1] : w[2]) || w[2] || w[1] || "";
+
+// Қазақ әріптерін қалыпқа келтіру (дауыспен жауапты салыстыру үшін)
+const FOLD = { ә: "а", ғ: "г", қ: "к", ң: "н", ө: "о", ұ: "у", ү: "у", һ: "х", і: "и", ё: "е", й: "и", ъ: "", ь: "" };
+export function normKk(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[әғқңөұүһіёйъь]/g, (c) => FOLD[c])
+    .replace(/[^a-zа-я0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+export function ratio(a, b) {
+  if (!a && !b) return 1;
+  const m = a.length, n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return 1 - prev[n] / Math.max(m, n, 1);
+}
+export function bestMatch(heard, replies) {
+  const h = normKk(heard);
+  let best = -1, score = 0;
+  replies.forEach((r, i) => {
+    const x = ratio(h, normKk(r.kk));
+    if (x > score) { score = x; best = i; }
+  });
+  return score >= 0.6 ? best : -1;
+}
+
+// Жауаптар ретін араластырамыз (дұрысы әрдайым бірінші болмасын); бір түйінде тұрақты
+function order(n, seed) {
+  const idx = Array.from({ length: n }, (_, i) => i);
+  let s = 0;
+  for (const ch of seed) s = (s * 33 + ch.charCodeAt(0)) >>> 0;
+  for (let i = n - 1; i > 0; i--) {
+    s = (s * 1103515245 + 12345) >>> 0;
+    const j = s % (i + 1);
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx;
+}
+// Аяққа дейінгі ең қысқа жол (қадам санағышы үшін)
+function stepsLeft(nodes, from) {
+  const seen = new Set([from]);
+  let q = [[from, 0]];
+  while (q.length) {
+    const nq = [];
+    for (const [id, d] of q) {
+      const n = nodes[id];
+      if (!n || n.end || !n.replies?.length) return d;
+      for (const r of n.replies) if (r.ok && !seen.has(r.next)) { seen.add(r.next); nq.push([r.next, d + 1]); }
+    }
+    q = nq;
+  }
+  return 0;
+}
+const starsFor = (m) => (m === 0 ? 3 : m <= 2 ? 2 : 1);
+const canRecord = () => typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined" && !!(window.AudioContext || window.webkitAudioContext);
+
+function Stars({ n, size = 18, label }) {
+  return (
+    <span className="vr-stars" role="img" aria-label={label}>
+      {[1, 2, 3].map((i) => (
+        <svg key={i} className={i <= n ? "on" : ""} viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+          <path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2L12 17.1 6.4 20l1.1-6.2L2.9 9.4l6.3-.9Z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+export { Stars };
+
+export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }) {
+  const { lang, explain, state, update, award, saveWord, t } = useApp();
+  const T = vrL(lang);
+  const tl = trLang(explain);
+  const [node, setNode] = useState(scene.start);
+  const [run, setRun] = useState(0);
+  const [mistakes, setMistakes] = useState(0);
+  const [picked, setPicked] = useState(null); // { i, ok }
+  const [tried, setTried] = useState([]); // осы түйінде қате таңдалғандар
+  const [showTr, setShowTr] = useState(false);
+  const [log, setLog] = useState([]);
+  const [talk, setTalk] = useState(false);
+  const [audioErr, setAudioErr] = useState(false);
+  const [result, setResult] = useState(null);
+  const [rec, setRec] = useState(null); // null | "rec" | "busy"
+  const [heard, setHeard] = useState(null); // { text, miss }
+  const [micOk, setMicOk] = useState(false);
+  const [goodK, setGoodK] = useState(0);
+  const stageRef = useRef(null);
+  const drawerRef = useRef(null);
+  const recRef = useRef(null);
+  const tok = useRef(0);
+  const advTimer = useRef(null);
+  const awarded = useRef(false);
+  const mounted = useRef(true);
+
+  const n = scene.nodes[node] || {};
+  const isEnd = !!n.end || !n.replies?.length;
+  const ord = useMemo(() => order(n.replies?.length || 0, `${scene.id}:${node}:${run}`), [scene.id, node, run, n.replies?.length]);
+  const replies = ord.map((i) => n.replies[i]);
+  const total = useMemo(() => log.filter((x) => x.me).length + stepsLeft(scene.nodes, node), [scene.nodes, node, log]);
+  const step = log.filter((x) => x.me).length + (isEnd ? 0 : 1);
+  const side = npcSide(place?.art || scene.place);
+
+  useEffect(() => {
+    mounted.current = true;
+    setMicOk(canRecord());
+    return () => {
+      mounted.current = false;
+      clearTimeout(advTimer.current);
+      try { recRef.current?.state === "recording" && recRef.current.stop(); } catch {}
+      stopKk();
+    };
+  }, []);
+
+  // Дыбыс: әр сөйлеуге жаңа белгі (ескі қоңыраулар елеусіз қалады)
+  const speak = useCallback((text, { slow = false, npc = true, done } = {}) => {
+    const my = ++tok.current;
+    let fin = false;
+    const end = () => { if (fin) return; fin = true; done && done(); };
+    sayKk(text, {
+      slow,
+      onState: (s) => {
+        if (!mounted.current || my !== tok.current) return end();
+        if (s === "playing") { setAudioErr(false); npc && setTalk(true); }
+        if (s === "idle" || s === "error") { setTalk(false); if (s === "error") setAudioErr(true); end(); }
+      },
+    }).catch(() => { if (my === tok.current) { setTalk(false); setAudioErr(true); } end(); });
+    return end;
+  }, []);
+
+  // Кейіпкердің жаңа сөзі: тізімге қосып, дауыстап айтамыз
+  useEffect(() => {
+    const line = scene.nodes[node]?.npc;
+    if (!line) return;
+    setLog((l) => [...l, { me: false, kk: line.kk, tr: L(line, tl) }]);
+    const id = setTimeout(() => speak(line.kk), 350);
+    return () => clearTimeout(id);
+  }, [node, run]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Соңғы түйін: нәтиже және марапат (бір рет)
+  useEffect(() => {
+    if (!isEnd || result) return;
+    const stars = starsFor(mistakes);
+    const prev = state.vr?.done?.[scene.id];
+    const first = !prev;
+    const xp = first ? 12 : 3, coins = first ? 6 : 1;
+    setResult({ stars, first, xp, coins });
+    if (awarded.current) return;
+    awarded.current = true;
+    update((s) => {
+      const vr = s.vr && typeof s.vr === "object" ? s.vr : {};
+      const done = vr.done && typeof vr.done === "object" ? vr.done : {};
+      const best = Math.max(stars, done[scene.id]?.stars || 0);
+      return { ...s, vr: { ...vr, done: { ...done, [scene.id]: { stars: best, at: Date.now() } } } };
+    });
+    award(xp, coins);
+  }, [isEnd]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const goNext = useCallback((r) => {
+    clearTimeout(advTimer.current);
+    setPicked(null);
+    setTried([]);
+    setHeard(null);
+    setShowTr(false);
+    setNode(scene.nodes[r.next] ? r.next : "__end");
+  }, [scene.nodes]);
+
+  function choose(k) {
+    if (isEnd || (picked && picked.ok)) return;
+    const r = replies[k];
+    if (!r || tried.includes(k)) return;
+    setHeard(null);
+    if (r.ok) {
+      setPicked({ i: k, ok: true });
+      setGoodK((g) => g + 1);
+      setLog((l) => [...l, { me: true, kk: r.kk, tr: L(r, tl) }]);
+      // Жауап айтылып біткен соң келесі қадамға өтеміз (ең көбі 6 с)
+      let gone = false;
+      const go = () => { if (gone || !mounted.current) return; gone = true; goNext(r); };
+      speak(r.kk, { npc: false, done: () => { clearTimeout(advTimer.current); advTimer.current = setTimeout(go, 450); } });
+      advTimer.current = setTimeout(go, 6000);
+    } else {
+      setPicked({ i: k, ok: false });
+      setTried((x) => [...x, k]);
+      setMistakes((m) => m + 1);
+    }
+  }
+  const pickedRef = useRef(null);
+  pickedRef.current = { picked, replies, choose, goNext, isEnd };
+
+  // Пернетақта: 1–3 — жауап, Enter — жалғастыру
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      const tag = (e.target?.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || drawerRef.current?.open) return;
+      const { picked: p, replies: rs, choose: ch, goNext: gn, isEnd: end } = pickedRef.current;
+      if (/^[1-9]$/.test(e.key)) {
+        const k = Number(e.key) - 1;
+        if (k < rs.length) { e.preventDefault(); ch(k); }
+      } else if (e.key === "Enter" && p?.ok && !end && tag !== "button") {
+        e.preventDefault();
+        gn(rs[p.i]);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Параллакс: тінтуір/саусақ және құрылғы еңісі (тек transform; reduced-motion кезінде өшеді)
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    const set = (x, y) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        el.style.setProperty("--px", x.toFixed(3));
+        el.style.setProperty("--py", y.toFixed(3));
+      });
+    };
+    const onMove = (e) => {
+      const b = el.getBoundingClientRect();
+      set(Math.max(-1, Math.min(1, ((e.clientX - b.left) / b.width) * 2 - 1)), Math.max(-1, Math.min(1, ((e.clientY - b.top) / b.height) * 2 - 1)));
+    };
+    const onLeave = () => set(0, 0);
+    const onTilt = (e) => {
+      if (e.gamma == null) return;
+      set(Math.max(-1, Math.min(1, e.gamma / 25)), Math.max(-1, Math.min(1, ((e.beta || 45) - 45) / 25)));
+    };
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", onLeave);
+    window.addEventListener("deviceorientation", onTilt);
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("deviceorientation", onTilt);
+    };
+  }, []);
+
+  async function mic() {
+    if (rec === "rec") return recRef.current?.stop();
+    if (rec || isEnd || picked?.ok) return;
+    setHeard(null);
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      setMicOk(false);
+      setHeard({ text: "", miss: true, err: T.micErr });
+      return;
+    }
+    stopKk();
+    const chunks = [];
+    const r = new MediaRecorder(stream);
+    recRef.current = r;
+    r.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+    r.onstop = async () => {
+      stream.getTracks().forEach((x) => x.stop());
+      if (!mounted.current) return;
+      setRec("busy");
+      try {
+        const audio = await toWav(new Blob(chunks, { type: r.mimeType || "audio/webm" }));
+        const res = await fetch("/api/transcribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ audio }) });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(d.error || `HTTP ${res.status}`);
+        if (!mounted.current) return;
+        const text = String(d.text || "").trim();
+        const k = text ? bestMatch(text, pickedRef.current.replies) : -1;
+        if (k >= 0) { setHeard({ text, miss: false }); pickedRef.current.choose(k); }
+        else setHeard({ text, miss: true });
+      } catch (e) {
+        if (mounted.current) setHeard({ text: "", miss: true, err: e.message || T.micErr });
+      } finally {
+        if (mounted.current) setRec(null);
+      }
+    };
+    r.start();
+    setRec("rec");
+    setTimeout(() => r.state === "recording" && r.stop(), 10000);
+  }
+
+  function replay() {
+    clearTimeout(advTimer.current);
+    stopKk();
+    tok.current++;
+    awarded.current = false;
+    setResult(null);
+    setMistakes(0);
+    setPicked(null);
+    setTried([]);
+    setHeard(null);
+    setLog([]);
+    setShowTr(false);
+    setNode(scene.start);
+    setRun((x) => x + 1);
+  }
+
+  const vocab = state.vocab || [];
+  const line = n.npc || { kk: "" };
+  const good = T.good[goodK % T.good.length];
+  const fb = picked && (picked.ok ? { ok: true } : { ok: false, note: L(replies[picked.i]?.note, tl) || T.defaultNote });
+
+  return (
+    <div className="vr-play">
+      <header className="vr-bar">
+        <button type="button" className="btn ghost small vr-back" onClick={onBack}>
+          <Icon name="left" size={18} className="vr-flip" /> <span>{T.back}</span>
+        </button>
+        <div className="vr-bar-t">
+          <small><span lang="kk">{L(place?.name, "kk")}</span> · <span className={`vr-lv lv-${scene.level}`}>{scene.level}</span></small>
+          <b lang="kk">{L(scene.title, "kk")}</b>
+        </div>
+        <div className="vr-bar-r">
+          {!result && <span className="vr-step" aria-live="polite">{vf(T.step, Math.max(1, step), `${total}`)}</span>}
+          <button type="button" className="btn ghost small" onClick={() => drawerRef.current?.showModal?.()} aria-haspopup="dialog">
+            <ShellGlyph name="chest" size={18} /> <span className="vr-hide-s">{T.words}</span>
+          </button>
+        </div>
+      </header>
+      <div className="vr-progress" aria-hidden="true"><i style={{ width: `${result ? 100 : Math.round(((Math.max(1, step) - 1) / Math.max(1, total)) * 100)}%` }} /></div>
+
+      <div className={`vr-scene side-${side}`}>
+      <div className="vr-stage" ref={stageRef}>
+        <VrScene art={place?.art || scene.place} npc={scene.npc} talk={talk} label={`${L(place?.name, "kk")} — ${scene.npc.name}`} />
+        <span className="vr-vignette" aria-hidden="true" />
+      </div>
+        <div className={`vr-bubble ${talk ? "is-talk" : ""}`} key={`${node}-${run}`} aria-live="polite">
+          <span className="vr-bubble-who">
+            <b>{scene.npc.name}</b> · {L(scene.npc.role, tl)}
+          </span>
+          <p className="vr-bubble-kk" lang="kk">{line.kk}</p>
+          {showTr && <p className="vr-bubble-tr">{L(line, tl)}</p>}
+          <div className="vr-bubble-tools">
+            <button type="button" className="vr-tool" onClick={() => speak(line.kk)} aria-label={T.replay} title={T.replay}>
+              <Icon name="volume" size={18} /><span>{T.replay}</span>
+            </button>
+            <button type="button" className="vr-tool" onClick={() => speak(line.kk, { slow: true })} aria-label={T.slow} title={T.slow}>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 15c0-4 4-7 8-7s7 2 8 5c1 0 2 1 2 2h-3c-1 2-4 3-7 3s-6-1-8-3Z M7 18l-1 2M15 18l1 2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span>{T.slow}</span>
+            </button>
+            <button type="button" className={`vr-tool ${showTr ? "on" : ""}`} onClick={() => setShowTr((x) => !x)} aria-pressed={showTr}>
+              <Icon name="globe" size={18} /><span>{showTr ? T.hideTr : T.showTr}</span>
+            </button>
+          </div>
+          {audioErr && <small className="vr-audio-err">{T.audioFail}</small>}
+        </div>
+      </div>
+
+      <div className="vr-body">
+        <section className="vr-main" aria-label={T.yourReply}>
+          {result ? (
+            <div className="vr-result card" role="status">
+              <div className="vr-res-top">
+                <Stars n={result.stars} size={40} label={vf(T.stars, result.stars)} />
+                <div>
+                  <h2>{T.result}</h2>
+                  <p>{result.stars === 3 ? T.s3 : result.stars === 2 ? T.s2 : T.s1}</p>
+                </div>
+              </div>
+              <div className="vr-res-meta">
+                <span className="vr-chip">{vf(T.mistakes, mistakes)}</span>
+                <span className="vr-chip gold"><ShellGlyph name="coin" size={16} /> {t.reward(result.xp, result.coins)}</span>
+                <small>{result.first ? T.firstReward : T.repeatReward}</small>
+              </div>
+              <div className="vr-res-btns">
+                {hasNext && <button type="button" className="btn primary" onClick={onNext}>{T.next} <Icon name="right" size={18} className="vr-flip" /></button>}
+                <button type="button" className="btn ghost" onClick={replay}><Icon name="refresh" size={18} /> {T.replayScene}</button>
+                <button type="button" className="btn ghost" onClick={onBack}>{T.toMap}</button>
+              </div>
+              <button type="button" className="vr-talk-cta" onClick={onTalk}>
+                <span className="vr-talk-ic"><ShellGlyph name="feather" size={22} /></span>
+                <span><b lang="kk">{T.free}</b><small>{T.freeSub}</small></span>
+                <Icon name="right" size={18} className="vr-flip" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="vr-replies-h">
+                <h2>{T.yourReply}</h2>
+                <small className="vr-hint">{T.pickHint}</small>
+              </div>
+              <ol className="vr-replies">
+                {replies.map((r, k) => {
+                  const st = picked?.i === k ? (picked.ok ? "ok" : "bad") : tried.includes(k) ? "bad" : "";
+                  const reveal = showTr || !!picked || tried.includes(k);
+                  return (
+                    <li key={`${node}-${k}`}>
+                      <button type="button" className={`vr-reply ${st}`} onClick={() => choose(k)} disabled={(picked?.ok && picked.i !== k) || tried.includes(k)} aria-keyshortcuts={String(k + 1)} style={{ "--d": `${k * 60}ms` }}>
+                        <span className="vr-key" aria-hidden="true">{k + 1}</span>
+                        <span className="vr-reply-t">
+                          <b lang="kk">{r.kk}</b>
+                          {reveal && <small>{L(r, tl)}</small>}
+                        </span>
+                        {st === "ok" && <Icon name="check" size={20} />}
+                        {st === "bad" && <Icon name="x" size={20} />}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+              {fb && (
+                <div className={`vr-fb ${fb.ok ? "ok" : "bad"}`} role="status" key={`${picked.i}-${picked.ok}`}>
+                  {fb.ok ? (
+                    <>
+                      <b>{good}</b>
+                      <button type="button" className="btn primary small" onClick={() => goNext(replies[picked.i])}>{T.cont} <Icon name="right" size={16} className="vr-flip" /></button>
+                    </>
+                  ) : (
+                    <>
+                      <div><b>{T.wrong}</b><p>{fb.note}</p></div>
+                      <small>{T.retry}</small>
+                    </>
+                  )}
+                </div>
+              )}
+              {micOk && (
+                <div className="vr-voice">
+                  <button type="button" className={`vr-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={rec === "busy" || !!picked?.ok} aria-pressed={rec === "rec"}>
+                    <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
+                    <span>{rec === "rec" ? T.listening : rec === "busy" ? T.recog : T.voice}</span>
+                  </button>
+                  {heard && (heard.text || heard.err) && (
+                    <p className={`vr-heard ${heard.miss ? "miss" : ""}`} role="status">
+                      {heard.text && <><small>{T.heard}:</small> <b lang="kk">«{heard.text}»</b> </>}
+                      {heard.miss && <span>{heard.err && !heard.text ? heard.err : T.noMatch}</span>}
+                    </p>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </section>
+
+        <aside className="vr-side">
+          <div className="vr-goal">
+            <span className="vr-goal-ic" aria-hidden="true"><ShellGlyph name="pennant" size={22} /></span>
+            <div>
+              <small>{T.goal}</small>
+              <p>{L(scene.goal, tl)}</p>
+              <p className="vr-goal-kk" lang="kk">{L(scene.goal, "kk")}</p>
+            </div>
+          </div>
+          {log.length > 1 && (
+            <details className="vr-log">
+              <summary>{T.dialog}</summary>
+              <ol>
+                {log.slice(0, -1).map((x, i) => (
+                  <li key={i} className={x.me ? "me" : ""}>
+                    <small>{x.me ? T.you : scene.npc.name}</small>
+                    <span lang="kk">{x.kk}</span>
+                  </li>
+                ))}
+              </ol>
+            </details>
+          )}
+        </aside>
+      </div>
+
+      <dialog className="vr-drawer" ref={drawerRef} aria-label={T.words} onClick={(e) => e.target === e.currentTarget && e.currentTarget.close()}>
+        <div className="vr-drawer-in">
+          <header>
+            <h2>{T.words}</h2>
+            <button type="button" className="icon-btn" onClick={() => drawerRef.current?.close()} aria-label={T.close}><Icon name="x" size={20} /></button>
+          </header>
+          <ul>
+            {(scene.words || []).map((w) => {
+              const saved = vocab.some((v) => v.kk === w[0]);
+              return (
+                <li key={w[0]}>
+                  <button type="button" className="vr-w-say" onClick={() => speak(w[0], { npc: false })} aria-label={`${T.listen}: ${w[0]}`}><Icon name="volume" size={18} /></button>
+                  <span className="vr-w-t"><b lang="kk">{w[0]}</b><small>{wordTr(w, explain)}</small></span>
+                  <button type="button" className={`btn small ${saved ? "ghost" : "gold"}`} disabled={saved} onClick={() => saveWord({ kk: w[0], ru: w[1], en: w[2], tr: wordTr(w, explain), src: "vr" })}>
+                    <Icon name={saved ? "check" : "plus"} size={16} /> <span className="vr-hide-s">{saved ? T.saved : T.save}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </dialog>
+    </div>
+  );
+}

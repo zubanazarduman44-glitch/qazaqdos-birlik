@@ -10,6 +10,7 @@ const PATHS = [
   ["/app/sozdik", 0.8, "daily"],
   ["/app/literature", 0.7, "monthly"],
   ["/app/qyran", 0.7, "monthly"],
+  ["/app/vr", 0.7, "monthly"],
   ["/app/tuzel", 0.7, "monthly"],
   ["/app/saiys", 0.6, "weekly"],
   ["/app/class", 0.5, "monthly"],

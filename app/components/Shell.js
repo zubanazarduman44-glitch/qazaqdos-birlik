@@ -20,6 +20,7 @@ export const NAV = [
   { href: "/app/history", key: "history", icon: "globe" },
   { href: "/app/games", key: "games", icon: "target" },
   { href: "/app/qyran", key: "chat", icon: "chat" },
+  { href: "/app/vr", key: "vr", icon: "sparkle" },
   { href: "/app/tuzel", key: "tuzel", icon: "pen" },
   { href: "/app/course", key: "course", icon: "book" },
   { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
@@ -33,7 +34,7 @@ const MOBILE = ["home", "course", "games", "chat"];
 const GROUPS = [
   { id: "top", keys: ["home"] },
   { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn", zh: "学习", es: "Aprender", de: "Lernen", fr: "Apprendre", tr: "Öğren", ar: "تعلّم", ko: "학습", ja: "学ぶ" }, keys: ["course", "sozdik"] },
-  { id: "practice", name: { kk: "Жаттығу", ru: "Практика", en: "Practise", zh: "练习", es: "Practicar", de: "Üben", fr: "Pratiquer", tr: "Pratik", ar: "تدرّب", ko: "연습", ja: "練習" }, keys: ["games", "chat", "tuzel"] },
+  { id: "practice", name: { kk: "Жаттығу", ru: "Практика", en: "Practise", zh: "练习", es: "Practicar", de: "Üben", fr: "Pratiquer", tr: "Pratik", ar: "تدرّب", ko: "연습", ja: "練習" }, keys: ["games", "chat", "vr", "tuzel"] },
   { id: "explore", name: { kk: "Таным", ru: "Познание", en: "Explore", zh: "探索", es: "Explorar", de: "Entdecken", fr: "Explorer", tr: "Keşfet", ar: "استكشف", ko: "탐구", ja: "探検" }, keys: ["travel", "history", "lit"] },
   { id: "community", name: { kk: "Қауым", ru: "Сообщество", en: "Community", zh: "社区", es: "Comunidad", de: "Gemeinschaft", fr: "Communauté", tr: "Topluluk", ar: "المجتمع", ko: "커뮤니티", ja: "コミュニティ" }, keys: ["saiys", "class", "shop"] },
 ];
