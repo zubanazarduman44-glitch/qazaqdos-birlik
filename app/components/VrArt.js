@@ -259,7 +259,7 @@ const OUT = {
   office: { top: "#3F4A5C", collar: C.surf },
 };
 
-function Npc({ voice = "f", place = "shop", name = "", talk = false }) {
+function Npc({ voice = "f", place = "shop", name = "", talk = false, mood = null }) {
   const h = hash(name + place);
   const k = h % 3;
   const skin = SKIN[k], skd = SKIN_D[k];
@@ -271,11 +271,13 @@ function Npc({ voice = "f", place = "shop", name = "", talk = false }) {
   const phone = place === "phone";
   const dark = top === "#FFFFFF" || top === C.surf ? "#D8D2C4" : "rgba(0,0,0,.22)";
   return (
-    <g className={`vr-npc${talk ? " is-talk" : ""}`}>
+    <g className={`vr-npc${talk ? " is-talk" : ""}${mood ? ` is-${mood}` : ""}`}>
       <g className="vr-body">
         {/* артқы шаш */}
+        <g className="vr-head"><g className="vr-react">
         {style === "long" && <path d="M-37 -262C-46 -304 46 -304 37 -262L44 -188C28 -178-28 -178-44 -188Z" fill={hair} />}
         {style === "bun" && <circle cx="0" cy="-294" r="16" fill={hair} />}
+        </g></g>
         {/* аяқ */}
         <path d="M-44 -100L-40 -8H-6L-2 -80H2L6 -8H40L44 -100Z" fill={o.coat ? "#3A3F4E" : "#3A3F4E"} />
         <ellipse cx="-23" cy="-6" rx="20" ry="8" fill={C.ink} />
@@ -317,6 +319,7 @@ function Npc({ voice = "f", place = "shop", name = "", talk = false }) {
         <circle cx="-78" cy="-104" r="11" fill={skin} />
         {/* мойын мен бас */}
         <rect x="-11" y="-226" width="22" height="24" fill={skd} />
+        <g className="vr-head"><g className="vr-react">
         {style === "braid" && <path d="M-30 -270C-40 -300 40 -300 30 -270Z" fill={hair} />}
         <circle cx="-31" cy="-252" r="7" fill={skd} />
         <circle cx="31" cy="-252" r="7" fill={skd} />
@@ -328,11 +331,14 @@ function Npc({ voice = "f", place = "shop", name = "", talk = false }) {
           <circle cx="-10" cy="-258" r="1.1" fill="#fff" />
           <circle cx="12" cy="-258" r="1.1" fill="#fff" />
         </g>
-        <path d={f ? "M-18 -266Q-11 -270-5 -266M5 -266Q11 -270 18 -266" : "M-19 -265Q-11 -271-4 -266M4 -266Q11 -271 19 -265"} fill="none" stroke={o.old && h % 2 ? "#8E877C" : hair} strokeWidth={f ? 2.4 : 3.6} strokeLinecap="round" />
+        <path className="vr-brow" d={f ? "M-18 -266Q-11 -270-5 -266M5 -266Q11 -270 18 -266" : "M-19 -265Q-11 -271-4 -266M4 -266Q11 -271 19 -265"} fill="none" stroke={o.old && h % 2 ? "#8E877C" : hair} strokeWidth={f ? 2.4 : 3.6} strokeLinecap="round" />
         <path d="M1 -251Q5 -244-1 -242" fill="none" stroke={skd} strokeWidth="2.2" strokeLinecap="round" />
         <circle cx="-19" cy="-242" r="6" fill="#E07B6A" opacity=".3" />
         <circle cx="19" cy="-242" r="6" fill="#E07B6A" opacity=".3" />
         <path className="vr-smile" d="M-8 -233Q0 -226 8 -233" fill="none" stroke="#7A2A22" strokeWidth="2.6" strokeLinecap="round" />
+        <path className="vr-grin" d="M-11 -235Q0 -233 11 -235Q9 -223 0 -223Q-9 -223-11 -235Z" fill="#7A2A22" />
+        <path className="vr-grin" d="M-8 -233.6Q0 -232.4 8 -233.6V-231H-8Z" fill="#fff" />
+        <path className="vr-hmm" d="M-7 -230Q-2 -234 3 -231T9 -232" fill="none" stroke="#7A2A22" strokeWidth="2.6" strokeLinecap="round" />
         <ellipse className="vr-mouth" cx="0" cy="-231" rx="6" ry="3.6" fill="#7A2A22" />
         {o.tache && <path d="M-13 -236Q-6 -242 0 -237Q6 -242 13 -236Q6 -232 0 -235Q-6 -232-13 -236Z" fill={hair} />}
         {o.glasses && (
@@ -379,6 +385,19 @@ function Npc({ voice = "f", place = "shop", name = "", talk = false }) {
             <path d="M-28 -274C-10 -279 10 -279 28 -274" fill="none" stroke={C.gold} strokeWidth="2" />
           </g>
         )}
+        </g></g>
+        {/* реакция белгілері: «?» (қате) және ұшқын (дұрыс) */}
+        <g transform="translate(58 -312)"><g className="vr-q">
+          <circle r="17" fill={C.surf} stroke={C.gold} strokeWidth="2.5" />
+          <circle r="12" fill="none" stroke={STD} strokeWidth="1.2" strokeDasharray="3 3" />
+          <path d="M-5 -4Q-5 -10 0 -10Q6 -10 6 -5Q6 -1 1 1V4" fill="none" stroke={C.deep} strokeWidth="3.4" strokeLinecap="round" />
+          <circle cy="9.5" r="2.2" fill={C.deep} />
+        </g></g>
+        <g className="vr-spark">
+          {[[-58, -300, 1], [56, -318, 1.3], [64, -268, 0.8], [-48, -332, 0.7]].map(([a, b, k], i) => (
+            <path key={i} transform={`translate(${a} ${b}) scale(${k})`} d="M0 -12Q2 -2 12 0Q2 2 0 12Q-2 2-12 0Q-2 -2 0 -12Z" fill={i % 2 ? C.gold2 : C.gold} />
+          ))}
+        </g>
         {o.steth && (
           <g fill="none" stroke="#5F6470" strokeWidth="3.4">
             <path d="M-17 -208C-22 -170-10 -150 0 -150C10 -150 22 -170 17 -208" />
@@ -1097,6 +1116,68 @@ const ART = {
   }),
 };
 
+// Орын тірлігі (қосымша): нан буы, жаңбыр тамшысы, көгершін, қоңырау, қағаз ұшақ…
+const Drops = ({ list }) => (
+  <g>
+    {list.map(([x, y, d], i) => (
+      <g key={i} className="vr-drop" style={{ animationDelay: `${-d}s` }}>
+        <path d={`M${x} ${y - 16}v14`} stroke="#fff" strokeWidth="2" opacity=".5" strokeLinecap="round" />
+        <path d={`M${x} ${y}q-5 9 0 13q5-4 0-13Z`} fill="#fff" stroke="rgba(15,94,122,.45)" strokeWidth="1.2" />
+      </g>
+    ))}
+  </g>
+);
+const Pigeon = ({ x, y, s = 1, flip = false, delay = 0 }) => (
+  <g transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
+    <ellipse cx="0" cy="2" rx="18" ry="3" fill="rgba(58,34,16,.18)" />
+    <path d="M-16 -10Q-22 -12-26 -6L-14 -4Z" fill="#6F7686" />
+    <path d="M-16 -8C-14 -22 6 -24 14 -14L10 0H-10Z" fill="#9AA1AF" />
+    <path d="M-8 -14C-2 -18 6 -16 8 -10" fill="none" stroke="#6F7686" strokeWidth="3" strokeLinecap="round" />
+    <path d="M-2 0v4M4 0v4" stroke="#C0563C" strokeWidth="2" strokeLinecap="round" />
+    <g className="vr-peck" style={{ animationDelay: `${-delay}s` }}>
+      <path d="M8 -14C8 -24 20 -26 22 -18L20 -12Z" fill="#7C8494" />
+      <path d="M8 -14Q14 -10 18 -13" fill="none" stroke="#5E8C7A" strokeWidth="3" />
+      <circle cx="17" cy="-20" r="1.6" fill={C.ink} />
+      <path d="M22 -19l5 1.5-5 1.5Z" fill="#E0A526" />
+    </g>
+  </g>
+);
+const PaperPlane = ({ y = 70 }) => (
+  <g className="vr-glide">
+    <g transform={`translate(0 ${y}) rotate(-8)`}>
+      <path d="M0 0L44 -8L10 8Z" fill={C.surf} />
+      <path d="M10 8L44 -8L16 2Z" fill="#E4DACA" />
+      <path d="M0 0L16 2L10 8Z" fill="#D2C6B1" />
+    </g>
+  </g>
+);
+const AMB = {
+  shop: {
+    front: (
+      <g>
+        <ellipse cx="370" cy="318" rx="46" ry="6" fill="rgba(58,34,16,.18)" />
+        <path d="M326 296h88l-8 22h-72Z" fill={C.wood} />
+        <path d="M330 302h80" stroke={C.wood2} strokeWidth="2" strokeDasharray="5 4" />
+        <path d="M334 298q14-26 32-4M356 296q16-30 36-2M380 298q12-20 26-2" fill="#D99C44" />
+        <path d="M342 290q6-6 12 0M366 286q8-7 16 0M388 290q5-5 10 0" fill="none" stroke="#F2C77A" strokeWidth="2" />
+        <Steam x={352} y={272} s={0.55} />
+        <Steam x={386} y={268} s={0.5} />
+      </g>
+    ),
+  },
+  bazaar: { front: <><Pigeon x={560} y={318} s={0.9} /><Pigeon x={604} y={320} s={0.8} flip delay={0.9} /></> },
+  taxi: { back: <Drops list={[[90, 60, 0], [150, 120, 1.1], [230, 40, 2.3], [330, 150, 0.6], [420, 70, 1.8], [500, 130, 2.9], [580, 50, 0.3], [650, 140, 1.5], [720, 90, 2.6], [270, 180, 3.2], [610, 190, 0.9], [120, 190, 2]]} /> },
+  school: { mid: <PaperPlane y={120} /> },
+  post: { mid: <PaperPlane y={60} /> },
+  hotel: {
+    front: (
+      <g transform="translate(662 280)">
+        <path className="vr-ding" d="M-26 -14q-6 8 0 16M26 -14q6 8 0 16M-34 -20q-10 14 0 28M34 -20q10 14 0 28" fill="none" stroke={C.gold} strokeWidth="2.5" strokeLinecap="round" />
+      </g>
+    ),
+  },
+};
+
 export const VR_ARTS = Object.keys(ART);
 const cache = new Map();
 const sceneOf = (art) => {
@@ -1107,21 +1188,22 @@ const sceneOf = (art) => {
 export const npcSide = (art) => (sceneOf(art).npc.x < 400 ? "left" : "right");
 
 // Толық сахна. talk — кейіпкер сөйлеп тұр (ауыз қимылы). npc={voice,name} болмаса — бос орын.
-export const VrScene = memo(function VrScene({ art, npc, talk = false, className = "", label }) {
+export const VrScene = memo(function VrScene({ art, npc, talk = false, mood = null, className = "", label }) {
   const sc = sceneOf(art);
+  const amb = AMB[art] || {};
   const { x, y, s } = sc.npc;
   return (
     <svg className={`vr-art ${className}`} viewBox="0 0 800 450" preserveAspectRatio="xMidYMax slice" role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : "true"} focusable="false">
-      <g className="vr-lay vr-l0">{sc.back}</g>
-      <g className="vr-lay vr-l1">{sc.mid}</g>
+      <g className="vr-lay vr-l0">{sc.back}{amb.back}</g>
+      <g className="vr-lay vr-l1">{sc.mid}{amb.mid}</g>
       {npc && (
         <g className="vr-lay vr-ln">
           <g transform={`translate(${x} ${y}) scale(${s})`}>
-            <Npc voice={npc.voice} place={art} name={npc.name} talk={talk} />
+            <Npc voice={npc.voice} place={art} name={npc.name} talk={talk} mood={mood} />
           </g>
         </g>
       )}
-      <g className="vr-lay vr-l2">{sc.front}</g>
+      <g className="vr-lay vr-l2">{sc.front}{amb.front}</g>
     </svg>
   );
 });
@@ -1355,7 +1437,36 @@ export function VrTownBg() {
       {[[330, 380], [860, 330]].map(([x, y], i) => (
         <g key={i} transform={`translate(${x} ${y}) scale(.45)`}><path d="M12 82V50C12 44 26 36 50 36S88 44 88 50V82Z" fill={C.surf} /><path d="M10 50C14 26 34 14 50 14S86 26 90 50C78 44 64 42 50 42S22 44 10 50Z" fill="#EFE6D2" /><path d="M12 56H88" stroke={C.red} strokeWidth="5" /></g>
       ))}
+      <g className="vr-rays"><circle cx="880" cy="56" r="38" fill="none" stroke={C.gold2} strokeWidth="3" strokeDasharray="5 9" strokeLinecap="round" /></g>
       <circle cx="880" cy="56" r="26" fill={C.gold2} />
+      {/* Тірлік: бұлттар, құстар, киіз үй түтіні, жолдағы автобус пен такси */}
+      <g className="vr-drift"><Cloud x={120} y={30} s={1.3} /></g>
+      <g className="vr-drift d2"><Cloud x={520} y={56} s={0.9} /></g>
+      <g className="vr-drift d3"><Cloud x={760} y={18} s={1.1} /></g>
+      <g className="vr-birds">
+        <path d="M0 0q6-6 12 0q6-6 12 0M30 10q5-5 10 0q5-5 10 0M14 18q4-4 8 0q4-4 8 0" fill="none" stroke={C.thread} strokeWidth="2" strokeLinecap="round" transform="translate(0 70)" />
+      </g>
+      {[[352, 384], [882, 334]].map(([x, y], i) => (
+        <g key={i} transform={`translate(${x} ${y})`}>
+          {[0, 1, 2].map((k) => <circle key={k} className="vr-puff" style={{ animationDelay: `${-(k * 1.2 + i * 0.6)}s` }} cx="0" cy="0" r={5 + k} fill="#F7F2E6" />)}
+        </g>
+      ))}
+      <g className="vr-car r2">
+        <g transform="translate(-23 -20)">
+          <rect x="0" y="0" width="46" height="16" rx="4" fill={C.red} />
+          <rect x="0" y="9" width="46" height="2.5" fill={C.gold} />
+          {[3, 14, 25, 36].map((wx) => <rect key={wx} x={wx} y="2.5" width="8" height="5" rx="1.2" fill="#DCEFF3" />)}
+          <circle cx="10" cy="16" r="3.4" fill={C.ink} /><circle cx="36" cy="16" r="3.4" fill={C.ink} />
+        </g>
+      </g>
+      <g className="vr-car r1">
+        <g transform="translate(17 -16) scale(-1 1)">
+          <path d="M0 9c0-4 3-5 6-5.5l5-5h14l5 5c4 .5 4 2 4 5.5v3H0Z" fill={C.gold} />
+          <rect x="13" y="-5" width="8" height="3" rx="1" fill={C.ink} />
+          <path d="M12 0h5v4h-8ZM19 0h5l3 4h-8Z" fill="#DCEFF3" />
+          <circle cx="8" cy="12.5" r="3.2" fill={C.ink} /><circle cx="27" cy="12.5" r="3.2" fill={C.ink} />
+        </g>
+      </g>
     </svg>
   );
 }

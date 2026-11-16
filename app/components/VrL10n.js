@@ -14,6 +14,7 @@ const L = {
     free: "Aqyl-мен еркін сөйлесу", freeSub: "Aqyl рөл ойнайды. Қазақша жаз немесе айт — ол жағдаятты жалғастырады.", freePh: "Қазақша жаз…", send: "Жіберу",
     fix: "Түзету", freeErr: "Aqyl жауап бере алмады. Тағы көр.", restart: "Басынан бастау", close: "Жабу", placeLbl: "Орын", typing: "жазып жатыр…",
     defaultNote: "Бұл жауап жағдаятқа сай емес. Әңгімені тағы оқып көр.", finish: "Нәтижені көру", dialog: "Әңгіме барысы", you: "Сен", stars: "{n} жұлдыз", audioFail: "Дыбыс ойнатылмады",
+    resume: "Тоқтаған жерден жалғастыр", startHere: "Осыдан баста", entering: "Кіру…", phrases: "Сен айтқан тіркестер",
   },
   ru: {
     kicker: "Виртуальные ситуации", sub: "Зайдите в магазин, придите в школу, отправьтесь в поездку — говорите по-казахски в жизненных ситуациях.",
@@ -28,6 +29,7 @@ const L = {
     free: "Свободный разговор с Aqyl", freeSub: "Aqyl играет роль. Пишите или говорите по-казахски — он продолжит ситуацию.", freePh: "Напишите по-казахски…", send: "Отправить",
     fix: "Исправление", freeErr: "Aqyl не смог ответить. Попробуйте ещё раз.", restart: "Начать заново", close: "Закрыть", placeLbl: "Место", typing: "печатает…",
     defaultNote: "Этот ответ не подходит к ситуации. Перечитайте реплику.", finish: "Посмотреть итог", dialog: "Ход разговора", you: "Вы", stars: "Звёзд: {n}", audioFail: "Звук не воспроизвёлся",
+    resume: "Продолжите с того места, где остановились", startHere: "Начните отсюда", entering: "Входим…", phrases: "Фразы, которые вы сказали",
   },
   en: {
     kicker: "Virtual situations", sub: "Walk into a shop, a classroom, a station — and speak Kazakh in real-life situations.",
@@ -42,6 +44,7 @@ const L = {
     free: "Free talk with Aqyl", freeSub: "Aqyl plays the role. Write or say anything in Kazakh — the scene keeps going.", freePh: "Write in Kazakh…", send: "Send",
     fix: "Correction", freeErr: "Aqyl couldn't answer. Please try again.", restart: "Start over", close: "Close", placeLbl: "Place", typing: "is typing…",
     defaultNote: "This reply doesn't fit the situation. Read the line again.", finish: "See the result", dialog: "Conversation so far", you: "You", stars: "{n} stars", audioFail: "Audio didn't play",
+    resume: "Pick up where you left off", startHere: "Start here", entering: "Entering…", phrases: "Phrases you used",
   },
   zh: {
     kicker: "虚拟情景", sub: "走进商店、教室、车站——在真实生活情景中说哈萨克语。",
@@ -56,6 +59,7 @@ const L = {
     free: "与 Aqyl 自由对话", freeSub: "Aqyl 扮演角色。用哈萨克语写或说——情景会继续。", freePh: "用哈萨克语写……", send: "发送",
     fix: "纠正", freeErr: "Aqyl 无法回答，请再试一次。", restart: "重新开始", close: "关闭", placeLbl: "地点", typing: "正在输入……",
     defaultNote: "这个回答不符合情景。请再读一遍对方的话。", finish: "查看结果", dialog: "对话记录", you: "你", stars: "{n} 颗星", audioFail: "音频无法播放",
+    resume: "从上次停下的地方继续", startHere: "从这里开始", entering: "正在进入…", phrases: "你说过的句子",
   },
   es: {
     kicker: "Situaciones virtuales", sub: "Entra en una tienda, un aula, una estación… y habla kazajo en situaciones de la vida real.",
@@ -70,6 +74,7 @@ const L = {
     free: "Charla libre con Aqyl", freeSub: "Aqyl hace el papel. Escribe o di lo que quieras en kazajo: la escena continúa.", freePh: "Escribe en kazajo…", send: "Enviar",
     fix: "Corrección", freeErr: "Aqyl no pudo responder. Inténtalo de nuevo.", restart: "Empezar de nuevo", close: "Cerrar", placeLbl: "Lugar", typing: "está escribiendo…",
     defaultNote: "Esta respuesta no encaja en la situación. Vuelve a leer la frase.", finish: "Ver el resultado", dialog: "La conversación", you: "Tú", stars: "{n} estrellas", audioFail: "No se pudo reproducir el audio",
+    resume: "Sigue donde lo dejaste", startHere: "Empieza aquí", entering: "Entrando…", phrases: "Frases que usaste",
   },
   de: {
     kicker: "Virtuelle Situationen", sub: "Geh in einen Laden, ein Klassenzimmer, einen Bahnhof – und sprich Kasachisch in echten Alltagssituationen.",
@@ -84,6 +89,7 @@ const L = {
     free: "Freies Gespräch mit Aqyl", freeSub: "Aqyl spielt die Rolle. Schreib oder sag etwas auf Kasachisch – die Szene geht weiter.", freePh: "Auf Kasachisch schreiben …", send: "Senden",
     fix: "Korrektur", freeErr: "Aqyl konnte nicht antworten. Bitte versuch es noch einmal.", restart: "Neu beginnen", close: "Schließen", placeLbl: "Ort", typing: "schreibt …",
     defaultNote: "Diese Antwort passt nicht zur Situation. Lies den Satz noch einmal.", finish: "Ergebnis ansehen", dialog: "Bisheriges Gespräch", you: "Du", stars: "{n} Sterne", audioFail: "Audio konnte nicht abgespielt werden",
+    resume: "Mach da weiter, wo du aufgehört hast", startHere: "Starte hier", entering: "Eintreten…", phrases: "Sätze, die du benutzt hast",
   },
   fr: {
     kicker: "Situations virtuelles", sub: "Entre dans un magasin, une classe, une gare… et parle kazakh dans des situations de la vie réelle.",
@@ -98,6 +104,7 @@ const L = {
     free: "Conversation libre avec Aqyl", freeSub: "Aqyl joue le rôle. Écris ou dis ce que tu veux en kazakh : la scène continue.", freePh: "Écris en kazakh…", send: "Envoyer",
     fix: "Correction", freeErr: "Aqyl n'a pas pu répondre. Réessaie.", restart: "Recommencer", close: "Fermer", placeLbl: "Lieu", typing: "écrit…",
     defaultNote: "Cette réponse ne convient pas à la situation. Relis la réplique.", finish: "Voir le résultat", dialog: "La conversation", you: "Toi", stars: "{n} étoiles", audioFail: "Le son n'a pas pu être lu",
+    resume: "Reprends là où tu t’es arrêté", startHere: "Commence ici", entering: "On entre…", phrases: "Les phrases que tu as dites",
   },
   tr: {
     kicker: "Sanal durumlar", sub: "Bir dükkâna, sınıfa, istasyona gir — gerçek hayat durumlarında Kazakça konuş.",
@@ -112,6 +119,7 @@ const L = {
     free: "Aqyl ile serbest sohbet", freeSub: "Aqyl rolü oynar. Kazakça yaz ya da söyle — sahne devam eder.", freePh: "Kazakça yaz…", send: "Gönder",
     fix: "Düzeltme", freeErr: "Aqyl cevap veremedi. Tekrar dene.", restart: "Baştan başla", close: "Kapat", placeLbl: "Yer", typing: "yazıyor…",
     defaultNote: "Bu cevap duruma uymuyor. Cümleyi yeniden oku.", finish: "Sonucu gör", dialog: "Konuşmanın akışı", you: "Sen", stars: "{n} yıldız", audioFail: "Ses çalınamadı",
+    resume: "Kaldığın yerden devam et", startHere: "Buradan başla", entering: "Giriliyor…", phrases: "Kullandığın ifadeler",
   },
   ar: {
     kicker: "مواقف افتراضية", sub: "ادخل متجرًا أو صفًّا أو محطة — وتحدّث بالكازاخية في مواقف من الحياة اليومية.",
@@ -126,6 +134,7 @@ const L = {
     free: "حديث حرّ مع Aqyl", freeSub: "يؤدي Aqyl الدور. اكتب أو قل أي شيء بالكازاخية — ويستمر المشهد.", freePh: "اكتب بالكازاخية…", send: "إرسال",
     fix: "تصحيح", freeErr: "لم يستطع Aqyl الرد. حاول مرة أخرى.", restart: "ابدأ من جديد", close: "إغلاق", placeLbl: "المكان", typing: "يكتب…",
     defaultNote: "هذا الرد لا يناسب الموقف. أعد قراءة العبارة.", finish: "عرض النتيجة", dialog: "مجرى الحديث", you: "أنت", stars: "{n} نجوم", audioFail: "تعذّر تشغيل الصوت",
+    resume: "تابع من حيث توقفت", startHere: "ابدأ من هنا", entering: "جارٍ الدخول…", phrases: "العبارات التي قلتها",
   },
   ko: {
     kicker: "가상 상황", sub: "가게, 교실, 역에 들어가서 실제 생활 상황에서 카자흐어로 말해 보세요.",
@@ -140,6 +149,7 @@ const L = {
     free: "Aqyl과 자유 대화", freeSub: "Aqyl이 역할을 맡아요. 카자흐어로 쓰거나 말하면 장면이 이어져요.", freePh: "카자흐어로 써 보세요…", send: "보내기",
     fix: "고쳐 쓰기", freeErr: "Aqyl이 대답하지 못했어요. 다시 시도해 주세요.", restart: "처음부터", close: "닫기", placeLbl: "장소", typing: "입력 중…",
     defaultNote: "이 대답은 상황에 맞지 않아요. 상대의 말을 다시 읽어 보세요.", finish: "결과 보기", dialog: "지금까지의 대화", you: "나", stars: "별 {n}개", audioFail: "소리를 재생하지 못했어요",
+    resume: "멈춘 곳에서 이어 하기", startHere: "여기서 시작하세요", entering: "들어가는 중…", phrases: "내가 말한 표현",
   },
   ja: {
     kicker: "バーチャルな場面", sub: "お店、教室、駅に入って、実際の生活場面でカザフ語を話そう。",
@@ -154,6 +164,7 @@ const L = {
     free: "Aqyl と自由に会話", freeSub: "Aqyl が役を演じます。カザフ語で書くか話すと、場面が続きます。", freePh: "カザフ語で書いてください…", send: "送信",
     fix: "訂正", freeErr: "Aqyl が答えられませんでした。もう一度お試しください。", restart: "最初から", close: "閉じる", placeLbl: "場所", typing: "入力中…",
     defaultNote: "この返事は場面に合いません。相手のせりふをもう一度読んでみよう。", finish: "結果を見る", dialog: "これまでの会話", you: "あなた", stars: "星 {n} 個", audioFail: "音声を再生できませんでした",
+    resume: "前回の続きから", startHere: "ここから始めよう", entering: "入ります…", phrases: "あなたが使ったフレーズ",
   },
 };
 

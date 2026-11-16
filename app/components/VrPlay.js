@@ -7,6 +7,7 @@ import Icon from "./Icon";
 import ShellGlyph from "./ShellGlyph";
 import { VrScene, npcSide } from "./VrArt";
 import { vrL, vf } from "./VrL10n";
+import { useAnimGate } from "./AnimGate";
 import { L } from "../../lib/i18n";
 import { sayKk, stopKk } from "../../lib/speak";
 import { toWav } from "../../lib/audio";
@@ -73,6 +74,49 @@ function stepsLeft(nodes, from) {
   }
   return 0;
 }
+const reducedMotion = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+const INTRO_MS = 1000; // есік ашылуы (reduced-motion: 380 мс ақырын сөну)
+
+// Сөз көпіршігі: сөздер дыбыспен қатар бірте-бірте шығады (мәтін DOM-да әрдайым толық)
+function Typed({ text, lead = 0 }) {
+  let at = 0;
+  return String(text)
+    .split(/(\s+)/)
+    .map((w, i) => {
+      if (!w.trim()) return w;
+      const t = lead + Math.min(at, 40) * 52;
+      at += w.length + 1;
+      return <span key={i} className="vr-w" style={{ "--t": `${t}ms` }}>{w}</span>;
+    });
+}
+
+// Сан біртіндеп өседі (reduced-motion — бірден соңғы мән)
+function useCount(to, ms = 900, delay = 0) {
+  const [v, setV] = useState(() => (reducedMotion() ? to : 0));
+  useEffect(() => {
+    if (reducedMotion()) { setV(to); return; }
+    let raf = 0, t0 = 0;
+    const tick = (now) => {
+      if (!t0) t0 = now;
+      const k = Math.min(1, Math.max(0, (now - t0 - delay) / ms));
+      setV(Math.round(to * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to, ms, delay]);
+  return v;
+}
+function Reward({ xp, coins, t }) {
+  const a = useCount(xp, 900, 500), b = useCount(coins, 900, 650);
+  return (
+    <span className="vr-chip gold vr-reward">
+      <ShellGlyph name="coin" size={16} /> <span aria-hidden="true">{t.reward(a, b)}</span>
+      <span className="sr-only">{t.reward(xp, coins)}</span>
+    </span>
+  );
+}
+
 const starsFor = (m) => (m === 0 ? 3 : m <= 2 ? 2 : 1);
 const canRecord = () => typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined" && !!(window.AudioContext || window.webkitAudioContext);
 
@@ -88,6 +132,28 @@ function Stars({ n, size = 18, label }) {
   );
 }
 export { Stars };
+
+// Киіз үйдің есігі (сықырлауық): қызыл киіз, алтын қошқар мүйіз, үзік тігіс
+function DoorArt({ flip }) {
+  return (
+    <svg viewBox="0 0 200 450" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" style={flip ? { transform: "scaleX(-1)" } : undefined}>
+      <rect width="200" height="450" fill="#8a2018" />
+      <rect x="0" y="0" width="200" height="450" fill="#b8322a" />
+      <rect x="10" y="10" width="180" height="430" rx="6" fill="none" stroke="rgba(255,253,247,.55)" strokeWidth="2" strokeDasharray="6 6" />
+      <rect x="0" y="0" width="200" height="22" fill="#e0a526" />
+      <rect x="0" y="428" width="200" height="22" fill="#e0a526" />
+      <rect x="182" y="0" width="18" height="450" fill="#86532b" />
+      <path d="M182 0v450" stroke="#5a3418" strokeWidth="2" />
+      <path d="M100 150l52 75-52 75-52-75Z" fill="#8a2018" stroke="#e0a526" strokeWidth="3" />
+      <path d="M100 172l36 53-36 53-36-53Z" fill="none" stroke="rgba(255,253,247,.5)" strokeWidth="1.6" strokeDasharray="4 4" />
+      <path transform="translate(100 226) scale(1.5) translate(-20 -15)" d="M20 23V13C20 7.5 15 4.5 11 6.2C7.6 7.7 8.2 12.4 11.6 12.4C13.6 12.4 14.2 10 12.6 9.3M20 13C20 7.5 25 4.5 29 6.2C32.4 7.7 31.8 12.4 28.4 12.4C26.4 12.4 25.8 10 27.4 9.3M15 23H25" fill="none" stroke="#e0a526" strokeWidth="1.8" strokeLinecap="round" />
+      {[70, 380].map((y) => (
+        <path key={y} transform={`translate(100 ${y}) scale(1.1) translate(-20 -15)`} d="M20 23V13C20 7.5 15 4.5 11 6.2C7.6 7.7 8.2 12.4 11.6 12.4C13.6 12.4 14.2 10 12.6 9.3M20 13C20 7.5 25 4.5 29 6.2C32.4 7.7 31.8 12.4 28.4 12.4C26.4 12.4 25.8 10 27.4 9.3M15 23H25" fill="none" stroke="#f2c14e" strokeWidth="2" strokeLinecap="round" />
+      ))}
+      <circle cx="168" cy="226" r="7" fill="#e0a526" />
+    </svg>
+  );
+}
 
 export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }) {
   const { lang, explain, state, update, award, saveWord, t } = useApp();
@@ -108,6 +174,10 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const [micOk, setMicOk] = useState(false);
   const [goodK, setGoodK] = useState(0);
   const stageRef = useRef(null);
+  const gate = useAnimGate(stageRef);
+  const [intro, setIntro] = useState(true);
+  const lead = useRef(null); // бірінші сөз есік ашылған соң
+  if (lead.current === null) lead.current = reducedMotion() ? 400 : INTRO_MS - 80;
   const drawerRef = useRef(null);
   const recRef = useRef(null);
   const tok = useRef(0);
@@ -122,6 +192,11 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const total = useMemo(() => log.filter((x) => x.me).length + stepsLeft(scene.nodes, node), [scene.nodes, node, log]);
   const step = log.filter((x) => x.me).length + (isEnd ? 0 : 1);
   const side = npcSide(place?.art || scene.place);
+
+  useEffect(() => {
+    const id = setTimeout(() => setIntro(false), reducedMotion() ? 400 : INTRO_MS + 120);
+    return () => clearTimeout(id);
+  }, []);
 
   useEffect(() => {
     mounted.current = true;
@@ -155,7 +230,8 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     const line = scene.nodes[node]?.npc;
     if (!line) return;
     setLog((l) => [...l, { me: false, kk: line.kk, tr: L(line, tl) }]);
-    const id = setTimeout(() => speak(line.kk), 350);
+    const id = setTimeout(() => speak(line.kk), lead.current);
+    lead.current = 350;
     return () => clearTimeout(id);
   }, [node, run]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -323,6 +399,10 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const line = n.npc || { kk: "" };
   const good = T.good[goodK % T.good.length];
   const fb = picked && (picked.ok ? { ok: true } : { ok: false, note: L(replies[picked.i]?.note, tl) || T.defaultNote });
+  const mood = result ? "ok" : picked ? (picked.ok ? "ok" : "bad") : null;
+  const said = log.filter((x) => x.me);
+  const doneSteps = result ? total : said.length;
+  const bubbleLead = intro ? INTRO_MS - 60 : 300;
 
   return (
     <div className="vr-play">
@@ -341,18 +421,48 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
           </button>
         </div>
       </header>
-      <div className="vr-progress" aria-hidden="true"><i style={{ width: `${result ? 100 : Math.round(((Math.max(1, step) - 1) / Math.max(1, total)) * 100)}%` }} /></div>
+      <ol className="vr-path" aria-hidden="true">
+        {Array.from({ length: Math.max(1, total) }, (_, i) => (
+          <li key={i} className={i < doneSteps ? "done" : i === doneSteps ? "now" : ""} style={{ "--i": i }}>
+            {i < doneSteps ? (
+              <svg viewBox="0 0 24 24" width="18" height="18"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.2L12 17.1 6.4 20l1.1-6.2L2.9 9.4l6.3-.9Z" /></svg>
+            ) : i === doneSteps ? (
+              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M7.5 3c2 0 3 2.4 2.6 5.2-.3 2-1 3.3-2.6 3.3S5 10.2 4.9 8.2C4.7 5.4 5.5 3 7.5 3ZM5.6 13.6h4.2l-.4 2.6c-.3 1.6-3.2 1.6-3.5 0ZM16.5 7c2 0 2.8 2.4 2.6 5.2-.1 2-1 3.3-2.6 3.3s-2.3-1.3-2.6-3.3C13.5 9.4 14.5 7 16.5 7ZM14.2 17.6h4.2l-.4 2.6c-.3 1.6-3.2 1.6-3.5 0Z" /></svg>
+            ) : (
+              <i />
+            )}
+          </li>
+        ))}
+      </ol>
 
-      <div className={`vr-scene side-${side}`}>
-      <div className="vr-stage" ref={stageRef}>
-        <VrScene art={place?.art || scene.place} npc={scene.npc} talk={talk} label={`${L(place?.name, "kk")} — ${scene.npc.name}`} />
+      <div className={`vr-scene side-${side}${intro ? " is-intro" : ""}`}>
+      <div className="vr-stage" ref={gate}>
+        <VrScene art={place?.art || scene.place} npc={scene.npc} talk={talk} mood={mood} label={`${L(place?.name, "kk")} — ${scene.npc.name}`} />
+        <span className="vr-light" aria-hidden="true" />
+        <span className="vr-motes" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>
         <span className="vr-vignette" aria-hidden="true" />
+        {picked?.ok && replies[picked.i] && (
+          <div className="vr-me" aria-hidden="true" key={`me-${node}-${run}`}>
+            <small>{T.you}</small>
+            <span lang="kk">{replies[picked.i].kk}</span>
+          </div>
+        )}
+        {intro && (
+          <div className="vr-doors" aria-hidden="true" onClick={() => setIntro(false)}>
+            <i className="vr-door l"><DoorArt /></i>
+            <i className="vr-door r"><DoorArt flip /></i>
+            <span className="vr-doors-plaque">
+              <small>{T.entering}</small>
+              <b lang="kk">{L(place?.name, "kk")}</b>
+            </span>
+          </div>
+        )}
       </div>
-        <div className={`vr-bubble ${talk ? "is-talk" : ""}`} key={`${node}-${run}`} aria-live="polite">
+        <div className={`vr-bubble ${talk ? "is-talk" : ""} ${picked?.ok || result ? "is-done" : ""}`} key={`${node}-${run}`} aria-live="polite" style={{ "--lead": `${bubbleLead}ms` }}>
           <span className="vr-bubble-who">
             <b>{scene.npc.name}</b> · {L(scene.npc.role, tl)}
           </span>
-          <p className="vr-bubble-kk" lang="kk">{line.kk}</p>
+          <p className="vr-bubble-kk" lang="kk"><Typed text={line.kk} lead={bubbleLead + 120} /></p>
           {showTr && <p className="vr-bubble-tr">{L(line, tl)}</p>}
           <div className="vr-bubble-tools">
             <button type="button" className="vr-tool" onClick={() => speak(line.kk)} aria-label={T.replay} title={T.replay}>
@@ -373,9 +483,16 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
       <div className="vr-body">
         <section className="vr-main" aria-label={T.yourReply}>
           {result ? (
-            <div className="vr-result card" role="status">
+            <div className={`vr-result card s-${result.stars}`} role="status">
+              {result.stars >= 2 && (
+                <span className="vr-confetti" aria-hidden="true">
+                  {Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--i": i }} />)}
+                </span>
+              )}
               <div className="vr-res-top">
-                <Stars n={result.stars} size={40} label={vf(T.stars, result.stars)} />
+                <span className="vr-res-medal">
+                  <Stars n={result.stars} size={34} label={vf(T.stars, result.stars)} />
+                </span>
                 <div>
                   <h2>{T.result}</h2>
                   <p>{result.stars === 3 ? T.s3 : result.stars === 2 ? T.s2 : T.s1}</p>
@@ -383,7 +500,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
               </div>
               <div className="vr-res-meta">
                 <span className="vr-chip">{vf(T.mistakes, mistakes)}</span>
-                <span className="vr-chip gold"><ShellGlyph name="coin" size={16} /> {t.reward(result.xp, result.coins)}</span>
+                <Reward xp={result.xp} coins={result.coins} t={t} />
                 <small>{result.first ? T.firstReward : T.repeatReward}</small>
               </div>
               <div className="vr-res-btns">
@@ -391,6 +508,19 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
                 <button type="button" className="btn ghost" onClick={replay}><Icon name="refresh" size={18} /> {T.replayScene}</button>
                 <button type="button" className="btn ghost" onClick={onBack}>{T.toMap}</button>
               </div>
+              {said.length > 0 && (
+                <div className="vr-said">
+                  <h3>{T.phrases}</h3>
+                  <ol>
+                    {said.map((x, i) => (
+                      <li key={i} style={{ "--i": i }}>
+                        <button type="button" className="vr-w-say" onClick={() => speak(x.kk, { npc: false })} aria-label={`${T.listen}: ${x.kk}`}><Icon name="volume" size={18} /></button>
+                        <span><b lang="kk">{x.kk}</b><small>{x.tr}</small></span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
               <button type="button" className="vr-talk-cta" onClick={onTalk}>
                 <span className="vr-talk-ic"><ShellGlyph name="feather" size={22} /></span>
                 <span><b lang="kk">{T.free}</b><small>{T.freeSub}</small></span>

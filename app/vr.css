@@ -74,10 +74,6 @@
 /* ── Сүзгі мен тізім ── */
 .vr-list { scroll-margin-top: 80px; }
 .vr-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-bottom: 14px; }
-.vr-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: var(--vr-surf); box-shadow: inset 0 0 0 1px var(--vr-rim); }
-.vr-seg button { min-height: 36px; min-width: 44px; padding: 6px 12px; border: 0; border-radius: 10px; background: transparent; font-weight: 800; font-size: 14px; cursor: pointer; color: var(--vr-muted); }
-.vr-seg button:hover { background: var(--vr-felt); color: var(--vr-ink); }
-.vr-seg button.on { background: var(--vr-sec); color: #fff; box-shadow: 0 2px 0 var(--vr-sec-deep); }
 .vr-place-chip { cursor: pointer; border: 0; color: #fff; background: var(--vr-sec); box-shadow: 0 2px 0 var(--vr-sec-deep); min-height: 36px; }
 .vr-place-chip:hover { filter: brightness(1.08); }
 .vr-count { margin-inline-start: auto; color: var(--vr-muted); font-weight: 700; }
@@ -96,8 +92,6 @@
 .vr-card-art { position: relative; display: block; aspect-ratio: 16 / 9; background: var(--vr-felt); overflow: hidden; }
 .vr-card-art .vr-art { width: 100%; height: 100%; display: block; }
 .vr-card-art .vr-art * { animation: none !important; }
-.vr-card-art .vr-lv { position: absolute; top: 10px; inset-inline-start: 10px; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); }
-.vr-card-done { position: absolute; top: 8px; inset-inline-end: 8px; padding: 3px 7px; border-radius: 999px; background: var(--vr-surf); box-shadow: 0 2px 0 rgba(58, 34, 16, 0.2); }
 .vr-card-b { display: grid; gap: 3px; padding: 12px 14px 4px; flex: 1; }
 .vr-card-b > small { font-size: 12px; font-weight: 800; color: var(--vr-sec-deep); letter-spacing: 0.04em; text-transform: uppercase; }
 .vr-card-b > b { font-size: 17px; line-height: 1.25; font-family: var(--head); font-weight: 600; }
@@ -118,9 +112,6 @@
 .vr-bar-r { display: flex; align-items: center; gap: 8px; }
 .vr-step { font-size: 13px; font-weight: 800; color: var(--vr-sec-deep); background: var(--vr-sec-soft); padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
 .vr-back { flex: none; }
-.vr-progress { height: 6px; border-radius: 6px; background: var(--vr-felt); overflow: hidden; margin-bottom: 12px; box-shadow: inset 0 0 0 1px var(--vr-line); }
-.vr-progress i { display: block; height: 100%; background: var(--vr-sec); border-radius: inherit; transition: width 0.5s var(--ease, ease); }
-[dir="rtl"] .vr-progress i { margin-inline-start: 0; }
 
 .vr-stage {
   --px: 0; --py: 0;
@@ -255,9 +246,6 @@
 .vr-res-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .vr-res-top h2 { font-size: clamp(20px, 2.4vw, 26px); }
 .vr-res-top p { margin: 4px 0 0; color: var(--vr-muted); }
-.vr-res-top .vr-stars svg { animation: vr-star 0.5s var(--ease, ease) both; }
-.vr-res-top .vr-stars svg:nth-child(2) { animation-delay: 0.12s; }
-.vr-res-top .vr-stars svg:nth-child(3) { animation-delay: 0.24s; }
 .vr-res-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .vr-res-meta small { color: var(--vr-muted); }
 .vr-res-btns { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -375,9 +363,311 @@
 @keyframes vr-recpulse { 0% { box-shadow: 0 0 0 0 rgba(184, 50, 42, 0.45); } 100% { box-shadow: 0 0 0 14px rgba(184, 50, 42, 0); } }
 @keyframes vr-dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
 
+/* ════════════════════════════════════════════════════════════════════
+   Тірі қабат · «Есіктен кір»
+   Хаб: қағаз афиша, «жалғастыр» жолағы, жанды карта (бұлт, құс, түтін, жолдағы көлік),
+   киіз қойындылар, ашықхат карталары, тігілген медаль. Сахна: киіз үй есігі ашылады,
+   жарық сәулесі мен шаң, кейіпкер реакциясы, сөз бірте-бірте, сенің көпіршігің, із-жол.
+   Тек transform/opacity; AnimGate экраннан тыс кідіртеді.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Хаб: қағаз афиша ── */
+.vr-head {
+  position: relative; overflow: hidden; padding: 22px 26px 28px; border-radius: 24px;
+  background: var(--vr-surf); box-shadow: inset 0 0 0 1px var(--vr-rim), 0 20px 40px -32px rgba(60, 40, 10, 0.55);
+}
+.vr-head::before { content: ""; position: absolute; inset: 8px; border-radius: 18px; border: 1.5px dashed rgba(122, 86, 22, 0.26); pointer-events: none; }
+.vr-head > * { position: relative; z-index: 1; }
+.vr-head h1 { color: var(--vr-ink); }
+.vr-meter { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.vr-meter-bar { display: block; width: 150px; height: 8px; border-radius: 8px; background: var(--vr-felt); overflow: hidden; box-shadow: inset 0 0 0 1px var(--vr-line); }
+.vr-meter-bar i { display: block; height: 100%; width: calc(var(--p, 0) * 1%); min-width: 6px; border-radius: inherit; background: var(--vr-sec); }
+
+/* ── «Жалғастыр» жолағы ── */
+.vr-resume {
+  position: relative; display: grid; grid-template-columns: 170px minmax(0, 1fr) auto; align-items: center; gap: 18px;
+  width: 100%; margin: 0 0 20px; padding: 10px 18px 10px 10px; border: 0; border-radius: 20px; cursor: pointer; text-align: start;
+  background: var(--vr-sec-deep); color: #fff; overflow: hidden;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1.6px); background-size: 14px 14px;
+  box-shadow: 0 4px 0 #2a1a56, 0 22px 36px -24px rgba(40, 20, 90, 0.8);
+  transition: transform 0.22s var(--ease, ease), box-shadow 0.22s;
+}
+[dir="rtl"] .vr-resume { padding: 10px 10px 10px 18px; }
+.vr-resume::before { content: ""; position: absolute; inset: 5px; border-radius: 16px; border: 1.5px dashed rgba(255, 255, 255, 0.28); pointer-events: none; }
+.vr .vr-resume { color: #fff; }
+.vr-resume:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #2a1a56, 0 26px 40px -24px rgba(40, 20, 90, 0.85); }
+.vr-resume:active { transform: translateY(1px); }
+.vr-resume-art { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; transform: rotate(-2.5deg); box-shadow: 0 0 0 4px var(--vr-surf), 0 10px 18px -8px rgba(0, 0, 0, 0.5); background: var(--vr-felt); }
+.vr-resume-art .vr-art { width: 100%; height: 100%; display: block; }
+.vr-resume-art .vr-art * { animation: none !important; }
+.vr-resume-t { display: grid; gap: 3px; min-width: 0; }
+.vr-resume-t small { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--vr-gold); }
+.vr-resume-t b { font-family: var(--head); font-weight: 600; font-size: clamp(18px, 2.2vw, 24px); line-height: 1.2; }
+.vr-resume-t > span { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 14px; color: rgba(255, 255, 255, 0.82); }
+.vr-resume-go { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: var(--vr-gold); color: #3a2400; font-weight: 800; box-shadow: 0 3px 0 #a5740f; white-space: nowrap; }
+.vr-door-ic { display: grid; place-items: center; transition: transform 0.3s var(--ease, ease); }
+.vr-resume:hover .vr-door-ic { transform: scale(1.12) rotate(-6deg); }
+
+/* ── Жанды карта ── */
+.vr-board { box-shadow: inset 0 0 0 2px var(--vr-rim), inset 0 -40px 60px -50px rgba(58, 34, 16, 0.4); }
+.vr-town-bg .vr-drift { animation: vr-drift 110s linear infinite; animation-delay: -30s; }
+.vr-town-bg .vr-drift.d2 { animation-duration: 150s; animation-delay: -100s; }
+.vr-town-bg .vr-drift.d3 { animation-duration: 130s; animation-delay: -70s; }
+.vr-town-bg .vr-birds { animation: vr-birds 34s linear infinite; animation-delay: -6s; }
+.vr-town-bg .vr-rays { transform-origin: 880px 56px; animation: vr-spin 50s linear infinite; }
+.vr-town-bg .vr-puff { transform-box: fill-box; transform-origin: 50% 50%; animation: vr-puff 3.6s ease-out infinite; opacity: 0; }
+.vr-town-bg .vr-car.r2 { animation: vr-road2 28s linear infinite; animation-delay: -9s; }
+.vr-town-bg .vr-car.r1 { animation: vr-road1 22s linear infinite reverse; animation-delay: -15s; }
+.vr-pin { animation: vr-pinin 0.55s var(--ease, ease) both; animation-delay: calc(var(--k, 0) * 40ms); }
+.vr-pin > .vr-bld, .vr-pin > .vr-pin-sh { grid-area: 1 / 1; }
+.vr-pin > .vr-pin-n { grid-area: 2 / 1; transition: transform 0.22s var(--ease, ease), background 0.2s, color 0.2s; }
+.vr-pin-sh { align-self: end; justify-self: center; width: 76%; height: 10px; margin-bottom: 1px; border-radius: 50%; background: rgba(58, 34, 16, 0.2); transition: transform 0.25s var(--ease, ease), opacity 0.25s; }
+.vr-pin .vr-bld { position: relative; }
+.vr-pin:hover, .vr-pin:focus-visible { z-index: 3; }
+.vr-pin:hover .vr-bld, .vr-pin:focus-visible .vr-bld { transform: translateY(-9px) scale(1.07); }
+.vr-pin:hover .vr-pin-sh, .vr-pin:focus-visible .vr-pin-sh, .vr-pin.on .vr-pin-sh { transform: scaleX(0.72); opacity: 0.6; }
+.vr-pin:hover .vr-pin-n, .vr-pin:focus-visible .vr-pin-n { transform: translateY(-3px) scale(1.07); background: var(--vr-sec); color: #fff; box-shadow: 0 3px 0 var(--vr-sec-deep); }
+.vr-pin.on::before { display: none; }
+.vr-pin.full .vr-pin-n::before { content: "★ "; color: var(--vr-gold); }
+.vr-pin-c { box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18); }
+
+/* ── Киіз қойындылар ── */
+.vr-seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.vr-seg button {
+  position: relative; display: inline-flex; align-items: center; gap: 7px; min-height: 42px; min-width: 48px; padding: 7px 14px;
+  border: 0; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 14px; color: var(--vr-muted);
+  background: var(--vr-felt); box-shadow: inset 0 0 0 1px var(--vr-rim), 0 2px 0 rgba(58, 34, 16, 0.16);
+  transition: transform 0.18s var(--ease, ease), background 0.18s, color 0.18s;
+}
+.vr-seg button::after { content: ""; position: absolute; inset: 4px; border-radius: 9px; border: 1.5px dashed rgba(122, 86, 22, 0.3); pointer-events: none; }
+.vr-seg button small { font-size: 11.5px; font-weight: 800; padding: 1px 7px; border-radius: 999px; background: rgba(255, 253, 247, 0.85); color: var(--vr-muted); }
+.vr-seg button:hover { transform: translateY(-1px); color: var(--vr-ink); }
+.vr-seg button.on { background: var(--vr-sec); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 0 var(--vr-sec-deep); }
+.vr-seg button.on::after { border-color: rgba(255, 255, 255, 0.5); }
+.vr-seg button.on small { background: rgba(255, 255, 255, 0.22); color: #fff; }
+
+/* ── Ашықхат карталары ── */
+.vr-card {
+  position: relative; padding: 8px 8px 0; border-radius: 16px; overflow: visible;
+  box-shadow: inset 0 0 0 1px var(--vr-rim), 0 1px 0 rgba(58, 34, 16, 0.08), 0 16px 28px -22px rgba(60, 40, 10, 0.55);
+  transition: transform 0.25s var(--ease, ease), box-shadow 0.25s;
+}
+.vr-card::before { content: ""; position: absolute; inset: 4px; border-radius: 13px; border: 1.5px dashed rgba(122, 86, 22, 0.22); pointer-events: none; }
+.vr-card:hover { transform: translateY(-4px) rotate(-0.5deg); box-shadow: inset 0 0 0 1.5px var(--vr-sec), 0 22px 34px -22px rgba(60, 40, 10, 0.6); }
+.vr-card-art { border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(58, 34, 16, 0.12); }
+.vr-card-art .vr-art { transition: transform 0.6s var(--ease, ease); transform-origin: 50% 70%; }
+.vr-card:hover .vr-card-art .vr-art { transform: scale(1.07); }
+.vr-stamp {
+  position: absolute; top: 8px; inset-inline-end: 8px; padding: 5px; transform: rotate(4deg);
+  background: radial-gradient(circle at 3px 3px, transparent 2.2px, var(--vr-surf) 2.7px) -3px -3px / 7px 7px;
+  filter: drop-shadow(0 2px 1px rgba(58, 34, 16, 0.25));
+}
+.vr-stamp .vr-lv { border-radius: 3px; min-width: 36px; padding: 4px 7px; }
+.vr-stamp.lv-A2 .vr-lv { background: var(--vr-blue); }
+.vr-stamp.lv-B1 .vr-lv { background: var(--vr-sec); }
+.vr-stamp.lv-B2 .vr-lv { background: var(--vr-deep); }
+.vr-medal {
+  position: relative; z-index: 1; align-self: flex-start; margin: -18px 0 -10px 10px; padding: 6px 11px; border-radius: 999px;
+  background: var(--vr-deep); box-shadow: 0 3px 0 #5e140e, 0 6px 12px -6px rgba(58, 34, 16, 0.6);
+  outline: 1.5px dashed rgba(246, 227, 176, 0.75); outline-offset: -5px;
+}
+[dir="rtl"] .vr-medal { margin: -18px 10px -10px 0; }
+.vr-medal .vr-stars svg { fill: rgba(255, 255, 255, 0.2); }
+.vr-medal .vr-stars svg.on { fill: var(--vr-gold); }
+.vr-card-b { padding: 14px 8px 4px; }
+.vr-card-b > small { color: var(--vr-sec-deep); }
+.vr-card-go { margin: 6px 0 0; padding: 8px 8px 12px; border-top: 1.5px dashed var(--vr-line); }
+.vr-card-go svg { transition: transform 0.2s var(--ease, ease); }
+.vr-card:hover .vr-card-go svg { transform: translateX(3px); }
+[dir="rtl"] .vr-card:hover .vr-card-go svg { transform: scaleX(-1) translateX(3px); }
+
+/* ── Сахна: із-жол (қадамдар) ── */
+.vr-path { list-style: none; margin: 2px 0 12px; padding: 0; display: flex; align-items: center; }
+.vr-path li { position: relative; flex: 1 1 0; display: flex; align-items: center; justify-content: center; height: 26px; color: var(--vr-muted); }
+.vr-path li::before { content: ""; position: absolute; top: 50%; inset-inline-start: -50%; inset-inline-end: 50%; border-top: 2px dashed rgba(122, 86, 22, 0.35); }
+.vr-path li:first-child::before { display: none; }
+.vr-path li.done::before, .vr-path li.now::before { border-top: 2.5px solid var(--vr-sec); }
+.vr-path svg, .vr-path i { position: relative; z-index: 1; }
+.vr-path i { display: block; width: 11px; height: 11px; border-radius: 50%; background: var(--vr-surf); box-shadow: inset 0 0 0 2px rgba(122, 86, 22, 0.4); }
+.vr-path li.done svg { fill: var(--vr-gold); stroke: #a5740f; stroke-width: 1; animation: vr-star 0.5s var(--ease, ease) both; }
+.vr-path li.now svg { fill: var(--vr-sec); animation: vr-stepin 0.4s var(--ease, ease) both, vr-step 1.4s 0.4s ease-in-out infinite; }
+
+/* ── Сахна: есік, жарық, шаң ── */
+.vr-stage { isolation: isolate; }
+.vr-doors { position: absolute; inset: 0; z-index: 4; display: flex; cursor: pointer; perspective: 1400px; animation: vr-doorsoff 0.3s 0.85s both; }
+.vr-door { position: relative; flex: 1 1 50%; display: block; height: 100%; transform-origin: 0 50%; backface-visibility: hidden; animation: vr-door-l 0.78s 0.24s cubic-bezier(0.55, 0.05, 0.3, 1) both; }
+.vr-door.r { transform-origin: 100% 50%; animation-name: vr-door-r; }
+.vr-door svg { display: block; width: 100%; height: 100%; }
+.vr-door.l { box-shadow: inset -6px 0 10px -6px rgba(0, 0, 0, 0.45); }
+.vr-doors-plaque {
+  position: absolute; left: 50%; top: 50%; z-index: 1; display: grid; justify-items: center; gap: 2px; padding: 10px 20px 12px;
+  translate: -50% -50%; border-radius: 14px; background: var(--vr-surf); text-align: center; white-space: nowrap;
+  box-shadow: 0 4px 0 rgba(58, 34, 16, 0.35), inset 0 0 0 2px var(--vr-gold); animation: vr-plaque 0.5s both;
+}
+.vr-doors-plaque small { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--vr-sec-deep); }
+.vr-doors-plaque b { font-family: var(--head); font-weight: 600; font-size: clamp(18px, 2.4vw, 26px); color: var(--vr-ink); }
+.vr-scene.is-intro .vr-stage > .vr-art { animation: vr-enter 1.15s cubic-bezier(0.25, 0.7, 0.2, 1) both; transform-origin: 50% 62%; }
+.vr-light {
+  position: absolute; inset: -10% -20%; pointer-events: none; z-index: 1;
+  background: linear-gradient(112deg, rgba(255, 244, 214, 0) 34%, rgba(255, 244, 214, 0.34) 44%, rgba(255, 244, 214, 0.1) 52%, rgba(255, 244, 214, 0) 60%);
+  transform: translateX(calc(var(--px) * 14px)); transition: transform 0.4s ease-out; animation: vr-light 10s ease-in-out infinite;
+}
+.vr-motes { position: absolute; inset: 0; pointer-events: none; z-index: 1; transform: translate(calc(var(--px) * -24px), calc(var(--py) * -12px)); transition: transform 0.4s ease-out; }
+.vr-motes i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 249, 230, 0.95); opacity: 0; animation: vr-mote 12s linear infinite; }
+.vr-motes i:nth-child(1) { left: 22%; top: 70%; }
+.vr-motes i:nth-child(2) { left: 38%; top: 55%; width: 3px; height: 3px; animation-delay: -3s; animation-duration: 10s; }
+.vr-motes i:nth-child(3) { left: 55%; top: 78%; animation-delay: -6s; }
+.vr-motes i:nth-child(4) { left: 70%; top: 50%; width: 4px; height: 4px; animation-delay: -8.5s; animation-duration: 14s; }
+.vr-motes i:nth-child(5) { left: 12%; top: 40%; width: 3px; height: 3px; animation-delay: -1.5s; animation-duration: 15s; }
+.vr-motes i:nth-child(6) { left: 84%; top: 66%; animation-delay: -10s; }
+.vr-vignette { z-index: 1; }
+
+/* ── Сенің көпіршігің (сахнада, кейіпкерге қарсы жақта) ── */
+.vr-me {
+  position: absolute; z-index: 2; bottom: 6%; right: 3%; max-width: min(46%, 400px); display: grid; gap: 1px;
+  padding: 9px 15px 11px; border-radius: 18px 18px 5px 18px; background: var(--vr-sec); color: #fff;
+  font-weight: 700; font-size: clamp(15px, 1.6vw, 18px); line-height: 1.35;
+  box-shadow: 0 4px 0 var(--vr-sec-deep), 0 16px 28px -14px rgba(30, 15, 70, 0.7);
+  outline: 1.5px dashed rgba(255, 255, 255, 0.4); outline-offset: -5px;
+  transform-origin: 100% 100%; animation: vr-me 0.46s cubic-bezier(0.3, 1.45, 0.5, 1) both;
+}
+.vr-me small { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; }
+.vr-scene.side-left .vr-me { right: auto; left: 3%; border-radius: 18px 18px 18px 5px; transform-origin: 0 100%; }
+
+/* ── Сөз көпіршігі: тігіс, сөйлеу белгісі, сөздер бірте-бірте ── */
+.vr-bubble { animation-delay: var(--lead, 0ms); }
+.vr-bubble::before { content: ""; position: absolute; inset: 5px; border-radius: 14px; border: 1.5px dashed rgba(122, 86, 22, 0.2); pointer-events: none; }
+.vr-bubble-who { display: flex; align-items: center; gap: 4px; }
+.vr-bubble-who::after {
+  content: ""; width: 16px; height: 12px; margin-inline-start: 6px; opacity: 0; transform: scaleY(0.4); transform-origin: 50% 100%;
+  background: linear-gradient(var(--vr-sec), var(--vr-sec)) 0 100% / 3px 60% no-repeat, linear-gradient(var(--vr-sec), var(--vr-sec)) 6px 100% / 3px 100% no-repeat, linear-gradient(var(--vr-sec), var(--vr-sec)) 12px 100% / 3px 45% no-repeat;
+  transition: opacity 0.2s;
+}
+.vr-bubble.is-talk .vr-bubble-who::after { opacity: 1; animation: vr-eq 0.42s ease-in-out infinite alternate; }
+.vr-bubble.is-done .vr-w { animation: none; }
+.vr-w { display: inline-block; animation: vr-word 0.34s var(--ease, ease) both; animation-delay: var(--t, 0ms); }
+
+/* ── Кейіпкер: бас қимылы, реакциялар ── */
+.vr-art .vr-head { transform-origin: 0 -222px; animation: vr-headidle 7s ease-in-out infinite; }
+.vr-art .is-talk .vr-head { animation: vr-nod 0.9s ease-in-out infinite; }
+.vr-art .vr-react { transform-origin: 0 -222px; transition: transform 0.45s cubic-bezier(0.3, 1.5, 0.5, 1); }
+.vr-art .is-bad .vr-react { transform: rotate(-9deg) translateX(-2px); }
+.vr-art .is-ok .vr-react { transform: rotate(3deg) translateY(-2px); }
+.vr-art .vr-brow { transition: transform 0.3s; }
+.vr-art .is-bad .vr-brow { transform: translateY(-3.5px); }
+.vr-art .vr-grin, .vr-art .vr-hmm, .vr-art .vr-q, .vr-art .vr-spark { opacity: 0; }
+.vr-art .is-ok:not(.is-talk) .vr-grin, .vr-art .is-bad:not(.is-talk) .vr-hmm { opacity: 1; }
+.vr-art .is-ok:not(.is-talk) .vr-smile, .vr-art .is-bad:not(.is-talk) .vr-smile { opacity: 0; }
+.vr-art .vr-q { transform-box: fill-box; transform-origin: 50% 100%; }
+.vr-art .is-bad .vr-q { animation: vr-qpop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both, vr-bob 2.4s 0.5s ease-in-out infinite; }
+.vr-art .vr-spark { transform-box: fill-box; transform-origin: 50% 50%; }
+.vr-art .is-ok .vr-spark { animation: vr-sparkle 1.2s ease-out both; }
+.vr-art .is-ok .vr-body { animation: vr-hop 0.5s ease-out, vr-breathe 4s 0.5s ease-in-out infinite; }
+/* Орын тірлігі (қосымша) */
+.vr-art .vr-drop { animation: vr-drop 3.6s linear infinite; }
+.vr-art .vr-peck { transform-box: fill-box; transform-origin: 0% 100%; animation: vr-peck 2.2s ease-in-out infinite; }
+.vr-art .vr-glide { animation: vr-glide 14s ease-in-out infinite; animation-delay: -3s; }
+.vr-art .vr-ding { animation: vr-ding 4s ease-out infinite; opacity: 0; }
+
+/* ── Нәтиже: медаль, мөр, сан, конфетти, тіркестер ── */
+.vr-result { position: relative; overflow: hidden; }
+.vr-result::before { content: ""; position: absolute; inset: 6px; border-radius: 16px; border: 1.5px dashed rgba(122, 86, 22, 0.25); pointer-events: none; }
+.vr-result > * { position: relative; }
+.vr-res-medal {
+  display: grid; place-items: center; padding: 14px 18px; border-radius: 999px; flex: none;
+  background: var(--vr-sec-deep); box-shadow: 0 4px 0 #2a1a56, 0 12px 22px -12px rgba(40, 20, 90, 0.7);
+  outline: 1.5px dashed rgba(255, 255, 255, 0.5); outline-offset: -6px;
+}
+.vr-res-medal .vr-stars { gap: 6px; }
+.vr-res-medal .vr-stars svg { fill: rgba(255, 255, 255, 0.16); }
+.vr-res-medal .vr-stars svg.on { fill: var(--vr-gold); animation: vr-stamp 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+.vr-res-medal .vr-stars svg:nth-child(1) { animation-delay: 0.25s; }
+.vr-res-medal .vr-stars svg:nth-child(2) { animation-delay: 0.55s; }
+.vr-res-medal .vr-stars svg:nth-child(3) { animation-delay: 0.85s; }
+.vr-reward { font-variant-numeric: tabular-nums; }
+.vr-confetti { position: absolute !important; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.vr-confetti i { position: absolute; top: -14px; left: calc(var(--i) * 6.8% + 2%); width: 8px; height: 12px; border-radius: 2px; background: var(--vr-gold); opacity: 0; animation: vr-fall 2.2s cubic-bezier(0.3, 0.55, 0.5, 1) both; animation-delay: calc(var(--i) * 70ms + 0.3s); }
+.vr-confetti i:nth-child(3n) { background: var(--vr-sec); width: 6px; }
+.vr-confetti i:nth-child(3n + 1) { background: var(--vr-red); height: 9px; }
+.vr-confetti i:nth-child(4n) { border-radius: 50%; width: 8px; height: 8px; background: var(--vr-blue); }
+.vr-said { display: grid; gap: 8px; }
+.vr-said h3 { margin: 0; font-size: 15px; font-family: var(--body); font-weight: 800; color: var(--vr-sec-deep); }
+.vr-said ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.vr-said li { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 12px; background: var(--vr-cream); box-shadow: inset 0 0 0 1px var(--vr-line); animation: vr-rise 0.4s var(--ease, ease) both; animation-delay: calc(0.9s + var(--i) * 90ms); }
+.vr-said li > span { display: grid; min-width: 0; }
+.vr-said b { font-size: 16px; }
+.vr-said small { color: var(--vr-muted); font-size: 13px; }
+.vr-reply.ok { animation: vr-okpop 0.42s cubic-bezier(0.3, 1.5, 0.5, 1); }
+
+/* ── Телефон: сахна ≤ 45vh, жауаптар жақын ── */
+@media (max-width: 720px) {
+  .vr-stage { height: clamp(196px, 56vw, 300px); max-height: 45vh; }
+  .vr-me { bottom: 8%; max-width: 72%; font-size: 14px; padding: 7px 12px 9px; }
+  .vr-doors-plaque { padding: 8px 14px 10px; }
+  .vr-bubble { margin-top: -18px; padding: 12px 14px 8px; }
+  .vr-bubble-tools { margin-top: 8px; padding-top: 6px; }
+  .vr-resume { grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 10px 12px 10px 10px; }
+  .vr-resume-go { grid-column: 1 / -1; justify-content: center; }
+}
+@media (max-width: 640px) {
+  .vr-head { padding: 18px 18px 24px; }
+  .vr-meter-bar { width: 110px; }
+  .vr-seg button { min-height: 40px; padding: 6px 10px; }
+  .vr-seg button small { display: none; }
+  .vr-card { padding: 6px 6px 0; }
+  .vr-medal { margin: -16px 0 -8px 6px; padding: 5px 8px; }
+  .vr-path li { height: 22px; }
+  .vr-replies-h { margin-bottom: 8px; }
+}
+
+/* ── Анимациялар (жаңа) ── */
+@keyframes vr-drift { from { transform: translateX(-1150px); } to { transform: translateX(1150px); } }
+@keyframes vr-birds { from { transform: translate(-80px, 30px); } to { transform: translate(1080px, -20px); } }
+@keyframes vr-puff { 0% { opacity: 0; transform: translate(0, 0) scale(0.5); } 20% { opacity: 0.95; } 100% { opacity: 0; transform: translate(10px, -36px) scale(1.7); } }
+@keyframes vr-road1 {
+  0% { transform: translate(-80px, 258px); } 11.8% { transform: translate(57px, 252px); } 23.3% { transform: translate(190px, 259px); }
+  33.6% { transform: translate(310px, 273px); } 45.1% { transform: translate(443px, 280px); } 58.3% { transform: translate(596px, 268px); }
+  69.1% { transform: translate(722px, 253px); } 83.4% { transform: translate(888px, 244px); } 100% { transform: translate(1080px, 262px); }
+}
+@keyframes vr-road2 {
+  0% { transform: translate(-80px, 467px); } 12.6% { transform: translate(66px, 462px); } 25.5% { transform: translate(216px, 469px); }
+  37.2% { transform: translate(352px, 483px); } 49% { transform: translate(488px, 490px); } 61.3% { transform: translate(631px, 478px); }
+  71.6% { transform: translate(751px, 463px); } 85.3% { transform: translate(909px, 454px); } 100% { transform: translate(1080px, 468px); }
+}
+@keyframes vr-pinin { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+@keyframes vr-step { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes vr-stepin { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: none; } }
+@keyframes vr-door-l { 0% { transform: none; opacity: 1; } 80% { opacity: 1; } 100% { transform: rotateY(-100deg); opacity: 0; } }
+@keyframes vr-door-r { 0% { transform: none; opacity: 1; } 80% { opacity: 1; } 100% { transform: rotateY(100deg); opacity: 0; } }
+@keyframes vr-doorsoff { to { opacity: 0; visibility: hidden; } }
+@keyframes vr-plaque { 0% { opacity: 0; scale: 0.85; } 25% { opacity: 1; scale: 1; } 55% { opacity: 1; } 100% { opacity: 0; scale: 1.08; } }
+@keyframes vr-enter { from { transform: scale(1.16); } to { transform: none; } }
+@keyframes vr-light { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes vr-mote { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: 0.85; } 85% { opacity: 0.5; } 100% { opacity: 0; transform: translate(26px, -90px); } }
+@keyframes vr-me { from { opacity: 0; transform: translateY(14px) scale(0.85); } to { opacity: 1; transform: none; } }
+@keyframes vr-eq { from { transform: scaleY(0.45); } to { transform: scaleY(1); } }
+@keyframes vr-word { from { opacity: 0; transform: translateY(0.35em); } to { opacity: 1; transform: none; } }
+@keyframes vr-headidle { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(1.6deg); } 65% { transform: rotate(-1.2deg); } }
+@keyframes vr-nod { 0%, 100% { transform: rotate(0deg) translateY(0); } 35% { transform: rotate(1.8deg) translateY(1.5px); } 70% { transform: rotate(-1deg) translateY(-1px); } }
+@keyframes vr-qpop { from { opacity: 0; transform: scale(0.2) translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes vr-bob { 0%, 100% { opacity: 1; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+@keyframes vr-sparkle { 0% { opacity: 0; transform: scale(0.3) rotate(-20deg); } 30% { opacity: 1; transform: scale(1.15); } 100% { opacity: 0; transform: scale(1) rotate(10deg); } }
+@keyframes vr-hop { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-9px); } 60% { transform: translateY(1px); } }
+@keyframes vr-drop { 0% { opacity: 0; transform: translateY(-10px); } 10% { opacity: 1; } 70% { opacity: 0.8; } 100% { opacity: 0; transform: translateY(70px); } }
+@keyframes vr-peck { 0%, 40%, 100% { transform: rotate(0deg); } 50%, 58% { transform: rotate(38deg); } 54% { transform: rotate(30deg); } }
+@keyframes vr-glide { 0% { transform: translate(-120px, 30px) rotate(4deg); opacity: 0; } 8% { opacity: 1; } 50% { transform: translate(400px, -10px) rotate(-4deg); } 92% { opacity: 1; } 100% { transform: translate(940px, 40px) rotate(6deg); opacity: 0; } }
+@keyframes vr-ding { 0%, 70% { opacity: 0; transform: scale(0.8); } 76% { opacity: 1; } 100% { opacity: 0; transform: scale(1.25); } }
+@keyframes vr-stamp { 0% { opacity: 0; transform: scale(2.6) rotate(-28deg); } 60% { opacity: 1; transform: scale(0.88) rotate(4deg); } 100% { opacity: 1; transform: none; } }
+@keyframes vr-fall { 0% { opacity: 0; transform: translateY(0) rotate(0deg); } 10% { opacity: 1; } 100% { opacity: 0; transform: translateY(340px) rotate(560deg); } }
+@keyframes vr-okpop { 0% { transform: scale(1); } 40% { transform: scale(1.025); } 100% { transform: scale(1); } }
+
 @media (prefers-reduced-motion: reduce) {
   .vr *, .vr *::before, .vr *::after { animation: none !important; transition: none !important; }
   .vr-art .vr-mouth { opacity: 0; }
   .vr-art .is-talk .vr-smile { opacity: 1; }
-  .vr-stage .vr-lay { transform: none !important; }
+  .vr-stage .vr-lay, .vr-motes, .vr-light { transform: none !important; }
+  .vr-motes { display: none; }
+  .vr .vr-doors { animation: vr-fadeout 0.38s ease both !important; }
+  .vr-art .is-bad .vr-q { opacity: 1; }
 }
+@keyframes vr-fadeout { from { opacity: 1; } to { opacity: 0; } }
