@@ -1,0 +1,199 @@
+/* ════════════════════════════════════════════════════════════════════
+   Qyzyl til · Қабық (Shell) — бөлім қолтаңбалары мен жаңартылған жақтау
+   layout.js ішінде qyzyl.css-тен КЕЙІН, rtl.css-тен БҰРЫН қосылады.
+   Бөлім айнымалылары (lib/sections.js → Shell.js):
+     --sec       бөлім реңі (ақ мәтінмен ≥ 4.5:1)
+     --sec-deep  ақшыл фондағы мәтін/белгі реңі
+     --sec-soft  әлсіз фон
+   Беттер оларды <main data-section="…"> ішінде қолдана алады.
+   Мәзір элементтерінде сол үштік --it / --it-deep / --it-soft атымен беріледі.
+   ════════════════════════════════════════════════════════════════════ */
+
+.sx, .sx-focus { --sx-cream: #fffdf7; --sx-cream-2: #f4ecda; --sx-ink: #1f2430; --sx-muted: #4a5160; --sx-rim: rgba(122, 86, 22, 0.24); }
+
+/* ── Киіз белгі тақтайшасы ── */
+.sx-g { display: block; flex: none; }
+.sx-gl {
+  flex: none; display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 9px;
+  background: var(--it-soft, var(--sec-soft)); color: var(--it-deep, var(--sec-deep));
+  transition: background-color 0.18s, color 0.18s, transform 0.18s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+/* ══════════ Бүйір мәзір ══════════ */
+/* ою жиегі барлық жағынан (RTL-де де) */
+.shell.sx .side { border: 5px solid transparent; border-image: none; }
+.sx .side { gap: clamp(4px, 1vh, 12px); padding: clamp(8px, 1.5vh, 16px) 10px clamp(8px, 1.3vh, 12px); }
+.sx .side > .logo { padding-inline-start: 6px; }
+.sx .side-nav { gap: clamp(1px, 0.7vh, 9px); }
+.sx .side-group { gap: clamp(0px, 0.25vh, 3px); }
+.sx .side-cap {
+  display: flex; align-items: center; gap: 8px;
+  padding: 2px 8px 1px; font-size: 11px; line-height: 1.35; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--sx-muted);
+}
+.sx .side-cap::after { content: ""; flex: 1; height: 0; border-top: 1.5px dashed var(--sx-rim); }
+.sx .side-link {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: clamp(2px, 0.42vh, 5px) 6px; padding-inline-end: 34px;
+  border-radius: 12px; line-height: 1.25;
+  font-size: clamp(13.5px, 1.8vh, 15px); font-weight: 600; color: var(--sx-ink);
+  transition: background-color 0.18s, color 0.18s;
+}
+.sx .side-link .sx-gl { width: clamp(22px, 3.2vh, 30px); height: clamp(22px, 3.2vh, 30px); }
+.sx .side-link .sx-lbl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sx .side-link:hover { background: var(--it-soft); color: var(--it-deep); }
+.sx .side-link:hover .sx-gl { transform: rotate(-6deg) scale(1.06); }
+.sx .side-link.on { background: var(--it); color: #fff; box-shadow: 0 2px 0 var(--it-deep); }
+.sx .side-link.on:hover { background: var(--it); color: #fff; }
+.sx .side-link.on .sx-gl { background: var(--sx-cream); color: var(--it-deep); }
+.sx .side-link.on .sx-lbl { font-weight: 700; }
+/* қошқар мүйіз белгісі — логикалық жақта (RTL-де өзі ауысады) */
+.sx .side-link.on::after { right: auto; left: auto; inset-inline-end: 10px; }
+
+.sx .side-foot { gap: 6px; }
+.sx .side-me {
+  position: relative; gap: 10px; padding: 6px 8px; border-radius: 14px;
+  background: var(--sx-cream-2); box-shadow: inset 0 0 0 1px var(--sx-rim);
+  transition: background-color 0.18s, box-shadow 0.18s;
+}
+.sx .side-me:hover { background: var(--it-soft); box-shadow: inset 0 0 0 1.5px var(--it); }
+.sx .side-me.on { background: var(--it-soft); box-shadow: inset 0 0 0 2px var(--it); }
+.sx .side-me .me-av { border-radius: 50%; overflow: hidden; background: var(--sx-cream); box-shadow: 0 0 0 2px var(--sx-cream), 0 0 0 3.5px var(--it); }
+.sx .side-me .me-txt b { font-size: 14px; font-weight: 700; color: var(--sx-ink); }
+.sx .side-me .me-txt small { font-size: 12px; color: var(--sx-muted); }
+.sx .side-me .me-go { margin-inline-start: auto; flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; color: var(--it-deep); background: var(--sx-cream); }
+.sx .side-tools { justify-content: stretch; }
+.sx .side-tools .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; padding: 3px; border-radius: 12px; background: var(--sx-cream-2); box-shadow: inset 0 0 0 1px var(--sx-rim); }
+.sx .seg button { min-height: 32px; padding: 4px 8px; border-radius: 9px; font-weight: 700; font-size: 13px; color: var(--sx-muted); transition: background-color 0.15s, color 0.15s; }
+.sx .seg button:hover:not(.on) { background: var(--sx-cream); color: var(--sx-ink); }
+.sx .seg button.on { background: #b8322a; color: #fff; box-shadow: 0 2px 0 #8a2018; }
+@media (max-height: 800px) {
+  .sx .side-me .me-av, .sx .side-me .me-av svg { width: 32px; height: 32px; }
+}
+
+/* ══════════ Жоғарғы жолақ ══════════ */
+.sx .main-col { background: radial-gradient(120% 300px at 50% 0, color-mix(in srgb, var(--sec) 7%, transparent), transparent 100%) no-repeat; }
+.sx .topbar { padding: 5px 10px; gap: 10px; }
+.sx .top-left { gap: 10px; flex: 1 1 auto; min-width: 0; }
+.sx-crest { display: flex; align-items: center; gap: 10px; min-width: 0; animation: sxCrest 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+.sx-crest-gl { --gl2: #ffd98a; width: 38px; height: 38px; border-radius: 12px; background: var(--sec); color: #fff; box-shadow: 0 2px 0 var(--sec-deep), inset 0 0 0 1.5px rgba(255, 255, 255, 0.28); }
+.sx-crest-t { display: grid; min-width: 0; line-height: 1.2; }
+.sx-crest-t small { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sec-deep); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sx-crest-t b { font-family: var(--head); font-size: 15px; font-weight: 600; color: var(--sx-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@keyframes sxCrest { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.sx .demo-note { flex: none; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #fbf0d0; color: #6b4a00; font-weight: 700; font-size: 13px; box-shadow: inset 0 0 0 1.5px #e0a526; white-space: nowrap; }
+.sx .demo-note:hover { background: #f6e3b0; }
+
+.sx .stats-pills { gap: 8px; flex: none; }
+.sx .sx-chip {
+  position: relative; gap: 6px; min-height: 38px; padding: 5px 12px 5px 9px; border-radius: 13px;
+  background: var(--sx-cream); color: var(--sx-ink);
+  box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 2px 0 rgba(122, 86, 22, 0.2);
+  font-weight: 800; font-size: 14.5px; line-height: 1; font-variant-numeric: tabular-nums;
+}
+.sx .sx-chip b { font-weight: 800; }
+.sx .sx-fire { background: #f6e4df; color: #8a2018; box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.42), 0 2px 0 rgba(138, 32, 24, 0.3); }
+.sx .sx-fire.cold { background: var(--sx-cream-2); color: var(--sx-muted); box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 2px 0 rgba(122, 86, 22, 0.2); }
+.sx .sx-fire.cold .sx-g { filter: grayscale(1); opacity: 0.6; }
+.sx .sx-coin { background: #fbf0d0; color: #5c3f00; box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.55), 0 2px 0 rgba(138, 90, 0, 0.32); }
+.sx .sx-lvl { padding-bottom: 11px; padding-top: 3px; }
+.sx .sx-lvl .pill-bar { left: 10px; right: 10px; bottom: 5px; height: 4px; border-radius: 4px; background: #eadfc6; }
+.sx .sx-lvl .pill-bar i { background: #b07c10; border-radius: 4px; transition: width 0.5s cubic-bezier(0.2, 0.8, 0.25, 1); }
+/* күндік мақсат: сақина + «30 / 50 XP» */
+.sx .sx-goal { padding-inline-start: 7px; gap: 8px; }
+.sx-ring { flex: none; display: block; }
+.sx-ring-bg { stroke: #eadfc6; }
+.sx-ring-fg { stroke: var(--sec); transition: stroke-dasharray 0.6s cubic-bezier(0.2, 0.8, 0.25, 1); }
+.sx-ring-ok { stroke: #2f6b4f; }
+.sx-goal.done { background: #e3efe6; color: #24543d; box-shadow: inset 0 0 0 1.5px rgba(47, 107, 79, 0.5), 0 2px 0 rgba(47, 107, 79, 0.3); }
+.sx-goal.done .sx-ring-fg { stroke: #2f6b4f; }
+.sx-goal-t { display: grid; gap: 2px; line-height: 1; text-align: start; }
+.sx-goal-t small { font-size: 10.5px; font-weight: 700; color: var(--sx-muted); white-space: nowrap; }
+.sx-goal.done .sx-goal-t small { color: #24543d; }
+.sx-goal-t b { font-size: 13.5px; white-space: nowrap; direction: ltr; unicode-bidi: isolate; }
+/* сан өзгергенде: key ауысады → жаңа элемент кішкене «секіріп» шығады */
+.sx-num { display: inline-block; animation: sxBump 0.42s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+@keyframes sxBump { 0% { transform: translateY(55%) scale(0.9); opacity: 0; } 55% { transform: translateY(-14%) scale(1.12); opacity: 1; } 100% { transform: none; opacity: 1; } }
+
+/* ══════════ Телефон: жоғарғы жолақ, төменгі мәзір, «Tagy» парағы ══════════ */
+.sx .bottom-nav a.on::before { content: none; }
+@media (max-width: 960px) {
+  .sx .topbar { padding: 5px 8px; gap: 8px; }
+  .sx .top-left { gap: 8px; }
+  .sx .mobile-logo .logo-word { display: none; }
+  .sx .mobile-logo .logo { gap: 0; }
+  .sx-crest { gap: 0; padding-inline-start: 8px; border-inline-start: 2px solid var(--sec); }
+  .sx-crest-gl { display: none; }
+  .sx-crest-t small { font-size: 10.5px; }
+  .sx-crest-t b { font-size: 14px; }
+  .sx .demo-note { padding: 0; width: 34px; height: 34px; justify-content: center; }
+  .sx .stats-pills { gap: 6px; }
+  .sx .sx-chip { min-height: 36px; padding: 4px 9px 4px 7px; font-size: 14px; border-radius: 12px; }
+  .sx .sx-goal { padding: 4px 6px; }
+  .sx-goal-t { display: none; }
+
+  .sx .bottom-nav {
+    left: 8px; right: 8px; padding: 5px 4px; border-radius: 22px; gap: 0;
+    background: var(--sx-cream); -webkit-backdrop-filter: none; backdrop-filter: none;
+    box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 -1px 0 rgba(255, 255, 255, 0.6), 0 12px 28px -12px rgba(60, 40, 10, 0.55);
+  }
+  .sx .bottom-nav a, .sx .bottom-nav button {
+    position: relative; display: grid; justify-items: center; align-content: center; gap: 3px;
+    min-height: 54px; padding: 4px 2px; border-radius: 16px; min-width: 0;
+    background: none; box-shadow: none; color: var(--sx-muted);
+    font-weight: 600; font-size: 11.5px; line-height: 1.2;
+  }
+  .sx .bottom-nav a > span:last-child, .sx .bottom-nav button > span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sx .bottom-nav .sx-gl { width: 46px; height: 28px; border-radius: 14px; background: transparent; color: var(--it-deep); }
+  .sx .bottom-nav .on { background: none; box-shadow: none; color: var(--it-deep); font-weight: 800; }
+  .sx .bottom-nav .on .sx-gl { --gl2: #ffd98a; background: var(--it); color: #fff; box-shadow: 0 2px 0 var(--it-deep); animation: sxPop 0.32s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+  .sx .bottom-nav a:active .sx-gl, .sx .bottom-nav button:active .sx-gl { transform: scale(0.92); }
+  .sx .bottom-nav a:active, .sx .bottom-nav button:active { transform: none; }
+
+  .shell.sx .sheet-wrap { background: rgba(31, 36, 48, 0.5); -webkit-backdrop-filter: none; backdrop-filter: none; animation: sxFade 0.2s both; }
+  .shell.sx .sheet {
+    left: 8px; right: 8px; top: auto; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 72px); width: auto;
+    display: grid; gap: 8px; padding: 30px 12px 12px; border-radius: 24px;
+    max-height: calc(100dvh - 110px); overflow-y: auto; overscroll-behavior: contain;
+    background: var(--sx-cream); -webkit-backdrop-filter: none; backdrop-filter: none;
+    box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 18px 40px -14px rgba(31, 36, 48, 0.6);
+  }
+  .shell.sx .sheet::before { left: 12px; right: 12px; top: 10px; height: 10px; border-radius: 3px; background: var(--oyu-band) repeat-x center / auto 10px; opacity: 1; }
+  .sx-sheet-g { display: grid; gap: 4px; }
+  .sx-sheet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .sx .sheet .side-cap { padding: 2px 4px 0; }
+  .shell.sx .sheet-link {
+    display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 48px; margin: 0; padding: 6px 8px;
+    border-radius: 14px; background: var(--it-soft); color: var(--it-deep); box-shadow: none;
+    font-weight: 700; font-size: 14px; line-height: 1.2;
+  }
+  .shell.sx .sheet-link .sx-gl { width: 34px; height: 34px; border-radius: 11px; background: var(--sx-cream); color: var(--it-deep); }
+  .shell.sx .sheet-link .sx-g { color: inherit; }
+  .shell.sx .sheet-link .sx-lbl { min-width: 0; overflow-wrap: anywhere; }
+  .shell.sx .sheet-link:hover, .shell.sx .sheet-link:active { background: var(--it-soft); box-shadow: inset 0 0 0 1.5px var(--it); }
+  .shell.sx .sheet-link.on { background: var(--it); color: #fff; box-shadow: 0 2px 0 var(--it-deep); }
+  .shell.sx .sheet-tools { justify-content: stretch; padding: 4px 0 0; }
+  .shell.sx .sheet-tools .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; background: var(--sx-cream-2); box-shadow: inset 0 0 0 1px var(--sx-rim); }
+  .shell.sx .sheet-tools .seg button { min-height: 40px; }
+  .shell.sx .sheet-tools .seg button.on { background: #b8322a; color: #fff; box-shadow: 0 2px 0 #8a2018; }
+}
+@media (max-width: 400px) {
+  .sx .sx-chip { padding: 4px 7px 4px 5px; gap: 4px; }
+}
+@keyframes sxPop { 0% { transform: scale(0.7); } 60% { transform: scale(1.08); } 100% { transform: none; } }
+@keyframes sxFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ══════════ Деңгей тестінің «фокус» қабығы (мәзірсіз) ══════════ */
+.sx-focus { background: radial-gradient(120% 320px at 50% 0, rgba(184, 50, 42, 0.07), transparent 100%) no-repeat; }
+.sx-focus .focus-head { justify-content: space-between; gap: 12px; width: min(980px, 100%); margin: 0 auto; padding: 16px 16px 6px; box-sizing: border-box; }
+.sx-focus .focus-prov { font-family: var(--head); font-size: 12.5px; font-weight: 600; color: #8a2018; padding: 7px 12px; border-radius: 999px; background: #f6e4df; white-space: nowrap; }
+.sx-focus .focus-main { width: min(980px, 100%); }
+@media (max-width: 520px) { .sx-focus .focus-prov { display: none; } .sx-focus .focus-head { justify-content: center; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sx-num, .sx-crest, .sx .bottom-nav .on .sx-gl, .shell.sx .sheet-wrap { animation: none; }
+  .sx-gl, .sx-ring-fg, .sx .sx-lvl .pill-bar i { transition: none; }
+  .sx .side-link:hover .sx-gl { transform: none; }
+}
