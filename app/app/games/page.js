@@ -31,6 +31,7 @@ export default function Games() {
               <span className="gl-art">
                 <GameScene id={g.id} />
                 <span className="gl-n">0{i + 1}</span>
+                {g.tag && <span className="gl-tag">{L(g.tag, lang)}</span>}
               </span>
               <span className="gl-body">
                 <span className="gl-title">

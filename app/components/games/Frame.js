@@ -160,6 +160,61 @@ export function Goat({ className = "", ...svg }) {
   );
 }
 
+/* Түйе (қос өркешті, оңға қарап жүреді). Аяқтары бөлек — жүріс CSS-пен. load — өркеш арасындағы теңнің түсі. */
+export function Camel({ coat = "#C9965A", load = R, className = "", ...svg }) {
+  const far = shade(coat, 0.74), dark = shade(coat, 0.55);
+  const leg = (cls, x, fill) => (
+    <g className={`cm-leg ${cls}`}>
+      <rect x={x} y="62" width="6.5" height="30" rx="3.2" fill={fill} />
+      <rect x={x - 1} y="89" width="9" height="5" rx="2.4" fill={dark} />
+    </g>
+  );
+  return (
+    <svg viewBox="0 0 124 100" className={`cm ${className}`} aria-hidden="true" focusable="false" {...svg}>
+      <ellipse cx="60" cy="96" rx="40" ry="3.6" fill={I} opacity=".14" />
+      <g className="cm-all">
+        {leg("cm-b", 38, far)}
+        {leg("cm-a", 80, far)}
+        <path d="M27 56C23 58 21 64 22 71" stroke={dark} strokeWidth="3.4" fill="none" strokeLinecap="round" />
+        <path d="M26 58C26 48 33 44 39 43C41 28 51 26 55 40C58 43 61 43 64 40C68 26 78 28 80 43C88 45 93 51 93 59C93 68 84 71 60 71C36 71 26 67 26 58Z" fill={coat} />
+        <path d="M84 52C90 45 94 35 95 23C95 16 100 13 106 14L115 17C118 18 118 23 115 24L105 26C104 38 100 50 92 62Z" fill={coat} />
+        <path d="M99 14L100 7L104 13Z" fill={coat} />
+        <circle cx="106" cy="18.5" r="1.7" fill={I} />
+        <path d="M88 54C92 48 95 40 96 32" stroke={far} strokeWidth="3" strokeDasharray="1 4" fill="none" strokeLinecap="round" />
+        <path d="M34 56C44 60 76 60 86 56" stroke={C} strokeOpacity=".4" strokeWidth="1.8" strokeDasharray="2 3" fill="none" strokeLinecap="round" />
+        {load && (
+          <g className="cm-load">
+            <path d="M52 34V58M68 34V58" stroke={dark} strokeWidth="2" />
+            <rect x="46" y="27" width="28" height="19" rx="5" fill={load} />
+            <rect x="49" y="30" width="22" height="13" rx="3" fill="none" stroke={PG} strokeWidth="1.3" strokeDasharray="2.5 2" />
+            <rect x="57.5" y="34" width="5" height="5" fill={G} transform="rotate(45 60 36.5)" />
+          </g>
+        )}
+        {leg("cm-a", 32, coat)}
+        {leg("cm-b", 74, coat)}
+      </g>
+    </svg>
+  );
+}
+
+/* Домбыра (тік тұрған): шанақ, мойын, екі ішек */
+export function Dombyra({ className = "", ...svg }) {
+  return (
+    <svg viewBox="0 0 60 150" className={`dmb ${className}`} aria-hidden="true" focusable="false" {...svg}>
+      <rect x="26.5" y="8" width="7" height="86" rx="3" fill="#5A3418" />
+      <path d="M24 4C24 1 36 1 36 4L35 14H25Z" fill="#3B2110" />
+      <circle cx="22.5" cy="6" r="2.6" fill={G} />
+      <circle cx="37.5" cy="10" r="2.6" fill={G} />
+      <path d="M30 78C46 82 54 98 54 114C54 134 44 146 30 146C16 146 6 134 6 114C6 98 14 82 30 78Z" fill="#B5702E" />
+      <path d="M30 86C41 90 47 101 47 114C47 129 40 138 30 138C20 138 13 129 13 114C13 101 19 90 30 86Z" fill="none" stroke={PG} strokeWidth="1.5" strokeDasharray="3 2.5" />
+      <circle cx="30" cy="112" r="5" fill="#3B2110" />
+      <rect x="23" y="128" width="14" height="3.4" rx="1.7" fill="#3B2110" />
+      <path className="dmb-s s1" d="M28.4 10V129" stroke={C} strokeWidth="1.1" />
+      <path className="dmb-s s2" d="M31.6 10V129" stroke={C} strokeWidth="1.1" />
+    </svg>
+  );
+}
+
 /* Қазандық — көкпардың қақпасы */
 export function KazanGoal({ color = K, className = "" }) {
   return (
@@ -236,6 +291,9 @@ const SCENE = {
   tenge: { bg: "#D5ECEA", ground: "#9CCFC4", stitch: T },
   bestas: { bg: "#D9E7EE", ground: "#A9C6D3", stitch: K },
   kokpar: { bg: "#DCEBDF", ground: "#A8CBB2", stitch: GR },
+  jalgau: { bg: "#F6E4DF", ground: "#E7BFB4", stitch: "#8A2018" },
+  keruen: { bg: "#F8E6CC", ground: "#E2B67C", stitch: "#9A4A1C" },
+  tynda: { bg: "#E4E1F2", ground: "#B7B1DC", stitch: "#4A3F8C" },
 };
 function Stone({ x, y, w, h, fill = "#C9C1AF", className = "" }) {
   return (
@@ -316,6 +374,57 @@ function SceneBody({ id }) {
         <path d="M100 86C104 40 140 28 150 46" stroke={K} strokeWidth="2" strokeDasharray="3 5" fill="none" opacity=".6" />
         <g className="gs-toss">
           <Stone x={104} y={30} w={40} h={28} fill={G} />
+        </g>
+      </>
+    );
+  if (id === "jalgau")
+    return (
+      <>
+        <circle cx="92" cy="68" r="50" fill="#9A6A2A" />
+        <circle cx="92" cy="68" r="43" fill={C} />
+        <circle cx="92" cy="68" r="38" fill="none" stroke="#8A2018" strokeOpacity=".3" strokeWidth="1.4" strokeDasharray="3 3" />
+        <rect x="84" y="12" width="16" height="10" rx="3" fill="#7A4A22" />
+        <g transform="translate(47 26) scale(.75)">
+          <path d="M60 98V58M60 60C60 34 26 30 26 52C26 68 46 68 46 54M60 60C60 34 94 30 94 52C94 68 74 68 74 54" fill="none" stroke="#B8322A" strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M60 98V58M60 60C60 34 26 30 26 52C26 68 46 68 46 54" fill="none" stroke={PG} strokeWidth="1.8" strokeDasharray="4 4" strokeLinecap="round" />
+        </g>
+        <path className="gs-thread" d="M92 100C120 124 160 118 178 84C184 72 190 60 198 46" fill="none" stroke={G} strokeWidth="3" strokeDasharray="7 5" strokeLinecap="round" />
+        <g className="gs-needle">
+          <path d="M194 52L222 14" stroke="#5F6470" strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M197 48L201 43" stroke={C} strokeWidth="1.8" strokeLinecap="round" />
+        </g>
+        <g className="gs-tag">
+          <rect x="150" y="92" width="62" height="28" rx="9" fill={G} />
+          <rect x="154" y="96" width="54" height="20" rx="6" fill="none" stroke="#9A6A10" strokeWidth="1.3" strokeDasharray="3 2.5" />
+          <text x="181" y="112" textAnchor="middle" fontSize="16" fontWeight="800" fill="#3A2500" fontFamily="inherit">-лар</text>
+        </g>
+      </>
+    );
+  if (id === "keruen")
+    return (
+      <>
+        <circle cx="196" cy="34" r="19" fill={G} />
+        <circle cx="196" cy="34" r="25" fill="none" stroke={G} strokeOpacity=".5" strokeWidth="2" strokeDasharray="3 5" />
+        <path d="M0 104C40 84 82 86 118 100C150 88 200 86 240 100V116H0Z" fill="#EBC993" />
+        <Camel x="2" y="56" width="74" height="60" coat="#B98548" load={K} className="gs-camel c3" />
+        <Camel x="64" y="46" width="88" height="71" coat="#C9965A" load={GR} className="gs-camel c2" />
+        <Camel x="136" y="34" width="104" height="84" coat="#D3A468" load="#B8322A" className="gs-camel" />
+        <path d="M60 86C66 90 72 90 78 84M138 82C144 86 150 84 156 76" stroke="#7A4A22" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </>
+    );
+  if (id === "tynda")
+    return (
+      <>
+        <path d="M0 112L44 52L72 88L112 30L160 112Z" fill="#8F86C7" />
+        <path d="M112 30L98 51L108 47L114 55L122 46L128 52Z" fill={C} />
+        <path d="M44 52L35 64L43 61L48 67L53 60Z" fill={C} />
+        <path d="M120 112L178 46L240 112Z" fill="#6E63B0" />
+        <path d="M178 46L166 60L175 57L181 65L190 59Z" fill={C} />
+        <g className="gs-wave" style={{ "--i": 0 }}><path d="M96 58C104 66 104 84 96 92" stroke={G} strokeWidth="4.5" fill="none" strokeLinecap="round" /></g>
+        <g className="gs-wave" style={{ "--i": 1 }}><path d="M110 48C124 62 124 88 110 102" stroke={G} strokeWidth="4.5" fill="none" strokeLinecap="round" /></g>
+        <g className="gs-wave" style={{ "--i": 2 }}><path d="M126 40C144 58 144 92 126 110" stroke={C} strokeWidth="4.5" fill="none" strokeLinecap="round" /></g>
+        <g transform="rotate(-24 52 80)">
+          <Dombyra x="30" y="6" width="50" height="125" className="gs-dmb" />
         </g>
       </>
     );
@@ -421,7 +530,7 @@ export function TopicPicker({ topic, setTopic, disabled }) {
 }
 
 /* Дайындық экраны — барлық ойынға ортақ */
-export function Ready({ game, topic, setTopic, onStart, level, setLevel }) {
+export function Ready({ game, topic, setTopic, onStart, level, setLevel, extra = null }) {
   const { t, lang } = useApp();
   return (
     <section className="card g-ready" style={{ "--gc": game.color }}>
@@ -434,8 +543,13 @@ export function Ready({ game, topic, setTopic, onStart, level, setLevel }) {
           <span>{L(game.desc, lang)}</span>
         </p>
         {setLevel && <LevelPicker level={level} setLevel={setLevel} />}
-        <h3>{t.topic}</h3>
-        <TopicPicker topic={topic} setTopic={setTopic} />
+        {extra}
+        {setTopic && (
+          <>
+            <h3>{t.topic}</h3>
+            <TopicPicker topic={topic} setTopic={setTopic} />
+          </>
+        )}
         <button className="btn gold big g-go" onClick={onStart}>
           {t.play} <Icon name="right" size={18} />
         </button>

@@ -461,3 +461,158 @@
   .gr-confetti, .g-burst { display: none; }
   .lane-slot, .kk-slot, .rider-slot, .tug-line, .g-time i { transition: none !important; }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   Тіл шеберханасы: Жалғау · Керуен · Тыңда (NewGames.js)
+   Қате = шарап реңкі + үзік жиек (бренд қызылы емес). Қозғалыс: transform / opacity.
+   ════════════════════════════════════════════════════════════════════ */
+.gl-tag { position: absolute; inset-inline-end: 12px; top: 12px; padding: 3px 10px; border-radius: 99px; font-weight: 700; font-size: 12.5px; color: #fff; background: var(--gc); box-shadow: 0 2px 0 rgba(31, 36, 48, 0.18); }
+.ng-note { margin: 0; padding: 6px 14px; border-radius: 99px; background: var(--surface-2); font-size: 14px; font-weight: 600; color: var(--muted); }
+.ng-forms { justify-content: center; }
+.g-ready-body > .topic-row.ng-forms .g-tchip { padding-inline: 14px; }
+
+.ng { display: grid; gap: 14px; }
+.ng-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; min-height: 34px; }
+.ng-side { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+.ng-count { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ng-count b { color: var(--ink); }
+.ng-pips { display: inline-flex; gap: 5px; align-items: center; }
+.ng-pips i { width: 14px; height: 14px; border-radius: 4px; background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--line); transition: transform 0.25s var(--ease, ease); }
+.ng-pips i.cur { box-shadow: inset 0 0 0 2px var(--gc); transform: scale(1.15); }
+.ng-pips i.ok { background: var(--altyn); box-shadow: inset 0 0 0 1.5px #b9821a; }
+.ng-pips i.bad { background: var(--wine-soft, #f3e3e6); box-shadow: none; outline: 1.5px dashed var(--wine, #6e1e2e); outline-offset: -1.5px; }
+.jg .ng-pips i { transform: rotate(45deg) scale(0.86); border-radius: 3px; }
+.jg .ng-pips i.cur { transform: rotate(45deg) scale(1.05); }
+.ty .ng-pips i { border-radius: 50%; }
+
+.ng-mark { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: #fff; background: var(--ok); }
+.ng-mark.bad { background: var(--wine, #6e1e2e); }
+.ng-fb { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #e3efe7; color: var(--ink); animation: ngIn 0.3s var(--ease, ease) both; }
+.ng-fb.bad { background: var(--wine-soft, #f3e3e6); outline: 2px dashed var(--wine, #6e1e2e); outline-offset: -2px; }
+.ng-fb-txt { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.ng-fb-word { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; font-size: 18px; }
+.ng-fb-word b { font-weight: 800; overflow-wrap: anywhere; }
+.ng-fb.ok .ng-fb-word b { color: var(--ok); }
+.ng-fb.bad .ng-fb-word b { color: var(--wine, #6e1e2e); }
+.ng-fb-word small { font-size: 13px; font-weight: 600; color: var(--muted); }
+.ng-fb-rule { font-size: 14px; line-height: 1.4; color: var(--muted); }
+.ng-fb-rule b { color: var(--ink); }
+.ng-next { flex: none; min-height: 44px; }
+.ng-say { flex: none; display: inline-grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; cursor: pointer; color: #fff; background: var(--kok); box-shadow: 0 2px 0 #0a4a61; transition: transform 0.15s var(--ease, ease); }
+.ng-say:hover { transform: translateY(-1px); }
+.ng-say:active { transform: translateY(1px); }
+@keyframes ngIn { from { opacity: 0; transform: translateY(6px); } }
+
+/* ── Жалғау: кесте тігу ── */
+.jg-cloth { position: relative; display: grid; justify-items: center; gap: 8px; padding: 18px 16px 16px; border-radius: 16px; background: var(--surface-2); text-align: center; }
+.jg-cloth::before { content: ""; position: absolute; inset: 7px; border-radius: 11px; border: 1.6px dashed color-mix(in srgb, var(--gc) 45%, transparent); pointer-events: none; }
+.jg-form { display: inline-flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 4px 10px; padding: 6px 14px; border-radius: 99px; background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--gc); font-size: 14.5px; }
+.jg-form b { color: var(--anar-2, #8a2018); }
+.jg-form i { font-style: normal; color: var(--muted); }
+.jg-word { display: flex; align-items: flex-end; justify-content: center; flex-wrap: wrap; margin: 6px 0 0; font-family: var(--head); font-weight: 600; font-size: clamp(28px, 7vw, 44px); line-height: 1.25; color: var(--ink); animation: promptIn 0.35s var(--ease, ease) both; }
+.jg-stem em { font-style: normal; color: var(--kok); }
+.jg-suf { position: relative; min-width: 1.6em; margin-inline-start: 3px; padding: 0 6px 4px; border-radius: 8px; color: var(--faint); background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line); }
+.jg-suf.on { color: var(--gold-ink, #3a2500); background: color-mix(in srgb, var(--altyn) 30%, var(--surface)); box-shadow: none; animation: jgSew 0.4s var(--ease, ease) both; }
+.jg.bad .jg-suf.on { color: var(--ok); background: #e3efe7; }
+.jg-thread { position: absolute; inset-inline: 4px; bottom: 2px; height: 3px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--altyn) 0 7px, transparent 7px 11px); transform: scaleX(0); transform-origin: left center; }
+.jg-suf.on .jg-thread { animation: jgThread 0.55s 0.1s ease-out forwards; }
+.jg-needle { width: 0.7em; height: 0.7em; margin-inline-start: 2px; align-self: center; animation: jgNeedle 1.4s ease-in-out infinite alternate; }
+.jg.ok .jg-needle, .jg.bad .jg-needle { animation: none; opacity: 0.35; }
+.jg-tr { margin: 0; font-size: 15px; color: var(--muted); }
+.jg-ask { margin: 0; font-size: 13.5px; font-weight: 600; color: var(--faint); }
+.jg-opt { font-size: 20px; letter-spacing: 0.01em; }
+@keyframes jgSew { from { opacity: 0; transform: translateX(14px) scale(0.9); } }
+@keyframes jgThread { to { transform: scaleX(1); } }
+@keyframes jgNeedle { from { transform: translate(0, 0); } to { transform: translate(3px, -4px); } }
+
+/* ── Керуен: дала мен түйелер ── */
+.kr-steppe { position: relative; height: 112px; padding: 0; overflow: hidden; background: #f8e6cc; }
+.kr-sun { position: absolute; right: 64px; top: 12px; width: 34px; height: 34px; border-radius: 50%; background: var(--altyn); box-shadow: 0 0 0 7px rgba(224, 165, 38, 0.22); }
+.kr-dune { position: absolute; inset: auto 0 0 0; height: 34px; background: #e2b67c; border-radius: 60% 40% 0 0 / 22px 16px 0 0; }
+.kr-yurt { position: absolute; right: 10px; bottom: 14px; width: 54px; height: 40px; }
+.kr-track { position: absolute; left: 8px; right: 62px; bottom: 8px; height: 62px; }
+.kr-van { --vw: 168px; display: flex; align-items: flex-end; width: var(--vw); height: 100%; transform: translateX(calc(var(--p) * (100cqw - var(--vw)))); transition: transform 1.4s ease-in-out; }
+.kr-track { container-type: inline-size; }
+.kr-van .cm { width: 33.33%; height: auto; flex: none; margin-inline-end: -6px; }
+.kr-van .cm:nth-child(1) { transform: scale(0.82); transform-origin: 50% 100%; }
+.kr-van .cm:nth-child(2) { transform: scale(0.9); transform-origin: 50% 100%; }
+.cm * { transform-box: fill-box; }
+.cm-leg { transform-origin: 50% 0; }
+:is(.kr-steppe.walk, .g-scene.live, .gl-card:hover, .gl-card:focus-visible) .cm .cm-a { animation: cmLeg 0.7s ease-in-out infinite alternate; }
+:is(.kr-steppe.walk, .g-scene.live, .gl-card:hover, .gl-card:focus-visible) .cm .cm-b { animation: cmLeg 0.7s ease-in-out infinite alternate-reverse; }
+:is(.kr-steppe.walk, .g-scene.live, .gl-card:hover, .gl-card:focus-visible) .cm .cm-all { animation: cmBob 0.7s ease-in-out infinite; }
+@keyframes cmLeg { from { transform: rotate(-11deg); } to { transform: rotate(11deg); } }
+@keyframes cmBob { 50% { transform: translateY(-1.5px); } }
+
+.kr-ask { display: grid; gap: 2px; justify-items: center; text-align: center; }
+.kr-ask-cap { font-size: 13px; font-weight: 700; color: var(--faint); }
+.kr-prompt { margin: 0; font-size: clamp(19px, 2.6vw, 25px); line-height: 1.3; overflow-wrap: anywhere; animation: promptIn 0.35s var(--ease, ease) both; }
+.kr-line { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; min-height: 72px; padding: 12px; border-radius: 14px; background: var(--surface-2); background-image: repeating-linear-gradient(90deg, color-mix(in srgb, var(--gc) 55%, transparent) 0 9px, transparent 9px 15px); background-size: calc(100% - 28px) 2px; background-position: 14px calc(100% - 9px); background-repeat: no-repeat; }
+.kr-empty { font-size: 14px; color: var(--faint); }
+.kr-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 48px; }
+.kr-tile { position: relative; min-height: 46px; padding: 8px 16px; border: 0; border-radius: 12px; cursor: pointer; font: inherit; font-weight: 700; font-size: 17px; color: var(--ink); background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--rim, rgba(31, 36, 48, 0.16)), inset 0 0 0 1.5px var(--line), 0 3px 0 rgba(31, 36, 48, 0.16); transition: transform 0.15s var(--ease, ease), opacity 0.15s; }
+.kr-tile:not(:disabled):hover { transform: translateY(-2px); box-shadow: inset 0 0 0 2px var(--gc), 0 3px 0 color-mix(in srgb, var(--gc) 45%, transparent); }
+.kr-tile:not(:disabled):active { transform: translateY(2px); }
+.kr-tile:disabled { cursor: default; }
+.kr-tile.used { opacity: 0; pointer-events: none; }
+.kr-tile.in { background: color-mix(in srgb, var(--gc) 13%, var(--surface)); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--gc) 55%, transparent), 0 3px 0 color-mix(in srgb, var(--gc) 35%, transparent); animation: krIn 0.22s var(--ease, ease) both; }
+.kr-tile.in.ok { color: var(--ok); background: #e3efe7; box-shadow: inset 0 0 0 2px var(--ok), 0 3px 0 #1f4a36; animation: qOkPop 0.45s var(--ease, ease) both; animation-delay: calc(var(--i) * 60ms); }
+.kr-tile.in.bad { color: var(--wine, #6e1e2e); background: var(--wine-soft, #f3e3e6); box-shadow: none; outline: 2px dashed var(--wine, #6e1e2e); outline-offset: -2px; }
+.kr-k { position: absolute; inset-inline-start: -5px; top: -7px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; font: 700 11px/1 var(--body); color: var(--muted); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
+@media (hover: none) { .kr-k { display: none; } }
+.kr-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; }
+.kr-actions .btn { min-height: 44px; }
+.kr-check { min-width: 150px; }
+@keyframes krIn { from { opacity: 0; transform: translateY(10px) scale(0.92); } }
+
+/* ── Тыңда: таудағы жаңғырық ── */
+.ty-stage { position: relative; display: grid; justify-items: center; gap: 12px; padding: 18px 14px 14px; border-radius: 16px; overflow: hidden; background: #e4e1f2; }
+.ty-mt { position: absolute; inset: auto 0 0 0; width: 100%; height: 78%; opacity: 0.5; }
+.ty-dmb { position: absolute; inset-inline-start: 5%; bottom: -14px; width: 46px; height: auto; transform: rotate(-14deg); transform-origin: 50% 100%; }
+.ty-stage.playing .dmb-s { animation: tyStr 0.12s linear infinite alternate; }
+.dmb-s { transform-box: fill-box; }
+.ty-play { position: relative; z-index: 1; display: grid; place-items: center; width: 92px; height: 92px; border: 0; border-radius: 50%; cursor: pointer; color: #fff; background: var(--kok); box-shadow: 0 5px 0 #0a4a61, 0 0 0 6px rgba(255, 253, 247, 0.75); transition: transform 0.15s var(--ease, ease); }
+.ty-play:hover { transform: translateY(-2px); }
+.ty-play:active { transform: translateY(3px); box-shadow: 0 2px 0 #0a4a61, 0 0 0 6px rgba(255, 253, 247, 0.75); }
+.ty-ring { position: absolute; inset: -6px; border-radius: 50%; border: 3px solid var(--altyn); opacity: 0; pointer-events: none; }
+.ty-stage.playing .ty-ring { animation: tyRing 1.2s ease-out infinite; }
+.ty-stage.playing .ty-ring.r2 { animation-delay: 0.6s; }
+.ty-stage.loading .ty-play .icon, .ty-stage.loading .ty-play svg { animation: tyPulse 0.7s ease-in-out infinite alternate; }
+.ty-ctl { position: relative; z-index: 1; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.ty-ctl .btn { min-height: 44px; }
+.ty-ask { margin: 0; text-align: center; font-size: clamp(19px, 2.6vw, 24px); line-height: 1.3; animation: promptIn 0.3s var(--ease, ease) both; }
+.ty-err { display: grid; gap: 6px; justify-items: center; text-align: center; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--line); font-size: 14.5px; }
+.ty-err b { color: var(--ink); }
+.ty-err span { color: var(--muted); }
+.ty-err-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 2px; }
+.ty-err-btns .btn { min-height: 44px; }
+.ty-w { font-size: 19px; }
+.ty-w mark { padding: 0 1px; border-radius: 3px; color: inherit; background: color-mix(in srgb, var(--altyn) 55%, transparent); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.ty-tr { font-size: 15px; color: var(--muted); }
+@keyframes tyRing { 0% { opacity: 0.9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.6); } }
+@keyframes tyPulse { to { opacity: 0.45; } }
+@keyframes tyStr { from { transform: translateX(-0.6px); } to { transform: translateX(0.6px); } }
+
+/* ── Тізім мен дайындық экранындағы көріністер ── */
+.gs-needle, .gs-wave, .gs-tag { transform-origin: 50% 50%; }
+:is(.g-scene.live, .gl-card:hover .g-scene, .gl-card:focus-visible .g-scene) .gs-needle { animation: jgNeedle 0.9s ease-in-out infinite alternate; }
+:is(.g-scene.live, .gl-card:hover .g-scene, .gl-card:focus-visible .g-scene) .gs-wave { animation: gsWave 1.5s ease-in-out infinite; animation-delay: calc(var(--i) * 0.25s); }
+@keyframes gsWave { 0%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+
+@media (max-width: 560px) {
+  .ng-fb { flex-wrap: wrap; }
+  .ng-fb-txt { flex-basis: calc(100% - 44px); }
+  .ng-next { width: 100%; }
+  .ng-pips { gap: 4px; }
+  .ng-pips i { width: 12px; height: 12px; }
+  .kr-van { --vw: 138px; }
+  .kr-steppe { height: 96px; }
+  .kr-track { height: 52px; }
+  .kr-check { flex: 1 1 100%; }
+  .ty-dmb { width: 38px; inset-inline-start: 2%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ng-fb, .jg-word, .jg-suf.on, .jg-needle, .kr-tile.in, .kr-prompt, .ty-ask, .ty-ring, .ty-play svg, .dmb-s, .cm .cm-a, .cm .cm-b, .cm .cm-all, .gs-needle, .gs-wave { animation: none !important; }
+  .jg-suf.on .jg-thread { animation: none; transform: scaleX(1); }
+  .kr-van, .kr-tile, .ng-pips i { transition: none; }
+}

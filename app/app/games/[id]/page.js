@@ -4,8 +4,9 @@ import Link from "next/link";
 import { GAMES } from "../../../../lib/games";
 import { Arkan, Asyk, Baige, Kokpar } from "../../../components/games/QuizGames";
 import { BesTas, Tenge } from "../../../components/games/OtherGames";
+import { Jalgau, Keruen, Tynda } from "../../../components/games/NewGames";
 
-const MAP = { baige: Baige, arkan: Arkan, asyk: Asyk, tenge: Tenge, bestas: BesTas, kokpar: Kokpar };
+const MAP = { baige: Baige, arkan: Arkan, asyk: Asyk, tenge: Tenge, bestas: BesTas, kokpar: Kokpar, jalgau: Jalgau, keruen: Keruen, tynda: Tynda };
 
 export default function GamePage({ params }) {
   const { id } = use(params);
