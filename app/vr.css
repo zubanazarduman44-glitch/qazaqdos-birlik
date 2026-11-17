@@ -807,4 +807,10 @@
   .vr .vr-stage .lf-myhand { transition: none !important; }
 }
 @media (min-width: 721px) { .vr-stage.is-life { max-height: min(60vh, 560px); } }
-@media (max-width: 720px) { .vr-life-ctl { top: 8px; bottom: auto; } }
+/* Телефонда: көше маңдайшасын жаппайтын шағын дөңгелек түйме (мәтіні экран оқу құралына қалады) */
+@media (max-width: 720px) {
+  .vr-life-ctl { top: 6px; right: 6px; bottom: auto; }
+  .vr .vr-life-btn { width: 44px; height: 44px; min-height: 44px; padding: 0; gap: 0; justify-content: center; font-size: 0; letter-spacing: 0;
+    background: rgba(255, 253, 247, 0.78); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .vr-life-btn svg { width: 20px; height: 20px; }
+}
