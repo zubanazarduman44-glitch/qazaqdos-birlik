@@ -9,7 +9,7 @@ import { VrScene, npcSide } from "./VrArt";
 import { vrL, vf } from "./VrL10n";
 import { useAnimGate } from "./AnimGate";
 import { L } from "../../lib/i18n";
-import { sayKk, stopKk } from "../../lib/speak";
+import { sayKk, stopKk, prefetchKk } from "../../lib/speak";
 import { toWav } from "../../lib/audio";
 
 // Түсіндірме: орысша түсіндірме — ru, қалғаны — en (сахна деректері kk/ru/en ғана)
@@ -232,6 +232,15 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     setLog((l) => [...l, { me: false, kk: line.kk, tr: L(line, tl) }]);
     const id = setTimeout(() => speak(line.kk), lead.current);
     lead.current = 350;
+    // Дұрыс жауаптардың және келесі кейіпкер сөздерінің дыбысын алдын ала жүктейміз — басқанда бірден айтылсын
+    const n = scene.nodes[node];
+    const ahead = [];
+    for (const r of n?.replies || []) {
+      if (r.ok && r.kk) ahead.push(r.kk);
+      const nx = scene.nodes[r.next]?.npc?.kk;
+      if (r.ok && nx) ahead.push(nx);
+    }
+    if (ahead.length) prefetchKk([...new Set(ahead)]);
     return () => clearTimeout(id);
   }, [node, run]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -273,10 +282,11 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
       setGoodK((g) => g + 1);
       setLog((l) => [...l, { me: true, kk: r.kk, tr: L(r, tl) }]);
       // Жауап айтылып біткен соң келесі қадамға өтеміз (ең көбі 6 с)
+      // Өз сөзің осы бетте бірден айтылады; ол біткенше келесі бетке өтпейміз (дыбыс жүктелмесе — ең көбі 9 с)
       let gone = false;
       const go = () => { if (gone || !mounted.current) return; gone = true; goNext(r); };
       speak(r.kk, { npc: false, done: () => { clearTimeout(advTimer.current); advTimer.current = setTimeout(go, 450); } });
-      advTimer.current = setTimeout(go, 6000);
+      advTimer.current = setTimeout(go, 9000);
     } else {
       setPicked({ i: k, ok: false });
       setTried((x) => [...x, k]);
