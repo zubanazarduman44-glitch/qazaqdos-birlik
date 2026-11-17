@@ -55,9 +55,9 @@ export function useTx() {
   return TX[lang] || TX.kk;
 }
 
-import { K, KD, R, G, PG, C, I, GR, T, B, SKIN, HOOF, Horse, Wolf, AsykBone, Goat, Camel, Dombyra, KazanGoal, FinishPost, Muiz, Heart, Clock, CoinIcon, GameScene } from "./GameArt";
+import { K, KD, R, G, PG, C, I, GR, T, B, SKIN, HOOF, Horse, Wolf, AsykBone, Goat, KazanGoal, FinishPost, Muiz, Heart, Clock, CoinIcon, GameScene } from "./GameArt";
 // Суреттер GameArt.js-те; ескі импорттар бұзылмауы үшін осы жерден де экспортталады
-export { Horse, Wolf, AsykBone, Goat, Camel, Dombyra, KazanGoal, FinishPost, Muiz, Heart, Clock, CoinIcon, GameScene };
+export { Horse, Wolf, AsykBone, Goat, KazanGoal, FinishPost, Muiz, Heart, Clock, CoinIcon, GameScene };
 
 function Star({ on, i }) {
   return (

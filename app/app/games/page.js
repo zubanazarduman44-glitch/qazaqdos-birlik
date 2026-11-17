@@ -1,5 +1,4 @@
 "use client";
-import LangPicker from "../../components/LangPicker";
 import Link from "next/link";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -22,7 +21,6 @@ export default function Games() {
           <p>{t.gamesSub}</p>
         </div>
         <div className="head-tools">
-          <LangPicker />
           <Qyran mood="cheer" size={90} />
         </div>
       </header>
@@ -30,7 +28,7 @@ export default function Games() {
         {GAMES.map((g, i) => {
           const s = state.games?.[g.id];
           return (
-            <Link key={g.id} href={`/app/games/${g.id}`} className="gl-card" style={{ "--gc": g.color, "--i": i }}>
+            <Link key={g.id} href={`/app/games/${g.id}`} className={`gl-card ${g.featured ? "feat" : ""}`} style={{ "--gc": g.color, "--i": i }}>
               <span className="gl-art">
                 <GameScene id={g.id} />
                 <span className="gl-n">0{i + 1}</span>
