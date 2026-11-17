@@ -70,7 +70,7 @@ export async function POST(req) {
       fast: true,
       thinking: "minimal",
       maxTokens: 600,
-      perCallMs: 14_000,
+      perCallMs: 20_000,
     });
     const text = tidy(String(raw || ""), { markdown: false });
     if (!text) return Response.json({ error: "Empty reply" }, { status: 502 });

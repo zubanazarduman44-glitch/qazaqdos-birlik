@@ -69,7 +69,7 @@ export async function POST(req) {
       fast: true, // жылдам модельдер алдымен: жауап тез келеді
       thinking: "minimal",
       maxTokens: 1800,
-      perCallMs: 14_000,
+      perCallMs: 20_000,
     });
     const clean = tidy(text, { markdown: true });
     if (!clean) return Response.json({ error: "Empty reply" }, { status: 502 });
