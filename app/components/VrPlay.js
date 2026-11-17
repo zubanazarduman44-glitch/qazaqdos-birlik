@@ -6,6 +6,8 @@ import { useApp } from "./Store";
 import Icon from "./Icon";
 import ShellGlyph from "./ShellGlyph";
 import { VrScene, npcSide } from "./VrArt";
+import VrLife from "./VrLife";
+import { hasLife, lifeSide, loadLife } from "./vr-places";
 import { vrL, vf } from "./VrL10n";
 import { useAnimGate } from "./AnimGate";
 import { L } from "../../lib/i18n";
@@ -76,6 +78,10 @@ function stepsLeft(nodes, from) {
 }
 const reducedMotion = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 const INTRO_MS = 1000; // есік ашылуы (reduced-motion: 380 мс ақырын сөну)
+// «Өмір» кіріспесі көрілген жағдаяттар (келесі жолы бірден үстелден басталады)
+const SEEN = "qd_vr_intro_v1";
+const seenIntro = (id) => { try { return JSON.parse(localStorage.getItem(SEEN) || "[]").includes(id); } catch { return false; } };
+const markIntro = (id) => { try { const a = JSON.parse(localStorage.getItem(SEEN) || "[]"); if (!a.includes(id)) localStorage.setItem(SEEN, JSON.stringify([...a, id].slice(-60))); } catch {} };
 
 // Сөз көпіршігі: сөздер дыбыспен қатар бірте-бірте шығады (мәтін DOM-да әрдайым толық)
 function Typed({ text, lead = 0 }) {
@@ -185,13 +191,29 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const awarded = useRef(false);
   const mounted = useRef(true);
 
+  // «Өмір» қабаты: орынның жеке файлы болса — кинематографиялық сахна (жүктелмесе — бұрынғы сурет)
+  const art = place?.art || scene.place;
+  const [lifeMod, setLifeMod] = useState(null); // null — жүктелуде, false — жоқ/қате
+  const lifeOn = hasLife(art) && lifeMod !== false;
+  const lifeOnRef = useRef(lifeOn);
+  lifeOnRef.current = lifeOn;
+  const [busy, setBusy] = useState(lifeOn); // кейіпкердің әрекеті жүріп жатыр — жауаптар күтеді
+  const [introOn, setIntroOn] = useState(() => !seenIntro(scene.id));
+  const lifeCtl = useRef(null);
+  useEffect(() => {
+    if (!hasLife(art)) return;
+    let live = true;
+    loadLife(art).then((m) => live && setLifeMod(m), () => live && setLifeMod(false));
+    return () => { live = false; };
+  }, [art]);
+
   const n = scene.nodes[node] || {};
   const isEnd = !!n.end || !n.replies?.length;
   const ord = useMemo(() => order(n.replies?.length || 0, `${scene.id}:${node}:${run}`), [scene.id, node, run, n.replies?.length]);
   const replies = ord.map((i) => n.replies[i]);
   const total = useMemo(() => log.filter((x) => x.me).length + stepsLeft(scene.nodes, node), [scene.nodes, node, log]);
   const step = log.filter((x) => x.me).length + (isEnd ? 0 : 1);
-  const side = npcSide(place?.art || scene.place);
+  const side = lifeOn ? lifeSide(art) : npcSide(art);
 
   useEffect(() => {
     const id = setTimeout(() => setIntro(false), reducedMotion() ? 400 : INTRO_MS + 120);
@@ -230,7 +252,8 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     const line = scene.nodes[node]?.npc;
     if (!line) return;
     setLog((l) => [...l, { me: false, kk: line.kk, tr: L(line, tl) }]);
-    const id = setTimeout(() => speak(line.kk), lead.current);
+    // «Өмір» сахнасында сөз әрекеттің тиісті сәтінде айтылады (onSay)
+    const id = lifeOnRef.current ? 0 : setTimeout(() => speak(line.kk), lead.current);
     lead.current = 350;
     // Дұрыс жауаптардың және келесі кейіпкер сөздерінің дыбысын алдын ала жүктейміз — басқанда бірден айтылсын
     const n = scene.nodes[node];
@@ -263,8 +286,26 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     award(xp, coins);
   }, [isEnd]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Орын файлы жүктелмей қалса — бұрынғы суретпен жалғастырамыз: күтіп тұрған сөзді айтып, жауаптарды ашамыз
+  useEffect(() => {
+    if (lifeMod !== false || !busy) return;
+    setBusy(false);
+    const ln = scene.nodes[node]?.npc;
+    if (ln) speak(ln.kk);
+  }, [lifeMod]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onLifeSay = useCallback((nid) => {
+    if (!mounted.current) return;
+    const ln = scene.nodes[nid]?.npc;
+    if (ln) speak(ln.kk);
+  }, [scene.nodes, speak]);
+  const onLifeFree = useCallback(() => { if (mounted.current) setBusy(false); }, []);
+  const onIntroSeen = useCallback(() => { markIntro(scene.id); setIntroOn(false); }, [scene.id]);
+  const skipLife = useCallback(() => lifeCtl.current?.skip?.(), []);
+
   const goNext = useCallback((r) => {
     clearTimeout(advTimer.current);
+    if (lifeOnRef.current) setBusy(true);
     setPicked(null);
     setTried([]);
     setHeard(null);
@@ -273,7 +314,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   }, [scene.nodes]);
 
   function choose(k) {
-    if (isEnd || (picked && picked.ok)) return;
+    if (isEnd || (picked && picked.ok) || busy) return;
     const r = replies[k];
     if (!r || tried.includes(k)) return;
     setHeard(null);
@@ -294,7 +335,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     }
   }
   const pickedRef = useRef(null);
-  pickedRef.current = { picked, replies, choose, goNext, isEnd };
+  pickedRef.current = { picked, replies, choose, goNext, isEnd, busy, skipLife };
 
   // Пернетақта: 1–3 — жауап, Enter — жалғастыру
   useEffect(() => {
@@ -302,7 +343,12 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
       if (e.altKey || e.ctrlKey || e.metaKey) return;
       const tag = (e.target?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea" || drawerRef.current?.open) return;
-      const { picked: p, replies: rs, choose: ch, goNext: gn, isEnd: end } = pickedRef.current;
+      const { picked: p, replies: rs, choose: ch, goNext: gn, isEnd: end, busy: wait, skipLife: sk } = pickedRef.current;
+      if (wait) {
+        // Кейіпкердің әрекеті жүріп жатыр: Enter — өткізу, сандар — елеусіз
+        if (e.key === "Enter" && tag !== "button") { e.preventDefault(); sk(); }
+        return;
+      }
       if (/^[1-9]$/.test(e.key)) {
         const k = Number(e.key) - 1;
         if (k < rs.length) { e.preventDefault(); ch(k); }
@@ -389,8 +435,10 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     setTimeout(() => r.state === "recording" && r.stop(), 10000);
   }
 
-  function replay() {
+  function replay(withIntro = false) {
     clearTimeout(advTimer.current);
+    if (withIntro) setIntroOn(true);
+    if (lifeOnRef.current) setBusy(true);
     stopKk();
     tok.current++;
     awarded.current = false;
@@ -412,7 +460,8 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const mood = result ? "ok" : picked ? (picked.ok ? "ok" : "bad") : null;
   const said = log.filter((x) => x.me);
   const doneSteps = result ? total : said.length;
-  const bubbleLead = intro ? INTRO_MS - 60 : 300;
+  const bubbleLead = lifeOn ? 120 : intro ? INTRO_MS - 60 : 300;
+  const lifeLabel = `${L(place?.name, "kk")} — ${scene.npc.name}`;
 
   return (
     <div className="vr-play">
@@ -445,19 +494,41 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
         ))}
       </ol>
 
-      <div className={`vr-scene side-${side}${intro ? " is-intro" : ""}`}>
-      <div className="vr-stage" ref={gate}>
-        <VrScene art={place?.art || scene.place} npc={scene.npc} talk={talk} mood={mood} label={`${L(place?.name, "kk")} — ${scene.npc.name}`} />
-        <span className="vr-light" aria-hidden="true" />
-        <span className="vr-motes" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>
+      <div className={`vr-scene side-${side}${intro && !lifeOn ? " is-intro" : ""}${lifeOn ? " is-life" : ""}`}>
+      <div className={`vr-stage${lifeOn ? " is-life" : ""}`} ref={gate}>
+        {lifeOn ? (
+          lifeMod && (
+            <VrLife mod={lifeMod} scene={scene} node={node} run={run} intro={introOn} talk={talk} mood={mood} label={lifeLabel}
+              ctl={lifeCtl} onSay={onLifeSay} onFree={onLifeFree} onIntroSeen={onIntroSeen} />
+          )
+        ) : (
+          <>
+            <VrScene art={art} npc={scene.npc} talk={talk} mood={mood} label={lifeLabel} />
+            <span className="vr-light" aria-hidden="true" />
+            <span className="vr-motes" aria-hidden="true"><i /><i /><i /><i /><i /><i /></span>
+          </>
+        )}
         <span className="vr-vignette" aria-hidden="true" />
+        {lifeOn && !result && (busy || (node === scene.start && !picked)) && (
+          <div className="vr-life-ctl">
+            {busy ? (
+              <button type="button" className="vr-life-btn" onClick={skipLife}>
+                {T.skip} <Icon name="right" size={16} className="vr-flip" />
+              </button>
+            ) : (
+              <button type="button" className="vr-life-btn" onClick={() => replay(true)}>
+                <Icon name="refresh" size={16} /> {T.rewatch}
+              </button>
+            )}
+          </div>
+        )}
         {picked?.ok && replies[picked.i] && (
           <div className="vr-me" aria-hidden="true" key={`me-${node}-${run}`}>
             <small>{T.you}</small>
             <span lang="kk">{replies[picked.i].kk}</span>
           </div>
         )}
-        {intro && (
+        {intro && !lifeOn && (
           <div className="vr-doors" aria-hidden="true" onClick={() => setIntro(false)}>
             <i className="vr-door l"><DoorArt /></i>
             <i className="vr-door r"><DoorArt flip /></i>
@@ -468,7 +539,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
           </div>
         )}
       </div>
-        <div className={`vr-bubble ${talk ? "is-talk" : ""} ${picked?.ok || result ? "is-done" : ""}`} key={`${node}-${run}`} aria-live="polite" style={{ "--lead": `${bubbleLead}ms` }}>
+        <div className={`vr-bubble ${talk ? "is-talk" : ""} ${picked?.ok || result ? "is-done" : ""}${busy && !result ? " is-wait" : ""}`} key={`${node}-${run}-${busy ? 0 : 1}`} aria-hidden={busy && !result ? "true" : undefined} aria-live="polite" style={{ "--lead": `${bubbleLead}ms` }}>
           <span className="vr-bubble-who">
             <b>{scene.npc.name}</b> · {L(scene.npc.role, tl)}
           </span>
@@ -515,7 +586,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
               </div>
               <div className="vr-res-btns">
                 {hasNext && <button type="button" className="btn primary" onClick={onNext}>{T.next} <Icon name="right" size={18} className="vr-flip" /></button>}
-                <button type="button" className="btn ghost" onClick={replay}><Icon name="refresh" size={18} /> {T.replayScene}</button>
+                <button type="button" className="btn ghost" onClick={() => replay()}><Icon name="refresh" size={18} /> {T.replayScene}</button>
                 <button type="button" className="btn ghost" onClick={onBack}>{T.toMap}</button>
               </div>
               {said.length > 0 && (
@@ -541,15 +612,15 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
             <>
               <div className="vr-replies-h">
                 <h2>{T.yourReply}</h2>
-                <small className="vr-hint">{T.pickHint}</small>
+                {busy ? <span className="vr-wait-dots" aria-hidden="true"><i /><i /><i /></span> : <small className="vr-hint">{T.pickHint}</small>}
               </div>
-              <ol className="vr-replies">
+              <ol className={`vr-replies${busy ? " is-wait" : ""}`} aria-hidden={busy ? "true" : undefined}>
                 {replies.map((r, k) => {
                   const st = picked?.i === k ? (picked.ok ? "ok" : "bad") : tried.includes(k) ? "bad" : "";
                   const reveal = showTr || !!picked || tried.includes(k);
                   return (
                     <li key={`${node}-${k}`}>
-                      <button type="button" className={`vr-reply ${st}`} onClick={() => choose(k)} disabled={(picked?.ok && picked.i !== k) || tried.includes(k)} aria-keyshortcuts={String(k + 1)} style={{ "--d": `${k * 60}ms` }}>
+                      <button type="button" className={`vr-reply ${st}`} onClick={() => choose(k)} disabled={busy || (picked?.ok && picked.i !== k) || tried.includes(k)} aria-keyshortcuts={String(k + 1)} style={{ "--d": `${k * 60}ms` }}>
                         <span className="vr-key" aria-hidden="true">{k + 1}</span>
                         <span className="vr-reply-t">
                           <b lang="kk">{r.kk}</b>
@@ -579,7 +650,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
               )}
               {micOk && (
                 <div className="vr-voice">
-                  <button type="button" className={`vr-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={rec === "busy" || !!picked?.ok} aria-pressed={rec === "rec"}>
+                  <button type="button" className={`vr-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy" || !!picked?.ok} aria-pressed={rec === "rec"}>
                     <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
                     <span>{rec === "rec" ? T.listening : rec === "busy" ? T.recog : T.voice}</span>
                   </button>

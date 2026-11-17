@@ -15,6 +15,7 @@ const L = {
     fix: "Түзету", freeErr: "Aqyl жауап бере алмады. Тағы көр.", restart: "Басынан бастау", close: "Жабу", placeLbl: "Орын", typing: "жазып жатыр…",
     defaultNote: "Бұл жауап жағдаятқа сай емес. Әңгімені тағы оқып көр.", finish: "Нәтижені көру", dialog: "Әңгіме барысы", you: "Сен", stars: "{n} жұлдыз", audioFail: "Дыбыс ойнатылмады",
     resume: "Тоқтаған жерден жалғастыр", startHere: "Осыдан баста", entering: "Кіру…", phrases: "Сен айтқан тіркестер",
+    skip: "Өткізіп жіберу", rewatch: "Кіруді қайта көру",
   },
   ru: {
     kicker: "Виртуальные ситуации", sub: "Зайдите в магазин, придите в школу, отправьтесь в поездку — говорите по-казахски в жизненных ситуациях.",
@@ -30,6 +31,7 @@ const L = {
     fix: "Исправление", freeErr: "Aqyl не смог ответить. Попробуйте ещё раз.", restart: "Начать заново", close: "Закрыть", placeLbl: "Место", typing: "печатает…",
     defaultNote: "Этот ответ не подходит к ситуации. Перечитайте реплику.", finish: "Посмотреть итог", dialog: "Ход разговора", you: "Вы", stars: "Звёзд: {n}", audioFail: "Звук не воспроизвёлся",
     resume: "Продолжите с того места, где остановились", startHere: "Начните отсюда", entering: "Входим…", phrases: "Фразы, которые вы сказали",
+    skip: "Пропустить", rewatch: "Смотреть вход заново",
   },
   en: {
     kicker: "Virtual situations", sub: "Walk into a shop, a classroom, a station — and speak Kazakh in real-life situations.",
@@ -45,6 +47,7 @@ const L = {
     fix: "Correction", freeErr: "Aqyl couldn't answer. Please try again.", restart: "Start over", close: "Close", placeLbl: "Place", typing: "is typing…",
     defaultNote: "This reply doesn't fit the situation. Read the line again.", finish: "See the result", dialog: "Conversation so far", you: "You", stars: "{n} stars", audioFail: "Audio didn't play",
     resume: "Pick up where you left off", startHere: "Start here", entering: "Entering…", phrases: "Phrases you used",
+    skip: "Skip", rewatch: "Watch the entrance again",
   },
   zh: {
     kicker: "虚拟情景", sub: "走进商店、教室、车站——在真实生活情景中说哈萨克语。",
@@ -60,6 +63,7 @@ const L = {
     fix: "纠正", freeErr: "Aqyl 无法回答，请再试一次。", restart: "重新开始", close: "关闭", placeLbl: "地点", typing: "正在输入……",
     defaultNote: "这个回答不符合情景。请再读一遍对方的话。", finish: "查看结果", dialog: "对话记录", you: "你", stars: "{n} 颗星", audioFail: "音频无法播放",
     resume: "从上次停下的地方继续", startHere: "从这里开始", entering: "正在进入…", phrases: "你说过的句子",
+    skip: "跳过", rewatch: "重看进门过程",
   },
   es: {
     kicker: "Situaciones virtuales", sub: "Entra en una tienda, un aula, una estación… y habla kazajo en situaciones de la vida real.",
@@ -75,6 +79,7 @@ const L = {
     fix: "Corrección", freeErr: "Aqyl no pudo responder. Inténtalo de nuevo.", restart: "Empezar de nuevo", close: "Cerrar", placeLbl: "Lugar", typing: "está escribiendo…",
     defaultNote: "Esta respuesta no encaja en la situación. Vuelve a leer la frase.", finish: "Ver el resultado", dialog: "La conversación", you: "Tú", stars: "{n} estrellas", audioFail: "No se pudo reproducir el audio",
     resume: "Sigue donde lo dejaste", startHere: "Empieza aquí", entering: "Entrando…", phrases: "Frases que usaste",
+    skip: "Saltar", rewatch: "Ver la entrada otra vez",
   },
   de: {
     kicker: "Virtuelle Situationen", sub: "Geh in einen Laden, ein Klassenzimmer, einen Bahnhof – und sprich Kasachisch in echten Alltagssituationen.",
@@ -90,6 +95,7 @@ const L = {
     fix: "Korrektur", freeErr: "Aqyl konnte nicht antworten. Bitte versuch es noch einmal.", restart: "Neu beginnen", close: "Schließen", placeLbl: "Ort", typing: "schreibt …",
     defaultNote: "Diese Antwort passt nicht zur Situation. Lies den Satz noch einmal.", finish: "Ergebnis ansehen", dialog: "Bisheriges Gespräch", you: "Du", stars: "{n} Sterne", audioFail: "Audio konnte nicht abgespielt werden",
     resume: "Mach da weiter, wo du aufgehört hast", startHere: "Starte hier", entering: "Eintreten…", phrases: "Sätze, die du benutzt hast",
+    skip: "Überspringen", rewatch: "Eintreten noch mal ansehen",
   },
   fr: {
     kicker: "Situations virtuelles", sub: "Entre dans un magasin, une classe, une gare… et parle kazakh dans des situations de la vie réelle.",
@@ -105,6 +111,7 @@ const L = {
     fix: "Correction", freeErr: "Aqyl n'a pas pu répondre. Réessaie.", restart: "Recommencer", close: "Fermer", placeLbl: "Lieu", typing: "écrit…",
     defaultNote: "Cette réponse ne convient pas à la situation. Relis la réplique.", finish: "Voir le résultat", dialog: "La conversation", you: "Toi", stars: "{n} étoiles", audioFail: "Le son n'a pas pu être lu",
     resume: "Reprends là où tu t’es arrêté", startHere: "Commence ici", entering: "On entre…", phrases: "Les phrases que tu as dites",
+    skip: "Passer", rewatch: "Revoir l’entrée",
   },
   tr: {
     kicker: "Sanal durumlar", sub: "Bir dükkâna, sınıfa, istasyona gir — gerçek hayat durumlarında Kazakça konuş.",
@@ -120,6 +127,7 @@ const L = {
     fix: "Düzeltme", freeErr: "Aqyl cevap veremedi. Tekrar dene.", restart: "Baştan başla", close: "Kapat", placeLbl: "Yer", typing: "yazıyor…",
     defaultNote: "Bu cevap duruma uymuyor. Cümleyi yeniden oku.", finish: "Sonucu gör", dialog: "Konuşmanın akışı", you: "Sen", stars: "{n} yıldız", audioFail: "Ses çalınamadı",
     resume: "Kaldığın yerden devam et", startHere: "Buradan başla", entering: "Giriliyor…", phrases: "Kullandığın ifadeler",
+    skip: "Geç", rewatch: "Girişi yeniden izle",
   },
   ar: {
     kicker: "مواقف افتراضية", sub: "ادخل متجرًا أو صفًّا أو محطة — وتحدّث بالكازاخية في مواقف من الحياة اليومية.",
@@ -135,6 +143,7 @@ const L = {
     fix: "تصحيح", freeErr: "لم يستطع Aqyl الرد. حاول مرة أخرى.", restart: "ابدأ من جديد", close: "إغلاق", placeLbl: "المكان", typing: "يكتب…",
     defaultNote: "هذا الرد لا يناسب الموقف. أعد قراءة العبارة.", finish: "عرض النتيجة", dialog: "مجرى الحديث", you: "أنت", stars: "{n} نجوم", audioFail: "تعذّر تشغيل الصوت",
     resume: "تابع من حيث توقفت", startHere: "ابدأ من هنا", entering: "جارٍ الدخول…", phrases: "العبارات التي قلتها",
+    skip: "تخطٍّ", rewatch: "شاهد الدخول مجددًا",
   },
   ko: {
     kicker: "가상 상황", sub: "가게, 교실, 역에 들어가서 실제 생활 상황에서 카자흐어로 말해 보세요.",
@@ -150,6 +159,7 @@ const L = {
     fix: "고쳐 쓰기", freeErr: "Aqyl이 대답하지 못했어요. 다시 시도해 주세요.", restart: "처음부터", close: "닫기", placeLbl: "장소", typing: "입력 중…",
     defaultNote: "이 대답은 상황에 맞지 않아요. 상대의 말을 다시 읽어 보세요.", finish: "결과 보기", dialog: "지금까지의 대화", you: "나", stars: "별 {n}개", audioFail: "소리를 재생하지 못했어요",
     resume: "멈춘 곳에서 이어 하기", startHere: "여기서 시작하세요", entering: "들어가는 중…", phrases: "내가 말한 표현",
+    skip: "건너뛰기", rewatch: "입장 장면 다시 보기",
   },
   ja: {
     kicker: "バーチャルな場面", sub: "お店、教室、駅に入って、実際の生活場面でカザフ語を話そう。",
@@ -165,6 +175,7 @@ const L = {
     fix: "訂正", freeErr: "Aqyl が答えられませんでした。もう一度お試しください。", restart: "最初から", close: "閉じる", placeLbl: "場所", typing: "入力中…",
     defaultNote: "この返事は場面に合いません。相手のせりふをもう一度読んでみよう。", finish: "結果を見る", dialog: "これまでの会話", you: "あなた", stars: "星 {n} 個", audioFail: "音声を再生できませんでした",
     resume: "前回の続きから", startHere: "ここから始めよう", entering: "入ります…", phrases: "あなたが使ったフレーズ",
+    skip: "スキップ", rewatch: "入る場面をもう一度見る",
   },
 };
 

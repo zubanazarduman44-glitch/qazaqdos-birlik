@@ -671,3 +671,140 @@
   .vr-art .is-bad .vr-q { opacity: 1; }
 }
 @keyframes vr-fadeout { from { opacity: 1; } to { opacity: 0; } }
+
+/* ═══ VR «өмір» қабаты (VrLife + vr-places): камера, буынды адамдар, кіріспе ═══ */
+.lf-art { background: var(--vr-felt); }
+.lf-art :is(.lf-cam, .lf-bob, .lf-actor, .lf-facing, .lf-root, .lf-tor, .lf-hd, .lf-face, .lf-ua, .lf-fa, .lf-th, .lf-sh, .lf-it, .lf-pass, .lf-mv) { transform-box: view-box; transform-origin: 0 0; }
+.lf-cam { transition-property: transform; transition-timing-function: cubic-bezier(0.5, 0.06, 0.24, 1); }
+.lf-bob { transform-origin: 400px 225px !important; }
+.lf-cam.is-walk .lf-bob { animation: lf-headbob 0.64s ease-in-out infinite; }
+.lf-actor { transition-property: transform; transition-timing-function: cubic-bezier(0.38, 0.08, 0.52, 0.96); }
+.lf-facing { transition: transform 0.26s cubic-bezier(0.4, 0, 0.3, 1); }
+.lf-mv { transition: transform 0.7s cubic-bezier(0.4, 0.05, 0.3, 1), opacity 0.5s ease; }
+.lf-root, .lf-hd, .lf-face, .lf-ua, .lf-fa, .lf-th, .lf-sh, .lf-it { transition: transform 0.42s cubic-bezier(0.3, 0.7, 0.3, 1); }
+.lf-instant *, .lf-instant { transition: none !important; }
+.lf-set { transition: opacity 0.5s ease; }
+.lf-set.off { opacity: 0; pointer-events: none; }
+.lf-set.off * { animation-play-state: paused !important; }
+.lf-dip { opacity: 0; pointer-events: none; transition: opacity 0.36s ease; }
+.lf-dip.on { opacity: 1; }
+.lf-xf { pointer-events: none; animation: lf-xf 0.45s ease forwards; }
+.lf-myhand { transform: translateY(280px); transition: transform 0.55s cubic-bezier(0.3, 1.2, 0.4, 1); }
+.lf-myhand.on { transform: none; }
+.lf-glow { animation: lf-flick 6s ease-in-out infinite; }
+
+/* Адам: тыныс, көз қағу, сөйлеу, көңіл күйі */
+.lf-tor { animation: lf-breathe 3.8s ease-in-out var(--bd, 0s) infinite; }
+.lf-eyes { transform-box: fill-box; transform-origin: 50% 50%; animation: lf-blink 4.7s var(--bd, 0s) infinite; }
+.lf-face { transform: translateX(calc(var(--look, 0) * 7px)); }
+.lf-hd { transform: rotate(calc(var(--look, 0) * 3deg)); }
+.lf-mouth, .lf-grin, .lf-hmm, .lf-q { opacity: 0; }
+.lf-mouth { transform-box: fill-box; transform-origin: 50% 50%; }
+.lf-q { transform-box: fill-box; transform-origin: 50% 100%; }
+.is-talk .lf-mouth { opacity: 1; animation: lf-talk 0.27s ease-in-out infinite alternate; }
+.is-talk .lf-smile { opacity: 0; }
+.is-talk > .lf-root .lf-hd { animation: lf-talkhead 2.6s ease-in-out infinite; }
+.is-ok:not(.is-talk) .lf-grin { opacity: 1; }
+.is-ok:not(.is-talk) .lf-smile { opacity: 0; }
+.is-ok:not(.p-sit):not(.p-drive):not(.is-seat) > .lf-root { animation: lf-hop 0.5s ease-out; }
+.is-bad .lf-hmm { opacity: 1; }
+.is-bad .lf-smile, .is-bad .lf-mouth { opacity: 0; }
+.is-bad .lf-q { opacity: 1; animation: vr-qpop 0.3s ease-out both; }
+.h-nod .lf-hd { animation: lf-nod 0.8s ease-in-out 2; }
+.h-shake .lf-hd { animation: lf-shake 0.7s ease-in-out 2; }
+.h-tilt .lf-hd { transform: rotate(-7deg); }
+.h-down .lf-face { transform: translate(calc(var(--look, 0) * 7px), 5px); }
+.h-up .lf-face { transform: translate(calc(var(--look, 0) * 7px), -3px); }
+
+/* Позалар (l — көрерменнің сол жағы; оң бұрыш = сағат тілімен) */
+.lf-ua.l { transform: rotate(9deg); } .lf-ua.r { transform: rotate(-9deg); }
+.lf-fa.l { transform: rotate(-6deg); } .lf-fa.r { transform: rotate(6deg); }
+.p-walk .lf-th.l { animation: lf-leg 0.92s ease-in-out infinite; }
+.p-walk .lf-th.r { animation: lf-leg 0.92s ease-in-out -0.46s infinite; }
+.p-walk .lf-sh.l { animation: lf-knee 0.92s linear infinite; }
+.p-walk .lf-sh.r { animation: lf-knee 0.92s linear -0.46s infinite; }
+.p-walk .lf-ua.l { animation: lf-arm 0.92s ease-in-out -0.46s infinite; }
+.p-walk .lf-ua.r { animation: lf-arm 0.92s ease-in-out infinite; }
+.p-walk > .lf-root, .p-walkz > .lf-root { animation: lf-step 0.46s ease-in-out infinite; }
+.p-walkz .lf-th.l { animation: lf-lift 0.92s ease-in-out infinite; }
+.p-walkz .lf-th.r { animation: lf-lift 0.92s ease-in-out -0.46s infinite; }
+.p-walkz .lf-ua.l { animation: lf-armz 0.92s ease-in-out -0.46s infinite; }
+.p-walkz .lf-ua.r { animation: lf-armz 0.92s ease-in-out infinite; }
+.has-hold:is(.p-walk, .p-walkz) .lf-ua.r { animation: none; transform: rotate(-14deg); }
+.has-hold:is(.p-walk, .p-walkz) .lf-fa.r { transform: rotate(86deg); }
+.has-hold:is(.p-walk, .p-walkz) .lf-fa.r .lf-it { transform: rotate(-72deg); }
+.p-sit > .lf-root, .is-seat > .lf-root { transform: translateY(46px); }
+.p-sit .lf-th, .is-seat .lf-th { transform: scaleY(0.25); animation: none; }
+.p-sit .lf-sh, .is-seat .lf-sh { transform: scaleY(3.4); animation: none; }
+.p-sit .lf-ua.l, .p-drive .lf-ua.l, .p-type .lf-ua.l { transform: rotate(14deg); }
+.p-sit .lf-ua.r, .p-drive .lf-ua.r, .p-type .lf-ua.r { transform: rotate(-14deg); }
+.p-sit .lf-fa.l { transform: rotate(-80deg); } .p-sit .lf-fa.r { transform: rotate(80deg); }
+.p-sit .lf-fa.l .lf-it { transform: rotate(66deg); } .p-sit .lf-fa.r .lf-it { transform: rotate(-66deg); }
+.p-drive > .lf-root { transform: translateY(46px); }
+.p-drive .lf-th { transform: scaleY(0.25); } .p-drive .lf-sh { transform: scaleY(3.4); }
+.p-drive .lf-fa.l { transform: rotate(-104deg); } .p-drive .lf-fa.r { transform: rotate(104deg); }
+.p-drive .lf-tor { animation: lf-steer 5s ease-in-out infinite; }
+.p-type .lf-fa.l { transform: rotate(-72deg); } .p-type .lf-fa.r { transform: rotate(72deg); animation: lf-tap 0.5s ease-in-out infinite alternate; }
+.p-write .lf-ua.l { transform: rotate(16deg); } .p-write .lf-fa.l { transform: rotate(-110deg); } .p-write .lf-fa.l .lf-it { transform: rotate(94deg); }
+.p-write .lf-ua.r { transform: rotate(-12deg); } .p-write .lf-fa.r { animation: lf-scrib 0.42s ease-in-out infinite alternate; } .p-write .lf-fa.r .lf-it { transform: rotate(-120deg); }
+.p-give .lf-ua.r { transform: rotate(-30deg); } .p-give .lf-fa.r { transform: rotate(-34deg); } .p-give .lf-fa.r .lf-it { transform: rotate(64deg) scale(1.15); }
+.p-carry .lf-ua.l { transform: rotate(14deg); } .p-carry .lf-fa.l { transform: rotate(-84deg); }
+.p-carry .lf-ua.r { transform: rotate(-14deg); } .p-carry .lf-fa.r { transform: rotate(86deg); } .p-carry .lf-fa.r .lf-it { transform: rotate(-72deg); }
+.p-point .lf-ua.r { transform: rotate(-80deg); } .p-point .lf-fa.r { transform: rotate(-8deg); }
+.p-wave .lf-ua.r { transform: rotate(-152deg); } .p-wave .lf-fa.r { animation: lf-wave 0.36s ease-in-out infinite alternate; }
+.p-pour .lf-ua.r { transform: rotate(-38deg); } .p-pour .lf-fa.r { transform: rotate(52deg); } .p-pour .lf-fa.r .lf-it { animation: lf-pour 1.6s ease-in-out infinite; }
+.p-reach .lf-ua.r { transform: rotate(-164deg); } .p-reach .lf-fa.r { transform: rotate(-6deg); } .p-reach .lf-fa.r .lf-it { transform: rotate(170deg); }
+.p-hands .lf-ua.l { transform: rotate(16deg); } .p-hands .lf-fa.l { transform: rotate(-64deg); }
+.p-hands .lf-ua.r { transform: rotate(-16deg); } .p-hands .lf-fa.r { transform: rotate(64deg); }
+.p-phone .lf-ua.r { transform: rotate(-8deg); } .p-phone .lf-fa.r { transform: rotate(148deg); } .p-phone .lf-fa.r .lf-it { transform: rotate(-140deg); }
+.p-phone .lf-face, .p-write .lf-face, .p-type .lf-face { transform: translate(calc(var(--look, 0) * 7px), 4px); }
+
+/* Фондағы өткіншілер */
+.lf-pass { animation: lf-pass 16s linear infinite; }
+
+@keyframes lf-headbob { 0%, 100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-3px) rotate(0.25deg); } 50% { transform: translateY(0) rotate(0deg); } 75% { transform: translateY(-3px) rotate(-0.25deg); } }
+@keyframes lf-xf { from { opacity: 0.9; } to { opacity: 0; } }
+@keyframes lf-flick { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.28; } }
+@keyframes lf-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.006, 1.014); } }
+@keyframes lf-blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+@keyframes lf-talk { 0% { transform: scaleY(0.25); } 35% { transform: scaleY(1.05); } 60% { transform: scaleY(0.5); } 100% { transform: scaleY(0.9); } }
+@keyframes lf-talkhead { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(1.8deg); } 70% { transform: rotate(-1.4deg); } }
+@keyframes lf-hop { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-8px); } }
+@keyframes lf-nod { 0%, 100% { transform: rotate(0deg) translateY(0); } 40% { transform: rotate(2deg) translateY(4px); } }
+@keyframes lf-shake { 0%, 100% { transform: rotate(0deg); } 30% { transform: rotate(5deg); } 70% { transform: rotate(-5deg); } }
+@keyframes lf-leg { 0%, 100% { transform: rotate(-24deg); } 50% { transform: rotate(22deg); } }
+@keyframes lf-knee { 0%, 45% { transform: rotate(2deg); } 72% { transform: rotate(42deg); } 100% { transform: rotate(2deg); } }
+@keyframes lf-arm { 0%, 100% { transform: rotate(-20deg); } 50% { transform: rotate(20deg); } }
+@keyframes lf-armz { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+@keyframes lf-lift { 0%, 50%, 100% { transform: translateY(0) scaleY(1); } 25% { transform: translateY(-5px) scaleY(0.9); } }
+@keyframes lf-step { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes lf-scrib { from { transform: rotate(96deg); } to { transform: rotate(104deg); } }
+@keyframes lf-tap { from { transform: rotate(70deg); } to { transform: rotate(76deg); } }
+@keyframes lf-wave { from { transform: rotate(-18deg); } to { transform: rotate(22deg); } }
+@keyframes lf-pour { 0%, 100% { transform: rotate(-20deg); } 45%, 70% { transform: rotate(18deg); } }
+@keyframes lf-steer { 0%, 100% { transform: rotate(0deg); } 40% { transform: rotate(0.8deg); } 70% { transform: rotate(-0.6deg); } }
+@keyframes lf-pass { 0% { transform: translate(var(--x0), var(--y)) scale(var(--s)); } 100% { transform: translate(var(--x1), var(--y)) scale(var(--s)); } }
+
+/* Сахна басқару: өткізу, кіруді қайта көру; кейіпкер әрекеті кезінде жауаптар күтеді */
+.vr-life-ctl { position: absolute; z-index: 5; right: 10px; bottom: 10px; display: flex; gap: 8px; }
+.vr-life-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 999px; cursor: pointer;
+  font: 800 13px/1 var(--body); letter-spacing: 0.02em; color: var(--vr-ink); background: rgba(255, 253, 247, 0.92);
+  box-shadow: 0 2px 0 rgba(58, 34, 16, 0.22), inset 0 0 0 1.5px var(--vr-rim); animation: vr-pop 0.3s 0.4s var(--ease, ease) both;
+}
+.vr-life-btn:hover { background: #fff; }
+.vr-life-btn:focus-visible { outline: 3px solid var(--vr-gold); outline-offset: 2px; }
+.vr-stage.is-life { background: #F1E4C6; }
+.vr-bubble.is-wait { visibility: hidden; }
+.vr-replies.is-wait { opacity: 0.0; pointer-events: none; }
+.vr-replies { transition: opacity 0.35s ease; }
+.vr-wait-dots { display: inline-flex; gap: 5px; margin-inline-start: 8px; vertical-align: middle; }
+.vr-wait-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--vr-sec); animation: vr-bob 0.9s ease-in-out infinite; }
+.vr-wait-dots i:nth-child(2) { animation-delay: 0.15s; } .vr-wait-dots i:nth-child(3) { animation-delay: 0.3s; }
+@media (max-width: 720px) { .vr-life-ctl { right: 8px; bottom: 8px; } .vr-life-btn { padding: 6px 12px; } }
+@media (prefers-reduced-motion: reduce) {
+  .vr .vr-stage .lf-xf { animation: lf-xf 0.4s ease forwards !important; }
+  .vr .vr-stage .lf-myhand { transition: none !important; }
+}
+@media (min-width: 721px) { .vr-stage.is-life { max-height: min(60vh, 560px); } }
+@media (max-width: 720px) { .vr-life-ctl { top: 8px; bottom: auto; } }
