@@ -126,14 +126,6 @@ export function ClassHourglass({ size = 14 }) {
   );
 }
 
-export function ClassHourglass({ size = 14 }) {
-  return (
-    <svg className="cl-hg" width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-      <path d="M4 2h8M4 14h8M5 2c0 3.2 6 4 6 6s-6 2.8-6 6M11 2c0 3.2-6 4-6 6s6 2.8 6 6" />
-    </svg>
-  );
-}
-
 /* ── Бос күй суреті: 260×170. Киіз қабырға, ағаш жақтаулы тақта, парта, кітап.
    kind тақтадағы «бор жазуын» және алдыңғы бөлшекті өзгертеді. ── */
 function Board({ kind }) {
