@@ -5,6 +5,12 @@ export const LIFE = {
   shop: { side: "right", load: () => import("./shop") },
   taxi: { side: "left", load: () => import("./taxi") },
   school: { side: "right", load: () => import("./school") },
+  bank: { side: "right", load: () => import("./bank") },
+  post: { side: "right", load: () => import("./post") },
+  bus: { side: "left", load: () => import("./bus") },
+  guest: { side: "right", load: () => import("./guest") },
+  phone: { side: "right", load: () => import("./phone") },
+  office: { side: "right", load: () => import("./office") },
 };
 
 export const hasLife = (art) => !!LIFE[art];
