@@ -1,5 +1,5 @@
 // Aqyl-мен чат: қазақ тілін үйретуші виртуалды дос
-import { callGemini, GeminiError, LANG_NAMES, KK_STYLE, tidy } from "../../../lib/gemini";
+import { callGemini, streamGemini, GeminiError, LANG_NAMES, KK_STYLE, tidy, kkFix } from "../../../lib/gemini";
 
 export const maxDuration = 60;
 const MAX_MESSAGES = 10;
@@ -62,9 +62,41 @@ export async function POST(req) {
   while (contents.length && contents[0].role !== "user") contents.shift();
   if (!contents.length || contents[contents.length - 1].role !== "user") return Response.json({ error: "Bad request" }, { status: 400 });
 
+  const sys = system(explain, String(name || "").slice(0, 40), String(level || "").slice(0, 20));
+
+  // Ағынды режим: жолма-жол JSON — {"d":"..."} бөлшектер, соңында {"done":true,"text":"..."} немесе {"error":"..."}
+  if (body.stream) {
+    let opened;
+    try {
+      opened = await streamGemini(contents, { system: sys, temperature: 0.5, thinking: "minimal", maxTokens: 1800 });
+    } catch (e) {
+      const status = e instanceof GeminiError ? e.status : 500;
+      return Response.json({ error: e.message || "AI error" }, { status });
+    }
+    const enc = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(ctrl) {
+        let all = "";
+        const send = (o) => ctrl.enqueue(enc.encode(JSON.stringify(o) + "\n"));
+        try {
+          for await (const d of opened.chunks) {
+            all += d;
+            send({ d: kkFix(d) });
+          }
+          const clean = tidy(all, { markdown: true });
+          send(clean ? { done: true, text: clean } : { error: "Empty reply" });
+        } catch (e) {
+          send(all ? { done: true, text: tidy(all, { markdown: true }) } : { error: e.message || "AI error" });
+        }
+        ctrl.close();
+      },
+    });
+    return new Response(stream, { headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store", "X-Accel-Buffering": "no" } });
+  }
+
   try {
     const text = await callGemini(contents, {
-      system: system(explain, String(name || "").slice(0, 40), String(level || "").slice(0, 20)),
+      system: sys,
       temperature: 0.5,
       fast: true, // жылдам модельдер алдымен: жауап тез келеді
       thinking: "minimal",

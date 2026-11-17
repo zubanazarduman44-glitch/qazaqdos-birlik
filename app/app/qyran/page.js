@@ -171,6 +171,7 @@ export default function Chat() {
   const fileRef = useRef(null);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [live, setLive] = useState(""); // ағынмен келіп жатқан жауап
   const [err, setErr] = useState("");
   const [rec, setRec] = useState(null); // null | "rec" | "busy"
   const recRef = useRef(null);
@@ -223,7 +224,7 @@ export default function Chat() {
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [msgs.length, busy]);
+  }, [msgs.length, busy, live.length >> 6]);
 
   async function send(q) {
     const msg = (q ?? text).trim();
@@ -237,17 +238,45 @@ export default function Chat() {
       const r = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-20), explain, name: state.profile.name, level: state.cefr ? `${state.cefr} (CEFR)` : `level ${lvl.level}` }),
+        body: JSON.stringify({ stream: true, messages: next.slice(-20), explain, name: state.profile.name, level: state.cefr ? `${state.cefr} (CEFR)` : `level ${lvl.level}` }),
       });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-      update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", text: d.text }].slice(-40) }));
+      if (!r.ok || !r.body) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || `HTTP ${r.status}`);
+      }
+      // Жауап бөлшектеп келеді: алғашқы сөздер бірден көрінеді
+      const reader = r.body.getReader();
+      const dec = new TextDecoder();
+      let buf = "";
+      let acc = "";
+      let final = "";
+      let fail = "";
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let i;
+        while ((i = buf.indexOf("\n")) >= 0) {
+          const line = buf.slice(0, i);
+          buf = buf.slice(i + 1);
+          if (!line.trim()) continue;
+          let o;
+          try { o = JSON.parse(line); } catch { continue; }
+          if (o.d) { acc += o.d; setLive(acc); }
+          if (o.done) final = o.text;
+          if (o.error) fail = o.error;
+        }
+      }
+      const out = final || acc;
+      if (!out) throw new Error(fail || t.errGeneric);
+      update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", text: out }].slice(-40) }));
       setTalkTick((n) => n + 1);
       award(2, 1);
     } catch (e) {
       setErr(e.message || t.errGeneric);
     } finally {
       setBusy(false);
+      setLive("");
     }
   }
 
@@ -474,11 +503,17 @@ export default function Chat() {
               <span className="msg-av" aria-hidden="true">
                 <Qyran mood="think" size={40} />
               </span>
-              <div className="msg-b typing" aria-label={AL.chat.thinking}>
-                <i />
-                <i />
-                <i />
-              </div>
+              {live ? (
+                <div className="msg-col">
+                  <div className="msg-b"><Rich text={live} /></div>
+                </div>
+              ) : (
+                <div className="msg-b typing" aria-label={AL.chat.thinking}>
+                  <i />
+                  <i />
+                  <i />
+                </div>
+              )}
             </div>
           )}
           {err && <p className="alert">{err}</p>}
