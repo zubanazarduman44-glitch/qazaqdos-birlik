@@ -10,12 +10,19 @@ import Quiz from "../../components/Quiz";
 import { LitEmblem, LitCorner, LitHeroArt, LIT_COVER, LIT_YEAR } from "../../components/LitArt";
 import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
 import { shuffle } from "../../../lib/wordTools";
-import { WORKS } from "../../../lib/literature";
+import { WORKS, splitSent } from "../../../lib/literature";
+import { LT } from "./litL10n";
 // Дайын орысша/ағылшынша аудармалар (lib/litTr.js) бетпен бірге емес, керек кезде жүктеледі
 let LIT_TR = null;
+let LIT_EPT = null;
 let litTrP = null;
-const loadLitTr = (to) => (to === "ru" || to === "en" ? (litTrP ||= import("../../../lib/litTr").then((m) => (LIT_TR = m.LIT_TR)).catch(() => (litTrP = null))) : Promise.resolve());
-const staticTr = (id, to) => (!LIT_TR ? null : to === "ru" ? LIT_TR[id]?.[0] : to === "en" ? LIT_TR[id]?.[1] : null);
+const loadLitTr = (to) => (to === "ru" || to === "en" ? (litTrP ||= import("../../../lib/litTr").then((m) => { LIT_EPT = m.LIT_EP_TR; return (LIT_TR = m.LIT_TR); }).catch(() => (litTrP = null))) : Promise.resolve());
+// ep=true: эпизод мәтіні; lead=true: эпизодқа кіріспе сөйлем
+const staticTr = (id, to, ep, lead) => {
+  if (to !== "ru" && to !== "en") return null;
+  if (ep) return LIT_EPT?.[id]?.[to]?.[lead ? 0 : 1] || null;
+  return !LIT_TR ? null : LIT_TR[id]?.[to === "ru" ? 0 : 1];
+};
 import { tx } from "../../../lib/tx";
 import { L } from "../../../lib/i18n";
 
@@ -26,6 +33,8 @@ const BORN = { kk: "т.", ru: "р.", en: "b." };
 const BORN_TITLE = { kk: "Авторлардың туған жылдары", ru: "Годы рождения авторов", en: "Authors\u2019 birth years" };
 const AUTH = WORKS.filter((w) => LIT_YEAR[w.id]).sort((a, b) => LIT_YEAR[a.id] - LIT_YEAR[b.id]);
 const Y0 = 1835, Y1 = 1925;
+// Aqyl чаты мен тестке: қысқа мәлімет + эпизод
+const fullText = (w) => (w.episode ? `${w.text}\n\n${w.episode.title.kk}. ${w.episode.lead} ${w.episode.text}` : w.text);
 const coverStyle = (id) => {
   const [c, d] = LIT_COVER[id] || ["#8A2018", "#5E140F"];
   return { "--lc": c, "--ld": d };
@@ -33,7 +42,10 @@ const coverStyle = (id) => {
 export default function Literature() {
   const { lang, explain, state, update, award } = useApp();
   const x = tx(lang);
+  const lt = LT(lang);
   const [id, setId] = useState(null);
+  const [stage, setStage] = useState("info"); // "info" — қысқа мәлімет | "read" — эпизод
+  const [rowTr, setRowTr] = useState({}); // жеке сөйлем аудармасы: {i: text | "loading"}
   const [cur, setCur] = useState(-1);
   const [playing, setPlaying] = useState(false);
   const [noVoice, setNoVoice] = useState(false);
@@ -54,7 +66,11 @@ export default function Literature() {
   const gHero = useAnimGate();
   const work = WORKS.find((w) => w.id === id);
   const lit = state.lit || {};
-  const sentences = useMemo(() => (work ? work.text.split(/(?<=[.!?])\s+/).filter(Boolean) : []), [work]);
+  const ep = work?.episode;
+  const reading = stage === "read" && !!ep;
+  const srcText = work ? (reading ? ep.text : work.text) : "";
+  const trKey = work ? `qd_lt_${work.id}${reading ? "_ep" : ""}_${explain}` : "";
+  const sentences = useMemo(() => splitSent(srcText), [srcText]);
 
   const stop = () => {
     run.current++;
@@ -71,6 +87,8 @@ export default function Literature() {
   function open(w) {
     stop();
     setId(w.id);
+    setStage("info");
+    setRowTr({});
     setCur(-1);
     setMsgs([]);
     setErr("");
@@ -82,20 +100,23 @@ export default function Literature() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function play() {
-    if (playing) return stop();
+  // from — қай сөйлемнен; one — тек бір сөйлем (▶ батырмасы)
+  async function play(from, one) {
+    if (playing && from == null) return stop();
+    if (playing) stop();
     const my = ++run.current;
     const voice = await getKkVoice();
     if (run.current !== my) return;
     setNoVoice(false);
     setPlaying(true);
-    let i = cur >= sentences.length - 1 ? 0 : Math.max(0, cur + 1);
+    let i = from != null ? from : cur >= sentences.length - 1 ? 0 : Math.max(0, cur + 1);
+    const end = one ? i + 1 : sentences.length;
 
     if (voice) {
       const s = window.speechSynthesis;
       const step = () => {
         if (run.current !== my) return;
-        if (i >= sentences.length) return setPlaying(false);
+        if (i >= end) return setPlaying(false);
         setCur(i);
         const u = new SpeechSynthesisUtterance(sentences[i]);
         u.voice = voice;
@@ -115,21 +136,25 @@ export default function Literature() {
     // Құрылғыда қазақша дауыс жоқ: серверден дыбыс аламыз (Gemini TTS)
     try {
       setLoadingTts(true);
-      const url = await fetchTtsUrl(work.text);
+      const seg = sentences.slice(i, end);
+      const segText = seg.join(" ");
+      const url = await fetchTtsUrl(segText);
       setLoadingTts(false);
       if (run.current !== my) return;
       const a = new Audio(url);
       audioRef.current = a;
-      const total = work.text.length;
+      const total = segText.length;
       const ends = [];
       let acc = 0;
-      sentences.forEach((sn) => {
+      seg.forEach((sn) => {
         acc += sn.length + 1;
         ends.push(acc / total);
       });
+      const i0 = i;
+      setCur(i0);
       a.ontimeupdate = () => {
         const k = a.currentTime / (a.duration || 1);
-        setCur(Math.max(0, ends.findIndex((e) => k <= e)));
+        setCur(i0 + Math.max(0, ends.findIndex((e) => k <= e)));
       };
       a.onended = () => setPlaying(false);
       a.onerror = () => setPlaying(false);
@@ -143,7 +168,7 @@ export default function Literature() {
       const alt = sy?.getVoices().find((v) => /^ru/i.test(v.lang)) || sy?.getVoices().find((v) => /^(tr|uz|ky)/i.test(v.lang)) || sy?.getVoices()[0];
       const step = () => {
         if (run.current !== my) return;
-        if (i >= sentences.length) return setPlaying(false);
+        if (i >= end) return setPlaying(false);
         setCur(i);
         if (alt) {
           const u = new SpeechSynthesisUtterance(sentences[i]);
@@ -175,8 +200,8 @@ export default function Literature() {
     loadLitTr(explain).then(() => on && prep());
     return () => { on = false; };
     function prep() {
-      if (staticTr(work.id, explain)) return;
-      const key = `qd_lt_${work.id}_${explain}`;
+      if (staticTr(work.id, explain, reading)) return;
+      const key = trKey;
       try {
         const hit = localStorage.getItem(key);
         if (hit) {
@@ -185,7 +210,7 @@ export default function Literature() {
         }
       } catch {}
       if (ready.current[key]) return;
-      ready.current[key] = fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) })
+      ready.current[key] = fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: srcText, to: explain }) })
         .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
         .then(({ ok, d }) => {
           if (!ok || !d.text) throw new Error("err");
@@ -200,22 +225,51 @@ export default function Literature() {
           return null;
         });
     }
-  }, [id, explain]);
+  }, [id, explain, reading]);
   async function translate() {
     if (trans) return setTrans(null);
     await loadLitTr(explain);
-    const st = staticTr(work.id, explain);
+    const st = staticTr(work.id, explain, reading);
     if (st) return setTrans(st);
-    const key = `qd_lt_${work.id}_${explain}`;
+    const key = trKey;
     let v = ready.current[key];
     if (typeof v === "string") return setTrans(v);
     setTrans("loading");
-    v = await (v || fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: work.text, to: explain }) }).then((r) => r.json()).then((d) => d.text).catch(() => null));
+    v = await (v || fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: srcText, to: explain }) }).then((r) => r.json()).then((d) => d.text).catch(() => null));
     if (v) setTrans(v);
     else {
       setTrans(null);
       setErr("Translate error");
     }
+  }
+
+  // Бір сөйлемнің аудармасы: дайын/толық аударма болса — содан, әйтпесе тек сол сөйлемді аударамыз
+  async function trRow(i, all) {
+    if (rowTr[i]) return setRowTr(({ [i]: _, ...r }) => r);
+    if (all) return setRowTr((r) => ({ ...r, [i]: all[i] }));
+    await loadLitTr(explain);
+    const st = staticTr(work.id, explain, reading);
+    const sp = st ? splitSent(st) : null;
+    if (sp && sp.length === sentences.length) return setRowTr((r) => ({ ...r, [i]: sp[i] }));
+    setRowTr((r) => ({ ...r, [i]: "loading" }));
+    const v = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: sentences[i], to: explain }) })
+      .then((r) => r.json()).then((d) => d.text).catch(() => null);
+    setRowTr(({ [i]: _, ...r }) => (v ? { ...r, [i]: v } : r));
+  }
+  function startReading() {
+    stop();
+    setStage("read");
+    setCur(-1);
+    setTrans(null);
+    setRowTr({});
+    requestAnimationFrame(() => document.getElementById("lit-episode")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
+  function backToInfo() {
+    stop();
+    setStage("info");
+    setCur(-1);
+    setTrans(null);
+    setRowTr({});
   }
 
   async function ask(t) {
@@ -230,7 +284,7 @@ export default function Literature() {
       const r = await fetch("/api/literature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next, title: work.work, author: work.author, text: work.text, explain, level: state.cefr || work.lvl, name: state.profile.name }),
+        body: JSON.stringify({ messages: next, title: work.work, author: work.author, text: fullText(work), explain, level: state.cefr || work.lvl, name: state.profile.name }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
@@ -253,7 +307,7 @@ export default function Literature() {
       const r = await fetch("/api/literature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "quiz", title: work.work, author: work.author, text: work.text, explain, level: state.cefr || work.lvl }),
+        body: JSON.stringify({ mode: "quiz", title: work.work, author: work.author, text: fullText(work), explain, level: state.cefr || work.lvl }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
@@ -368,14 +422,21 @@ export default function Literature() {
     );
   }
 
-  const tr = typeof trans === "string" && trans !== "loading" ? trans.split(/(?<=[.!?])\s+/).filter(Boolean) : null;
+  const tr = typeof trans === "string" && trans !== "loading" ? splitSent(trans) : null;
   const parallel = !!tr && tr.length === sentences.length;
+  const leadTr = reading && tr ? staticTr(work.id, explain, true, true) : null;
   const mood = loadingTts || busy || quiz === "loading" ? "think" : playing ? "happy" : qres ? (qres.right >= 4 ? "cheer" : "support") : "idle";
-  const prog = sentences.length ? Math.max(0, cur + 1) / sentences.length : 0;
+  const prog = reading && sentences.length ? Math.max(0, cur + 1) / sentences.length : 0;
   const snt = (sn, i) => (
     <span key={i} className={`snt ${i === cur ? "now" : ""} ${i < cur ? "past" : ""}`} onClick={() => setCur(i)}>
       {sn}{" "}
     </span>
+  );
+  const epTitleTr = ep && explain !== "kk" ? ep.title[explain] || null : null;
+  const trBtn = explain !== "kk" && (
+    <button className={`btn ghost lit-tbtn ${trans && trans !== "loading" ? "is-on" : ""}`} onClick={translate} aria-pressed={!!trans && trans !== "loading"}>
+      <Icon name="globe" size={18} /> {trans && trans !== "loading" ? x.litTransHide : x.litTrans}
+    </button>
   );
 
   return (
@@ -410,45 +471,88 @@ export default function Literature() {
           </div>
         </header>
 
-        <section className="lit-recto">
-          <div className="lit-thread" aria-hidden="true"><i style={{ transform: `scaleX(${prog})` }} /></div>
-          {parallel ? (
-            <ol className="lit-par">
-              {sentences.map((sn, i) => (
-                <li key={i} className={`lit-row ${i === cur ? "now" : ""}`}>
-                  <span className="lit-n" aria-hidden="true">{i + 1}</span>
-                  <span className="lit-kk" lang="kk" dir="ltr">{snt(sn, i)}</span>
-                  <span className="lit-tr" lang={explain} dir="auto" data-notap="">{tr[i]}</span>
-                </li>
-              ))}
+        {!reading ? (
+          <section className="lit-recto lit-info">
+            <h3 className="lit-sec-h"><Icon name="book" size={16} /> {lt.about}</h3>
+            <p className={`reader-text lit-text lit-intro ${/^[«"“(]/.test(sentences[0] || "") ? "no-cap" : ""}`} lang="kk" dir="ltr">{sentences.map(snt)}</p>
+            {trans && (
+              <p className={`lit-trans ${trans === "loading" ? "is-loading" : ""}`} lang={trans === "loading" ? undefined : explain} dir="auto" data-notap="">
+                {trans === "loading" ? x.tapLoading : trans}
+              </p>
+            )}
+            {ep && (
+              <div className="lit-start">
+                <span className="lit-adapt"><Icon name="scroll" size={14} /> {lt.adapted}</span>
+                <p className="lit-start-t" lang="kk" dir="ltr">{ep.title.kk}</p>
+                {epTitleTr && <p className="lit-start-tr" dir="auto">{epTitleTr}</p>}
+                <div className="lit-start-row">
+                  <button className="btn lit-go" onClick={startReading}>
+                    <Icon name="book" size={20} /> {lt.start}
+                  </button>
+                  {trBtn}
+                </div>
+              </div>
+            )}
+          </section>
+        ) : (
+          <section className="lit-recto lit-ep" id="lit-episode">
+            <div className="lit-thread" aria-hidden="true"><i style={{ transform: `scaleX(${prog})` }} /></div>
+            <div className="lit-ep-top">
+              <span className="lit-adapt"><Icon name="scroll" size={14} /> {lt.adapted}</span>
+              <button className="lit-ep-back" onClick={backToInfo}><Icon name="left" size={14} /> {lt.about}</button>
+            </div>
+            <header className="lit-ep-head">
+              <h3 lang="kk" dir="ltr">{ep.title.kk}</h3>
+              {epTitleTr && <p className="lit-ep-ttr" dir="auto">{epTitleTr}</p>}
+              <p className="lit-lead" lang="kk" dir="ltr">{ep.lead}</p>
+              {leadTr && <p className="lit-tr lit-lead-tr" lang={explain} dir="auto" data-notap="">{leadTr}</p>}
+            </header>
+            <ol className="lit-par lit-eps">
+              {sentences.map((sn, i) => {
+                const one = parallel ? tr[i] : rowTr[i];
+                return (
+                  <li key={i} className={`lit-row ${i === cur ? "now" : ""} ${i < cur ? "past" : ""}`}>
+                    <button className={`lit-say ${playing && i === cur ? "is-on" : ""}`} onClick={() => play(i, true)} aria-label={`${lt.listen} ${i + 1}`} title={lt.listen}>
+                      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4.5 2.8v10.4L13 8z" fill="currentColor" /></svg>
+                      <span className="lit-say-n" aria-hidden="true">{i + 1}</span>
+                    </button>
+                    <span className="lit-kk" lang="kk" dir="ltr">{snt(sn, i)}</span>
+                    {explain !== "kk" && !parallel && (
+                      <button className={`lit-row-tr ${rowTr[i] ? "is-on" : ""}`} onClick={() => trRow(i)} aria-label={lt.trOne} title={lt.trOne} aria-pressed={!!rowTr[i]}>
+                        <Icon name="globe" size={16} />
+                      </button>
+                    )}
+                    {one && (
+                      <span className={`lit-tr ${one === "loading" ? "is-loading" : ""}`} lang={explain} dir="auto" data-notap="">{one === "loading" ? x.tapLoading : one}</span>
+                    )}
+                  </li>
+                );
+              })}
             </ol>
-          ) : (
-            <p className={`reader-text lit-text ${/^[«"“(]/.test(sentences[0] || "") ? "no-cap" : ""}`} lang="kk" dir="ltr">{sentences.map(snt)}</p>
-          )}
-          {trans && !parallel && (
-            <p className={`lit-trans ${trans === "loading" ? "is-loading" : ""}`} lang={trans === "loading" ? undefined : explain} dir="auto" data-notap="">
-              {trans === "loading" ? x.tapLoading : trans}
-            </p>
-          )}
-          <p className="lit-note"><Icon name="search" size={15} /> {x.litNote}</p>
-          {noVoice && <p className="lit-note lit-warn">{x.litNoVoice}{err ? ` (${err})` : ""}</p>}
-        </section>
+            {trans && !parallel && (
+              <p className={`lit-trans ${trans === "loading" ? "is-loading" : ""}`} lang={trans === "loading" ? undefined : explain} dir="auto" data-notap="">
+                {trans === "loading" ? x.tapLoading : trans}
+              </p>
+            )}
+            <p className="lit-note"><Icon name="search" size={15} /> {lt.hint}</p>
+            <p className="lit-note lit-adapt-note"><Icon name="scroll" size={15} /> {lt.adaptedNote}</p>
+            {noVoice && <p className="lit-note lit-warn">{x.litNoVoice}{err ? ` (${err})` : ""}</p>}
+          </section>
+        )}
       </article>
 
-      <div className="lit-dock">
-        <button className={`btn lit-play ${playing ? "is-on" : ""}`} onClick={play}>
-          <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : x.litRead}
-        </button>
-        {explain !== "kk" && (
-          <button className={`btn ghost lit-tbtn ${trans && trans !== "loading" ? "is-on" : ""}`} onClick={translate} aria-pressed={!!trans && trans !== "loading"}>
-            <Icon name="globe" size={18} /> {trans && trans !== "loading" ? x.litTransHide : x.litTrans}
+      {reading && (
+        <div className="lit-dock">
+          <button className={`btn lit-play ${playing ? "is-on" : ""}`} onClick={() => play()}>
+            <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : lt.readAll}
           </button>
-        )}
-        <button className="btn gold lit-done" disabled={quiz === "loading"} onClick={finish}>
-          <Icon name={lit[work.id] ? "star" : "check"} size={18} /> {lit[work.id] ? x.litDoneMark : x.litDone}
-        </button>
-        {cur >= 0 && <span className="lit-pos" aria-hidden="true">{cur + 1}/{sentences.length}</span>}
-      </div>
+          {trBtn}
+          <button className="btn gold lit-done" disabled={quiz === "loading"} onClick={finish}>
+            <Icon name={lit[work.id] ? "star" : "check"} size={18} /> {lit[work.id] ? x.litDoneMark : x.litDone}
+          </button>
+          {cur >= 0 && <span className="lit-pos" aria-hidden="true">{cur + 1}/{sentences.length}</span>}
+        </div>
+      )}
 
       {quiz && (
         <section className="card lit-quiz rise">
