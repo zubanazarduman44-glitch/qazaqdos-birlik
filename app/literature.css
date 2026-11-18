@@ -6,16 +6,16 @@
    ════════════════════════════════════════════════════════════════════ */
 /* Ортақ токендер paper.css-ке көшті (--pp-*); мәндері өзгермеген. */
 .literature.lit-lib, .literature.lit-read {
-  --lit-paper: var(--pp-paper, #fffdf7);
-  --lit-felt: var(--pp-felt, #f4ecda);
-  --lit-felt-2: var(--pp-felt-2, #e6d9bc);
+  --lit-paper: var(--pp-paper, #ffffff);
+  --lit-felt: var(--pp-felt, #f1eee8);
+  --lit-felt-2: var(--pp-felt-2, #e3ddd2);
   --lit-wood: var(--pp-wood, #7a4a22);
   --lit-wood-d: var(--pp-wood-d, #4f2e14);
-  --lit-gold: var(--pp-gold, #e0a526);
-  --lit-gold-soft: var(--pp-gold-soft, #f6e3b0);
-  --lit-red: var(--pp-red, #b8322a);
-  --lit-red-d: var(--pp-red-d, #8a2018);
-  --lit-blue: #0f5e7a;
+  --lit-gold: var(--pp-gold, #e8b23a);
+  --lit-gold-soft: var(--pp-gold-soft, #f8e6b8);
+  --lit-red: var(--pp-red, #a3242b);
+  --lit-red-d: var(--pp-red-d, #741820);
+  --lit-blue: #0b6e7e;
   --lit-blue-d: #0a4a61;
   --lit-ink: var(--pp-ink, #1f2430);
   --lit-muted: var(--pp-muted, #4a5160);
@@ -63,7 +63,7 @@
 /* ── Сөрелер ──────────────────────────────────────────────────────── */
 .lit-shelf { display: grid; gap: 14px; padding-inline: 10px; }
 .lit-shelf-h { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; font-family: var(--head); font-size: clamp(17px, 2vw, 21px); font-weight: 600; color: var(--lit-ink); }
-.lit-shelf-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--anar-soft, #f6e4df); color: var(--lit-red-d); }
+.lit-shelf-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--anar-soft, #f6e1e2); color: var(--lit-red-d); }
 .lit-shelf-h small { font-family: var(--body); font-size: 13px; font-weight: 800; color: var(--lit-muted); padding: 2px 10px; border-radius: 99px; background: var(--lit-felt); }
 .lit-shelf-h::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--lit-felt-2) 0 6px, transparent 6px 11px); }
 
