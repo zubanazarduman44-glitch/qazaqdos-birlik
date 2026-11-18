@@ -20,6 +20,8 @@ import { tr } from "../../lib/wordTools";
 import { L } from "../../lib/i18n";
 import { lessonTitle } from "../../lib/courseIndex";
 import AqylGuide from "../components/AqylGuide";
+import ShellGlyph from "../components/ShellGlyph";
+import { SECTIONS, SECTION_HINT, pickL, secVars } from "../../lib/sections";
 
 // Дәстүр карточкасының суреті (TRADITIONS ретімен): киіз үй, қонақжайлылық, Наурыз, домбыра, бүркітші, тұсау кесу, көкпар, шапан
 const TRAD_ART = [
@@ -32,6 +34,17 @@ function TradArt({ i }) {
   if (a.topic) return <TopicArt topic={a.topic} size={92} />;
   return <NatArt name={a.nat} size={120} />;
 }
+
+// Жылдам өту картасының бұрыштағы белгісі — шағын қошқар мүйіз (бөлім реңімен)
+const Horn = () => (
+  <svg className="hm-qmark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+    <path d="M12 21v-9M12 12c0-5-5.5-7-8-4.2-1.6 1.8-.2 4.6 2.2 3.6M12 12c0-5 5.5-7 8-4.2 1.6 1.8.2 4.6-2.2 3.6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 2.5l1.6 1.9L12 6.3l-1.6-1.9z" fill="var(--pp-gold, #e0a526)" />
+  </svg>
+);
+
+// Мазмұн күн белгілі болғанша (SSR/гидрация) қаңқа сызықтары ретінде көрінеді: мәтін орнын ұстайды, бос карточка көрінбейді
+const Sk = ({ on, children }) => <span className={on ? "hm-skl" : undefined}>{children}</span>;
 
 // «Күн сөзі» жүктелгенше орын ұстайтын бейтарап сөз (көрінбейді)
 const WORD0 = { t: "greet", kk: "Сәлеметсіз бе", ru: "Здравствуйте", en: "Hello" };
@@ -68,17 +81,19 @@ export default function Home() {
   const wodHide = now && WORDS ? undefined : { visibility: "hidden" };
   const tip = t.qyranTip[dayIdx % t.qyranTip.length];
   const savedToday = state.vocab?.some((v) => v.kk === word.kk);
-  const mood = todayXp >= DAILY_GOAL ? "cheer" : todayXp > 0 ? "happy" : "idle";
+  const wait = !now;
+  // Aqyl қалпы: мақсат орындалды → cheer, бастады → happy, кеш батып серия үзілгелі тұр → sleepy, әйтпесе idle
+  const mood = todayXp >= DAILY_GOAL ? "cheer" : todayXp > 0 ? "happy" : now && now.getHours() >= 19 && state.streak > 0 ? "sleepy" : "idle";
   const goalTxt = t.todayGoalTxt ? t.todayGoalTxt(Math.min(todayXp, DAILY_GOAL), DAILY_GOAL) : `${Math.min(todayXp, DAILY_GOAL)} / ${DAILY_GOAL} XP`;
 
   const quick = useMemo(
     () => [
-      { href: "/app/history", art: "bowl", t: t.nav.history },
-      { href: "/app/games", art: "kamshy", t: t.nav.games },
-      { href: "/app/qyran", art: "dombyra", t: t.navLong.chat },
-      { href: "/app/tuzel", art: "taqiya", t: t.navLong.tuzel },
-    ],
-    [t]
+      { k: "history", art: "bowl", t: t.nav.history },
+      { k: "games", art: "kamshy", t: t.nav.games },
+      { k: "chat", art: "dombyra", t: t.navLong.chat },
+      { k: "tuzel", art: "taqiya", t: t.navLong.tuzel },
+    ].map((q) => ({ ...q, href: SECTIONS[q.k].href, glyph: SECTIONS[q.k].glyph, hint: pickL(SECTION_HINT[q.k], lang) })),
+    [t, lang]
   );
 
   const stats = [
@@ -108,7 +123,7 @@ export default function Home() {
             <span className="hm-goal-bar" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, todayXp / DAILY_GOAL)})` }} /></span>
           </div>
           <div className="hm-aqyl" aria-hidden="true"><Qyran mood={mood} size={120} /></div>
-          <p className="hm-tip" style={hide}>{tip}</p>
+          {!wait && <p className="hm-tip">{tip}</p>}
         </div>
 
         <TorLesson tor={tor} />
@@ -169,13 +184,13 @@ export default function Home() {
           </Link>
         )}
 
-        <section className="hm-tile hm-wod hm-in" style={{ "--i": 6 }} aria-label={t.wordOfDay}>
+        <section className={`hm-tile hm-wod hm-in${wodHide ? " is-wait" : ""}`} style={{ "--i": 6 }} aria-label={t.wordOfDay}>
           <span className="hm-kicker">{t.wordOfDay}</span>
-          <div className="hm-wod-word" style={wodHide}>
-            <TopicArt topic={word.t} size={72} />
+          <div className="hm-wod-word">
+            <span className="hm-wod-art"><TopicArt topic={word.t} size={72} /></span>
             <div>
-              <b lang="kk">{word.kk}</b>
-              <span>{tr(word, explain)}</span>
+              <b lang="kk"><Sk on={wodHide}>{word.kk}</Sk></b>
+              <span><Sk on={wodHide}>{tr(word, explain)}</Sk></span>
             </div>
           </div>
           <button
@@ -204,17 +219,17 @@ export default function Home() {
 
       {/* ── 4 · Мәдениет ── */}
       <div ref={gCult} className="hm-bento hm-culture">
-        <article className="hm-tile hm-proverb hm-in" style={{ "--i": 7 }}>
+        <article className={`hm-tile hm-proverb hm-in${wait ? " is-wait" : ""}`} style={{ "--i": 7 }}>
           <span className="hm-kicker">{x0.proverb}</span>
-          <blockquote lang="kk" style={hide}>{PROV.kk}</blockquote>
-          <p style={hide}>{lang === "kk" ? (explain === "ru" ? PROV.ru : PROV.en) : lang === "ru" ? PROV.ru : PROV.en}</p>
+          <blockquote lang="kk"><Sk on={wait}>{PROV.kk}</Sk></blockquote>
+          <p><Sk on={wait}>{lang === "kk" ? (explain === "ru" ? PROV.ru : PROV.en) : lang === "ru" ? PROV.ru : PROV.en}</Sk></p>
         </article>
-        <article className="hm-tile hm-trad hm-in" style={{ "--i": 8 }}>
-          <span className="hm-trad-art" aria-hidden="true" style={hide}><TradArt i={tradI} /></span>
+        <article className={`hm-tile hm-trad hm-in${wait ? " is-wait" : ""}`} style={{ "--i": 8 }}>
+          <span className="hm-trad-art" aria-hidden="true"><span style={hide}><TradArt i={tradI} /></span></span>
           <div>
             <span className="hm-kicker">{x0.tradition}</span>
-            <h3 style={hide}>{L(TRAD.t, lang)}</h3>
-            <p style={hide}>{L(TRAD.d, lang)}</p>
+            <h3><Sk on={wait}>{L(TRAD.t, lang)}</Sk></h3>
+            <p><Sk on={wait}>{L(TRAD.d, lang)}</Sk></p>
           </div>
         </article>
       </div>
@@ -223,9 +238,15 @@ export default function Home() {
       <h3 className="hm-sec hm-in" style={{ "--i": 9 }}>{t.quick}</h3>
       <nav ref={gQuick} className="hm-quick hm-in" style={{ "--i": 10 }} aria-label={t.quick}>
         {quick.map((q, i) => (
-          <Link key={q.href} href={q.href} className={`hm-qcard tint-${i}`}>
-            <span className="hm-qart"><NatArt name={q.art} size={96} /></span>
-            <b>{q.t}</b>
+          <Link key={q.href} href={q.href} className="hm-qcard" style={{ ...secVars(q.k), "--j": i }}>
+            <span className="hm-qstage" aria-hidden="true">
+              <span className="hm-qart"><NatArt name={q.art} size={96} /></span>
+            </span>
+            <Horn />
+            <span className="hm-qtxt">
+              <b><span className="hm-qgl" aria-hidden="true"><ShellGlyph name={q.glyph} size={16} /></span>{q.t}</b>
+              <small>{q.hint}</small>
+            </span>
             <span className="hm-qgo" aria-hidden="true"><Icon name="right" size={16} /></span>
           </Link>
         ))}

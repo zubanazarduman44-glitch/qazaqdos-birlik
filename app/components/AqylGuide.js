@@ -34,13 +34,15 @@ export default function AqylGuide({ state, lang, today, todayXp = 0, goal = 50, 
   else g = { mood: todayXp >= goal ? "cheer" : "idle", txt: L.chat, href: "/app/qyran", icon: "chat" };
 
   const [say, cta] = g.txt;
+  // Гидрацияға дейін (today = null) кеңес белгісіз: орын бос қалмас үшін қаңқа (skeleton) көрсетеміз, сілтеме басылмайды
+  const wait = !today;
   return (
-    <section className="aq-guide" aria-label={L.kicker} style={today ? undefined : { visibility: "hidden" }}>
-      <AqylSays mood={g.mood} size={84} title={L.kicker} tone="paper">
-        <p className="aq-guide-say">{say}</p>
+    <section className={`aq-guide${wait ? " is-wait" : ""}`} aria-label={L.kicker} aria-busy={wait || undefined}>
+      <AqylSays mood={wait ? "idle" : g.mood} size={84} title={L.kicker} tone="paper">
+        <p className="aq-guide-say">{wait ? <><i className="aq-sk" /><i className="aq-sk aq-sk-2" /></> : say}</p>
       </AqylSays>
-      <Link href={g.href} className="btn primary big aq-guide-go">
-        <Icon name={g.icon} size={18} /> {cta} <Icon name="right" size={18} className="aq-guide-arrow" />
+      <Link href={g.href} className="btn ghost big aq-guide-go" tabIndex={wait ? -1 : undefined} aria-hidden={wait || undefined}>
+        <Icon name={g.icon} size={18} /> {cta} {g.icon !== "right" && <Icon name="right" size={18} className="aq-guide-arrow" />}
       </Link>
     </section>
   );
