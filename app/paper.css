@@ -118,3 +118,51 @@ main[data-section] :focus-visible { outline-color: var(--sec-deep, var(--pp-red-
   .page-head p { font-size: 15px; }
   .sec-intro { padding: 14px 16px; border-radius: var(--pp-r); }
 }
+
+/* ══════════ Ұсақ бөлшектер: кіріспе, хабарлама, өріс, бос күй ══════════
+   Бәрі бөлім реңінен (--sec) алынады; тек transform/opacity қозғалады. */
+/* Кіріспе: белгі ромб тақтайшада, бұрышта шаңырақ нобайы (өте әлсіз) */
+.sec-intro { position: relative; overflow: hidden; isolation: isolate; gap: 18px; padding: 20px 24px; }
+.sec-intro::after {
+  content: ""; position: absolute; z-index: -1; inset-inline-end: -38px; top: -46px; width: 168px; height: 168px; pointer-events: none;
+  background: var(--sec, var(--pp-red)); opacity: 0.07;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23000' stroke-width='5'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Cpath d='M14 38Q50 28 86 38M10 50Q50 40 90 50M14 62Q50 52 86 62M38 14Q28 50 38 86M50 10Q40 50 50 90M62 14Q52 50 62 86'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23000' stroke-width='5'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Cpath d='M14 38Q50 28 86 38M10 50Q50 40 90 50M14 62Q50 52 86 62M38 14Q28 50 38 86M50 10Q40 50 50 90M62 14Q52 50 62 86'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+.sec-intro-ic { position: relative; isolation: isolate; width: 52px; height: 52px; margin-top: 2px; background: none; color: var(--sec-deep, var(--pp-red-d)); }
+.sec-intro-ic::before {
+  content: ""; position: absolute; z-index: -1; inset: 7px; border-radius: 10px; transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--pp-paper), var(--sec-soft, var(--pp-felt)) 70%);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--sec, var(--pp-red)) 30%, transparent), 0 3px 0 color-mix(in srgb, var(--sec, var(--pp-red)) 18%, transparent);
+}
+.sec-intro-ic::after { content: ""; position: absolute; top: -1px; left: 50%; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 1.5px; transform: rotate(45deg); background: var(--pp-gold); }
+.sec-intro-body li svg { padding: 2px; box-sizing: content-box; border-radius: 50%; background: var(--pp-ok-soft); margin-top: 1px; }
+
+/* Хабарлама (марапат): қағаз чип, алтын жиек, Aqyl дөңгелек тақтайшада */
+.toasts { width: max-content; max-width: calc(100vw - 32px); }
+.toast {
+  padding-block: 6px; padding-inline: 6px 20px; gap: 12px; background: var(--pp-paper); color: var(--pp-ink);
+  box-shadow: inset 0 0 0 1px var(--pp-rim), 0 0 0 4px rgba(224, 165, 38, 0.16), var(--pp-sh-3);
+  -webkit-backdrop-filter: none; backdrop-filter: none; font-variant-numeric: tabular-nums;
+}
+.toast > :first-child { flex: none; border-radius: 50%; background: radial-gradient(circle at 50% 62%, var(--pp-gold-soft), var(--pp-felt) 72%); box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.5); }
+
+/* Өрістер: қағаз беті, фокус — бөлім реңімен */
+.sx :is(.input, textarea.input, select.input) {
+  background: #fffefa; border-radius: var(--pp-r-sm);
+  box-shadow: inset 0 0 0 1.5px var(--pp-felt-2), inset 0 2px 3px rgba(60, 40, 10, 0.05);
+  transition: box-shadow var(--pp-t1) var(--pp-ease);
+}
+.sx :is(.input, textarea.input, select.input):hover { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--sec, var(--pp-red)) 38%, var(--pp-felt-2)), inset 0 2px 3px rgba(60, 40, 10, 0.05); }
+.sx :is(.input, textarea.input, select.input):focus {
+  outline: none; box-shadow: inset 0 0 0 2px var(--sec, var(--pp-red)), 0 0 0 4px color-mix(in srgb, var(--sec, var(--pp-red)) 16%, transparent);
+}
+.sx .input::placeholder { color: #77705f; opacity: 1; }
+
+/* Бос күй суреті: бөлім реңіндегі жұмсақ тұғыр (дөңгелек жарық + еденге түскен көлеңке) */
+.sx :is(.cl-empty-art) {
+  background:
+    radial-gradient(ellipse 46% 9% at 50% 92%, color-mix(in srgb, var(--sec, var(--pp-red)) 20%, transparent), transparent 72%),
+    radial-gradient(circle at 50% 52%, var(--sec-soft, var(--pp-felt)) 0 46%, transparent 47%);
+}
+.sx .vr-empty { border: 0; border-radius: var(--pp-r); background: var(--pp-paper); box-shadow: var(--pp-card); }

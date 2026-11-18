@@ -25,6 +25,8 @@
   -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
+/* Тақырып үстіндегі жалауша таспасы алынды (дизайн жүйесі: тақырып маңында қайталанатын ою/таспа жоқ) */
+.sh-bunting { display: none; }
 .sh-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; margin: 4px 0 18px; }
 .sh-head-txt { flex: 1 1 380px; }
 .sh-head h1 { margin: 4px 0 6px; font-family: var(--head); font-size: clamp(30px, 4vw, 44px); line-height: 1.05; letter-spacing: -0.01em; color: var(--sh-ink); }
