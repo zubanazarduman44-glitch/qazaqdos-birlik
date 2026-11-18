@@ -13,31 +13,31 @@ import WordTap from "./WordTap";
 import { authed } from "../../lib/auth";
 import { whenIdle } from "../../lib/idle";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
-import { SECTIONS, sectionOf, secVars } from "../../lib/sections";
+import { SECTIONS, SECTION_HINT, TODAY_LABEL, pickL, sectionOf, secVars } from "../../lib/sections";
 
 export const NAV = [
   { href: "/app", key: "home", icon: "home" },
-  { href: "/app/travel", key: "travel", icon: "map" },
-  { href: "/app/history", key: "history", icon: "globe" },
+  { href: "/app/course", key: "course", icon: "book" },
+  { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
+  { href: "/app/tuzel", key: "tuzel", icon: "pen" },
   { href: "/app/games", key: "games", icon: "target" },
   { href: "/app/qyran", key: "chat", icon: "chat" },
   { href: "/app/vr", key: "vr", icon: "sparkle" },
-  { href: "/app/tuzel", key: "tuzel", icon: "pen" },
-  { href: "/app/course", key: "course", icon: "book" },
-  { href: "/app/sozdik", key: "sozdik", icon: "stamp" },
   { href: "/app/saiys", key: "saiys", icon: "trophy" },
+  { href: "/app/travel", key: "travel", icon: "map" },
+  { href: "/app/history", key: "history", icon: "globe" },
   { href: "/app/literature", key: "lit", icon: "scroll" },
   { href: "/app/class", key: "class", icon: "user" },
   { href: "/app/shop", key: "shop", icon: "bag" },
 ];
 const MOBILE = ["home", "course", "games", "chat"];
-// Бүйір мәзір топтары: оқу → жаттығу → таным → қауым
+// Бүйір мәзір топтары: «Бүгін» (бастау нүктесі) → оқу → тәжірибе → әлем → қауым
 const GROUPS = [
   { id: "top", keys: ["home"] },
-  { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn", zh: "学习", es: "Aprender", de: "Lernen", fr: "Apprendre", tr: "Öğren", ar: "تعلّم", ko: "학습", ja: "学ぶ" }, keys: ["course", "sozdik"] },
-  { id: "practice", name: { kk: "Жаттығу", ru: "Практика", en: "Practise", zh: "练习", es: "Practicar", de: "Üben", fr: "Pratiquer", tr: "Pratik", ar: "تدرّب", ko: "연습", ja: "練習" }, keys: ["games", "chat", "vr", "tuzel"] },
-  { id: "explore", name: { kk: "Таным", ru: "Познание", en: "Explore", zh: "探索", es: "Explorar", de: "Entdecken", fr: "Explorer", tr: "Keşfet", ar: "استكشف", ko: "탐구", ja: "探検" }, keys: ["travel", "history", "lit"] },
-  { id: "community", name: { kk: "Қауым", ru: "Сообщество", en: "Community", zh: "社区", es: "Comunidad", de: "Gemeinschaft", fr: "Communauté", tr: "Topluluk", ar: "المجتمع", ko: "커뮤니티", ja: "コミュニティ" }, keys: ["saiys", "class", "shop"] },
+  { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn", zh: "学习", es: "Aprender", de: "Lernen", fr: "Apprendre", tr: "Öğren", ar: "تعلّم", ko: "학습", ja: "学ぶ" }, keys: ["course", "sozdik", "tuzel"] },
+  { id: "practice", name: { kk: "Тәжірибе", ru: "Практика", en: "Practise", zh: "练习", es: "Practicar", de: "Üben", fr: "Pratiquer", tr: "Pratik", ar: "تدرّب", ko: "연습", ja: "練習" }, keys: ["games", "chat", "vr", "saiys"] },
+  { id: "world", name: { kk: "Әлем", ru: "Мир", en: "World", zh: "世界", es: "Mundo", de: "Welt", fr: "Monde", tr: "Dünya", ar: "العالم", ko: "세계", ja: "世界" }, keys: ["travel", "history", "lit"] },
+  { id: "community", name: { kk: "Қауым", ru: "Сообщество", en: "Community", zh: "社区", es: "Comunidad", de: "Gemeinschaft", fr: "Communauté", tr: "Topluluk", ar: "المجتمع", ko: "커뮤니티", ja: "コミュニティ" }, keys: ["class", "shop"] },
 ];
 const groupOf = (key) => GROUPS.find((g) => g.keys.includes(key));
 const PROVERB = "Өнер алды — қызыл тіл";
@@ -160,7 +160,8 @@ export default function Shell({ children }) {
 
   const showNav = () => true;
   const active = (href) => (href === "/app" ? path === "/app" : path?.startsWith(href));
-  const label = (k) => t.navLong[k] || t.nav[k];
+  const label = (k) => (k === "home" ? pickL(TODAY_LABEL, lang) : t.navLong[k] || t.nav[k]);
+  const hint = (k) => pickL(SECTION_HINT[k], lang);
   const cap = (g) => (g?.name ? g.name[lang] || g.name.en : null);
 
   // Ағымдағы бөлім қолтаңбасы: реңі мен белгісі қабықтың барлық жерінде бірдей
@@ -185,16 +186,22 @@ export default function Shell({ children }) {
   const sideLink = (n) => {
     const on = active(n.href);
     return (
-      <Link key={n.href} href={n.href} className={`side-link ${on ? "on" : ""}`} aria-current={on ? "page" : undefined} style={secVars(n.key, "it")}>
-        <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={18} /></span>
-        <span className="sx-lbl">{label(n.key)}</span>
+      <Link key={n.href} href={n.href} className={`side-link ${on ? "on" : ""} ${n.key === "home" ? "sx-today" : ""}`} aria-current={on ? "page" : undefined} title={hint(n.key)} style={secVars(n.key, "it")}>
+        <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={n.key === "home" ? 22 : 18} /></span>
+        <span className="sx-lbl">
+          <b>{label(n.key)}</b>
+          <small>{hint(n.key)}</small>
+        </span>
       </Link>
     );
   };
   const sheetLink = (href, key, text) => (
-    <Link key={href} href={href} className={`sheet-link ${active(href) ? "on" : ""}`} aria-current={active(href) ? "page" : undefined} style={secVars(key, "it")}>
+    <Link key={href} href={href} className={`sheet-link ${active(href) ? "on" : ""} ${key === "home" ? "sx-today" : ""}`} aria-current={active(href) ? "page" : undefined} style={secVars(key, "it")}>
       <span className="sx-gl"><ShellGlyph name={SECTIONS[key].glyph} size={20} /></span>
-      <span className="sx-lbl">{text}</span>
+      <span className="sx-lbl">
+        <b>{text}</b>
+        <small>{hint(key)}</small>
+      </span>
     </Link>
   );
 
@@ -259,7 +266,7 @@ export default function Shell({ children }) {
         {NAV.filter(showNav).filter((n) => MOBILE.includes(n.key)).map((n) => (
           <Link key={n.href} href={n.href} className={active(n.href) ? "on" : ""} aria-current={active(n.href) ? "page" : undefined} style={secVars(n.key, "it")}>
             <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={20} /></span>
-            <span>{t.nav[n.key]}</span>
+            <span>{n.key === "home" ? label("home") : t.nav[n.key]}</span>
           </Link>
         ))}
         <button className={more || !inBar ? "on" : ""} onClick={() => setMore((x) => !x)} aria-expanded={more} style={secVars(more ? "admin" : inBar ? "home" : secKey, "it")}>

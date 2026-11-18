@@ -38,7 +38,7 @@ export default function Quiz({ questions, onDone, pass = Math.ceil(questions.len
     const P = AL.praise;
     return (
       <div className="quiz-done pop">
-        <Qyran mood={ok ? "cheer" : "support"} size={110} />
+        <Qyran mood={pct >= 100 ? "proud" : ok ? "celebrate" : "encouraging"} size={110} />
         <h3>{t.score(right, questions.length)}</h3>
         <p className="quiz-praise" role="status">{pct >= 100 ? P.perfect : pct >= 80 ? P.great : pct >= 60 ? P.good : P.keep}</p>
       </div>

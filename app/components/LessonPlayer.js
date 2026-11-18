@@ -443,7 +443,7 @@ function Summary({ items, result, phrases, T, lang }) {
   return (
     <div className="lp-sum">
       <div className="lp-sum-head">
-        <span className="lp-sum-aqyl" aria-hidden="true"><Qyran mood={pct >= 60 ? "cheer" : "support"} size={104} /></span>
+        <span className="lp-sum-aqyl" aria-hidden="true"><Qyran mood={pct >= 100 ? "proud" : pct >= 60 ? "celebrate" : "encouraging"} size={104} /></span>
         <p className="lp-sum-praise">{praiseFor(pct, lang)}</p>
         <h2 tabIndex={-1}>{T("done")}</h2>
         <p className="lp-sum-score"><b>{pct}%</b><span>{result.right} / {result.total} · {T("firstTry")}</span></p>
@@ -561,7 +561,7 @@ export default function LessonPlayer({ lesson, lang, explain, level, onFinish, o
     setRun((r) => {
       const n = correct ? r.n + 1 : 0;
       const hit = n === 3 || n === 5 || (n > 5 && n % 5 === 0);
-      return hit ? { n, cue: r.cue + 1, text: n >= 5 ? AL.praise.s5 : AL.praise.s3 } : { ...r, n };
+      return hit ? { n, cue: r.cue + 1, text: n >= 5 ? AL.praise.s5 : AL.praise.s3, mood: n >= 5 ? "proud" : "celebrate" } : { ...r, n };
     });
     dispatch({ type: "answer", correct, wrong, seed: Math.random() });
   };
@@ -617,7 +617,7 @@ export default function LessonPlayer({ lesson, lang, explain, level, onFinish, o
         <footer className={`lp-foot lp-fb ${fb.correct ? "is-ok" : "is-bad"}`}>
           <div className="lp-fb-body" role="status" aria-live="polite">
             <span className="lp-fb-ic lp-fb-aqyl" aria-hidden="true">
-              <Qyran mood={fb.correct ? "happy" : "support"} size={52} />
+              <Qyran mood={fb.correct ? "happy" : "oops"} size={52} />
               <i className="lp-fb-dot"><Icon name={fb.correct ? "check" : "x"} size={14} stroke={3} /></i>
             </span>
             <div className="lp-fb-txt">
@@ -638,7 +638,7 @@ export default function LessonPlayer({ lesson, lang, explain, level, onFinish, o
           </button>
         </footer>
       )}
-      <AqylPraise cue={run.cue} text={run.text} mood="cheer" />
+      <AqylPraise cue={run.cue} text={run.text} mood={run.mood || "cheer"} />
     </section>
   );
 }

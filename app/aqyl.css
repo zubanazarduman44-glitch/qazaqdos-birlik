@@ -10,7 +10,7 @@
   94% { transform: scaleY(1); }
   96% { transform: scaleY(0.08); }
 }
-.qyran.aq.bk-sleep .bk-eyes, .qyran.aq.bk-cheer .bk-eyes { animation: none; }
+.qyran.aq.bk-sleep .bk-eyes, .qyran.aq.bk-cheer .bk-eyes, .qyran.aq.bk-proud .bk-eyes { animation: none; }
 
 /* Үкі қауырсындары желмен тербеледі */
 .qyran.aq .aq-uki { animation: aqUki 3.4s ease-in-out infinite; }
@@ -143,6 +143,32 @@
 .aq-dots i:nth-child(3) { background: #0f5e7a; animation-delay: 0.3s; }
 @keyframes aqBead { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
 .aq-says.is-compact .aq-says-b { padding: 10px 14px 12px; font-size: 15px; }
+
+/* ═════ Қалып ауысқандағы бір реттік реакция (Qyran.js: <g class="aq-react" key={mood}>) ═════
+   happy/cheer — секіру · proud — кеуде керу · oops — басын шайқау · wow — селт ету · support — иілу · sleep — мүлгу */
+.qyran.aq .aq-react { transform-origin: 100px 214px; }
+.qyran.aq.bk-happy .aq-react, .qyran.aq.bk-cheer .aq-react { animation: aqHop 0.5s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+.qyran.aq.bk-proud .aq-react { animation: aqProud 0.7s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+.qyran.aq.bk-oops .aq-react { animation: aqOops 0.6s ease-in-out both; }
+.qyran.aq.bk-wow .aq-react { animation: aqStartle 0.4s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+.qyran.aq.bk-support .aq-react { animation: aqNod 0.7s ease-in-out both; }
+.qyran.aq.bk-sleep .aq-react { animation: aqDroop 1.2s ease-in-out both; }
+@keyframes aqHop { 0% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(-9px) scale(0.97, 1.04); } 60% { transform: translateY(0) scale(1.04, 0.96); } 100% { transform: none; } }
+@keyframes aqProud { 0% { transform: scale(1); } 45% { transform: scale(1.06) translateY(-3px); } 100% { transform: none; } }
+@keyframes aqOops { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 55% { transform: rotate(3deg); } 80% { transform: rotate(-1.5deg); } }
+@keyframes aqStartle { 0% { transform: none; } 35% { transform: translateY(-6px) scale(1.03); } 100% { transform: none; } }
+@keyframes aqNod { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(3deg) translateY(2px); } }
+@keyframes aqDroop { 0% { transform: none; } 100% { transform: translateY(3px) rotate(-2deg); } }
+/* proud: таңба жылт етеді; oops: тер тамшысы сырғиды */
+.qyran.aq .aq-medal { transform-box: fill-box; transform-origin: 50% 0; animation: aqMedal 2.6s ease-in-out infinite; }
+@keyframes aqMedal { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(5deg); } }
+.qyran.aq .aq-sweat { animation: aqSweat 2.2s ease-in infinite; }
+@keyframes aqSweat { 0% { opacity: 0; transform: translateY(-4px); } 20%, 70% { opacity: 1; } 100% { opacity: 0; transform: translateY(8px); } }
+.qyran.aq.bk-oops .bk-arm-r { animation: aqScratch 1.4s ease-in-out infinite; }
+@keyframes aqScratch { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-7deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .qyran.aq .aq-react, .qyran.aq .aq-medal, .qyran.aq .aq-sweat, .qyran.aq.bk-oops .bk-arm-r { animation: none !important; }
+}
 
 /* ── Мақтау сәті: бұрышта, бөгемейді ── */
 .aq-praise-slot { position: fixed; z-index: 150; inset-inline-end: 18px; bottom: 22px; pointer-events: none; }

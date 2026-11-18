@@ -39,6 +39,15 @@
   --pp-lead: 15.5px;
   /* Ортақ қағаз беті */
   --pp-card: inset 0 0 0 1px var(--pp-rim), var(--pp-sh-2);
+  /* Рөлдік түстер: дұрыс — шалғын жасылы, қате — шарап (ешқашан бренд қызылы емес), ақпарат/дыбыс — көк */
+  --pp-ok: #2f6b4f; --pp-ok-soft: #e3efe6;
+  --pp-wine: #6e1e2e; --pp-wine-soft: #f3e3e6;
+  --pp-blue: #0f5e7a; --pp-blue-soft: #dcebf0;
+  /* Прогресс жолағының төсеніші */
+  --pp-track: #eadfc6;
+  /* Қозғалыс: бір қисық, үш ұзақтық */
+  --pp-ease: cubic-bezier(0.2, 0.8, 0.25, 1);
+  --pp-t1: 0.15s; --pp-t2: 0.25s; --pp-t3: 0.45s;
 }
 
 /* ══════════ Бет тақырыбы: белгі + тақырып + түсініктеме + құралдар ══════════ */
@@ -83,8 +92,24 @@
 
 /* ══════════ Бөлім тақырыптары мен бөлгіштер ══════════ */
 .pp-sec { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; font-family: var(--head); font-size: var(--pp-h2); font-weight: 600; color: var(--pp-ink); }
-.pp-sec::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--pp-felt-2) 0 6px, transparent 6px 11px); }
+.pp-sec::after { content: ""; flex: 1; height: 0; border-top: 1px solid var(--pp-hair); }
 hr, .pp-hr { height: 0; margin: var(--pp-gap) 0; border: 0; border-top: 1px solid var(--pp-hair); background: none; }
+
+/* ══════════ Бір платформа: бөлімдер арасындағы ұсақ айырмашылықтарды теңестіру ══════════
+   Ереже: үлкен блок — --pp-r-lg (24), ішкі карточка — --pp-r (18), түйме/чип — --pp-r-sm (12) не 999px.
+   Беттің өз CSS-і тек бояу мен иллюстрацияны шешеді; пішін, көлеңке, тақырып — осы жерде. */
+.sx .main :is(.aul, .gl-card, .szk-table, .passport, .pf-card, .tzs-stage, .tzs-card, .tzs-custom, .cx-stage, .sy-hero, .lit-hero) { border-radius: var(--pp-r-lg); }
+.sx .main :is(.pf-mate, .pf-role, .story, .side-prog, .cx-start, .sh-good) { border-radius: var(--pp-r); }
+/* Белгі (eyebrow): барлық бөлімде бір үлгі — Әдебиеттегідей алтын сызықша + қою анар, бас әріпсіз */
+.sx .main .cx-kicker { font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--pp-red-d); }
+.sx .main .cx-kicker::before { width: 22px; height: 3px; background: var(--pp-gold); }
+/* Бет тақырыптары: бір қаріп, бір салмақ, бір ырғақ */
+.sx .main :is(.sh-head-txt, .hist-head-t, .trip-head-t) h1 { font-size: var(--pp-h1); line-height: 1.08; letter-spacing: -0.02em; }
+/* Прогресс жолақтары: бір пішін (толық дөңгелек), бір төсеніш */
+.sx .main :is(.bar, .pf-xp-bar, .lvx-bar, .cl-bar) { border-radius: 999px; background-color: var(--pp-track); }
+.sx .main :is(.bar, .pf-xp-bar, .lvx-bar, .cl-bar) > i { border-radius: inherit; transition: width var(--pp-t3) var(--pp-ease); }
+/* Бөлім реңі — тек екпін: таңдалған таб, белсенді чип, фокус */
+main[data-section] :focus-visible { outline-color: var(--sec-deep, var(--pp-red-d)); }
 
 /* Мобиль: тақырып ықшам, құралдар толық ен */
 @media (max-width: 640px) {

@@ -1,6 +1,9 @@
 // Aqyl — «Qyzyl til» кейіпкері: жас алтын қыран (бүркіт), алдынан қарап, бұтақта отыр.
 // Киіз-аппликация стилі: тегіс қабаттар, ою-өрнекті қызыл орамал (қошқар мүйіз), басында үкі.
 // mood: idle | happy | think | wow | support | cheer | sleep | talk (сөйлеп тұр) | explain (қанатымен көрсетіп түсіндіреді)
+//       | proud (марапат, таңба тағып тұр) | oops (қате: абдырап, тер тамшысы)
+// Синонимдер: thinking, talking, explaining, praise/celebrate → cheer, surprised → wow, encouraging/encourage → support, sleepy → sleep, sad/wrong → oops.
+// Қалып ауысқанда бір реттік қысқа реакция ойнайды (.aq-react, reduced-motion кезінде өшеді).
 // Семантикалық атаулар да қабылданады: thinking → think, talking → talk, explaining → explain.
 import { useId } from "react";
 import { useSkin } from "../../lib/skin";
@@ -51,10 +54,10 @@ function Eye({ cx, cy, mood, side, look, lid }) {
   if (mood === "sleep") {
     return <path d={`M${cx - 10} ${cy + 1} Q${cx} ${cy + 9} ${cx + 10} ${cy + 1}`} stroke={INK} strokeWidth="3.6" fill="none" strokeLinecap="round" />;
   }
-  if (mood === "cheer") {
+  if (mood === "cheer" || mood === "proud") {
     return <path d={`M${cx - 10} ${cy + 4} Q${cx} ${cy - 9} ${cx + 10} ${cy + 4}`} stroke={INK} strokeWidth="4" fill="none" strokeLinecap="round" />;
   }
-  const big = mood === "wow";
+  const big = mood === "wow" || mood === "oops";
   const rx = big ? 15 : 13.5, ry = big ? 17 : 15.5;
   const ir = big ? 7.4 : 9.4;
   const lx = cx + look.x, ly = cy + look.y;
@@ -75,9 +78,9 @@ function Eye({ cx, cy, mood, side, look, lid }) {
   );
 }
 
-const ALIAS = { thinking: "think", talking: "talk", explaining: "explain", praise: "cheer" };
+const ALIAS = { thinking: "think", talking: "talk", explaining: "explain", praise: "cheer", celebrate: "cheer", surprised: "wow", encouraging: "support", encourage: "support", sleepy: "sleep", sad: "oops", wrong: "oops" };
 // Басқа кейіпкерлерде (Animals) жоқ қалыптар — ең жақын қалыпқа
-const ANIMAL_MOOD = { talk: "happy", explain: "support" };
+const ANIMAL_MOOD = { talk: "happy", explain: "support", proud: "cheer", oops: "think" };
 
 export default function Qyran({ mood: moodIn = "idle", size = 160, className = "", title = "Aqyl", skin: skinProp }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
@@ -125,6 +128,8 @@ export default function Qyran({ mood: moodIn = "idle", size = 160, className = "
     sleep: { l: 0, r: 0, look: { x: 0, y: 0 }, lid: 0, beak: "closed", blush: false },
     talk: { l: 4, r: 4, look: { x: 0.5, y: 0.8 }, lid: 0, beak: "talk", blush: true },
     explain: { l: 4, r: 112, look: { x: 3.4, y: -1.6 }, lid: 0, beak: "talk", blush: false },
+    proud: { l: 4, r: 4, look: { x: 0, y: 0 }, lid: 0, beak: "smile", blush: true },
+    oops: { l: 4, r: 150, look: { x: -3.2, y: 2.4 }, lid: 0, beak: "side", blush: false },
   }[mood] || null;
   const p = P || { l: 4, r: 4, look: { x: 0, y: 0 }, lid: 0, beak: "smile", blush: false };
   const EL = { x: 80, y: 60 }, ER = { x: 120, y: 60 };
@@ -140,6 +145,8 @@ export default function Qyran({ mood: moodIn = "idle", size = 160, className = "
     sleep: [[49, 48], [49, 48]],
     talk: [[43, 44], [43, 44]],
     explain: [[45, 46], [39, 36]],
+    proud: [[41, 39], [41, 39]],
+    oops: [[35, 43], [35, 43]],
   }[mood] || [[49, 46], [49, 46]];
   const brow = (cx, side, [yi, yo]) => {
     const xi = cx - side * 12, xo = cx + side * 15;
@@ -184,6 +191,7 @@ export default function Qyran({ mood: moodIn = "idle", size = 160, className = "
         <path d="M184 206 L194 200" stroke="#6B4423" strokeWidth="4" strokeLinecap="round" />
       </g>
 
+      <g className="aq-react" key={mood}>
       <g className="bk-float">
         <g className="an-body">
           {/* артқы қанат (алдында тұрмайтын) */}
@@ -313,6 +321,15 @@ export default function Qyran({ mood: moodIn = "idle", size = 160, className = "
         {/* денені қиып өтетін қанат: think — иекте, support — жүрек тұсында */}
         {mood === "think" && wing(-1, p.l, "bk-arm-l aq-chin", 0.56)}
         {mood === "support" && wing(1, p.r, "bk-arm-r aq-heart", 0.9)}
+        {/* proud: кеудедегі алтын таңба (ромб медаль) */}
+        {mood === "proud" && (
+          <g className="aq-medal">
+            <path d="M92 128 L100 142 L108 128" fill="none" stroke={RED} strokeWidth="4" strokeLinejoin="round" />
+            <path d="M100 138 L111 150 L100 162 L89 150Z" fill={GOLD} stroke="#B07C10" strokeWidth="1.6" />
+            <path d="M100 144 L105 150 L100 156 L95 150Z" fill={RED} />
+          </g>
+        )}
+      </g>
       </g>
 
       {/* Эффекттер */}
@@ -345,6 +362,18 @@ export default function Qyran({ mood: moodIn = "idle", size = 160, className = "
           <path d="M152 57 L157.4 60 L155.7 63 L150.3 60Z" fill="#0F5E7A" />
           <circle cx="46" cy="40" r="2.4" fill="#0F5E7A" />
           <circle cx="160" cy="76" r="2.2" fill={RED} />
+        </g>
+      )}
+      {mood === "proud" && (
+        <g className="bk-fx aq-idea" fill={GOLD}>
+          <path d="M28 46 l3 7.4 7.4 3 -7.4 3 -3 7.4 -3 -7.4 -7.4 -3 7.4 -3z" />
+          <path d="M172 40 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4z" />
+        </g>
+      )}
+      {mood === "oops" && (
+        <g className="bk-fx aq-sweat">
+          <path d="M158 30 C152 40 150 45 150 48 a8 8 0 0 0 16 0 C166 45 164 40 158 30Z" fill="#CFE6EE" stroke="#0F5E7A" strokeWidth="2" />
+          <path d="M155 46 a3.2 3.2 0 0 0 3 3" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" />
         </g>
       )}
       {mood === "sleep" && (

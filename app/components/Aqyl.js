@@ -1,10 +1,19 @@
 "use client";
 // Aqyl — бренд мұғалім-кейіпкер. Бір ғана бейне (Qyran.js) барлық жерде: сабақта, тестте, басты бетте, чатта.
-// Семантикалық қалыптар: idle · thinking · talking · happy · explaining (+ cheer, support, wow).
+// Семантикалық қалыптар (сабақ, тест, марапат бір тілде сөйлейді):
+//   idle — күту · happy — дұрыс жауап · proud — марапат, таңба · celebrate (cheer) — сабақ/миссия аяқталды
+//   thinking — тексеріп жатыр · explaining — ереже түсіндіреді · talking — сөйлеп тұр
+//   surprised (wow) — тосын жаңалық · oops — қате (ұрсу емес, абдырау) · encouraging (support) — қолдау
+//   sleepy (sleep) — серия үзілгелі тұр
+// Ескі атаулар (cheer, support, wow, think, talk, explain) өзгеріссіз жұмыс істейді.
 import { useEffect, useState } from "react";
 import Qyran from "./Qyran";
 
-const MOOD = { idle: "idle", thinking: "think", talking: "talk", happy: "happy", explaining: "explain", cheer: "cheer", support: "support", wow: "wow" };
+const MOOD = {
+  idle: "idle", thinking: "think", talking: "talk", happy: "happy", explaining: "explain", cheer: "cheer", support: "support", wow: "wow",
+  proud: "proud", celebrate: "cheer", surprised: "wow", oops: "oops", encouraging: "support", sleepy: "sleep", sleep: "sleep",
+};
+export const AQYL_MOODS = ["idle", "happy", "proud", "celebrate", "thinking", "explaining", "talking", "surprised", "oops", "encouraging", "sleepy"];
 export const aqylMood = (m) => MOOD[m] || m || "idle";
 
 /** Aqyl + қағаз «сөз бұлты». tone: paper | ok | bad | gold */
