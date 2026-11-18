@@ -5,14 +5,14 @@
    ════════════════════════════════════════════════════════════════════ */
 :root {
   /* Түстер */
-  --bg: #faf6ee;            /* ақ киіз */
-  --surface: #fffdf7;       /* панель */
-  --surface-2: #f4ecda;     /* екінші деңгей */
-  --kok: #0f5e7a;           /* негізгі әрекет */
+  --bg: #fcfaf6;            /* ақ киіз */
+  --surface: #ffffff;       /* панель */
+  --surface-2: #f1eee8;     /* екінші деңгей */
+  --kok: #0b6e7e;           /* негізгі әрекет */
   --kok-2: #0a4a61;
-  --qyzyl: #a63a2b;         /* екінші екпін */
-  --altyn: #e0a526;         /* тек толтыру мен ою, мәтінге емес */
-  --altyn-soft: #f6e3b0;
+  --qyzyl: #a3242b;         /* екінші екпін */
+  --altyn: #e8b23a;         /* тек толтыру мен ою, мәтінге емес */
+  --altyn-soft: #f8e6b8;
   --ink: #1f2430;
   --muted: #4a5160;
   --faint: #5f6470;
@@ -27,11 +27,11 @@
   --paper-solid: var(--surface);
   --paper-strong: var(--surface);
   --paper-2: var(--surface-2);
-  --rim: rgba(122, 86, 22, 0.22);
+  --rim: rgba(60, 52, 48, 0.22);
   --line: rgba(31, 36, 48, 0.12);
   --edge: transparent;
-  --shadow: 0 1px 2px rgba(60, 40, 10, 0.06), 0 10px 24px -18px rgba(60, 40, 10, 0.35);
-  --shadow-lg: 0 2px 4px rgba(60, 40, 10, 0.07), 0 22px 44px -24px rgba(60, 40, 10, 0.45);
+  --shadow: 0 1px 2px rgba(45, 38, 36, 0.06), 0 10px 24px -18px rgba(45, 38, 36, 0.35);
+  --shadow-lg: 0 2px 4px rgba(45, 38, 36, 0.07), 0 22px 44px -24px rgba(45, 38, 36, 0.45);
   --blur: none; --blur-s: none;
   /* Пішін: карточка 16, түйме 12, шағын 10 */
   --r: 16px; --r-sm: 12px;
@@ -115,7 +115,7 @@ a { color: var(--kok); }
 .side-link.on { background: var(--kok); color: #fff; box-shadow: none; }
 .side-link.on::after {
   content: ""; position: absolute; right: 10px; top: 50%; width: 18px; height: 12px; transform: translateY(-50%);
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'%3E%3Cg fill='none' stroke='%23e0a526' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M18 22c0-9-7-13-12-9-4 4-1 10 4 8'/%3E%3Cpath d='M18 22c0-9 7-13 12-9 4 4 1 10-4 8'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'%3E%3Cg fill='none' stroke='%23e8b23a' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M18 22c0-9-7-13-12-9-4 4-1 10 4 8'/%3E%3Cpath d='M18 22c0-9 7-13 12-9 4 4 1 10-4 8'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
 }
 .side-me { background: var(--surface-2); box-shadow: none; border-radius: 12px; }
 .seg { background: var(--surface-2); box-shadow: none; }
@@ -124,7 +124,7 @@ a { color: var(--kok); }
 
 /* ── Жоғарғы жолақ пен төменгі мәзір ── */
 .topbar { top: 10px; margin: 10px clamp(14px, 3vw, 32px) 4px; padding: 5px 10px; border-width: 4px; border-radius: 16px; background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--oyu-band) border-box; background-size: auto, auto 8px; box-shadow: var(--shadow); }
-.bottom-nav { background: var(--surface); box-shadow: 0 -1px 0 var(--rim), 0 -10px 24px -18px rgba(60, 40, 10, 0.4); }
+.bottom-nav { background: var(--surface); box-shadow: 0 -1px 0 var(--rim), 0 -10px 24px -18px rgba(45, 38, 36, 0.4); }
 .bottom-nav a, .bottom-nav button { min-height: 52px; color: var(--muted); font-weight: 600; }
 .bottom-nav a.on, .bottom-nav button.on { color: var(--kok); background: none; box-shadow: none; outline: 0; border-color: transparent; }
 .bottom-nav a.on::before { content: ""; position: absolute; top: 0; left: 30%; right: 30%; height: 3px; border-radius: 0 0 3px 3px; background: var(--altyn); }
@@ -163,7 +163,7 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .kosh-levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 6px 0 22px; }
 .kosh-lv { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 14px 16px 18px; border: 0; border-radius: var(--r); text-align: left; cursor: pointer; font: inherit; color: var(--ink); background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--rim); overflow: hidden; }
 .kosh-lv-id { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; font-family: var(--head); font-weight: 800; font-size: 16px; color: #fff; background: var(--tone); }
-.kosh-lv.s0 { --tone: #2f6b4f; } .kosh-lv.s1 { --tone: #0f5e7a; } .kosh-lv.s2 { --tone: #a63a2b; }
+.kosh-lv.s0 { --tone: #2f6b4f; } .kosh-lv.s1 { --tone: #0b6e7e; } .kosh-lv.s2 { --tone: #a63a2b; }
 .kosh-lv-t { display: grid; min-width: 0; } .kosh-lv-t b { font-size: 16px; } .kosh-lv-t small { color: var(--muted); font-size: 13px; }
 .kosh-lv-n { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .kosh-lv-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--surface-2); } .kosh-lv-bar i { display: block; height: 100%; background: var(--tone); }
@@ -173,7 +173,7 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 
 /* Жол: ауылдар бір-біріне із арқылы жалғанады */
 .kosh { --tone: #2f6b4f; list-style: none; margin: 0; padding: 0 0 20px; display: grid; gap: 34px; position: relative; max-width: 980px; }
-.kosh.s1 { --tone: #0f5e7a; } .kosh.s2 { --tone: #a63a2b; }
+.kosh.s1 { --tone: #0b6e7e; } .kosh.s2 { --tone: #a63a2b; }
 .kosh::before { /* керуен ізі */
   content: ""; position: absolute; top: 60px; bottom: 60px; left: 50%; width: 0; border-left: 4px dashed color-mix(in srgb, var(--tone) 38%, transparent); transform: translateX(-2px);
 }
@@ -189,7 +189,7 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .aul-body h3 { margin: 0; padding-right: 44px; font-family: var(--head); font-weight: 600; font-size: 19px; }
 .aul-meta { margin: 0; font-size: 13.5px; color: var(--muted); }
 .trail { display: flex; flex-wrap: wrap; gap: 8px 6px; align-items: center; padding: 4px 0 2px; }
-.stop { position: relative; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; color: #5a3d00; background: var(--altyn-soft); box-shadow: inset 0 0 0 1.5px #e0a526; transition: transform 0.12s var(--ease); }
+.stop { position: relative; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; color: #5a3d00; background: var(--altyn-soft); box-shadow: inset 0 0 0 1.5px #e8b23a; transition: transform 0.12s var(--ease); }
 .stop.phrases { border-radius: 14px; }
 .stop:hover:not(:disabled) { transform: translateY(-2px); }
 .stop.done { color: #fff; background: var(--ok); box-shadow: none; }
@@ -217,24 +217,24 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .msg-photo img { display: block; width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; }
 .msg-photo > span { padding: 0 8px 4px; font-size: 14px; }
 .vz-gone { display: inline-flex; align-items: center; gap: 6px; padding: 10px 10px 0; font-size: 13px; opacity: 0.85; }
-.msg-vision { padding: 0; overflow: hidden; background: #FFFDF7; }
-.vz-card { display: grid; gap: 10px; padding: 14px 16px 16px; min-width: min(300px, 70vw); border-top: 4px solid #E0A526; animation: vzIn 0.45s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+.msg-vision { padding: 0; overflow: hidden; background: #FFFFFF; }
+.vz-card { display: grid; gap: 10px; padding: 14px 16px 16px; min-width: min(300px, 70vw); border-top: 4px solid #E8B23A; animation: vzIn 0.45s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
 .vz-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.vz-kk { display: block; font-family: var(--head); font-weight: 800; font-size: 26px; line-height: 1.1; color: #0F5E7A; }
+.vz-kk { display: block; font-family: var(--head); font-weight: 800; font-size: 26px; line-height: 1.1; color: #0B6E7E; }
 .vz-tl { font-size: 13px; color: #5F6470; }
-.vz-say { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #0F5E7A; color: #fff; cursor: pointer; transition: transform 0.15s, background 0.2s; }
+.vz-say { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #0B6E7E; color: #fff; cursor: pointer; transition: transform 0.15s, background 0.2s; }
 .vz-say:hover { background: #0A4A61; } .vz-say:active { transform: scale(0.92); }
 .vz-tr { font-size: 17px; font-weight: 600; color: #1F2430; }
-.vz-ex { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; background: #F4ECDA; }
+.vz-ex { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; background: #F1EEE8; }
 .vz-ex small { font-size: 12px; font-weight: 600; color: #A63A2B; }
 .vz-ex span { font-size: 14px; color: #4A5160; }
-.vz-tip { margin: 0; font-size: 14px; color: #4A5160; padding-left: 10px; border-left: 3px solid #E0A526; }
-.vz-save { justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: #E0A526; color: #1F2430; font: inherit; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
+.vz-tip { margin: 0; font-size: 14px; color: #4A5160; padding-left: 10px; border-left: 3px solid #E8B23A; }
+.vz-save { justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: #E8B23A; color: #1F2430; font: inherit; font-weight: 700; cursor: pointer; transition: transform 0.15s; }
 .vz-save:active { transform: scale(0.96); } .vz-save.on { background: #E6F0EA; color: #2F6B4F; cursor: default; }
 .vz-sheet { margin: 0 12px 10px; padding: 12px; border-radius: 16px; background: #0A4A61; color: #fff; display: grid; gap: 10px; animation: vzUp 0.35s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
 .vz-view { position: relative; aspect-ratio: 4 / 3; max-height: 46vh; border-radius: 12px; overflow: hidden; background: #062f3e; }
 .vz-view video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.vz-view .c { position: absolute; width: 28px; height: 28px; border: 3px solid #E0A526; }
+.vz-view .c { position: absolute; width: 28px; height: 28px; border: 3px solid #E8B23A; }
 .vz-view .tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; border-radius: 8px 0 0 0; }
 .vz-view .tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; border-radius: 0 8px 0 0; }
 .vz-view .bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; border-radius: 0 0 0 8px; }
@@ -244,25 +244,25 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .vz-side { display: grid; justify-items: center; gap: 2px; min-width: 64px; min-height: 48px; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; opacity: 0.9; }
 .vz-side small { font-size: 12px; }
 .vz-shutter { width: 68px; height: 68px; border-radius: 50%; border: 4px solid #fff; background: none; padding: 4px; cursor: pointer; }
-.vz-shutter i { display: block; width: 100%; height: 100%; border-radius: 50%; background: #E0A526; transition: transform 0.15s; }
+.vz-shutter i { display: block; width: 100%; height: 100%; border-radius: 50%; background: #E8B23A; transition: transform 0.15s; }
 .vz-shutter:active i { transform: scale(0.86); }
 .vz-privacy { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
-.mic-mini.on { background: #0F5E7A; color: #fff; }
+.mic-mini.on { background: #0B6E7E; color: #fff; }
 @keyframes vzIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes vzUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @media (max-width: 520px) { .vz-kk { font-size: 22px; } .composer { gap: 6px; } .composer .btn { min-width: 46px; padding-left: 0; padding-right: 0; } }
 
 /* ── Qyzyl til логотипі ── */
 .logo-word { letter-spacing: -0.01em; font-weight: 800; }
-.logo-word b { color: #B8322A; font-weight: 800; }
+.logo-word b { color: #A3242B; font-weight: 800; }
 .logo .qz-mark { display: block; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.25, 1); }
 .logo .qz-tongue { transform-origin: 112px 136px; transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1); }
 @media (hover: hover) { .logo:hover .qz-tongue { transform: rotate(-8deg) scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .logo .qz-tongue { transition: none; } }
 
 /* ── Бөлім түсіндірмесі (Tilbil, Түзел) ── */
-.sec-intro { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 18px; padding: 16px 18px; border-radius: 16px; background: #FFFDF7; border: 1px solid #E6D9BC; }
-.sec-intro-ic { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #F4ECDA; color: #8A2018; }
+.sec-intro { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 18px; padding: 16px 18px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E3DDD2; }
+.sec-intro-ic { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #F1EEE8; color: #741820; }
 .sec-intro-body { display: grid; gap: 4px; min-width: 0; }
 .sec-intro-body b { font-family: var(--head); font-weight: 700; font-size: 17px; line-height: 1.3; color: #1F2430; }
 .sec-intro-body p { margin: 0; font-size: 15px; line-height: 1.5; color: #4A5160; max-width: 70ch; }

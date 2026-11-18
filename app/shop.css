@@ -5,8 +5,8 @@
    Тек осы бет: барлық класс .sh / sh- арқылы.
    ════════════════════════════════════════════════════════════════════ */
 .sh {
-  --sh-red: #b8322a; --sh-deep: #8a2018; --sh-cream: #faf6ee; --sh-surf: #fffdf7; --sh-felt: #f4ecda;
-  --sh-ink: #1f2430; --sh-muted: #4a5160; --sh-gold: #e0a526; --sh-gold-ink: #6b4500; --sh-blue: #0f5e7a;
+  --sh-red: #a3242b; --sh-deep: #741820; --sh-cream: #fcfaf6; --sh-surf: #ffffff; --sh-felt: #f1eee8;
+  --sh-ink: #1f2430; --sh-muted: #4a5160; --sh-gold: #e8b23a; --sh-gold-ink: #6b4500; --sh-blue: #0b6e7e;
   --sh-ok: #2f6b4f; --sh-wine: #6e1e2e; --sh-wine-soft: #f3e3e6; --sh-thread: #3a2210;
   --sh-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .3 0 0 0 0 .12 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   position: relative; color: var(--sh-ink);
@@ -63,7 +63,7 @@
     linear-gradient(160deg, #c8443a, var(--sh-red) 40%, var(--sh-deep)) border-box;
   box-shadow: 0 0 0 2.5px var(--sh-thread), inset 0 0 0 2.5px var(--sh-thread), 0 22px 40px -26px rgba(90, 30, 10, 0.6);
 }
-.sh-glass::before { content: ""; position: absolute; inset: 6px; border-radius: 156px 156px 18px 18px; border: 2px dashed rgba(224, 165, 38, 0.55); pointer-events: none; }
+.sh-glass::before { content: ""; position: absolute; inset: 6px; border-radius: 156px 156px 18px 18px; border: 2px dashed rgba(232, 178, 58, 0.55); pointer-events: none; }
 .sh-glass::after {
   content: ""; position: absolute; top: -20%; bottom: -20%; width: 34%; inset-inline-start: -40%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent); transform: skewX(-16deg);
@@ -72,10 +72,10 @@
 .sh-glass-label {
   position: absolute; top: 18px; left: 50%; transform: translateX(-50%); white-space: nowrap; z-index: 1;
   padding: 3px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 800; letter-spacing: 0.02em;
-  background: var(--sh-surf); color: var(--sh-deep); box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.35);
+  background: var(--sh-surf); color: var(--sh-deep); box-shadow: inset 0 0 0 1.5px rgba(163, 36, 43, 0.35);
 }
 .sh-mirror.trying .sh-glass-label { background: var(--sh-blue); color: #fff; box-shadow: none; }
-.sh-mirror.trying .sh-glass::before { border-color: rgba(15, 94, 122, 0.55); }
+.sh-mirror.trying .sh-glass::before { border-color: rgba(14, 143, 163, 0.55); }
 .sh-tassel { position: absolute; top: 56px; width: 2px; height: 46px; background: var(--sh-gold); transform-origin: top; animation: shSway 4s ease-in-out infinite; }
 .sh-tassel::after { content: ""; position: absolute; bottom: -14px; left: -5px; width: 12px; height: 16px; border-radius: 6px 6px 2px 2px; background: repeating-linear-gradient(90deg, var(--sh-gold) 0 2px, #b07c10 2px 3px); }
 .sh-tassel.s1 { inset-inline-start: 22px; } .sh-tassel.s2 { inset-inline-end: 22px; animation-delay: -2s; }
@@ -93,9 +93,9 @@
 /* Киіп көру жолағы */
 .sh-try {
   display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 10px; align-items: center; padding: 10px 12px; border-radius: 16px;
-  background: #e6f0f3; box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.35); animation: shIn 0.35s var(--ease) both;
+  background: #e6f0f3; box-shadow: inset 0 0 0 1.5px rgba(14, 143, 163, 0.35); animation: shIn 0.35s var(--ease) both;
 }
-.sh-try-art { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: var(--sh-surf); box-shadow: inset 0 0 0 1px rgba(15, 94, 122, 0.25); }
+.sh-try-art { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: var(--sh-surf); box-shadow: inset 0 0 0 1px rgba(14, 143, 163, 0.25); }
 .sh-try-txt { display: grid; } .sh-try-txt small { font-size: 12.5px; font-weight: 700; color: var(--sh-blue); } .sh-try-txt b { font-family: var(--head); font-size: 15px; font-weight: 700; }
 .sh-try-acts { grid-column: 1 / -1; display: flex; gap: 8px; }
 .sh-try-acts .btn:first-child { flex: 1; }
@@ -105,15 +105,15 @@
 .sh-slots { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .sh-slot {
   width: 100%; min-height: 56px; display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border: 0; cursor: pointer; font: inherit; text-align: start;
-  border-radius: 14px; color: var(--sh-ink); background: transparent; box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.3);
+  border-radius: 14px; color: var(--sh-ink); background: transparent; box-shadow: inset 0 0 0 1.5px rgba(60, 52, 48, 0.3);
   background-image: linear-gradient(var(--sh-felt), var(--sh-felt)); transition: transform 0.2s var(--ease), box-shadow 0.2s;
 }
 .sh-slot:hover { transform: translateY(-2px); }
 .sh-slot.full { background-image: none; background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.5), 0 6px 14px -12px rgba(90, 50, 10, 0.6); }
 .sh-slot.try { box-shadow: inset 0 0 0 2px var(--sh-blue); }
 .sh-slot[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--sh-red); }
-.sh-slot-art { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: var(--sh-cream); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.18); }
-.sh-slot:not(.full) .sh-slot-art { background: transparent; box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.28); outline: 1.5px dashed rgba(122, 86, 22, 0.35); outline-offset: -5px; }
+.sh-slot-art { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: var(--sh-cream); box-shadow: inset 0 0 0 1.5px rgba(60, 52, 48, 0.18); }
+.sh-slot:not(.full) .sh-slot-art { background: transparent; box-shadow: inset 0 0 0 1.5px rgba(60, 52, 48, 0.28); outline: 1.5px dashed rgba(60, 52, 48, 0.35); outline-offset: -5px; }
 .sh-slot-ghost { display: grid; opacity: 0.3; filter: grayscale(1); }
 .sh-slot-txt { display: grid; line-height: 1.2; }
 .sh-slot-txt small { font-size: 12px; font-weight: 700; color: var(--sh-muted); }
@@ -127,7 +127,7 @@
 .sh-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
 .sh-tab {
   display: inline-flex; align-items: center; gap: 7px; min-height: 48px; padding: 4px 11px 4px 5px; border: 0; cursor: pointer; font: inherit;
-  border-radius: 14px; color: var(--sh-ink); background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.26), 0 3px 0 rgba(122, 86, 22, 0.14);
+  border-radius: 14px; color: var(--sh-ink); background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(60, 52, 48, 0.26), 0 3px 0 rgba(60, 52, 48, 0.14);
   transition: transform 0.2s var(--ease), box-shadow 0.2s, background-color 0.2s;
 }
 .sh-tab:hover { transform: translateY(-2px); }
@@ -166,14 +166,14 @@
   display: grid; grid-template-columns: repeat(auto-fill, minmax(198px, 1fr)); gap: 14px; padding: 52px 14px 18px;
   margin-top: -12px; border-radius: 0 0 18px 18px;
   background: var(--sh-noise), linear-gradient(180deg, #efe2c4, var(--sh-felt) 60px);
-  box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.18), inset 0 -8px 0 rgba(122, 86, 22, 0.12);
+  box-shadow: inset 0 0 0 1.5px rgba(60, 52, 48, 0.18), inset 0 -8px 0 rgba(60, 52, 48, 0.12);
 }
 
 /* ── Бұйым: киіз тауар ── */
 .sh-good {
   --rc: var(--sh-blue); --rt: var(--sh-blue); --rs: #e3eef2;
   position: relative; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 12px; border-radius: 18px;
-  background: var(--sh-surf); box-shadow: 0 0 0 1px rgba(122, 86, 22, 0.16), 0 12px 22px -18px rgba(90, 50, 10, 0.7);
+  background: var(--sh-surf); box-shadow: 0 0 0 1px rgba(60, 52, 48, 0.16), 0 12px 22px -18px rgba(90, 50, 10, 0.7);
   transition: transform 0.3s var(--ease), box-shadow 0.3s;
   animation: shIn 0.45s calc(var(--i, 0) * 45ms + var(--si, 0) * 90ms) var(--ease) both;
 }
@@ -192,7 +192,7 @@
   font-family: var(--head); font-weight: 700; font-size: 14px; color: var(--sh-ink); background: #fbeecb;
   box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.5); transform: rotate(4deg); transform-origin: 0 50%;
 }
-.sh-tag::before { content: ""; position: absolute; inset-inline-start: 5px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.6); }
+.sh-tag::before { content: ""; position: absolute; inset-inline-start: 5px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--sh-surf); box-shadow: inset 0 0 0 1.5px rgba(60, 52, 48, 0.6); }
 .sh-tag.own { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: 50%; color: #fff; background: var(--sh-ok); box-shadow: 0 0 0 2px var(--sh-surf), 0 0 0 3.5px rgba(47, 107, 79, 0.35); transform: none; }
 .sh-tag.own::before { display: none; }
 .sh-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -215,7 +215,7 @@
 .sh-need { position: relative; align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 8px; font-size: 12.5px; font-weight: 800; color: var(--sh-wine); background: var(--sh-wine-soft); }
 .sh-acts { position: relative; display: flex; gap: 6px; margin-top: auto; padding-top: 4px; }
 .sh-acts .btn { flex: 1; padding-inline: 8px; gap: 5px; white-space: nowrap; }
-.sh-acts .sh-trybtn { flex: 0 1 auto; background: transparent; color: var(--sh-blue); box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.4); }
+.sh-acts .sh-trybtn { flex: 0 1 auto; background: transparent; color: var(--sh-blue); box-shadow: inset 0 0 0 1.5px rgba(14, 143, 163, 0.4); }
 .sh-acts .sh-trybtn:hover:not(:disabled) { background: #e6f0f3; }
 .sh-acts .sh-trybtn.on { background: var(--sh-blue); color: #fff; box-shadow: none; }
 .sh .btn.ghost.sh-poor { color: var(--sh-wine); box-shadow: inset 0 0 0 1.5px rgba(110, 30, 46, 0.35); background: var(--sh-surf); }
@@ -228,8 +228,8 @@
 /* Күйлер */
 .sh-good.is-on { background: linear-gradient(180deg, #fff7df, var(--sh-surf) 70%); box-shadow: 0 0 0 2.5px var(--sh-gold), 0 14px 26px -16px rgba(176, 124, 16, 0.75); }
 .sh-good.is-lock .sh-plate-art { filter: grayscale(0.45) opacity(0.78) drop-shadow(0 6px 5px rgba(70, 35, 8, 0.18)); }
-.sh-good.is-lock .sh-tag { background: var(--sh-felt); box-shadow: inset 0 0 0 1.5px rgba(122, 86, 22, 0.3); }
-.sh-good.trying { box-shadow: 0 0 0 2.5px var(--sh-blue), 0 14px 26px -16px rgba(15, 94, 122, 0.7); }
+.sh-good.is-lock .sh-tag { background: var(--sh-felt); box-shadow: inset 0 0 0 1.5px rgba(60, 52, 48, 0.3); }
+.sh-good.trying { box-shadow: 0 0 0 2.5px var(--sh-blue), 0 14px 26px -16px rgba(14, 143, 163, 0.7); }
 .sh-good.shake { animation: shShake 0.45s ease both; }
 
 /* ── Қалқымалы кішкене айна (кіші экран) ── */

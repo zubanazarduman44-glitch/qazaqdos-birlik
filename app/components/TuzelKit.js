@@ -127,7 +127,7 @@ export function TuzelSay({ mood = "idle", size = 64, tone = "", children, classN
   );
 }
 
-const RED = "#B8322A", RED_D = "#8A2018", GOLD = "#E0A526", PGOLD = "#F6E3B0", BLUE = "#0F5E7A", CREAM = "#FFFDF7", INK = "#1F2430";
+const RED = "#A3242B", RED_D = "#741820", GOLD = "#E8B23A", PGOLD = "#F8E6B8", BLUE = "#0B6E7E", CREAM = "#FFFFFF", INK = "#1F2430";
 
 // Қойынды суреттері (56×56)
 export function TuzelArt({ name, size = 56 }) {

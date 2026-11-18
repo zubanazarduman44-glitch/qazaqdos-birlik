@@ -3,9 +3,9 @@
    Қозғалыс — тек оқушы әрекетіне жауап. Күй түспен ғана емес, белгіше мен мәтінмен беріледі.
    ════════════════════════════════════════════════════════════════════ */
 .lp {
-  --lp-ok-soft: color-mix(in srgb, var(--ok, #2f6b4f) 12%, var(--surface, #fffdf7));
+  --lp-ok-soft: color-mix(in srgb, var(--ok, #2f6b4f) 12%, var(--surface, #ffffff));
   --lp-bad-soft: #f3e3e6;
-  --lp-kok-soft: color-mix(in srgb, var(--kok, #0f5e7a) 9%, var(--surface, #fffdf7));
+  --lp-kok-soft: color-mix(in srgb, var(--kok, #0b6e7e) 9%, var(--surface, #ffffff));
   display: flex; flex-direction: column; gap: 20px;
   width: 100%; max-width: 640px; margin: 0 auto; padding: 4px 0 8px;
   min-height: min(700px, calc(100vh - 150px)); min-height: min(700px, calc(100dvh - 150px));
@@ -54,7 +54,7 @@
 .lp-intro-phrase .lp-art { width: 104px; height: 104px; }
 .lp-horn {
   width: 44px; height: 26px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'%3E%3Cg fill='none' stroke='%23e0a526' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M18 22c0-9-7-13-12-9-4 4-1 10 4 8'/%3E%3Cpath d='M18 22c0-9 7-13 12-9 4 4 1 10-4 8'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 24'%3E%3Cg fill='none' stroke='%23e8b23a' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M18 22c0-9-7-13-12-9-4 4-1 10 4 8'/%3E%3Cpath d='M18 22c0-9 7-13 12-9 4 4 1 10-4 8'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
 }
 .lp-tr { margin: 0 0 10px; font-size: 22px; color: var(--muted); font-weight: 500; }
 
@@ -238,31 +238,31 @@
 .lp-aqyl-ask {
   align-self: center; display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 4px 16px 4px 6px; padding-inline: 6px 16px;
   border: 0; border-radius: 999px; background: #fff8e6; color: var(--ink);
-  box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.55); font-size: 16px; font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.55); font-size: 16px; font-weight: 700;
 }
-.lp-aqyl-ask:hover { box-shadow: inset 0 0 0 2px var(--altyn, #e0a526); }
-.lp-aqyl-ask:focus-visible { outline: 3px solid var(--kok, #0f5e7a); outline-offset: 2px; }
-.lp-aqyl-av { width: 44px; height: 44px; border-radius: 50%; background: #f6e3b0; display: grid; place-items: end center; overflow: hidden; line-height: 0; }
+.lp-aqyl-ask:hover { box-shadow: inset 0 0 0 2px var(--altyn, #e8b23a); }
+.lp-aqyl-ask:focus-visible { outline: 3px solid var(--kok, #0e8fa3); outline-offset: 2px; }
+.lp-aqyl-av { width: 44px; height: 44px; border-radius: 50%; background: #f8e6b8; display: grid; place-items: end center; overflow: hidden; line-height: 0; }
 .lp-aqyl-av .qyran { width: 42px; height: auto; margin-bottom: -3px; }
 [dir="rtl"] .lp-aqyl-ask .ic:last-child { transform: scaleX(-1); }
 .lp-intro .aq-explain { margin-top: 4px; }
 
 .lp-fb .lp-fb-aqyl { position: relative; width: 56px; height: 56px; background: none !important; border-radius: 0; place-items: end center; line-height: 0; }
 .lp-fb-aqyl .qyran { width: 56px; height: auto; }
-.lp-fb-dot { position: absolute; bottom: -2px; inset-inline-end: -4px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: #fff; box-shadow: 0 0 0 2px var(--surface, #fffdf7); }
+.lp-fb-dot { position: absolute; bottom: -2px; inset-inline-end: -4px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: #fff; box-shadow: 0 0 0 2px var(--surface, #ffffff); }
 .lp-fb.is-ok .lp-fb-dot { background: var(--ok, #2f6b4f); }
 .lp-fb.is-bad .lp-fb-dot { background: #6e1e2e; }
 /* Қате — шарап түсі, үзік жиек (брендтің қызылы емес) */
 .lp-fb.is-bad { background: #f3e3e6; box-shadow: none; outline: 1.5px dashed #6e1e2e; outline-offset: -1.5px; }
 .lp-fb.is-bad .lp-fb-txt b { color: #6e1e2e; }
 .lp-fb .aq-why .aq-says-av { display: none; }
-.lp-fb .aq-why.tone-bad .aq-says-b { background: #fffdf7; outline: 0; box-shadow: inset 0 0 0 1px rgba(110, 30, 46, 0.25); border-radius: 14px; }
+.lp-fb .aq-why.tone-bad .aq-says-b { background: #ffffff; outline: 0; box-shadow: inset 0 0 0 1px rgba(110, 30, 46, 0.25); border-radius: 14px; }
 .lp-fb .aq-why .aq-says-b::before { display: none; }
 
 .lp-sum-aqyl { line-height: 0; margin-bottom: -2px; }
 .lp-sum-aqyl .qyran { width: 104px; height: auto; }
 .lp-sum-praise {
   position: relative; margin: 0 0 4px; max-width: 32ch; padding: 10px 16px; border-radius: 16px;
-  background: #fff8e6; box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.55); font-weight: 700; line-height: 1.4;
+  background: #fff8e6; box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.55); font-weight: 700; line-height: 1.4;
 }
-.lp-sum-praise::before { content: ""; position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; background: #fff8e6; transform: rotate(45deg); box-shadow: -1.5px -1.5px 0 rgba(224, 165, 38, 0.55); }
+.lp-sum-praise::before { content: ""; position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; background: #fff8e6; transform: rotate(45deg); box-shadow: -1.5px -1.5px 0 rgba(232, 178, 58, 0.55); }

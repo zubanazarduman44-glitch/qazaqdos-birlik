@@ -4,26 +4,26 @@
    Қозғалыс — тек transform/opacity. Логикалық қасиеттер (RTL қолдауы).
    ════════════════════════════════════════════════════════════════════ */
 .tuzel, .tzw, .tzs {
-  --tz-red: #b8322a;
-  --tz-red-d: #8a2018;
-  --tz-cream: #faf6ee;
-  --tz-surf: #fffdf7;
-  --tz-sand: #f4ecda;
+  --tz-red: #a3242b;
+  --tz-red-d: #741820;
+  --tz-cream: #fcfaf6;
+  --tz-surf: #ffffff;
+  --tz-sand: #f1eee8;
   --tz-sand-2: #ebdfc4;
   --tz-ink: #1f2430;
   --tz-mut: #4a5160;
-  --tz-gold: #e0a526;
-  --tz-gold-s: #f6e3b0;
-  --tz-blue: #0f5e7a;
+  --tz-gold: #e8b23a;
+  --tz-gold-s: #f8e6b8;
+  --tz-blue: #0b6e7e;
   --tz-blue-d: #0a4a61;
-  --tz-blue-s: #dcebf0;
+  --tz-blue-s: #dbf1f4;
   --tz-ok: #2f6b4f;
   --tz-ok-s: #e1eee6;
   --tz-wine: #6e1e2e;
   --tz-wine-s: #f3e3e6;
-  --tz-rim: rgba(122, 86, 22, 0.22);
+  --tz-rim: rgba(60, 52, 48, 0.22);
   --tz-rule: #d3e3e8;
-  --tz-lift: 0 1px 0 rgba(60, 40, 10, 0.06), 0 14px 28px -20px rgba(60, 40, 10, 0.45);
+  --tz-lift: 0 1px 0 rgba(45, 38, 36, 0.06), 0 14px 28px -20px rgba(45, 38, 36, 0.45);
   --tz-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   color: var(--tz-ink);
 }
@@ -37,7 +37,7 @@
 .tz-cta {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 12px 22px;
   border: 0; border-radius: 16px; cursor: pointer; font: inherit; font-weight: 800; font-size: 16px;
-  color: #fff; background: var(--tz-red); box-shadow: 0 4px 0 var(--tz-red-d), 0 14px 22px -14px rgba(138, 32, 24, 0.8);
+  color: #fff; background: var(--tz-red); box-shadow: 0 4px 0 var(--tz-red-d), 0 14px 22px -14px rgba(116, 24, 32, 0.8);
   transition: transform 0.15s var(--tz-ease), box-shadow 0.15s var(--tz-ease);
 }
 .tz-cta:hover:not(:disabled) { transform: translateY(-1px); }
@@ -129,7 +129,7 @@
 [dir="rtl"] .tuzel .tz-panel { border-radius: 24px 0 24px 24px; }
 .tuzel .tz-panel::before {
   content: ""; position: absolute; inset: 8px; border-radius: 0 18px 18px 18px; pointer-events: none;
-  border: 1.5px dashed rgba(184, 50, 42, 0.18);
+  border: 1.5px dashed rgba(163, 36, 43, 0.18);
 }
 [dir="rtl"] .tuzel .tz-panel::before { border-radius: 18px 0 18px 18px; }
 .tuzel .tz-panel > * { position: relative; }
@@ -169,7 +169,7 @@
   position: relative; padding: 18px 16px 6px; padding-inline-start: 58px; border-radius: 6px 20px 0 0;
   background: var(--tz-surf); box-shadow: inset 0 0 0 1.5px var(--tz-rim);
 }
-.tzw-sheet::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 44px; width: 2px; background: rgba(184, 50, 42, 0.45); }
+.tzw-sheet::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 44px; width: 2px; background: rgba(163, 36, 43, 0.45); }
 .tzw-area {
   display: block; width: 100%; min-height: 224px; margin: 0; padding: 0 4px 0 0; border: 0; border-radius: 0; resize: vertical;
   font: inherit; font-size: 18px; line-height: 32px; color: var(--tz-ink); background-color: transparent;
@@ -221,7 +221,7 @@
   position: relative; padding: 18px 18px 14px; padding-inline-start: 58px; border-radius: 20px; min-width: 0;
   background: var(--tz-surf); box-shadow: inset 0 0 0 1.5px var(--tz-rim), 0 5px 0 -1px var(--tz-sand-2), var(--tz-lift);
 }
-.tzw-page::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 44px; width: 2px; background: rgba(184, 50, 42, 0.45); }
+.tzw-page::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 44px; width: 2px; background: rgba(163, 36, 43, 0.45); }
 .tzw-page-head { display: flex; align-items: center; justify-content: space-between; gap: 8px 14px; flex-wrap: wrap; margin-bottom: 8px; }
 .tzw-page-head h3, .tzw-notes h3 { margin: 0; font-family: var(--head); font-size: 16px; display: flex; align-items: center; gap: 8px; }
 .tzw-legend { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
@@ -275,14 +275,14 @@
 .tzw-clean { display: flex; align-items: center; gap: 8px; margin: 0; padding: 14px; border-radius: 14px; color: var(--tz-ok); background: var(--tz-ok-s); font-weight: 800; }
 .tzw-check.clean .tzw-legend { display: none; }
 .tzw-tip { max-width: 760px; }
-.tzw-tip .tz-say-bubble { background: #fff8e4; box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.55); }
-.tzw-tip .tz-say-bubble::before { background: #fff8e4; border-color: rgba(224, 165, 38, 0.55); }
+.tzw-tip .tz-say-bubble { background: #fff8e4; box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.55); }
+.tzw-tip .tz-say-bubble::before { background: #fff8e4; border-color: rgba(232, 178, 58, 0.55); }
 
 /* ══ АЙТЫЛЫМ ══ */
 .tzs { display: grid; gap: 18px; max-width: 1040px; margin: 0 auto; }
 .tzs-head { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px 18px; }
 @media (max-width: 640px) { .tzs-head { grid-template-columns: 1fr; } }
-.tzs-lvbadge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 8px; padding-inline: 8px 16px; border-radius: 99px; background: var(--tz-gold-s); box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.6); justify-self: start; }
+.tzs-lvbadge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 8px; padding-inline: 8px 16px; border-radius: 99px; background: var(--tz-gold-s); box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.6); justify-self: start; }
 .tzs-lvbadge-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: #fff; background: var(--tz-red); }
 .tzs-lvbadge small { display: block; font-size: 12px; font-weight: 700; color: var(--tz-mut); }
 .tzs-lvbadge b { font-family: var(--head); font-size: 15px; }
@@ -316,17 +316,17 @@
 .tzs-stage {
   position: relative; display: grid; gap: 18px; padding: clamp(14px, 2.4vw, 26px); border-radius: 26px; overflow: hidden;
   background:
-    radial-gradient(circle at 85% 50%, rgba(224, 165, 38, 0.22), transparent 42%),
+    radial-gradient(circle at 85% 50%, rgba(232, 178, 58, 0.22), transparent 42%),
     var(--tz-sand);
   box-shadow: inset 0 0 0 1.5px var(--tz-sand-2);
 }
 @media (min-width: 900px) { .tzs-stage { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: center; } }
-[dir="rtl"] .tzs-stage { background: radial-gradient(circle at 15% 50%, rgba(224, 165, 38, 0.22), transparent 42%), var(--tz-sand); }
+[dir="rtl"] .tzs-stage { background: radial-gradient(circle at 15% 50%, rgba(232, 178, 58, 0.22), transparent 42%), var(--tz-sand); }
 .tzs-card {
   position: relative; display: grid; gap: 12px; padding: 20px 22px 22px; border-radius: 20px; min-width: 0;
   background: var(--tz-surf); box-shadow: inset 0 6px 0 var(--tz-gold), inset 0 0 0 1.5px var(--tz-rim), var(--tz-lift);
 }
-.tzs-card::before { content: ""; position: absolute; inset: 12px 7px 7px; border-radius: 15px; border: 1.5px dashed rgba(122, 86, 22, 0.2); pointer-events: none; }
+.tzs-card::before { content: ""; position: absolute; inset: 12px 7px 7px; border-radius: 15px; border: 1.5px dashed rgba(60, 52, 48, 0.2); pointer-events: none; }
 .tzs-card > * { position: relative; }
 .tzs-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .tzs-card-top .kicker { margin: 0; }
@@ -339,7 +339,7 @@
   cursor: pointer; font: inherit; font-weight: 800; transition: transform 0.15s var(--tz-ease);
 }
 .tzs-play { color: #fff; background: var(--tz-blue); box-shadow: 0 3px 0 var(--tz-blue-d); }
-.tzs-play.slow { color: var(--tz-blue-d); background: var(--tz-blue-s); box-shadow: inset 0 0 0 1.5px rgba(15, 94, 122, 0.35); }
+.tzs-play.slow { color: var(--tz-blue-d); background: var(--tz-blue-s); box-shadow: inset 0 0 0 1.5px rgba(14, 143, 163, 0.35); }
 .tzs-x { font-size: 12px; padding: 1px 6px; border-radius: 6px; background: #fff; color: var(--tz-blue-d); }
 .tzs-play:active, .tzs-next:active, .tzs-use:active:not(:disabled) { transform: translateY(2px); }
 .tzs-play.playing::after { content: ""; position: absolute; inset: -4px; border-radius: 17px; border: 2px solid var(--tz-blue); animation: tzPing 1s ease-out infinite; pointer-events: none; }
@@ -357,12 +357,12 @@
 .tzs-track { fill: rgba(255, 253, 247, 0.6); stroke: var(--tz-sand-2); stroke-width: 1.5; stroke-dasharray: 4 5; }
 .tzs-tick { fill: var(--tz-sand-2); transition: fill 0.2s; }
 .tzs-tick.on { fill: var(--tz-red); }
-.tzs-rec.idle .tzs-tick:nth-child(odd) { fill: rgba(224, 165, 38, 0.55); }
+.tzs-rec.idle .tzs-tick:nth-child(odd) { fill: rgba(232, 178, 58, 0.55); }
 .tzs-bead { position: absolute; inset: 0; transition: transform 0.1s linear; pointer-events: none; }
 .tzs-bead i { position: absolute; top: 3px; left: calc(50% - 10px); width: 20px; height: 20px; border-radius: 50%; background: var(--tz-gold); box-shadow: 0 0 0 3px var(--tz-surf), 0 2px 4px rgba(0, 0, 0, 0.25); }
 .tzs-mic {
   position: relative; z-index: 2; display: grid; place-items: center; width: 128px; height: 128px; border: 0; border-radius: 50%; cursor: pointer;
-  color: #fff; background: var(--tz-red); box-shadow: 0 6px 0 var(--tz-red-d), 0 22px 30px -16px rgba(138, 32, 24, 0.9);
+  color: #fff; background: var(--tz-red); box-shadow: 0 6px 0 var(--tz-red-d), 0 22px 30px -16px rgba(116, 24, 32, 0.9);
   transition: transform 0.18s var(--tz-ease), box-shadow 0.18s;
 }
 .tzs-mic-oyu { position: absolute; inset: 9px; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, 0.55); pointer-events: none; }
@@ -371,14 +371,14 @@
 .tzs-mic:hover:not(:disabled) { transform: scale(1.04); }
 .tzs-mic:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 var(--tz-red-d); }
 .tzs-mic .ic { position: relative; }
-.tzs-rec.rec .tzs-mic { background: var(--tz-red-d); box-shadow: 0 6px 0 #5e140f, 0 0 0 6px rgba(184, 50, 42, 0.18); }
+.tzs-rec.rec .tzs-mic { background: var(--tz-red-d); box-shadow: 0 6px 0 #5e140f, 0 0 0 6px rgba(163, 36, 43, 0.18); }
 .tzs-rec.rec .tzs-mic-oyu { animation: tzSpin 8s linear infinite; }
 .tzs-rec.busy .tzs-mic { cursor: wait; background: var(--tz-surf); box-shadow: inset 0 0 0 2px var(--tz-gold), 0 6px 0 var(--tz-sand-2); }
-.tzs-rec.busy .tzs-mic-oyu { border-color: rgba(224, 165, 38, 0.7); animation: tzSpin 3s linear infinite; }
+.tzs-rec.busy .tzs-mic-oyu { border-color: rgba(232, 178, 58, 0.7); animation: tzSpin 3s linear infinite; }
 .tzs-mic-bird { position: relative; display: grid; margin-top: 6px; }
 .tzs-mic-bird .qyran { display: block; }
 .tzs-pulse { position: absolute; inset: 41px; pointer-events: none; }
-.tzs-pulse i { position: absolute; inset: 0; border-radius: 50%; border: 3px solid rgba(184, 50, 42, 0.55); animation: tzPulse 1.8s ease-out infinite; }
+.tzs-pulse i { position: absolute; inset: 0; border-radius: 50%; border: 3px solid rgba(163, 36, 43, 0.55); animation: tzPulse 1.8s ease-out infinite; }
 .tzs-pulse i:nth-child(2) { animation-delay: 0.6s; } .tzs-pulse i:nth-child(3) { animation-delay: 1.2s; }
 @keyframes tzPulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.62); opacity: 0; } }
 @keyframes tzSpin { to { transform: rotate(360deg); } }

@@ -1,5 +1,5 @@
 // Qyzyl til белгісі: Q әрпі, құйрығы — қызыл тіл («Өнер алды — қызыл тіл»)
-export default function QyzylMark({ size = 40, ink = "#1F2430", red = "#B8322A", groove = "#FFFDF7", title }) {
+export default function QyzylMark({ size = 40, ink = "#1F2430", red = "#A3242B", groove = "#FFFFFF", title }) {
   return (
     <svg className="qz-mark" viewBox="0 0 200 200" width={size} height={size} role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
       <circle cx="94" cy="92" r="58" fill="none" stroke={ink} strokeWidth="28" />

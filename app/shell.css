@@ -9,7 +9,7 @@
    Мәзір элементтерінде сол үштік --it / --it-deep / --it-soft атымен беріледі.
    ════════════════════════════════════════════════════════════════════ */
 
-.sx, .sx-focus { --sx-cream: #fffdf7; --sx-cream-2: #f4ecda; --sx-ink: #1f2430; --sx-muted: #4a5160; --sx-rim: rgba(122, 86, 22, 0.24); }
+.sx, .sx-focus { --sx-cream: #ffffff; --sx-cream-2: #f1eee8; --sx-ink: #1f2430; --sx-muted: #4a5160; --sx-rim: rgba(60, 52, 48, 0.24); }
 
 /* ── Киіз белгі тақтайшасы ── */
 .sx-g { display: block; flex: none; }
@@ -32,7 +32,11 @@
   padding: 6px 8px 2px; font-size: 11px; line-height: 1.3; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--sx-muted);
 }
-.sx .side-cap::after { content: ""; flex: 1; height: 0; border-top: 1px solid var(--sx-rim); }
+.sx .side-cap::after {
+  content: ""; flex: 1; height: 7px; border-top: 0;
+  background: var(--kz-rhomb-rim) left center / 7px 7px no-repeat, linear-gradient(var(--sx-rim), var(--sx-rim)) 11px center / calc(100% - 11px) 1px no-repeat;
+}
+[dir="rtl"] .sx .side-cap::after { background: var(--kz-rhomb-rim) right center / 7px 7px no-repeat, linear-gradient(var(--sx-rim), var(--sx-rim)) right 11px center / calc(100% - 11px) 1px no-repeat; }
 /* Мәзір жолы: ≥44px нысана; екінші жол (бөлімнің мақсаты) — белсенді жолда, «Бүгінде» және биік экранда */
 .sx .side-link {
   display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 44px;
@@ -91,7 +95,7 @@
 .sx .side-me .me-go { margin-inline-start: auto; flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; color: var(--it-deep); background: var(--sx-cream); }
 .sx .seg button { min-height: 32px; padding: 4px 8px; border-radius: 9px; font-weight: 700; font-size: 13px; color: var(--sx-muted); transition: background-color 0.15s, color 0.15s; }
 .sx .seg button:hover:not(.on) { background: var(--sx-cream); color: var(--sx-ink); }
-.sx .seg button.on { background: #b8322a; color: #fff; box-shadow: 0 2px 0 #8a2018; }
+.sx .seg button.on { background: #a3242b; color: #fff; box-shadow: 0 2px 0 #741820; }
 @media (max-height: 800px) {
   .sx .side-me .me-av, .sx .side-me .me-av svg { width: 32px; height: 32px; }
 }
@@ -101,34 +105,36 @@
 .sx .topbar { padding: 5px 10px; gap: 10px; }
 .sx .top-left { gap: 10px; flex: 1 1 auto; min-width: 0; }
 .sx-crest { display: flex; align-items: center; gap: 10px; min-width: 0; animation: sxCrest 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
-.sx-crest-gl { --gl2: #ffd98a; width: 38px; height: 38px; border-radius: 12px; background: var(--sec); color: #fff; box-shadow: 0 2px 0 var(--sec-deep), inset 0 0 0 1.5px rgba(255, 255, 255, 0.28); }
+.sx-crest-gl { position: relative; --gl2: #ffd98a; width: 38px; height: 38px; border-radius: 12px; background: var(--sec); color: #fff; box-shadow: 0 2px 0 var(--sec-deep), inset 0 0 0 1.5px rgba(255, 255, 255, 0.28); }
 .sx-crest-t { display: grid; min-width: 0; line-height: 1.2; }
 .sx-crest-t small { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sec-deep); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sx-crest-t b { font-family: var(--head); font-size: 15px; font-weight: 600; color: var(--sx-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* ◆ эмблема моншағы: бөлім тақтайшасының астында ілулі алтын тұмар */
+.sx-crest-gl::after { content: ""; position: absolute; bottom: -5px; left: 50%; width: 7px; height: 7px; margin-inline-start: -3.5px; border-radius: 1.5px; transform: rotate(45deg); background: var(--pp-gold, #e8b23a); box-shadow: 0 0 0 2px var(--sx-cream); }
 @keyframes sxCrest { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-.sx .demo-note { flex: none; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #fbf0d0; color: #6b4a00; font-weight: 700; font-size: 13px; box-shadow: inset 0 0 0 1.5px #e0a526; white-space: nowrap; }
-.sx .demo-note:hover { background: #f6e3b0; }
+.sx .demo-note { flex: none; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #fbf0d0; color: #6b4a00; font-weight: 700; font-size: 13px; box-shadow: inset 0 0 0 1.5px #e8b23a; white-space: nowrap; }
+.sx .demo-note:hover { background: #f8e6b8; }
 
 .sx .stats-pills { gap: 8px; flex: none; }
 .sx .sx-chip {
   position: relative; gap: 6px; min-height: 38px; padding: 5px 12px 5px 9px; border-radius: 13px;
   background: var(--sx-cream); color: var(--sx-ink);
-  box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 2px 0 rgba(122, 86, 22, 0.2);
+  box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 2px 0 rgba(60, 52, 48, 0.2);
   font-weight: 800; font-size: 14.5px; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .sx .sx-chip b { font-weight: 800; }
-.sx .sx-fire { background: #f6e4df; color: #8a2018; box-shadow: inset 0 0 0 1.5px rgba(184, 50, 42, 0.42), 0 2px 0 rgba(138, 32, 24, 0.3); }
-.sx .sx-fire.cold { background: var(--sx-cream-2); color: var(--sx-muted); box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 2px 0 rgba(122, 86, 22, 0.2); }
+.sx .sx-fire { background: #f6e1e2; color: #741820; box-shadow: inset 0 0 0 1.5px rgba(163, 36, 43, 0.42), 0 2px 0 rgba(116, 24, 32, 0.3); }
+.sx .sx-fire.cold { background: var(--sx-cream-2); color: var(--sx-muted); box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 2px 0 rgba(60, 52, 48, 0.2); }
 .sx .sx-fire.cold .sx-g { filter: grayscale(1); opacity: 0.6; }
 .sx .sx-coin { background: #fbf0d0; color: #5c3f00; box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.55), 0 2px 0 rgba(138, 90, 0, 0.32); }
 .sx .sx-lvl { padding-bottom: 11px; padding-top: 3px; }
-.sx .sx-lvl .pill-bar { left: 10px; right: 10px; bottom: 5px; height: 4px; border-radius: 4px; background: #eadfc6; }
+.sx .sx-lvl .pill-bar { left: 10px; right: 10px; bottom: 5px; height: 4px; border-radius: 4px; background: #e6e1d8; }
 .sx .sx-lvl .pill-bar i { background: #b07c10; border-radius: 4px; transition: width 0.5s cubic-bezier(0.2, 0.8, 0.25, 1); }
 /* күндік мақсат: сақина + «30 / 50 XP» */
 .sx .sx-goal { padding-inline-start: 7px; gap: 8px; }
 .sx-ring { flex: none; display: block; }
-.sx-ring-bg { stroke: #eadfc6; }
+.sx-ring-bg { stroke: #e6e1d8; }
 .sx-ring-fg { stroke: var(--sec); transition: stroke-dasharray 0.6s cubic-bezier(0.2, 0.8, 0.25, 1); }
 .sx-ring-ok { stroke: #2f6b4f; }
 .sx-goal.done { background: #e3efe6; color: #24543d; box-shadow: inset 0 0 0 1.5px rgba(47, 107, 79, 0.5), 0 2px 0 rgba(47, 107, 79, 0.3); }
@@ -143,6 +149,7 @@
 
 /* ══════════ Телефон: жоғарғы жолақ, төменгі мәзір, «Tagy» парағы ══════════ */
 .sx .bottom-nav a.on::before { content: none; }
+/* ◆ белсенді төменгі мәзір: белгі үстінде кішкене алтын тұмар */
 @media (max-width: 960px) {
   .sx .topbar { padding: 5px 8px; gap: 8px; }
   .sx .top-left { gap: 8px; }
@@ -161,7 +168,7 @@
   .sx .bottom-nav {
     left: 8px; right: 8px; padding: 5px 4px; border-radius: 22px; gap: 0;
     background: var(--sx-cream); -webkit-backdrop-filter: none; backdrop-filter: none;
-    box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 -1px 0 rgba(255, 255, 255, 0.6), 0 12px 28px -12px rgba(60, 40, 10, 0.55);
+    box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 -1px 0 rgba(255, 255, 255, 0.6), 0 12px 28px -12px rgba(45, 38, 36, 0.55);
   }
   .sx .bottom-nav a, .sx .bottom-nav button {
     position: relative; display: grid; justify-items: center; align-content: center; gap: 3px;
@@ -173,6 +180,7 @@
   .sx .bottom-nav .sx-gl { width: 46px; height: 28px; border-radius: 14px; background: transparent; color: var(--it-deep); }
   .sx .bottom-nav .on { background: none; box-shadow: none; color: var(--it-deep); font-weight: 800; }
   .sx .bottom-nav .on .sx-gl { --gl2: #ffd98a; background: var(--it); color: #fff; box-shadow: 0 2px 0 var(--it-deep); animation: sxPop 0.32s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
+  .sx .bottom-nav .on::before { content: ""; position: absolute; top: 0; left: 50%; right: auto; width: 6px; height: 6px; margin-inline-start: -3px; border-radius: 1px; transform: rotate(45deg); background: var(--pp-gold, #e8b23a); }
   .sx .bottom-nav a:active .sx-gl, .sx .bottom-nav button:active .sx-gl { transform: scale(0.92); }
   .sx .bottom-nav a:active, .sx .bottom-nav button:active { transform: none; }
 
@@ -212,9 +220,9 @@
 @keyframes sxFade { from { opacity: 0; } to { opacity: 1; } }
 
 /* ══════════ Деңгей тестінің «фокус» қабығы (мәзірсіз) ══════════ */
-.sx-focus { background: radial-gradient(120% 320px at 50% 0, rgba(184, 50, 42, 0.07), transparent 100%) no-repeat; }
+.sx-focus { background: radial-gradient(120% 320px at 50% 0, rgba(163, 36, 43, 0.07), transparent 100%) no-repeat; }
 .sx-focus .focus-head { justify-content: space-between; gap: 12px; width: min(980px, 100%); margin: 0 auto; padding: 16px 16px 6px; box-sizing: border-box; }
-.sx-focus .focus-prov { font-family: var(--head); font-size: 12.5px; font-weight: 600; color: #8a2018; padding: 7px 12px; border-radius: 999px; background: #f6e4df; white-space: nowrap; }
+.sx-focus .focus-prov { font-family: var(--head); font-size: 12.5px; font-weight: 600; color: #741820; padding: 7px 12px; border-radius: 999px; background: #f6e1e2; white-space: nowrap; }
 .sx-focus .focus-main { width: min(980px, 100%); }
 @media (max-width: 520px) { .sx-focus .focus-prov { display: none; } .sx-focus .focus-head { justify-content: center; } }
 

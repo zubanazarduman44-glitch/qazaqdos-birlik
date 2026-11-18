@@ -39,7 +39,7 @@ function TradArt({ i }) {
 const Horn = () => (
   <svg className="hm-qmark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
     <path d="M12 21v-9M12 12c0-5-5.5-7-8-4.2-1.6 1.8-.2 4.6 2.2 3.6M12 12c0-5 5.5-7 8-4.2 1.6 1.8.2 4.6-2.2 3.6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 2.5l1.6 1.9L12 6.3l-1.6-1.9z" fill="var(--pp-gold, #e0a526)" />
+    <path d="M12 2.5l1.6 1.9L12 6.3l-1.6-1.9z" fill="var(--pp-gold, #e8b23a)" />
   </svg>
 );
 

@@ -4,12 +4,12 @@
    Анимация — тек transform/opacity; prefers-reduced-motion құрметтеледі.
    ════════════════════════════════════════════════════════════════════ */
 .cl {
-  --cl-red: var(--pp-red, #b8322a);
-  --cl-red-d: var(--pp-red-d, #8a2018);
+  --cl-red: var(--pp-red, #a3242b);
+  --cl-red-d: var(--pp-red-d, #741820);
   --cl-ink: var(--pp-ink, #1f2430);
   --cl-muted: var(--pp-muted, #4a5160);
-  --cl-felt: var(--pp-felt, #f4ecda);
-  --cl-hair: var(--pp-hair, rgba(122, 86, 22, 0.16));
+  --cl-felt: var(--pp-felt, #f1eee8);
+  --cl-hair: var(--pp-hair, rgba(60, 52, 48, 0.16));
   --cl-ok: #2f6b4f;
   --cl-wine: #6e1e2e;
   --cl-wine-soft: #f3e3e6;
@@ -23,7 +23,7 @@
 /* ── Бөлім тақырыбы (Әдебиет сөресі сияқты) ── */
 .cl-h { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .cl-h h2 { margin: 0; font-family: var(--head); font-size: var(--pp-h2, 19px); font-weight: 600; letter-spacing: -0.01em; color: var(--cl-ink); min-width: 0; }
-.cl-h-ic { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--anar-soft, #f6e4df); color: var(--cl-red-d); }
+.cl-h-ic { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--anar-soft, #f6e1e2); color: var(--cl-red-d); }
 .cl-h-tools { margin-inline-start: auto; }
 .cl-count { display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 8px; border-radius: 99px; background: var(--cl-felt); color: var(--cl-muted); font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .cl-label { display: block; margin: 0 0 6px; font-size: 13.5px; font-weight: 700; color: var(--cl-muted); }
@@ -58,7 +58,7 @@
 .cl-switch::-webkit-scrollbar { display: none; }
 .cl-switch-b {
   flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 0; border-radius: 99px;
-  background: var(--pp-paper, #fffdf7); box-shadow: inset 0 0 0 1.5px var(--pp-rim); color: var(--cl-ink); font: inherit; font-weight: 700; font-size: 14.5px; cursor: pointer;
+  background: var(--pp-paper, #ffffff); box-shadow: inset 0 0 0 1.5px var(--pp-rim); color: var(--cl-ink); font: inherit; font-weight: 700; font-size: 14.5px; cursor: pointer;
 }
 .cl-switch-b svg { color: var(--cl-muted); }
 .cl-switch-b.is-on { background: var(--cl-red); color: #fff; box-shadow: 0 3px 0 var(--cl-red-d); }
@@ -70,7 +70,7 @@
 .cl-hero-id { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .cl-emblem { flex: none; }
 .cl-role { display: inline-block; margin-bottom: 4px; padding: 2px 10px; border-radius: 99px; background: var(--cl-felt); color: var(--cl-muted); font-size: 12.5px; font-weight: 800; }
-.cl-role.is-t { background: var(--anar-soft, #f6e4df); color: var(--cl-red-d); }
+.cl-role.is-t { background: var(--anar-soft, #f6e1e2); color: var(--cl-red-d); }
 .cl-name { margin: 0; font-family: var(--head); font-size: clamp(24px, 3.2vw, 34px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; overflow-wrap: anywhere; }
 .cl-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
 .cl-facts li { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 8px; padding: 12px 14px; border-radius: var(--pp-r-sm, 12px); background: var(--cl-felt); min-width: 0; }
@@ -93,8 +93,8 @@
 /* Ортақ прогресс-сақина */
 .cl-ring { position: relative; display: inline-grid; place-items: center; flex: none; }
 .cl-ring svg { position: absolute; inset: 0; }
-.cl-ring-track { stroke: var(--pp-felt-2, #e6d9bc); }
-.cl-ring-fill { stroke: var(--pp-gold, #e0a526); }
+.cl-ring-track { stroke: var(--pp-felt-2, #e3ddd2); }
+.cl-ring-fill { stroke: var(--pp-gold, #e8b23a); }
 .cl-ring.is-full .cl-ring-fill { stroke: var(--cl-ok); }
 .cl-ring-in { display: grid; place-items: center; border-radius: 50%; overflow: hidden; }
 
@@ -103,7 +103,7 @@
 .cl-code-cap { font-size: 13px; font-weight: 800; color: var(--cl-muted); }
 .cl-code-val { display: flex; gap: 4px; direction: ltr; }
 .cl-code-val span {
-  display: grid; place-items: center; width: 32px; height: 42px; border-radius: 9px; background: var(--pp-paper, #fffdf7); box-shadow: inset 0 0 0 1px var(--pp-rim), 0 2px 0 var(--pp-felt-2);
+  display: grid; place-items: center; width: 32px; height: 42px; border-radius: 9px; background: var(--pp-paper, #ffffff); box-shadow: inset 0 0 0 1px var(--pp-rim), 0 2px 0 var(--pp-felt-2);
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 21px; font-weight: 800; color: var(--cl-red-d);
 }
 .cl-copy { width: 100%; }
@@ -116,10 +116,10 @@
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 8px 12px; border: 0; border-radius: 12px; background: none;
   color: var(--cl-muted); font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; transition: background-color 0.15s, color 0.15s;
 }
-.cl-tabs button.is-on { background: var(--pp-paper, #fffdf7); color: var(--cl-ink); box-shadow: var(--pp-sh-1); }
+.cl-tabs button.is-on { background: var(--pp-paper, #ffffff); color: var(--cl-ink); box-shadow: var(--pp-sh-1); }
 .cl-tabs button.is-on svg { color: var(--cl-red); }
 .cl-tabs .cl-count { background: rgba(255, 255, 255, 0.7); }
-.cl-tabs button.is-on .cl-count { background: var(--anar-soft, #f6e4df); color: var(--cl-red-d); }
+.cl-tabs button.is-on .cl-count { background: var(--anar-soft, #f6e1e2); color: var(--cl-red-d); }
 .cl-panel { display: grid; gap: 14px; }
 
 /* «Жаңа тапсырма» түймесі */
@@ -127,7 +127,7 @@
   display: flex; align-items: center; gap: 14px; width: 100%; min-height: 64px; padding: 12px 16px; border: 1.5px dashed var(--pp-rim); border-radius: var(--pp-r, 18px);
   background: transparent; color: var(--cl-ink); font: inherit; text-align: start; cursor: pointer; transition: background-color 0.15s, border-color 0.15s;
 }
-.cl-new:hover { background: var(--pp-paper, #fffdf7); border-color: var(--cl-red); }
+.cl-new:hover { background: var(--pp-paper, #ffffff); border-color: var(--cl-red); }
 .cl-new-ic { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--cl-red); color: #fff; }
 .cl-new b { display: block; font-size: 15.5px; }
 .cl-new small { display: block; font-size: 13px; color: var(--cl-muted); }
@@ -138,7 +138,7 @@
 .cl-kinds-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .cl-kind {
   position: relative; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 10px 12px; border-radius: 14px;
-  background: var(--pp-paper, #fffdf7); box-shadow: inset 0 0 0 1.5px var(--pp-rim); font-weight: 700; font-size: 14px; line-height: 1.2; cursor: pointer;
+  background: var(--pp-paper, #ffffff); box-shadow: inset 0 0 0 1.5px var(--pp-rim); font-weight: 700; font-size: 14px; line-height: 1.2; cursor: pointer;
 }
 .cl-kind input { position: absolute; opacity: 0; pointer-events: none; }
 .cl-kind svg { flex: none; color: var(--k); }
@@ -155,7 +155,7 @@
 .cl-tasks { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .cl-task {
   display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 14px 16px;
-  border-radius: var(--pp-r, 18px); background: var(--pp-paper, #fffdf7); box-shadow: var(--pp-card);
+  border-radius: var(--pp-r, 18px); background: var(--pp-paper, #ffffff); box-shadow: var(--pp-card);
   border-inline-start: 4px solid var(--k);
 }
 .cl-task.is-done { border-inline-start-color: var(--pp-felt-2); }
@@ -174,7 +174,7 @@
 .cl-task-count b { font-size: 16px; color: var(--cl-ink); }
 .cl-done-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 99px; background: #e3eee6; color: var(--cl-ok); font-weight: 800; font-size: 14px; }
 .cl-bar { display: block; height: 8px; border-radius: 99px; background: var(--cl-felt); overflow: hidden; }
-.cl-bar i { display: block; height: 100%; border-radius: inherit; background: var(--pp-gold, #e0a526); transform-origin: left; animation: cl-grow 0.6s var(--ease, ease) both; }
+.cl-bar i { display: block; height: 100%; border-radius: inherit; background: var(--pp-gold, #e8b23a); transform-origin: left; animation: cl-grow 0.6s var(--ease, ease) both; }
 [dir="rtl"] .cl-bar i { transform-origin: right; }
 @keyframes cl-grow { from { transform: scaleX(0); } }
 
@@ -195,7 +195,7 @@
 .cl-row-rank { display: grid; place-items: center; }
 .cl-rank-n { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--cl-felt); font-weight: 800; font-size: 14px; color: var(--cl-muted); font-variant-numeric: tabular-nums; }
 .cl-row-av { position: relative; display: grid; }
-.cl-dot { position: absolute; inset-inline-end: -1px; bottom: -1px; width: 13px; height: 13px; border-radius: 50%; background: #c9c2b2; box-shadow: 0 0 0 2.5px var(--pp-paper, #fffdf7); }
+.cl-dot { position: absolute; inset-inline-end: -1px; bottom: -1px; width: 13px; height: 13px; border-radius: 50%; background: #c9c2b2; box-shadow: 0 0 0 2.5px var(--pp-paper, #ffffff); }
 .cl-dot.on { background: #3f9a5e; }
 .cl-row-who { display: grid; min-width: 0; }
 .cl-row-who b { font-size: 15.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -220,12 +220,12 @@
 .cl-code-in { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 19px !important; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; direction: ltr; }
 .cl-code-in::placeholder { color: #b9b0a0; font-weight: 600; }
 .cl-tip { display: flex; align-items: flex-start; gap: 8px; margin: 0; font-size: 14px; line-height: 1.5; color: var(--cl-muted); }
-.cl-tip svg { flex: none; margin-top: 2px; color: var(--pp-gold, #e0a526); }
+.cl-tip svg { flex: none; margin-top: 2px; color: var(--pp-gold, #e8b23a); }
 
 /* ── Растау терезесі ── */
 .cl-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; background: rgba(31, 36, 48, 0.42); animation: cl-fade 0.18s ease both; }
 .cl-dialog {
-  width: min(420px, 100%); padding: 24px; border-radius: var(--pp-r-lg, 24px); background: var(--pp-paper, #fffdf7); box-shadow: var(--pp-sh-3), inset 0 0 0 1px var(--pp-rim);
+  width: min(420px, 100%); padding: 24px; border-radius: var(--pp-r-lg, 24px); background: var(--pp-paper, #ffffff); box-shadow: var(--pp-sh-3), inset 0 0 0 1px var(--pp-rim);
   text-align: center; animation: cl-pop 0.22s var(--ease, ease) both;
 }
 .cl-dialog-ic { display: inline-block; margin-bottom: 10px; }

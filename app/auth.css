@@ -1,20 +1,23 @@
 /* ════════ Qyzyl til · Алғашқы жол: кіру, тіркелу, онбординг ════════
    Сол жақта қызыл киіз қабырға (логотип, Aqyl, мақал), оң жақта ақ киіз карточка. */
 .au {
-  --au-red: #b8322a; --au-deep: #8a2018; --au-cream: #fffdf7; --au-cream-2: #f4ecda; --au-ink: #1f2430; --au-muted: #4a5160; --au-gold: #e0a526;
-  --au-rim: rgba(122, 86, 22, 0.24);
+  --au-red: #a3242b; --au-deep: #741820; --au-cream: #ffffff; --au-cream-2: #f1eee8; --au-ink: #1f2430; --au-muted: #4a5160; --au-gold: #e8b23a;
+  --au-rim: rgba(60, 52, 48, 0.24);
   min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: minmax(340px, 0.9fr) minmax(0, 1.1fr);
-  background: #faf6ee; color: var(--au-ink);
+  background: #fcfaf6; color: var(--au-ink);
 }
 
 /* ── Қабырға ── */
 .au-wall {
   position: relative; display: flex; flex-direction: column; gap: 22px; padding: 26px clamp(22px, 3vw, 40px) 30px;
   background: var(--au-red); color: #fff; overflow: hidden;
+  /* ою тұсқағазының орнына: бір ғана үлкен «мүйіз бұрыш» төменгі соңғы бұрышта (мотив сөздігі, paper.css) */
   background-image:
     radial-gradient(circle at 50% 38%, rgba(255, 220, 160, 0.16), transparent 55%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cg fill='none' stroke='%238a2018' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M44 70c0-16-12-22-21-16-7 5-3 15 5 13 6-2 6-9 0-9'/%3E%3Cpath d='M44 70c0-16 12-22 21-16 7 5 3 15-5 13-6-2-6-9 0-9'/%3E%3C/g%3E%3Cpath d='M44 14l6 6-6 6-6-6z' fill='%238a2018'/%3E%3C/svg%3E");
-  background-size: auto, 88px 88px;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg transform='rotate(180 16 16)'%3E%3Cg fill='none' stroke='%23741820' stroke-width='.9' stroke-linecap='round'%3E%3Cpath d='M15 9h9c2.6 0 3.2 3.3.9 3.5'/%3E%3Cpath d='M9 15v9c0 2.6 3.3 3.2 3.5.9'/%3E%3C/g%3E%3Cpath d='M9 5.6 12.4 9 9 12.4 5.6 9Z' fill='%23741820'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: auto, 150px 150px;
+  background-position: center, right 14px bottom;
+  background-repeat: no-repeat;
 }
 .au-wall::after { content: ""; position: absolute; top: 0; bottom: 0; inset-inline-end: 0; width: 12px; background: var(--oyu-band) repeat-y center / 12px auto; }
 .au-wall-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -37,7 +40,7 @@
 }
 .au-bubble::before { content: ""; position: absolute; top: -8px; left: 50%; width: 16px; height: 16px; background: var(--au-cream); transform: translateX(-50%) rotate(45deg); border-radius: 3px; }
 
-.au-prov { position: relative; z-index: 1; margin: 0; padding: 14px 18px; border-radius: 16px; background: var(--au-deep); box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.55); }
+.au-prov { position: relative; z-index: 1; margin: 0; padding: 14px 18px; border-radius: 16px; background: var(--au-deep); box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.55); }
 .au-prov blockquote { margin: 0; font-family: var(--head); font-weight: 600; font-size: clamp(16px, 1.6vw, 19px); line-height: 1.35; color: #fff; }
 .au-prov figcaption { margin-top: 4px; font-size: 14px; color: #f8dcd2; }
 .au-perks { position: relative; z-index: 1; list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -57,7 +60,7 @@
 .au-main { display: grid; place-items: center; padding: clamp(20px, 4vw, 48px) clamp(16px, 4vw, 48px); min-width: 0; }
 .au-card {
   width: min(480px, 100%); padding: clamp(22px, 3vw, 34px); border-radius: 24px;
-  background: var(--au-cream); box-shadow: inset 0 0 0 1.5px var(--au-rim), 0 4px 0 rgba(122, 86, 22, 0.16), 0 24px 48px -28px rgba(60, 40, 10, 0.45);
+  background: var(--au-cream); box-shadow: inset 0 0 0 1.5px var(--au-rim), 0 4px 0 rgba(60, 52, 48, 0.16), 0 24px 48px -28px rgba(45, 38, 36, 0.45);
   animation: auIn 0.42s cubic-bezier(0.2, 0.8, 0.25, 1) both;
 }
 .au-card h1 { margin: 0 0 6px; font-size: clamp(24px, 2.6vw, 30px); line-height: 1.15; color: var(--au-ink); }
@@ -85,7 +88,7 @@
 .au-links { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; margin-top: 18px; font-weight: 700; font-size: 14.5px; }
 .au-links a { color: var(--au-deep); }
 .au-try { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 12px; background: #fbf0d0; color: #5c3f00 !important; text-decoration: none; box-shadow: inset 0 0 0 1.5px var(--au-gold); }
-.au-try:hover { background: #f6e3b0; }
+.au-try:hover { background: #f8e6b8; }
 
 /* ── Онбординг ── */
 .au-steps .au-card { width: min(640px, 100%); }
@@ -100,10 +103,10 @@
 .obx-opt {
   position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 10px 40px 10px 10px; padding-inline: 10px 40px;
   border: 0; border-radius: 16px; font: inherit; color: var(--au-ink); text-align: start; cursor: pointer;
-  background: #fff; box-shadow: inset 0 0 0 1.5px var(--au-rim), 0 2px 0 rgba(122, 86, 22, 0.14);
+  background: #fff; box-shadow: inset 0 0 0 1.5px var(--au-rim), 0 2px 0 rgba(60, 52, 48, 0.14);
   transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.25, 1), box-shadow 0.16s, background-color 0.16s;
 }
-.obx-opt:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--au-red), 0 4px 0 rgba(122, 86, 22, 0.14); }
+.obx-opt:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--au-red), 0 4px 0 rgba(60, 52, 48, 0.14); }
 .obx-opt.on { background: #fbeae5; box-shadow: inset 0 0 0 2.5px var(--au-red), 0 3px 0 var(--au-deep); }
 .obx-opt-t { display: grid; gap: 2px; min-width: 0; }
 .obx-opt-t b { font-size: 15px; }
@@ -120,14 +123,14 @@
 
 .obx-goals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .obx-goal { align-items: flex-start; min-height: 96px; flex-direction: column; gap: 8px; padding: 14px; }
-.obx-gl { --gl2: #e0a526; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--it-soft); color: var(--it-deep); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1); }
-.obx-goal:hover { box-shadow: inset 0 0 0 1.5px var(--it), 0 4px 0 rgba(122, 86, 22, 0.14); }
+.obx-gl { --gl2: #e8b23a; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--it-soft); color: var(--it-deep); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.obx-goal:hover { box-shadow: inset 0 0 0 1.5px var(--it), 0 4px 0 rgba(60, 52, 48, 0.14); }
 .obx-goal.on { background: var(--it-soft); box-shadow: inset 0 0 0 2.5px var(--it), 0 3px 0 var(--it-deep); }
 .obx-goal.on .obx-gl { --gl2: #ffd98a; background: var(--it); color: #fff; transform: rotate(-6deg) scale(1.05); }
 .obx-goal .obx-ok { top: 14px; transform: scale(0.4); background: var(--it); }
 .obx-goal.on > .obx-ok { transform: none; }
 
-.obx-pass { display: flex; align-items: center; gap: 16px; padding: 14px; margin-bottom: 14px; border-radius: 18px; background: #fbf0d6; box-shadow: inset 0 0 0 1.5px rgba(224, 165, 38, 0.6); }
+.obx-pass { display: flex; align-items: center; gap: 16px; padding: 14px; margin-bottom: 14px; border-radius: 18px; background: #fbf0d6; box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.6); }
 .obx-pass-av { flex: none; border-radius: 50%; box-shadow: 0 0 0 4px var(--au-cream), 0 0 0 6px var(--au-red); line-height: 0; }
 .obx-pass-av .avatar { animation: auPop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
 .obx-pass-t { display: grid; gap: 6px; min-width: 0; }
@@ -142,7 +145,7 @@
 .obx-av.on .avatar { border-radius: 50%; box-shadow: 0 0 0 3px var(--au-cream), 0 0 0 6px var(--au-red); }
 .obx-av .obx-ok { top: auto; bottom: -2px; inset-inline-end: -2px; transform: scale(0.4); }
 .obx-av.on .obx-ok { transform: none; }
-.obx-after { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; background: #e7ede1; color: #24522b; font-weight: 600; font-size: 14px; --gl2: #e0a526; }
+.obx-after { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; background: #e7ede1; color: #24522b; font-weight: 600; font-size: 14px; --gl2: #e8b23a; }
 .obx-after .sx-g { color: #3a7440; flex: none; }
 
 .obx-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; }

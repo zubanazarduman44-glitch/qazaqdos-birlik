@@ -5,11 +5,11 @@
    Барлық ереже .sy ішінде — басқа беттерге әсер етпейді.
    ════════════════════════════════════════════════════════════════════ */
 .saiys.sy {
-  --sy-red: #b8322a; --sy-red-d: #8a2018; --sy-red-soft: #f6e4df;
-  --sy-gold: #e0a526; --sy-gold-l: #f6e3b0; --sy-gold-ink: #3a2500;
+  --sy-red: #a3242b; --sy-red-d: #741820; --sy-red-soft: #f6e1e2;
+  --sy-gold: #e8b23a; --sy-gold-l: #f8e6b8; --sy-gold-ink: #3a2500;
   --sy-silver: #cfcbc2; --sy-bronze: #c98450;
-  --sy-ink: #1f2430; --sy-cream: #fffdf7; --sy-sand: #f4ecda;
-  --sy-blue: #0f5e7a; --sy-ok: #2f6b4f;
+  --sy-ink: #1f2430; --sy-cream: #ffffff; --sy-sand: #f1eee8;
+  --sy-blue: #0b6e7e; --sy-ok: #2f6b4f;
   --sy-dir: 1;
   max-width: 1080px; gap: 18px; min-width: 0;
 }
@@ -40,12 +40,12 @@
 .sy-bubble {
   position: absolute; inset-inline-end: 23%; top: 4%; max-width: 64%; display: grid; gap: 2px;
   padding: 9px 13px; border-radius: 14px; background: #fff; color: var(--sy-ink); font-size: 13.5px; line-height: 1.35;
-  box-shadow: inset 0 0 0 1.5px rgba(138, 32, 24, 0.22), 0 10px 22px -14px rgba(60, 30, 10, 0.55);
+  box-shadow: inset 0 0 0 1.5px rgba(116, 24, 32, 0.22), 0 10px 22px -14px rgba(60, 30, 10, 0.55);
   animation: syBubble 0.5s var(--ease) 0.7s both; transform-origin: 100% 50%;
 }
 [dir="rtl"] .sy-bubble { transform-origin: 0 50%; }
-.sy-bubble::after { content: ""; position: absolute; inset-inline-end: -7px; top: 18px; width: 14px; height: 14px; background: #fff; transform: rotate(45deg); box-shadow: 2px -2px 0 -0.5px rgba(138, 32, 24, 0.22); clip-path: polygon(0 0, 100% 0, 100% 100%); }
-[dir="rtl"] .sy-bubble::after { box-shadow: -2px 2px 0 -0.5px rgba(138, 32, 24, 0.22); clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.sy-bubble::after { content: ""; position: absolute; inset-inline-end: -7px; top: 18px; width: 14px; height: 14px; background: #fff; transform: rotate(45deg); box-shadow: 2px -2px 0 -0.5px rgba(116, 24, 32, 0.22); clip-path: polygon(0 0, 100% 0, 100% 100%); }
+[dir="rtl"] .sy-bubble::after { box-shadow: -2px 2px 0 -0.5px rgba(116, 24, 32, 0.22); clip-path: polygon(0 0, 0 100%, 100% 100%); }
 .sy-bubble b { font-family: var(--head); font-size: 13.5px; font-weight: 700; }
 .sy-bubble span { color: var(--muted); font-weight: 600; font-size: 13px; }
 .sy-bubble.up { box-shadow: inset 0 0 0 2px var(--sy-gold), 0 10px 22px -14px rgba(60, 30, 10, 0.55); }
@@ -85,7 +85,7 @@
 .sy-prize { position: relative; overflow: hidden; display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 14px 16px; align-items: center; padding: 18px; }
 .sy-prize::before {
   content: ""; position: absolute; width: 300px; height: 300px; inset-inline-start: -98px; top: -96px; border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg, rgba(224, 165, 38, 0.2) 0 9deg, transparent 9deg 18deg);
+  background: repeating-conic-gradient(from 0deg, rgba(232, 178, 58, 0.2) 0 9deg, transparent 9deg 18deg);
   -webkit-mask-image: radial-gradient(closest-side, #000 45%, transparent); mask-image: radial-gradient(closest-side, #000 45%, transparent);
   animation: sySpin 80s linear infinite; pointer-events: none;
 }
@@ -169,7 +169,7 @@
 
 /* ── Бәйге жолы ── */
 .sy-race { padding: 18px 18px 16px; }
-.sy-lanes { list-style: none; margin: 0; padding: 0; border-radius: 14px; overflow: hidden; background: #ecdcb6; box-shadow: inset 0 0 0 1px rgba(122, 86, 22, 0.18); }
+.sy-lanes { list-style: none; margin: 0; padding: 0; border-radius: 14px; overflow: hidden; background: #ecdcb6; box-shadow: inset 0 0 0 1px rgba(60, 52, 48, 0.18); }
 .sy-lane { display: grid; grid-template-columns: minmax(0, 150px) minmax(0, 1fr); align-items: center; gap: 8px; padding: 4px 10px; border-bottom: 2px dashed rgba(255, 253, 247, 0.9); }
 .sy-lane:last-child { border-bottom: 0; }
 .sy-lane:nth-child(odd) { background: rgba(255, 253, 247, 0.32); }

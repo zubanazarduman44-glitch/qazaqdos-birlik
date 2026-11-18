@@ -6,9 +6,9 @@
    Барлық стиль .ld ішінде; ескі .landing/.hero ережелеріне тәуелсіз.
    ════════════════════════════════════════════════════════════════════ */
 .ld {
-  --red: #b8322a; --red-2: #8a2018; --red-3: #6e1e2e;
-  --cream: #fffdf7; --cream-2: #faf6ee; --sand: #f4ecda;
-  --ink: #1f2430; --mut: #4a5160; --gold: #e0a526; --gold-soft: #f6e3b0; --blue: #0f5e7a;
+  --red: #a3242b; --red-2: #741820; --red-3: #6e1e2e;
+  --cream: #ffffff; --cream-2: #fcfaf6; --sand: #f1eee8;
+  --ink: #1f2430; --mut: #4a5160; --gold: #e8b23a; --gold-soft: #f8e6b8; --blue: #0b6e7e;
   --ribH: 180px; --ribS: 1;           /* лента биіктігі мен масштабы (180 бірлік = ribH) */
   --ease-out: cubic-bezier(0.2, 0.75, 0.2, 1);
   --spring: cubic-bezier(0.34, 1.45, 0.5, 1);
@@ -24,7 +24,7 @@
 .ld-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; padding-bottom: 18px; position: relative; z-index: 5; animation: ldFade 0.6s ease both; }
 .ld-head-r { display: flex; align-items: center; gap: 10px; }
 .ld .btn.ld-primary { background: var(--red); color: #fff; box-shadow: 0 3px 0 var(--red-2); }
-.ld .btn.ld-primary:hover:not(:disabled) { background: #a32a23; filter: none; }
+.ld .btn.ld-primary:hover:not(:disabled) { background: #8f1f26; filter: none; }
 .ld .btn.ld-primary:active:not(:disabled) { background: var(--red-2); box-shadow: none; }
 .ld .btn.ghost.ld-second { background: var(--cream); box-shadow: inset 0 0 0 2px var(--ink); }
 .ld .btn.ghost.ld-second:hover:not(:disabled) { box-shadow: inset 0 0 0 2px var(--red); color: var(--red-2); }
@@ -34,8 +34,8 @@
 .ld-hero::before { /* киіз фон: ақшыл дақ + жіңішке ою торы */
   content: ""; position: absolute; inset: -90px 0 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(60% 70% at 78% 42%, rgba(224, 165, 38, 0.16), transparent 70%),
-    radial-gradient(40% 50% at 10% 20%, rgba(184, 50, 42, 0.07), transparent 70%);
+    radial-gradient(60% 70% at 78% 42%, rgba(232, 178, 58, 0.16), transparent 70%),
+    radial-gradient(40% 50% at 10% 20%, rgba(163, 36, 43, 0.07), transparent 70%);
 }
 .ld-hero-in { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: end; padding-top: clamp(12px, 3vw, 36px); }
 .ld-copy { padding-bottom: calc(70px * var(--ribS) + 12px); }
@@ -45,7 +45,7 @@
 .ld-proverb-kk {
   display: inline-flex; align-items: center; gap: 10px; justify-self: start;
   font-family: var(--head); font-weight: 600; font-size: clamp(14px, 1.25vw, 16.5px); letter-spacing: 0.01em;
-  color: var(--red-2); padding: 7px 14px 7px 10px; border-radius: 999px; background: #f6e4df;
+  color: var(--red-2); padding: 7px 14px 7px 10px; border-radius: 999px; background: #f6e1e2;
 }
 .ld-proverb-kk::before { /* логотиптің тілі */
   content: ""; width: 22px; height: 14px; flex: none; background: var(--red);
@@ -74,7 +74,7 @@
   position: absolute; top: 0; right: 0; bottom: 0; left: 92px; overflow: hidden;
   border-radius: 50% 50% 26px 26px / 220px 220px 26px 26px;
   border: 10px solid var(--red); background: #cfe6ea;
-  box-shadow: 0 0 0 5px var(--cream), 0 0 0 7px rgba(138, 32, 24, 0.25), 0 30px 50px -30px rgba(90, 30, 10, 0.55);
+  box-shadow: 0 0 0 5px var(--cream), 0 0 0 7px rgba(116, 24, 32, 0.25), 0 30px 50px -30px rgba(90, 30, 10, 0.55);
   animation: ldArch 1s 0.3s var(--ease-out) both;
 }
 .ld-arch::after { /* киіз тігісі */
@@ -144,15 +144,15 @@
 
 /* Төрт әлем: ортада қызыл жіп, суреттер кезектесіп */
 .ld-worlds { position: relative; list-style: none; margin: 0 auto; padding: 0; max-width: 1080px; display: grid; gap: clamp(28px, 4vw, 48px); }
-.ld-worlds::before { content: ""; position: absolute; top: 40px; bottom: 40px; left: 50%; width: 0; border-left: 3px dashed rgba(184, 50, 42, 0.55); transform: translateX(-1.5px); }
+.ld-worlds::before { content: ""; position: absolute; top: 40px; bottom: 40px; left: 50%; width: 0; border-left: 3px dashed rgba(163, 36, 43, 0.55); transform: translateX(-1.5px); }
 .ld-world { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 84px minmax(0, 1fr); grid-template-areas: "art n txt"; align-items: center; }
 .ld-world:nth-child(even) { grid-template-areas: "txt n art"; }
-.ld-world-art { grid-area: art; position: relative; aspect-ratio: 12 / 7; border-radius: 24px; overflow: hidden; background: var(--sand); box-shadow: 0 0 0 6px var(--cream), 0 0 0 7.5px rgba(122, 86, 22, 0.22), 0 26px 40px -28px rgba(70, 30, 10, 0.55); transform: rotate(var(--tilt, -1.2deg)); transition: transform 0.5s var(--ease-out); }
+.ld-world-art { grid-area: art; position: relative; aspect-ratio: 12 / 7; border-radius: 24px; overflow: hidden; background: var(--sand); box-shadow: 0 0 0 6px var(--cream), 0 0 0 7.5px rgba(60, 52, 48, 0.22), 0 26px 40px -28px rgba(70, 30, 10, 0.55); transform: rotate(var(--tilt, -1.2deg)); transition: transform 0.5s var(--ease-out); }
 .ld-world:nth-child(even) .ld-world-art { --tilt: 1.2deg; }
 .ld-world:hover .ld-world-art { transform: rotate(0deg) scale(1.015); }
 .ld-world-art > .sa, .ld-world-art > svg, .ld-world-art .ld-art-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .ld-world-art .g-scene { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ld-world-n { grid-area: n; justify-self: center; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--red); color: var(--cream); font-family: var(--head); font-weight: 800; font-size: 26px; box-shadow: 0 0 0 7px var(--cream-2), 0 4px 0 7px rgba(138, 32, 24, 0.18); }
+.ld-world-n { grid-area: n; justify-self: center; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--red); color: var(--cream); font-family: var(--head); font-weight: 800; font-size: 26px; box-shadow: 0 0 0 7px var(--cream-2), 0 4px 0 7px rgba(116, 24, 32, 0.18); }
 .ld-world-txt { grid-area: txt; padding: 8px clamp(4px, 2vw, 20px); }
 .ld-world:nth-child(even) .ld-world-txt { text-align: right; }
 .ld-world-txt h3 { margin: 0 0 8px; font-family: var(--head); font-weight: 600; font-size: clamp(20px, 2.1vw, 29px); line-height: 1.2; color: var(--ink); }
@@ -205,7 +205,7 @@
 
 /* Қадамдар: өсетін сөйлеу бұлттары */
 .ld-steps { position: relative; list-style: none; margin: 0 auto; padding: 0 0 26px; max-width: 1080px; display: grid; grid-template-columns: 0.86fr 1fr 1.16fr; gap: clamp(16px, 2.4vw, 30px); align-items: end; }
-.ld-steps::after { content: ""; position: absolute; left: 4%; right: 4%; bottom: 0; height: 0; border-top: 3px dotted rgba(184, 50, 42, 0.45); }
+.ld-steps::after { content: ""; position: absolute; left: 4%; right: 4%; bottom: 0; height: 0; border-top: 3px dotted rgba(163, 36, 43, 0.45); }
 .ld-step { position: relative; padding: 22px 24px 24px; border-radius: 28px; background: var(--cream); box-shadow: 0 0 0 2px var(--ink), 0 6px 0 var(--ink); }
 .ld-step::after { content: ""; position: absolute; left: 30px; bottom: -22px; width: 28px; height: 24px; background: var(--ink); clip-path: polygon(0 100%, 20% 0, 100% 0); }
 .ld-step::before { content: ""; position: absolute; z-index: 1; left: 34px; bottom: -13px; width: 20px; height: 16px; background: var(--cream); clip-path: polygon(0 100%, 20% 0, 100% 0); }
@@ -232,7 +232,7 @@
 .ld-qa[open] .ld-a { animation: ldPopL 0.45s var(--spring) both; }
 .ld-a-av { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: var(--gold-soft); box-shadow: inset 0 0 0 2px var(--red); }
 .ld-a-av svg { display: block; width: 46px; height: auto; }
-.ld-a p { margin: 0; max-width: 640px; padding: 14px 20px; border-radius: 22px 22px 22px 6px; background: var(--cream); color: var(--ink); font-size: 16.5px; line-height: 1.6; box-shadow: 0 0 0 1.5px rgba(122, 86, 22, 0.25), 0 10px 22px -16px rgba(60, 30, 10, 0.4); }
+.ld-a p { margin: 0; max-width: 640px; padding: 14px 20px; border-radius: 22px 22px 22px 6px; background: var(--cream); color: var(--ink); font-size: 16.5px; line-height: 1.6; box-shadow: 0 0 0 1.5px rgba(60, 52, 48, 0.25), 0 10px 22px -16px rgba(60, 30, 10, 0.4); }
 
 /* Соңғы шақыру — қызыл киіз */
 .ld-final { position: relative; margin: clamp(56px, 8vw, 104px) 0 28px; display: flex; align-items: center; gap: clamp(16px, 3vw, 40px); padding: clamp(26px, 4vw, 48px) clamp(22px, 5vw, 64px); border-radius: 34px; background: var(--red); color: var(--cream); overflow: hidden; box-shadow: 0 6px 0 var(--red-2), 0 30px 50px -30px rgba(90, 20, 10, 0.6); }
@@ -248,7 +248,7 @@
 .ld .btn.ld-onred:hover:not(:disabled) { background: #fff; filter: none; }
 .ld .btn.ld-onred:focus-visible { outline-color: var(--cream); box-shadow: 0 0 0 5px var(--red-3); }
 
-.ld-foot { margin-top: 24px; padding-top: 22px; padding-bottom: 40px; border-top: 1px solid var(--pp-hair, rgba(122, 86, 22, 0.16)); text-align: center; color: var(--mut); }
+.ld-foot { margin-top: 24px; padding-top: 22px; padding-bottom: 40px; border-top: 1px solid var(--pp-hair, rgba(60, 52, 48, 0.16)); text-align: center; color: var(--mut); }
 .ld-foot p { margin: 0; font-size: 14px; }
 
 /* ═════════ Анимациялар ═════════ */
