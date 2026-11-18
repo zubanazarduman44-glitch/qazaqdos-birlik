@@ -71,6 +71,7 @@ export default function Literature() {
   const srcText = work ? (reading ? ep.text : work.text) : "";
   const trKey = work ? `qd_lt_${work.id}${reading ? "_ep" : ""}_${explain}` : "";
   const sentences = useMemo(() => splitSent(srcText), [srcText]);
+  const [pick, setPick] = useState(null); // оқу басталатын таңдалған сөйлем
 
   const stop = () => {
     run.current++;
@@ -507,28 +508,28 @@ export default function Literature() {
               <p className="lit-lead" lang="kk" dir="ltr">{ep.lead}</p>
               {leadTr && <p className="lit-tr lit-lead-tr" lang={explain} dir="auto" data-notap="">{leadTr}</p>}
             </header>
-            <ol className="lit-par lit-eps">
-              {sentences.map((sn, i) => {
-                const one = parallel ? tr[i] : rowTr[i];
+            {/* Кәдімгі мәтін: сөйлемдер абзацпен қатар жүреді (нөмір мен батырмасыз). Сөйлемді басса — сол жерден оқиды. */}
+            <div className="lit-flow" lang="kk" dir="ltr">
+              {Array.from({ length: Math.ceil(sentences.length / 4) }, (_, g) => {
+                const idx = sentences.map((_, k) => k).slice(g * 4, g * 4 + 4);
                 return (
-                  <li key={i} className={`lit-row ${i === cur ? "now" : ""} ${i < cur ? "past" : ""}`}>
-                    <button className={`lit-say ${playing && i === cur ? "is-on" : ""}`} onClick={() => play(i, true)} aria-label={`${lt.listen} ${i + 1}`} title={lt.listen}>
-                      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4.5 2.8v10.4L13 8z" fill="currentColor" /></svg>
-                      <span className="lit-say-n" aria-hidden="true">{i + 1}</span>
-                    </button>
-                    <span className="lit-kk" lang="kk" dir="ltr">{snt(sn, i)}</span>
-                    {explain !== "kk" && !parallel && (
-                      <button className={`lit-row-tr ${rowTr[i] ? "is-on" : ""}`} onClick={() => trRow(i)} aria-label={lt.trOne} title={lt.trOne} aria-pressed={!!rowTr[i]}>
-                        <Icon name="globe" size={16} />
-                      </button>
-                    )}
-                    {one && (
-                      <span className={`lit-tr ${one === "loading" ? "is-loading" : ""}`} lang={explain} dir="auto" data-notap="">{one === "loading" ? x.tapLoading : one}</span>
-                    )}
-                  </li>
+                  <div key={g} className="lit-para">
+                    <p className="reader-text lit-text">
+                      {idx.map((k) => (
+                        <span
+                          key={k}
+                          className={`snt ${k === cur ? "now" : ""} ${k < cur ? "past" : ""} ${playing && k === cur ? "is-say" : ""}`}
+                          onClick={() => { if (!playing) { setPick(k); setCur(k); } }}
+                        >
+                          {sentences[k]}{" "}
+                        </span>
+                      ))}
+                    </p>
+                    {parallel && <p className="lit-tr lit-para-tr" lang={explain} dir="auto" data-notap="">{idx.map((k) => tr[k]).join(" ")}</p>}
+                  </div>
                 );
               })}
-            </ol>
+            </div>
             {trans && !parallel && (
               <p className={`lit-trans ${trans === "loading" ? "is-loading" : ""}`} lang={trans === "loading" ? undefined : explain} dir="auto" data-notap="">
                 {trans === "loading" ? x.tapLoading : trans}
@@ -543,7 +544,7 @@ export default function Literature() {
 
       {reading && (
         <div className="lit-dock">
-          <button className={`btn lit-play ${playing ? "is-on" : ""}`} onClick={() => play()}>
+          <button className={`btn lit-play ${playing ? "is-on" : ""}`} onClick={() => { const f = !playing ? pick : null; setPick(null); play(f != null ? f : undefined); }}>
             <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : lt.readAll}
           </button>
           {trBtn}
