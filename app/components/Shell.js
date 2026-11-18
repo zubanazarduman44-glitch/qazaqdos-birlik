@@ -13,7 +13,7 @@ import WordTap from "./WordTap";
 import { authed } from "../../lib/auth";
 import { whenIdle } from "../../lib/idle";
 import { UI_LANGS, UI_LABELS } from "../../lib/i18n";
-import { SECTIONS, SECTION_HINT, TODAY_LABEL, pickL, sectionOf, secVars } from "../../lib/sections";
+import { SECTIONS, SECTION_HINT, pickL, sectionOf, secVars } from "../../lib/sections";
 
 export const NAV = [
   { href: "/app", key: "home", icon: "home" },
@@ -31,7 +31,7 @@ export const NAV = [
   { href: "/app/shop", key: "shop", icon: "bag" },
 ];
 const MOBILE = ["home", "course", "games", "chat"];
-// Бүйір мәзір топтары: «Бүгін» (бастау нүктесі) → оқу → тәжірибе → әлем → қауым
+// Бүйір мәзір топтары: «Басты» → оқу → тәжірибе → әлем → қауым
 const GROUPS = [
   { id: "top", keys: ["home"] },
   { id: "learn", name: { kk: "Оқу", ru: "Учёба", en: "Learn", zh: "学习", es: "Aprender", de: "Lernen", fr: "Apprendre", tr: "Öğren", ar: "تعلّم", ko: "학습", ja: "学ぶ" }, keys: ["course", "sozdik", "tuzel"] },
@@ -160,7 +160,7 @@ export default function Shell({ children }) {
 
   const showNav = () => true;
   const active = (href) => (href === "/app" ? path === "/app" : path?.startsWith(href));
-  const label = (k) => (k === "home" ? pickL(TODAY_LABEL, lang) : t.navLong[k] || t.nav[k]);
+  const label = (k) => t.navLong[k] || t.nav[k];
   const hint = (k) => pickL(SECTION_HINT[k], lang);
   const cap = (g) => (g?.name ? g.name[lang] || g.name.en : null);
 
@@ -186,7 +186,7 @@ export default function Shell({ children }) {
   const sideLink = (n) => {
     const on = active(n.href);
     return (
-      <Link key={n.href} href={n.href} className={`side-link ${on ? "on" : ""} ${n.key === "home" ? "sx-today" : ""}`} aria-current={on ? "page" : undefined} title={hint(n.key)} style={secVars(n.key, "it")}>
+      <Link key={n.href} href={n.href} className={`side-link ${on ? "on" : ""}`} aria-current={on ? "page" : undefined} title={hint(n.key)} style={secVars(n.key, "it")}>
         <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={n.key === "home" ? 22 : 18} /></span>
         <span className="sx-lbl">
           <b>{label(n.key)}</b>
@@ -196,7 +196,7 @@ export default function Shell({ children }) {
     );
   };
   const sheetLink = (href, key, text) => (
-    <Link key={href} href={href} className={`sheet-link ${active(href) ? "on" : ""} ${key === "home" ? "sx-today" : ""}`} aria-current={active(href) ? "page" : undefined} style={secVars(key, "it")}>
+    <Link key={href} href={href} className={`sheet-link ${active(href) ? "on" : ""}`} aria-current={active(href) ? "page" : undefined} style={secVars(key, "it")}>
       <span className="sx-gl"><ShellGlyph name={SECTIONS[key].glyph} size={20} /></span>
       <span className="sx-lbl">
         <b>{text}</b>

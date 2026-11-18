@@ -1,215 +1,235 @@
 "use client";
-// Басты бет (/app) — «Бүгін не үйренемін?» деген сұраққа бір қарағанда жауап береді.
-// 1) Бүгінгі оқу миссиясы (келесі сабақ + бір басты батырма, бүгінгі мақсат пен ошақ ықшам)
-// 2) Көш картасы — курс прогресі Қазақстан өңірлері бойымен (KoshMap, жалқау жүктеледі)  ·  Aqyl панелі
-// 3) Соңғы сабақ · Менің жолым (деңгей, сөз, сабақ) · Таңбалар
 import "../home.css";
+import { tx } from "../../lib/tx";
+import { PROVERBS, TRADITIONS } from "../../lib/culture";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useTor, TorLesson, TorHearth, TorQuests } from "../components/Tor";
+import { useEffect, useMemo, useState } from "react";
 import { DAILY_GOAL, dayKey, useApp } from "../components/Store";
-import { useClientDate, localDayIndexOf } from "../../lib/useClientDate";
-import { useAnimGate } from "../components/AnimGate";
+import { useClientDate, utcDayIndex, localDayIndexOf } from "../../lib/useClientDate";
+import Qyran from "../components/Qyran";
 import Icon from "../components/Icon";
 import Avatar from "../components/Avatar";
+import TopicArt from "../components/TopicArt";
+import { NatArt } from "../components/NatArt";
+import { RegionScene } from "../components/SightArt";
+import HomeYurt, { useDayPhase } from "../components/HomeArt";
+import { useAnimGate } from "../components/AnimGate";
+import { REGIONS } from "../../lib/regions";
+import { tr } from "../../lib/wordTools";
+import { L } from "../../lib/i18n";
+import { lessonTitle } from "../../lib/courseIndex";
 import AqylGuide from "../components/AqylGuide";
-import { HomeTanba } from "../components/HomeTanba";
-import { useHomeL } from "../components/HomeL10n";
-import { koshRegions, regionName } from "../components/KoshRoute";
-import { ALL_LESSONS, LEVELS, UNITS, lessonById, lessonTitle, levelOfTopic, levelStats } from "../../lib/courseIndex";
 
-const KoshMap = dynamic(() => import("../components/KoshMap"), { ssr: false, loading: () => <div className="km km-ph" aria-busy="true" /> });
-
-const LESSON_XP = 15; // курс сабағын алғаш өткенде (app/app/course/page.js: award(15, 8))
-const BADGES = ["first", "stamp1", "streak7", "words50", "stamp5", "a1", "a2", "kosh"];
-
-function TodayRing({ v, max }) {
-  const p = Math.min(1, v / max), C = 2 * Math.PI * 22;
-  return (
-    <svg className="hm-ring" viewBox="0 0 52 52" width="52" height="52" aria-hidden="true">
-      <circle cx="26" cy="26" r="22" className="hm-ring-bg" />
-      <circle cx="26" cy="26" r="22" className="hm-ring-fg" strokeDasharray={`${C * p} ${C}`} transform="rotate(-90 26 26)" />
-    </svg>
-  );
+// Дәстүр карточкасының суреті (TRADITIONS ретімен): киіз үй, қонақжайлылық, Наурыз, домбыра, бүркітші, тұсау кесу, көкпар, шапан
+const TRAD_ART = [
+  { nat: "yurt" }, { nat: "bowl" }, { topic: "tradition" }, { nat: "dombyra" },
+  { eagle: true }, { topic: "family" }, { nat: "kamshy" }, { topic: "clothes" },
+];
+function TradArt({ i }) {
+  const a = TRAD_ART[i] || { nat: "yurt" };
+  if (a.eagle) return <Qyran mood="wow" size={92} />;
+  if (a.topic) return <TopicArt topic={a.topic} size={92} />;
+  return <NatArt name={a.nat} size={120} />;
 }
 
+// «Күн сөзі» жүктелгенше орын ұстайтын бейтарап сөз (көрінбейді)
+const WORD0 = { t: "greet", kk: "Сәлеметсіз бе", ru: "Здравствуйте", en: "Hello" };
+
 export default function Home() {
-  const { t, lang, state, update, toast } = useApp();
-  const H = useHomeL(lang);
-  const gMap = useAnimGate();
+  const { t, lang, explain, state, saveWord, award } = useApp();
+  const tor = useTor();
+  // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
+  const gHero = useAnimGate(), gDay = useAnimGate(), gDisc = useAnimGate(), gCult = useAnimGate(), gQuick = useAnimGate();
+  const phase = useDayPhase();
+  const x0 = tx(lang);
+  // Күнге тәуелді мазмұн: сервер мен гидрация рендерінде now = null → бейтарап (0-индекс, көрінбейді),
+  // гидрациядан кейін нақты күн қойылады (бірдей өлшем, орын ығыспайды)
   const now = useClientDate();
+  const hide = now ? undefined : { visibility: "hidden" };
+  const dayN = now ? utcDayIndex(now) : 0;
+  const PROV = PROVERBS[dayN % PROVERBS.length];
+  const tradI = dayN % TRADITIONS.length;
+  const TRAD = TRADITIONS[tradI];
   const today = now ? dayKey(now) : null;
-  const isToday = !!today && state.today?.date === today;
-  const todayXp = isToday ? state.today.xp || 0 : 0;
+  const todayXp = today && state.today?.date === today ? state.today.xp : 0;
+  const stampCount = Object.keys(state.stamps || {}).length;
+  const next = REGIONS.find((r) => !state.stamps?.[r.id]);
+  const dayIdx = now ? localDayIndexOf(now) : 0;
+  // Сөз қоры (~110 KB) — тек «күн сөзі» үшін: гидрациядан кейін бөлек жүктеледі (бастапқы JS жеңіл).
+  // Жүктелгенше карточка орнын бейтарап көрінбейтін сөз ұстап тұрады.
+  const [WORDS, setWords] = useState(null);
+  useEffect(() => {
+    let on = true;
+    import("../../lib/words").then((m) => on && setWords(m.WORDS));
+    return () => { on = false; };
+  }, []);
+  const word = WORDS ? WORDS[dayIdx % WORDS.length] : WORD0;
+  const wodHide = now && WORDS ? undefined : { visibility: "hidden" };
+  const tip = t.qyranTip[dayIdx % t.qyranTip.length];
+  const savedToday = state.vocab?.some((v) => v.kk === word.kk);
+  const mood = todayXp >= DAILY_GOAL ? "cheer" : todayXp > 0 ? "happy" : "idle";
+  const goalTxt = t.todayGoalTxt ? t.todayGoalTxt(Math.min(todayXp, DAILY_GOAL), DAILY_GOAL) : `${Math.min(todayXp, DAILY_GOAL)} / ${DAILY_GOAL} XP`;
 
-  const done = state.course?.done || {};
-  const regions = useMemo(() => koshRegions(done), [done]);
-  const next = ALL_LESSONS.find((l) => !done[l.id]);
-  const unit = next && UNITS[next.topic];
-  const lev = next && levelOfTopic(next.topic);
-  const curR = regions.find((r) => r.state === "cur");
-  const doneCount = ALL_LESSONS.filter((l) => done[l.id]).length;
-  const stampsN = regions.filter((r) => r.state === "done").length;
-  const learned = Object.keys(state.sozdik?.learned || {}).length;
-  const missionHref = next ? `/app/course?l=${next.id}` : "/app/sozdik";
+  const quick = useMemo(
+    () => [
+      { href: "/app/history", art: "bowl", t: t.nav.history },
+      { href: "/app/games", art: "kamshy", t: t.nav.games },
+      { href: "/app/qyran", art: "dombyra", t: t.navLong.chat },
+      { href: "/app/tuzel", art: "taqiya", t: t.navLong.tuzel },
+    ],
+    [t]
+  );
 
-  const lastId = Object.entries(done).filter(([, d]) => d?.at).sort((a, b) => b[1].at - a[1].at)[0]?.[0];
-  const last = lastId && lessonById(lastId);
-
-  // Күндік тапсырмалар сыйлығы (бұрынғы «Төр» тапсырмаларымен бірдей шарт): 30 XP · 1 сабақ · 3 жаттығу
-  const lessonsToday = today ? Object.values(done).filter((d) => d?.at && dayKey(new Date(d.at)) === today).length : 0;
-  const questsDone = isToday && todayXp >= 30 && lessonsToday >= 1 && (state.today.tasks || 0) >= 3;
-  const claimed = !!today && state.quests?.date === today && state.quests.claimed;
-  const claim = () => { update((s) => ({ ...s, coins: (s.coins || 0) + 15, quests: { date: today, claimed: true } })); toast(`+15 ${t.coins}`); };
-
-  const lvDone = (id) => { const v = LEVELS.find((x) => x.id === id); const s = v && levelStats(v, done); return !!s && s.total > 0 && s.done >= s.total; };
-  const earned = {
-    first: doneCount > 0, stamp1: stampsN >= 1, streak7: (state.streak || 0) >= 7, words50: learned >= 50,
-    stamp5: stampsN >= 5, a1: lvDone("A1"), a2: lvDone("A2"), kosh: stampsN >= regions.length,
-  };
-  const earnedN = BADGES.filter((b) => earned[b]).length;
+  const stats = [
+    { i: "star", v: state.xp || 0, l: t.statsXp, c: "gold" },
+    { i: "coin", v: state.coins || 0, l: t.statsCoins, c: "gold" },
+    { i: "flame", v: state.streak || 0, l: t.statsStreak, c: "red" },
+    { i: "stamp", v: `${stampCount}/${REGIONS.length}`, l: t.statsStamps, c: "blue" },
+  ];
 
   return (
     <div className="hm">
-      {/* ── 1 · Бүгінгі оқу миссиясы ── */}
-      <section className="hm-mission hm-in" style={{ "--i": 0 }} aria-labelledby="hm-mis-t">
-        <header className="hm-greet">
-          <Avatar value={state.profile.avatar} size={44} />
+      {/* ── 1 · Төр: сәлем, бүгінгі сабақ және киіз үйдің іші ── */}
+      <section ref={gHero} className="hm-hero hm-in" style={{ "--i": 0 }}>
+        <div className="hm-greet">
+          <Avatar value={state.profile.avatar} size={48} />
           <div>
             <h1>{t.hello(state.profile.name || "Дос")}</h1>
-            <p>{H.tagline}</p>
+            <p>{t.helloSub}</p>
           </div>
-        </header>
-
-        <div className="hm-mis">
-          <span className="hm-kicker">{H.mission}</span>
-          <p className="hm-ask">{H.ask}</p>
-          {next ? (
-            <>
-              <h2 id="hm-mis-t" className="hm-mis-t">{lessonTitle(next, lang)}</h2>
-              <ul className="hm-mis-meta">
-                <li className="hm-lv">{lev?.id}</li>
-                {curR && <li><Icon name="map" size={16} /> {regionName(curR.id, lang)}</li>}
-                <li><Icon name="book" size={16} /> {next.kind === "phrases" ? H.phrases : H.words(5)}</li>
-                <li>{H.min(5)}</li>
-                <li><Icon name="star" size={16} /> +{LESSON_XP} XP</li>
-              </ul>
-              <div className="hm-mis-dots" aria-hidden="true">
-                {unit.lessons.map((l) => <i key={l.id} className={done[l.id] ? "on" : l.id === next.id ? "cur" : ""} />)}
-              </div>
-            </>
-          ) : (
-            <h2 id="hm-mis-t" className="hm-mis-t hm-mis-all">{H.allDone}</h2>
-          )}
-          <Link href={missionHref} className="btn primary big hm-cta">
-            {next ? H.start : H.review} <Icon name="right" size={20} className="hm-flip" />
-          </Link>
         </div>
 
-        <aside className="hm-today" style={today ? undefined : { visibility: "hidden" }}>
-          <div className="hm-today-xp">
-            <TodayRing v={todayXp} max={DAILY_GOAL} />
-            <span><b>{Math.min(todayXp, DAILY_GOAL)}/{DAILY_GOAL} XP</b><small>{H.today}</small></span>
+        <div className={`hm-scene ph-${phase}`}>
+          <HomeYurt phase={phase} xp={todayXp} goal={DAILY_GOAL} lit={tor.lit} streak={tor.streak} stamps={stampCount} stampTotal={REGIONS.length} />
+          <div className="hm-goal">
+            <span className="hm-goal-n">{goalTxt}</span>
+            <span className="hm-goal-l">{t.todayGoal}</span>
+            <span className="hm-goal-bar" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, todayXp / DAILY_GOAL)})` }} /></span>
           </div>
-          <div className={`hm-today-fire${state.lastDay === today ? " lit" : ""}`}>
-            <span className="hm-fire-i"><Icon name="flame" size={20} /></span>
-            <span><b>{state.streak || 0}</b><small>{t.statsStreak}</small></span>
-          </div>
-          {questsDone && !claimed && (
-            <button type="button" className="btn gold small hm-claim" onClick={claim}>
-              <Icon name="coin" size={16} /> {H.claim}
-            </button>
-          )}
-        </aside>
+          <div className="hm-aqyl" aria-hidden="true"><Qyran mood={mood} size={120} /></div>
+          <p className="hm-tip" style={hide}>{tip}</p>
+        </div>
+
+        <TorLesson tor={tor} />
       </section>
 
-      {/* ── 2 · Көш картасы + Aqyl ── */}
-      <div className="hm-mid">
-        <section ref={gMap} className="hm-map hm-in" style={{ "--i": 2 }} aria-labelledby="hm-map-t">
-          <header className="hm-map-h">
-            <div>
-              <h2 id="hm-map-t">{H.mapT}</h2>
-              <p>{H.mapSub}</p>
-            </div>
-            <span className="hm-map-n"><Icon name="stamp" size={16} /> {H.regions(stampsN, regions.length)}</span>
-          </header>
-          <KoshMap regions={regions} lang={lang} L={H} />
-        </section>
-
-        <div className="hm-aq hm-in" style={{ "--i": 1 }}>
-          <AqylGuide
-            variant="panel"
-            missionHref={missionHref}
-            tipLabel={H.tipK}
-            dayIdx={now ? localDayIndexOf(now) : 0}
-            links={[{ href: "/app/sozdik", icon: "refresh", t: H.review }, { href: "/app/qyran", icon: "chat", t: H.askAqyl }]}
-            state={state}
-            lang={lang}
-            today={today}
-            todayXp={todayXp}
-            goal={DAILY_GOAL}
-            next={next}
-            nextTitle={next ? lessonTitle(next, lang) : ""}
-            hour={now ? now.getHours() : 12}
-          />
-        </div>
+      {/* ── Aqyl кеңесі: келесі қадам (деңгей тесті, ошақ, қате сөздер, сабақ, VR) ── */}
+      <div className="hm-in" style={{ "--i": 1 }}>
+        <AqylGuide
+          state={state}
+          lang={lang}
+          today={today}
+          todayXp={todayXp}
+          goal={DAILY_GOAL}
+          next={tor.next}
+          nextTitle={tor.next ? lessonTitle(tor.next, lang) : ""}
+          hour={now ? now.getHours() : 12}
+        />
       </div>
 
-      {/* ── 3 · Соңғы сабақ · жол · таңбалар ── */}
-      <div className="hm-low">
-        <section className="hm-card hm-last hm-in" style={{ "--i": 3 }}>
-          <span className="hm-kicker">{H.last}</span>
-          {last ? (
-            <>
-              <h3>{lessonTitle(last, lang)}</h3>
-              <p className="hm-muted">{levelOfTopic(last.topic)?.id} · {H.score(done[last.id]?.score ?? 0)}</p>
-              <Link href={`/app/course?l=${last.id}`} className="btn ghost hm-card-go">
-                <Icon name="refresh" size={16} /> {H.repeat}
-              </Link>
-            </>
-          ) : (
-            <>
-              <p className="hm-muted">{H.lastNone}</p>
-              <Link href="/app/course" className="btn ghost hm-card-go">
-                {t.nav.course} <Icon name="right" size={16} className="hm-flip" />
-              </Link>
-            </>
+      {/* ── 2 · Күн: ошақ, тапсырмалар, есеп ── */}
+      <div ref={gDay} className="hm-bento hm-day">
+        <div className="hm-in" style={{ "--i": 2 }}><TorHearth tor={tor} /></div>
+        <div className="hm-in" style={{ "--i": 3 }}><TorQuests tor={tor} /></div>
+        <ul className="hm-stats hm-in" style={{ "--i": 4 }}>
+          {stats.map((s) => (
+            <li key={s.l} className={`hm-stat c-${s.c}`}>
+              <span className="hm-stat-i"><Icon name={s.i} size={18} /></span>
+              <b>{s.v}</b>
+              <small>{s.l}</small>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* ── 3 · Жол мен сөз ── */}
+      <div ref={gDisc} className="hm-bento hm-discover">
+        {next ? (
+          <Link href={`/app/travel?r=${next.id}`} className="hm-tile hm-next hm-in" style={{ "--i": 5 }}>
+            <span className="hm-next-art"><RegionScene region={next} /></span>
+            <span className="hm-next-body">
+              <span className="hm-kicker">{t.nextStep}</span>
+              <h2>{t.nextTravel(L(next.name, lang))}</h2>
+              <span className="hm-next-sub">{t.nextTravelSub}</span>
+              <span className="btn gold hm-next-btn">
+                {t.start} <Icon name="right" size={18} />
+              </span>
+            </span>
+          </Link>
+        ) : (
+          <Link href="/app/games" className="hm-tile hm-next hm-next-all hm-in" style={{ "--i": 5 }}>
+            <span className="hm-next-trophy" aria-hidden="true"><Icon name="trophy" size={56} /></span>
+            <span className="hm-next-body">
+              <h2>{t.allStamps}</h2>
+              <span className="btn gold hm-next-btn">
+                {t.nav.games} <Icon name="right" size={18} />
+              </span>
+            </span>
+          </Link>
+        )}
+
+        <section className="hm-tile hm-wod hm-in" style={{ "--i": 6 }} aria-label={t.wordOfDay}>
+          <span className="hm-kicker">{t.wordOfDay}</span>
+          <div className="hm-wod-word" style={wodHide}>
+            <TopicArt topic={word.t} size={72} />
+            <div>
+              <b lang="kk">{word.kk}</b>
+              <span>{tr(word, explain)}</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn ghost small hm-wod-save"
+            disabled={savedToday || !now || !WORDS}
+            style={wodHide}
+            onClick={() => {
+              saveWord({ kk: word.kk, tr: tr(word, explain), e: word.e, src: "day" });
+              award(2, 1);
+            }}
+          >
+            <Icon name={savedToday ? "check" : "plus"} size={16} /> {savedToday ? t.saved : t.saveWord}
+          </button>
+          {state.vocab?.length > 0 && (
+            <div className="hm-vocab">
+              {state.vocab.slice(0, 8).map((v) => (
+                <span key={v.kk} className="hm-vchip" title={v.tr} lang="kk">
+                  {v.kk}
+                </span>
+              ))}
+            </div>
           )}
         </section>
-
-        <section className="hm-card hm-prog hm-in" style={{ "--i": 4 }}>
-          <span className="hm-kicker">{H.prog}</span>
-          <dl className="hm-nums">
-            <div><dt>{H.level}</dt><dd>{state.cefr || lev?.id || "B2"}</dd></div>
-            <div><dt>{H.learned}</dt><dd>{learned}</dd></div>
-            <div><dt>{H.lessonsDone}</dt><dd>{doneCount}<small>/{ALL_LESSONS.length}</small></dd></div>
-          </dl>
-          <ul className="hm-levels">
-            {LEVELS.map((v) => {
-              const s = levelStats(v, done);
-              return (
-                <li key={v.id} aria-label={`${v.id}: ${s.done}/${s.total}`}>
-                  <span>{v.id}</span>
-                  <i aria-hidden="true"><b style={{ transform: `scaleX(${s.total ? s.done / s.total : 0})` }} /></i>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-
-        <section className="hm-card hm-badges hm-in" style={{ "--i": 5 }}>
-          <span className="hm-kicker">{H.badges} <small>{earnedN}/{BADGES.length}</small></span>
-          <ul>
-            {BADGES.map((b) => (
-              <li key={b} className={earned[b] ? "on" : ""}>
-                <HomeTanba glyph={b} on={earned[b]} size={48} />
-                <span>{H.b[b]}</span>
-                {earned[b] && <span className="sr-only">· {H.earned}</span>}
-              </li>
-            ))}
-          </ul>
-        </section>
       </div>
+
+      {/* ── 4 · Мәдениет ── */}
+      <div ref={gCult} className="hm-bento hm-culture">
+        <article className="hm-tile hm-proverb hm-in" style={{ "--i": 7 }}>
+          <span className="hm-kicker">{x0.proverb}</span>
+          <blockquote lang="kk" style={hide}>{PROV.kk}</blockquote>
+          <p style={hide}>{lang === "kk" ? (explain === "ru" ? PROV.ru : PROV.en) : lang === "ru" ? PROV.ru : PROV.en}</p>
+        </article>
+        <article className="hm-tile hm-trad hm-in" style={{ "--i": 8 }}>
+          <span className="hm-trad-art" aria-hidden="true" style={hide}><TradArt i={tradI} /></span>
+          <div>
+            <span className="hm-kicker">{x0.tradition}</span>
+            <h3 style={hide}>{L(TRAD.t, lang)}</h3>
+            <p style={hide}>{L(TRAD.d, lang)}</p>
+          </div>
+        </article>
+      </div>
+
+      {/* ── 5 · Жылдам өту ── */}
+      <h3 className="hm-sec hm-in" style={{ "--i": 9 }}>{t.quick}</h3>
+      <nav ref={gQuick} className="hm-quick hm-in" style={{ "--i": 10 }} aria-label={t.quick}>
+        {quick.map((q, i) => (
+          <Link key={q.href} href={q.href} className={`hm-qcard tint-${i}`}>
+            <span className="hm-qart"><NatArt name={q.art} size={96} /></span>
+            <b>{q.t}</b>
+            <span className="hm-qgo" aria-hidden="true"><Icon name="right" size={16} /></span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

@@ -1,233 +1,357 @@
 /* ════════════════════════════════════════════════════════════════════
-   Qyzyl til · Басты бет (/app) — «Бүгін не үйренемін?»
-   Құрылым: миссия (бір басты батырма) → Көш картасы + Aqyl → соңғы сабақ · жол · таңбалар.
-   Палитра — Әдебиет стилі (paper.css --pp-*): кілегей қағаз, киіз, алтын, анар-қызыл тек басты әрекетте.
-   Ою жолақтары жоқ. Тек transform/opacity анимациясы; prefers-reduced-motion құрметтеледі.
-   Тор: ≥1180px — карта | Aqyl қатар; одан тар — миссия → Aqyl → карта → төменгі қатар.
+   Qyzyl til · Басты бет («Басты», /app) — «Төр»: киіз үйдің іші.
+   Идея: оқушының өз киіз үйі. Шаңырақтағы аспан — тәулік уақыты,
+   уықтар бүгінгі XP-мен алтынға боялады, ошақ оты — серия,
+   тұс киіздегі жамаулар — саяхат мөрлері. Қызыл — тек басты әрекетте.
+   Тек transform/opacity анимациясы; prefers-reduced-motion құрметтеледі.
    ════════════════════════════════════════════════════════════════════ */
 .hm {
-  --hm-red: var(--pp-red, #b8322a);
-  --hm-red-d: var(--pp-red-d, #8a2018);
-  --hm-gold: var(--pp-gold, #e0a526);
-  --hm-gold-soft: var(--pp-gold-soft, #f6e3b0);
-  --hm-paper: var(--pp-paper, #fffdf7);
-  --hm-felt: var(--pp-felt, #f4ecda);
-  --hm-ink: var(--pp-ink, #1f2430);
-  --hm-muted: var(--pp-muted, #4a5160);
-  --hm-blue: #0f5e7a;
-  --hm-rim: var(--pp-rim, rgba(122, 86, 22, 0.22));
-  --hm-hair: var(--pp-hair, rgba(122, 86, 22, 0.16));
-  --hm-card: var(--pp-card, inset 0 0 0 1px rgba(122, 86, 22, 0.22), 0 10px 26px -18px rgba(60, 40, 10, 0.4));
-  --hm-r: 22px;
+  --hm-r: 24px;
+  --hm-red: var(--anar, #b8322a);
+  --hm-red-d: var(--anar-2, #8a2018);
+  --hm-gold: var(--altyn, #e0a526);
+  --hm-gold-soft: var(--altyn-soft, #f6e3b0);
+  --hm-blue: var(--kok, #0f5e7a);
+  --hm-ok: var(--ok, #2f6b4f);
   --hm-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  display: grid; gap: 20px; min-width: 0; color: var(--hm-ink);
+  display: grid;
+  gap: 20px;
+  min-width: 0;
 }
-.hm > *, .hm-mid > *, .hm-low > * { min-width: 0; }
-.hm a:focus-visible, .hm button:focus-visible { outline: 3px solid var(--hm-red); outline-offset: 3px; }
-.hm .btn { white-space: normal; text-align: center; }
-[dir="rtl"] .hm .hm-flip, [dir="rtl"] .hm .km-flip { transform: scaleX(-1); }
+.hm > *, .hm-bento > * { min-width: 0; }
 
+/* ── Ортақ ── */
 .hm-kicker {
   display: inline-flex; align-items: center; gap: 8px;
-  font-size: 14px; font-weight: 700; color: var(--hm-red-d);
+  font-size: 14px; font-weight: 700; letter-spacing: 0; text-transform: none;
+  color: var(--hm-red-d);
 }
+/* Әдебиеттегідей белгі: алтын сызықша */
 .hm-kicker::before { content: ""; width: 22px; height: 3px; background: var(--hm-gold); border-radius: 2px; flex: none; }
-.hm-kicker small { font-weight: 600; color: var(--hm-muted); font-size: 13px; }
-.hm-muted { color: var(--hm-muted); margin: 0; font-size: 14.5px; }
-.hm-card {
-  background: var(--hm-paper); border-radius: var(--hm-r); padding: 20px;
-  box-shadow: var(--hm-card); display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
+.hm-tile {
+  position: relative; display: block;
+  background: var(--surface, #fffdf7); color: var(--ink);
+  border-radius: var(--hm-r); padding: 20px;
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow);
+  text-decoration: none;
 }
-.hm-card h3 { margin: 2px 0 0; font-size: 20px; }
+.hm a:focus-visible, .hm button:focus-visible { outline: 3px solid var(--hm-red); outline-offset: 3px; }
+.hm-bento { display: grid; gap: 20px; }
 
-/* ════ 1 · Миссия ════ */
-.hm-mission {
-  position: relative; isolation: isolate; overflow: hidden;
-  display: grid; gap: 18px 28px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "greet today" "mis today";
-  padding: 24px 28px 26px;
-  border-radius: 28px;
+/* ════ 1 · Төр (hero) ════ */
+.hm-hero {
+  position: relative; isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-areas: "greet scene" "lesson scene";
+  grid-template-rows: auto 1fr;
+  column-gap: 20px;
+  padding: 28px 28px 0;
+  border-radius: 30px;
   background:
-    radial-gradient(90% 120% at 100% 100%, rgba(224, 165, 38, 0.16), transparent 60%),
-    var(--hm-paper);
-  box-shadow: var(--hm-card);
+    radial-gradient(120% 90% at 80% 110%, rgba(224, 165, 38, 0.22), transparent 60%),
+    radial-gradient(70% 60% at 0% 0%, rgba(184, 50, 42, 0.07), transparent 70%),
+    var(--surface, #fffdf7);
+  box-shadow: inset 0 0 0 1px var(--rim), var(--shadow-lg);
+  overflow: hidden;
 }
-/* Қызыл екпін — миссияның сол (RTL-де оң) жиегі */
-.hm-mission::before {
-  content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 6px;
-  background: linear-gradient(var(--hm-red), var(--hm-red-d));
+/* киіз тігісі */
+.hm-hero::after {
+  content: ""; position: absolute; inset: 8px; border-radius: 23px; pointer-events: none; z-index: 3;
+  border: 1.5px dashed rgba(138, 32, 24, 0.2);
 }
-.hm-greet { grid-area: greet; display: flex; align-items: center; gap: 12px; }
-.hm-greet h1 { font-size: 22px; margin: 0; }
-.hm-greet p { margin: 2px 0 0; color: var(--hm-muted); font-size: 15px; font-weight: 600; }
-.hm-mis { grid-area: mis; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; }
-.hm-ask { margin: 2px 0 0; font-size: 15.5px; color: var(--hm-muted); font-weight: 600; }
-.hm-mis-t { margin: 0; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.1; overflow-wrap: anywhere; }
-.hm-mis-all { font-size: clamp(20px, 2.4vw, 26px); max-width: 40ch; }
-.hm-mis-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; margin: 4px 0 0; padding: 0; font-size: 14.5px; color: var(--hm-muted); font-weight: 600; }
-.hm-mis-meta li { display: inline-flex; align-items: center; gap: 5px; }
-.hm-mis-meta .ic { color: var(--hm-red-d); flex: none; }
-.hm-lv { background: var(--hm-blue); color: #fff !important; border-radius: 8px; padding: 2px 8px; font-weight: 800; font-size: 13px; }
-.hm-mis-dots { display: flex; gap: 5px; margin: 6px 0 4px; width: min(100%, 420px); }
-.hm-mis-dots i { flex: 1; height: 8px; border-radius: 4px; background: var(--hm-felt); box-shadow: inset 0 0 0 1px var(--hm-hair); }
-.hm-mis-dots i.on { background: var(--hm-red); box-shadow: none; }
-.hm-mis-dots i.cur { background: var(--hm-gold); box-shadow: none; }
-.hm-cta { margin-top: 6px; min-width: 240px; }
+.hm-greet { grid-area: greet; display: flex; align-items: center; gap: 14px; padding-block-end: 18px; }
+.hm-greet .avatar, .hm-greet svg { flex: none; }
+.hm-greet h1 { font-size: clamp(22px, 2.3vw, 28px); margin: 0 0 2px; }
+.hm-greet p { margin: 0; color: var(--muted); font-size: 15px; }
 
-.hm-today {
-  grid-area: today; align-self: stretch;
-  display: flex; flex-direction: column; justify-content: center; gap: 14px;
-  padding-inline-start: 24px; border-inline-start: 1px solid var(--hm-hair);
-  min-width: 190px;
+/* Сабақ */
+.hm-lesson { grid-area: lesson; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-block: 8px 30px; align-self: center; }
+.hm-l-head { display: flex; align-items: center; gap: 16px; }
+.hm-l-art { flex: none; filter: drop-shadow(0 6px 10px rgba(60, 30, 10, 0.18)); }
+.hm-l-tt { min-width: 0; }
+.hm-lesson h2 { font-size: clamp(26px, 3.1vw, 40px); line-height: 1.08; margin: 0 0 6px; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.hm-l-done { font-size: clamp(20px, 2.2vw, 26px) !important; }
+.hm-l-meta { margin: 0; color: var(--muted); font-size: 14.5px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.hm-lv { display: inline-grid; place-items: center; min-width: 30px; height: 22px; padding: 0 7px; border-radius: 7px; background: var(--hm-blue); color: #fff; font-size: 12px; font-weight: 800; }
+.hm-frets { display: flex; gap: 6px; width: 100%; max-width: 420px; }
+.hm-frets i {
+  flex: 1; height: 10px; border-radius: 4px;
+  background: var(--surface-2, #f4ecda); box-shadow: inset 0 0 0 1px var(--rim);
+  transform-origin: 0 50%;
+  animation: hmFret 0.45s var(--hm-ease) both; animation-delay: calc(0.35s + var(--i) * 60ms);
 }
-.hm-today-xp, .hm-today-fire { display: flex; align-items: center; gap: 12px; }
-.hm-today b { display: block; font-size: 18px; line-height: 1.1; }
-.hm-today small { display: block; color: var(--hm-muted); font-size: 13px; font-weight: 600; }
-.hm-ring-bg { fill: none; stroke: var(--hm-felt); stroke-width: 6; }
-.hm-ring-fg { fill: none; stroke: var(--hm-gold); stroke-width: 6; stroke-linecap: round; }
-.hm-fire-i { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: var(--hm-felt); color: #9a8f7a; flex: none; }
-.hm-today-fire.lit .hm-fire-i { background: #fbe3c4; color: #d4561f; }
-.hm-claim { align-self: flex-start; min-height: 44px; }
+.hm-frets i.on { background: var(--hm-red); box-shadow: none; }
+.hm-frets i.cur { background: var(--hm-gold); box-shadow: inset 0 0 0 1px #b07c10; animation: hmFret 0.45s var(--hm-ease) both, hmPulse 1.6s 1.2s ease-in-out infinite alternate; }
+.hm-cta.btn { min-width: 240px; justify-content: center; gap: 10px; margin-block-start: 4px; font-size: 17px; }
+.hm-cta svg { transition: transform 0.25s var(--hm-ease); }
+.hm-cta:hover svg { transform: translateX(4px); }
+[dir="rtl"] .hm-cta svg, [dir="rtl"] .hm-qgo svg, [dir="rtl"] .hm-level-go svg, [dir="rtl"] .hm-next-btn svg { transform: scaleX(-1); }
+[dir="rtl"] .hm-cta:hover svg { transform: scaleX(-1) translateX(4px); }
 
-/* ════ 2 · Карта + Aqyl ════ */
-.hm-mid { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) minmax(250px, 300px); align-items: start; }
-.hm-map {
-  background: var(--hm-paper); border-radius: var(--hm-r); padding: 20px 20px 16px; box-shadow: var(--hm-card);
+/* Сахна */
+.hm-scene { grid-area: scene; position: relative; align-self: end; margin-inline-end: -10px; }
+.hm-yurt { display: block; width: 100%; height: auto; overflow: visible; }
+.hm-goal {
+  position: absolute; left: 0.5%; top: 2%; z-index: 2;
+  display: grid; gap: 2px; padding: 9px 13px 10px; min-width: 128px;
+  background: var(--surface, #fffdf7); border-radius: 14px;
+  box-shadow: inset 0 0 0 1px var(--rim), 0 8px 20px -12px rgba(60, 40, 10, 0.5);
 }
-.hm-map-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
-.hm-map-h h2 { margin: 0; font-size: 22px; }
-.hm-map-h p { margin: 4px 0 0; color: var(--hm-muted); font-size: 14.5px; max-width: 52ch; }
-.hm-map-n { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--hm-felt); font-weight: 700; font-size: 14px; color: var(--hm-red-d); }
-
-/* Көш картасы (KoshMap) */
-.km { position: relative; }
-.km-ph { aspect-ratio: 1000 / 554; border-radius: 16px; background: var(--hm-felt); margin-bottom: 70px; }
-.km-svg { display: block; width: 100%; height: auto; overflow: visible; direction: ltr; }
-.km-r { stroke: #fffdf7; stroke-width: 1.6; stroke-linejoin: round; cursor: pointer; transition: fill 0.2s; }
-.km-r.s-done { fill: #f3dcae; }
-.km-r.s-cur { fill: #f2c9c0; }
-.km-r.s-open { fill: #f6e8d2; }
-.km-r.s-next { fill: #efe5d2; }
-.km-r.s-locked { fill: #e9e2d5; cursor: default; }
-.km-r.is-on { fill-opacity: 0.75; stroke: var(--hm-red-d); stroke-width: 2.4; }
-.km-route { fill: none; stroke: #a8916a; stroke-width: 2.2; stroke-dasharray: 2 7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
-.km-route-done { fill: none; stroke: var(--hm-red); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
-.km-stop { cursor: pointer; outline: none; }
-.km-hit { fill: transparent; }
-.km-stop:focus-visible .km-hit { fill: rgba(184, 50, 42, 0.14); stroke: var(--hm-red-d); stroke-width: 2.5; }
-.km-stamp > circle:first-child { fill: var(--hm-red); }
-.km-stamp-ring { fill: none; stroke: #fffdf7; stroke-width: 1.3; stroke-dasharray: 2.2 1.8; }
-.km-stamp-tick { fill: none; stroke: #fffdf7; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.km-stamp { transform: rotate(-10deg); }
-.km-cur-dot { fill: var(--hm-gold); stroke: #fffdf7; stroke-width: 3; }
-.km-pulse { fill: none; stroke: var(--hm-red); stroke-width: 2.5; transform-box: fill-box; transform-origin: center; animation: kmPulse 2.4s ease-out infinite; }
-@keyframes kmPulse { from { transform: scale(0.9); opacity: 0.85; } to { transform: scale(2); opacity: 0; } }
-.km-num circle { fill: #fffdf7; stroke: var(--hm-red); stroke-width: 2.4; }
-.km-num.s-next circle { stroke: #9a8668; stroke-dasharray: 3 2.4; }
-.km-num text { font: 800 11px/1 var(--body, sans-serif); text-anchor: middle; fill: var(--hm-ink); }
-.km-lock-dot { fill: #c9bba2; }
-.km-aqyl { pointer-events: none; }
-.km-aqyl .qyran { overflow: visible; }
-
-.km-info {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  margin-top: 10px; padding: 10px 12px; border-radius: 16px; background: var(--hm-felt);
-  min-height: 64px;
+.hm-goal-n { direction: ltr; unicode-bidi: isolate; text-align: start; font-family: var(--head); font-weight: 700; font-size: 17px; color: var(--ink); white-space: nowrap; }
+.hm-goal-l { font-size: 12px; color: var(--muted); font-weight: 600; }
+.hm-goal-bar { display: block; height: 6px; border-radius: 3px; background: var(--surface-2, #f4ecda); overflow: hidden; margin-block-start: 4px; }
+.hm-goal-bar i { display: block; height: 100%; background: var(--hm-gold); transform-origin: 0 50%; animation: hmGrow 1s 0.6s var(--hm-ease) backwards; }
+[dir="rtl"] .hm-goal-bar i, [dir="rtl"] .q-bar i { transform-origin: 100% 50%; }
+.hm-aqyl { position: absolute; left: 72.6%; bottom: 23.6%; width: 20%; z-index: 2; pointer-events: none; }
+.hm-aqyl svg { display: block; width: 100%; height: auto; }
+.hm-tip {
+  position: absolute; right: 0.5%; top: 2%; z-index: 2; margin: 0;
+  max-width: 36%; padding: 10px 14px;
+  background: var(--surface, #fffdf7); color: var(--ink);
+  border-radius: 16px 16px 4px 16px; font-size: 14px; font-weight: 600; line-height: 1.35;
+  box-shadow: inset 0 0 0 1px var(--rim), 0 8px 20px -12px rgba(60, 40, 10, 0.5);
+  animation: hmTip 0.6s 1.1s var(--hm-ease) backwards;
 }
-.km-info-mark { width: 36px; height: 36px; border-radius: 50%; flex: none; display: grid; place-items: center; background: #fffdf7; color: var(--hm-ink); box-shadow: inset 0 0 0 2px var(--hm-red); font-size: 14px; }
-.km-info.s-done .km-info-mark { background: var(--hm-red); color: #fff; box-shadow: none; }
-.km-info.s-cur .km-info-mark { background: var(--hm-gold); box-shadow: none; }
-.km-info.s-next .km-info-mark, .km-info.s-locked .km-info-mark { box-shadow: inset 0 0 0 2px #b7a88e; color: #7d705a; }
-.km-info-b { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.km-info-b b { font-size: 16px; }
-.km-info-b small { color: var(--hm-muted); font-size: 13.5px; font-weight: 600; }
-.km-info-b .km-info-lock { color: #6e1e2e; }
-.km-info-go { flex: none; min-height: 44px; }
-
-/* Aqyl панелі (AqylGuide variant="panel") */
-.hm-aq { position: sticky; top: 16px; }
-.aq-panel {
-  background: var(--hm-paper); border-radius: var(--hm-r); padding: 18px; box-shadow: var(--hm-card);
-  display: flex; flex-direction: column; gap: 14px;
+.hm-tip::after {
+  content: ""; position: absolute; right: 22%; bottom: -9px; width: 16px; height: 16px;
+  background: inherit; transform: rotate(45deg); border-radius: 0 0 4px 0;
+  box-shadow: 1px 1px 0 var(--rim);
 }
-.aq-panel-top { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
-.aq-panel-av { display: block; line-height: 0; flex: none; }
-.aq-panel-say { position: relative; background: #f8f1e1; border-radius: 16px; padding: 12px 14px; }
-.aq-panel-say::before { content: ""; position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; background: #f8f1e1; transform: translateX(-50%) rotate(45deg); border-radius: 3px; }
-.aq-panel-k { display: block; font-size: 13px; color: var(--hm-red-d); margin-bottom: 2px; position: relative; }
-.aq-panel-say p { margin: 0; font-weight: 600; font-size: 15.5px; line-height: 1.45; position: relative; }
-.aq-panel-go { width: 100%; }
-.aq-panel-tip { margin: 0; padding: 12px 14px; border-radius: 14px; box-shadow: inset 0 0 0 1px var(--hm-hair); font-size: 14.5px; line-height: 1.5; }
-.aq-panel-tip b { color: var(--hm-blue); }
-.aq-panel-links { display: grid; gap: 2px; }
-.aq-panel-links a {
-  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; border-radius: 12px;
-  color: var(--hm-ink); text-decoration: none; font-weight: 700; font-size: 14.5px;
+
+/* Сахна ішіндегі қозғалыс */
+.hy-pole-on { animation: hmFade 0.5s ease-out both; }
+.hy-patch { transform-box: fill-box; transform-origin: center; animation: hmPop 0.45s var(--hm-ease) both; }
+.hy-crown { animation: hmPulse 1.8s ease-in-out infinite alternate; }
+.hy-cloud { animation: hyCloud 28s linear infinite; }
+.hy-beam { animation: hyBeam 6s ease-in-out infinite alternate; }
+.hy-glow { transform-box: fill-box; transform-origin: center; animation: hyGlow 2.4s ease-in-out infinite alternate; }
+.hy-stars circle { animation: hmPulse 2.2s ease-in-out infinite alternate; }
+.hy-smoke ellipse { transform-box: fill-box; transform-origin: center; opacity: 0; animation: hySmoke 6s ease-out infinite; }
+.hf-l { transform-box: fill-box; transform-origin: 50% 100%; animation: hfFlick 1.1s ease-in-out infinite alternate; }
+.hf-l2 { animation-duration: 0.8s; animation-delay: -0.3s; }
+.hf-l3 { animation-duration: 0.65s; animation-delay: -0.2s; }
+.hf-l4 { animation-duration: 0.5s; }
+.hf-sparks circle { transform-box: fill-box; opacity: 0; animation: hfSpark 3s linear infinite; }
+.hf-off .hf-coal { opacity: 0.55; animation: hmPulse 2.6s ease-in-out infinite alternate; }
+.hf-on .hf-coal { opacity: 0.9; }
+
+/* ════ Деңгей тесті ════ */
+.hm-level {
+  display: flex; align-items: center; gap: 14px; padding: 10px 16px 10px 12px;
+  border-radius: 20px; text-decoration: none; color: var(--ink);
+  background: var(--hm-gold-soft);
+  box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.45);
+  transition: transform 0.25s var(--hm-ease);
 }
-.aq-panel-links a:hover { background: var(--hm-felt); }
-.aq-panel-links .ic { color: var(--hm-red-d); flex: none; }
+.hm-level b { flex: 1; font-size: 15.5px; }
+.hm-level-go { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; background: var(--hm-red); color: #fff; box-shadow: 0 3px 0 var(--hm-red-d); }
+.hm-level:hover { transform: translateY(-2px); }
 
-/* ════ 3 · Төменгі қатар ════ */
-.hm-low { display: grid; gap: 20px; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.5fr); align-items: stretch; }
-.hm-card-go { margin-top: auto; min-height: 44px; }
-.hm-nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 2px 0 0; width: 100%; }
-.hm-nums div { min-width: 0; }
-.hm-nums dt { font-size: 12.5px; color: var(--hm-muted); font-weight: 600; line-height: 1.25; }
-.hm-nums dd { margin: 2px 0 0; font-size: 24px; font-weight: 800; font-family: var(--head); }
-.hm-nums dd small { font-size: 13px; color: var(--hm-muted); font-weight: 600; }
-.hm-levels { list-style: none; margin: 2px 0 0; padding: 0; display: grid; gap: 6px; width: 100%; }
-.hm-levels li { display: grid; grid-template-columns: 28px 1fr; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 800; color: var(--hm-muted); }
-.hm-levels i { height: 7px; border-radius: 4px; background: var(--hm-felt); overflow: hidden; }
-.hm-levels b { display: block; height: 100%; background: var(--hm-blue); transform-origin: left center; }
-[dir="rtl"] .hm-levels b { transform-origin: right center; }
-.hm-badges ul { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 8px; }
-.hm-badges li { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font-size: 12px; font-weight: 700; color: #8a7f6c; line-height: 1.2; }
-.hm-badges li.on { color: var(--hm-ink); }
-.hm-tanba .tb-disc { fill: #efe8da; }
-.hm-tanba .tb-ring { fill: none; stroke: #c9bba2; stroke-width: 1.2; stroke-dasharray: 2.4 2; }
-.hm-tanba .tb-g { fill: none; stroke: #b3a487; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.hm-tanba .tb-txt { font: 800 12px/1 var(--body, sans-serif); text-anchor: middle; fill: #b3a487; }
-.hm-tanba.on .tb-disc { fill: var(--hm-red); }
-.hm-tanba.on .tb-ring { stroke: var(--hm-gold); }
-.hm-tanba.on .tb-g { stroke: #fffdf7; }
-.hm-tanba.on .tb-txt { fill: #fffdf7; }
+/* ════ 2 · Күн ════ */
+.hm-day { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr) minmax(0, 0.78fr); align-items: stretch; }
+.hm-day > div { display: grid; }
 
-/* Кіру анимациясы */
-.hm-in { animation: hmRise 0.6s var(--hm-ease) both; animation-delay: calc(var(--i, 0) * 60ms); }
-@keyframes hmRise { from { opacity: 0; transform: translateY(14px); } }
-
-/* ════ Тар экрандар ════ */
-@media (max-width: 1179px) {
-  .hm-mid { grid-template-columns: minmax(0, 1fr); }
-  .hm-aq { order: -1; position: static; }
-  .aq-panel { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: start; }
-  .aq-panel-top { flex-direction: row; align-items: flex-start; text-align: start; grid-row: span 2; }
-  .aq-panel-av .qyran { width: 72px; height: auto; }
-  .aq-panel-say::before { top: 18px; left: -7px; transform: rotate(45deg); }
-  [dir="rtl"] .aq-panel-say::before { left: auto; right: -7px; }
-  .hm-low { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .hm-badges { grid-column: 1 / -1; }
-  .hm-badges ul { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+/* Ошақ — қараңғы киіз, от жарқырайды */
+.hm-hearth {
+  display: grid; grid-template-columns: 112px minmax(0, 1fr); grid-template-areas: "art body" "emb emb";
+  gap: 4px 14px; align-items: center;
+  background: radial-gradient(90% 80% at 15% 30%, rgba(240, 138, 44, 0.28), transparent 65%), #3a2418;
+  color: #fff6e2;
+  box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.12), var(--shadow);
 }
-@media (max-width: 760px) {
-  .hm { gap: 14px; }
-  .hm-mission { grid-template-columns: minmax(0, 1fr); grid-template-areas: "greet" "mis" "today"; padding: 18px 16px 18px 20px; border-radius: 22px; gap: 14px; }
-  .hm-today { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; padding: 12px 0 0; border-inline-start: 0; border-top: 1px solid var(--hm-hair); min-width: 0; gap: 12px 20px; }
-  .hm-today .hm-ring, .hm-fire-i { width: 40px; height: 40px; }
-  .hm-cta { width: 100%; min-width: 0; }
-  .aq-panel { display: flex; padding: 14px; gap: 10px; }
-  .aq-panel-av .qyran { width: 60px; }
-  .aq-panel-say p { font-size: 15px; }
-  .aq-panel-links { grid-template-columns: 1fr 1fr; }
-  .hm-map { padding: 14px 12px 12px; }
-  .hm-map-h { flex-direction: column; gap: 8px; }
-  .hm-map-h h2 { font-size: 20px; }
-  .hm-low { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-  .hm-badges ul { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hm-hearth.is-out { background: radial-gradient(90% 80% at 15% 30%, rgba(240, 138, 44, 0.1), transparent 65%), #2f2925; }
+.hm-hearth .hm-kicker { color: #f0be45; }
+.hm-h-art { grid-area: art; }
+.hm-flame { display: block; width: 112px; height: 112px; overflow: visible; }
+.hm-h-body { grid-area: body; min-width: 0; }
+.hm-h-num { margin: 4px 0 2px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.hm-h-num b { font-family: var(--head); font-size: 46px; line-height: 1; letter-spacing: -0.03em; }
+.hm-h-num span { font-weight: 700; color: #ead9bd; }
+.hm-h-state { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 14px; color: #ead9bd; line-height: 1.35; }
+.hm-h-state svg { flex: none; margin-block-start: 1px; color: #f0be45; }
+.hm-embers {
+  grid-area: emb; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; align-items: center;
+  margin-block-start: 10px; padding-block-start: 12px; border-top: 1px dashed rgba(255, 230, 190, 0.22);
+}
+.hm-embers small { font-size: 12.5px; color: #d9c6a5; line-height: 1.35; }
+.hm-embers .link-btn { grid-column: 1 / -1; justify-self: start; color: #f0be45; font-size: 13.5px; }
+.hm-embers .link-btn:disabled { color: #a8987e; }
+.hm-coals { display: inline-flex; gap: 6px; }
+.hm-coals i { width: 18px; height: 14px; border-radius: 50% 50% 45% 45%; background: #5a4a40; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25); }
+.hm-coals i.on { background: radial-gradient(circle at 50% 60%, #ffd27a, #f08a2c 55%, #b8322a); box-shadow: 0 0 10px rgba(240, 138, 44, 0.7); animation: hmPulse 1.8s ease-in-out infinite alternate; }
+
+/* Тапсырмалар */
+.hm-quests { display: flex; flex-direction: column; gap: 12px; }
+.hm-q-top { display: flex; align-items: center; gap: 10px; }
+.hm-q-top h3 { margin: 0; font-size: 17px; flex: 1; }
+.hm-q-count { font-family: var(--head); font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--surface-2, #f4ecda); color: var(--ink); }
+.hm-chest { flex: none; margin-block: -6px; }
+.hm-chest.ready { animation: hmBob 1.2s ease-in-out infinite alternate; }
+.hm-quests ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.hm-quests li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; grid-template-areas: "mark name num" "mark bar bar"; gap: 6px 10px; align-items: center; animation: hmRise 0.5s var(--hm-ease) both; animation-delay: calc(0.45s + var(--i) * 80ms); }
+.hm-quests .q-mark { grid-area: mark; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 2px var(--rim); color: #fff; align-self: start; }
+.hm-quests li.done .q-mark { background: var(--hm-ok); box-shadow: none; }
+.hm-quests .q-name { grid-area: name; font-weight: 600; font-size: 14.5px; }
+.hm-quests li.done .q-name { color: var(--muted); }
+.hm-quests .q-num { grid-area: num; font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 700; color: var(--muted); }
+.hm-quests .q-bar { grid-area: bar; display: block; height: 8px; border-radius: 4px; background: var(--surface-2, #f4ecda); overflow: hidden; }
+.hm-quests .q-bar i { display: block; height: 100%; width: 100%; background: var(--hm-red); transform-origin: 0 50%; animation: hmGrow 0.9s var(--hm-ease) backwards; animation-delay: calc(0.6s + var(--i) * 100ms); }
+.hm-quests li.done .q-bar i { background: var(--hm-ok); }
+.hm-claim { align-self: flex-start; gap: 6px; }
+.hm-q-note { color: var(--muted); font-size: 13px; }
+
+/* Есеп */
+.hm-stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.hm-stat {
+  display: grid; align-content: start; gap: 2px; padding: 12px; border-radius: 18px;
+  background: var(--surface, #fffdf7); box-shadow: inset 0 0 0 1px var(--rim);
+}
+.hm-stat-i { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; margin-block-end: 4px; }
+.c-gold .hm-stat-i { background: var(--hm-gold-soft); color: #7a4a00; }
+.c-red .hm-stat-i { background: var(--anar-soft, #f6e4df); color: var(--hm-red-d); }
+.c-blue .hm-stat-i { background: #dcebef; color: var(--hm-blue); }
+.hm-stat b { font-family: var(--head); font-size: 20px; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.hm-stat small { font-size: 12px; color: var(--muted); line-height: 1.25; }
+
+/* ════ 3 · Жол мен сөз ════ */
+.hm-discover { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+.hm-next { padding: 0; overflow: hidden; display: grid; grid-template-rows: 180px auto; transition: transform 0.3s var(--hm-ease), box-shadow 0.3s; }
+.hm-next:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgba(184, 50, 42, 0.4), var(--shadow-lg); }
+.hm-next-art { position: relative; display: block; overflow: hidden; }
+.hm-next-art .sa { position: absolute; inset: 0; transition: transform 0.6s var(--hm-ease); }
+.hm-next:hover .hm-next-art .sa { transform: scale(1.04); }
+.hm-next-body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 20px 20px; }
+.hm-next h2 { font-size: clamp(19px, 1.8vw, 23px); margin: 2px 0 0; }
+.hm-next-sub { color: var(--muted); font-size: 14.5px; }
+.hm-next-btn { margin-block-start: 8px; gap: 8px; }
+.hm-next-all { background: radial-gradient(80% 120% at 0% 50%, rgba(224, 165, 38, 0.18), transparent 70%), var(--surface, #fffdf7); grid-template-rows: auto; grid-template-columns: auto minmax(0, 1fr); align-items: center; padding-inline-start: 20px; }
+.hm-next-trophy { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 28px; background: var(--hm-gold-soft); color: #7a4a00; }
+
+.hm-wod { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; background: linear-gradient(160deg, var(--surface, #fffdf7) 55%, #f8eedb); }
+.hm-wod-word { display: flex; align-items: center; gap: 16px; }
+.hm-wod-word svg { flex: none; }
+.hm-wod-word b { display: block; font-family: var(--head); font-size: clamp(26px, 2.6vw, 34px); line-height: 1.1; letter-spacing: -0.02em; color: var(--hm-red-d); overflow-wrap: anywhere; }
+.hm-wod-word span { display: block; color: var(--muted); font-size: 15px; margin-block-start: 4px; }
+.hm-wod-save { gap: 6px; }
+.hm-vocab { margin-block-start: auto; display: flex; flex-wrap: wrap; gap: 6px; padding-block-start: 12px; border-top: 1px dashed var(--rim); width: 100%; }
+.hm-vchip { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface-2, #f4ecda); color: var(--ink); }
+
+/* ════ 4 · Мәдениет ════ */
+.hm-culture { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+.hm-proverb { padding: 22px 24px; overflow: hidden; }
+.hm-proverb blockquote { position: relative; margin: 12px 0 10px; font-family: var(--head); font-weight: 600; font-size: clamp(19px, 2vw, 24px); line-height: 1.3; letter-spacing: -0.01em; }
+.hm-proverb blockquote::before { content: "«"; color: var(--hm-red); margin-inline-end: 2px; }
+.hm-proverb blockquote::after { content: "»"; color: var(--hm-red); margin-inline-start: 2px; }
+.hm-proverb p { margin: 0; color: var(--muted); font-size: 15px; }
+.hm-trad { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 16px; align-items: center; }
+.hm-trad-art { display: grid; place-items: center; width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle at 50% 60%, var(--hm-gold-soft), #f8eedb 70%); overflow: hidden; }
+.hm-trad-art svg { max-width: 100px; height: auto; }
+.hm-trad h3 { margin: 8px 0 4px; font-size: 18px; }
+.hm-trad p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+
+/* ════ 5 · Жылдам өту ════ */
+.hm-sec { display: flex; align-items: center; gap: 12px; margin: 6px 0 -6px; font-size: 18px; }
+.hm-sec::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--rim) 0 6px, transparent 6px 11px); }
+.hm-quick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.hm-qcard {
+  position: relative; display: grid; justify-items: start; gap: 4px; padding: 14px 16px 16px;
+  border-radius: 22px; text-decoration: none; color: var(--ink); overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--rim);
+  transition: transform 0.3s var(--hm-ease), box-shadow 0.3s;
+}
+.hm-qcard.tint-0 { background: #f8eedb; }
+.hm-qcard.tint-1 { background: #f6e4df; }
+.hm-qcard.tint-2 { background: #e2eef1; }
+.hm-qcard.tint-3 { background: #e5efe8; }
+.hm-qart { justify-self: center; display: block; transition: transform 0.4s var(--hm-ease); }
+.hm-qart svg { display: block; }
+.hm-qcard b { font-size: 15px; padding-inline-end: 34px; }
+.hm-qgo { position: absolute; inset-inline-end: 12px; bottom: 12px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--surface, #fffdf7); box-shadow: inset 0 0 0 1px var(--rim); transition: background 0.2s, color 0.2s; }
+.hm-qcard:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px rgba(184, 50, 42, 0.4), var(--shadow); }
+.hm-qcard:hover .hm-qart { transform: rotate(-5deg) scale(1.06); }
+.hm-qcard:hover .hm-qgo { background: var(--hm-red); color: #fff; box-shadow: none; }
+
+/* ════ Кіру қозғалысы ════ */
+.hm-in { animation: hmRise 0.7s var(--hm-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+
+@keyframes hmRise { from { opacity: 0; transform: translateY(18px); } }
+@keyframes hmFade { from { opacity: 0; } }
+@keyframes hmPop { from { opacity: 0; transform: scale(0.3); } }
+@keyframes hmFret { from { transform: scaleX(0); } }
+@keyframes hmGrow { from { transform: scaleX(0); } }
+@keyframes hmTip { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
+@keyframes hmPulse { from { opacity: 1; } to { opacity: 0.55; } }
+@keyframes hmBob { to { transform: translateY(-4px); } }
+@keyframes hyCloud { from { transform: translateX(-70px); } to { transform: translateX(90px); } }
+@keyframes hyBeam { from { opacity: 0.65; } to { opacity: 1; } }
+@keyframes hyGlow { from { opacity: 0.8; transform: scale(0.97); } to { opacity: 1; transform: scale(1.03); } }
+@keyframes hySmoke {
+  0% { opacity: 0; transform: translateY(0) scale(0.6); }
+  15% { opacity: 0.18; }
+  100% { opacity: 0; transform: translateY(-170px) scale(2.4); }
+}
+@keyframes hfFlick { from { transform: scale(1, 1) skewX(0deg); } to { transform: scale(0.94, 1.08) skewX(-3deg); } }
+@keyframes hfSpark {
+  0% { opacity: 0; transform: translateY(0); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-46px) translateX(6px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hm-in, .km-pulse { animation: none; }
-  .km-r { transition: none; }
+  .hm, .hm *, .hm *::before, .hm *::after { animation: none !important; transition: none !important; }
+}
+
+/* ════ Жауапты орналасу ════ */
+@media (max-width: 1180px) {
+  .hm-day { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .hm-stats { grid-column: 1 / -1; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .hm-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "greet" "scene" "lesson"; grid-template-rows: auto; padding: 20px 20px 0; }
+  .hm-scene { margin-inline: -8px; max-width: 640px; justify-self: center; width: calc(100% + 16px); }
+  .hm-lesson { padding-block-end: 22px; }
+  .hm-discover, .hm-culture { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .hm { gap: 14px; }
+  .hm-bento { gap: 14px; }
+  .hm-hero { padding: 16px 14px 0; border-radius: 24px; }
+  .hm-hero::after { inset: 6px; border-radius: 19px; }
+  .hm-greet { gap: 10px; padding-block-end: 10px; }
+  .hm-greet h1 { font-size: 21px; }
+  .hm-greet p { font-size: 13.5px; }
+  .hm-scene { margin-inline: -6px; width: calc(100% + 12px); }
+  .hm-goal { padding: 6px 9px 7px; min-width: 0; border-radius: 11px; }
+  .hm-goal-n { font-size: 13.5px; }
+  .hm-goal-l { font-size: 10.5px; }
+  .hm-tip { font-size: 11.5px; padding: 7px 9px; max-width: 40%; border-radius: 12px 12px 3px 12px; line-height: 1.3; }
+  .hm-tip::after { width: 10px; height: 10px; bottom: -5px; }
+  .hm-lesson {
+    position: relative; z-index: 4; margin: -2px -8px 8px; padding: 16px; gap: 12px;
+    background: var(--surface, #fffdf7); border-radius: 20px;
+    box-shadow: inset 0 0 0 1px var(--rim), 0 -10px 24px -16px rgba(60, 40, 10, 0.45);
+  }
+  .hm-l-head { gap: 12px; }
+  .hm-l-art { width: 52px; height: 52px; }
+  .hm-lesson h2 { font-size: 24px; }
+  .hm-l-meta { font-size: 13.5px; }
+  .hm-cta.btn { width: 100%; min-width: 0; }
+  .hm-day { grid-template-columns: minmax(0, 1fr); }
+  .hm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hm-hearth { grid-template-columns: 92px minmax(0, 1fr); }
+  .hm-flame { width: 92px; height: 92px; }
+  .hm-h-num b { font-size: 40px; }
+  .hm-tile { padding: 16px; border-radius: 20px; }
+  .hm-next { padding: 0; grid-template-rows: 150px auto; }
+  .hm-next-body { padding: 14px 16px 16px; }
+  .hm-proverb { padding: 18px; }
+  .hm-trad { grid-template-columns: 84px minmax(0, 1fr); gap: 12px; }
+  .hm-trad-art { width: 84px; height: 84px; }
+  .hm-trad-art svg { max-width: 76px; }
+  .hm-quick { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .hm-qcard { padding: 10px 12px 12px; }
+  .hm-qart svg { width: 80px; height: auto; }
+  .hm-qcard b { font-size: 14px; }
+  .hm-level b { font-size: 14px; }
 }
