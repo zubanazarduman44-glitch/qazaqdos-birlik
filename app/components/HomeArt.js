@@ -284,3 +284,4 @@ export default function HomeYurt({ phase = "day", xp = 0, goal = 50, lit = false
     </svg>
   );
 }
+
