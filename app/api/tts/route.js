@@ -1,7 +1,10 @@
 // Қазақша дауыстап оқу (құрылғыда қазақша дауыс болмаса): Gemini TTS
 export const maxDuration = 60;
 
-const FALLBACK = [process.env.GEMINI_TTS_MODEL, "gemini-2.5-flash-preview-tts", "gemini-3.1-flash-tts-preview", "gemini-2.5-pro-preview-tts"].filter(Boolean);
+const FALLBACK = [process.env.GEMINI_TTS_MODEL, "gemini-3.8-flash-tts", "gemini-2.5-flash-preview-tts", "gemini-3.8-flash-lite-tts"].filter(Boolean);
+// Тілді нақты көрсетеміз: әйтпесе модель кириллицаны кейде орысша оқиды. Қолдамаса — бір рет онсыз қайталаймыз.
+const LANG = "kk-KZ";
+const noLang = new Set();
 const cache = new Map();
 let found = { at: 0, list: [] };
 
@@ -34,32 +37,51 @@ function wav(pcm, rate = 24000) {
   return Buffer.concat([h, pcm]);
 }
 
-// Дыбысты тазалау: басы мен соңындағы үнсіздікті кесеміз, жұмсақ кіру/сөну қосамын,
-// соңына қысқа тыныштық қоямыз — сонда соңында «шырт» еткен дыбыс болмайды.
+// Дыбысты тазалау. Gemini кейде сөздің соңына дем шығару / «шш» деген шуыл қосады — соны кесеміз.
+// 10 мс терезелермен қараймыз: қуаты (RMS) мен нөлден өту жиілігі (ZCR). Соңынан бастап
+// тым әлсіз терезелерді және «ысылдаған» (ZCR жоғары, қуаты төмен) терезелерді алып тастаймыз.
 function cleanPcm(buf, rate = 24000) {
   const n = Math.floor(buf.length / 2);
   if (n < rate / 10) return buf;
   const src = new Int16Array(buf.buffer.slice(buf.byteOffset, buf.byteOffset + n * 2));
-  const TH = 600; // ~ -35 dB
+  const W = Math.round(rate * 0.01);
+  const wins = Math.floor(n / W);
+  const rms = new Float64Array(wins);
+  const zcr = new Float64Array(wins);
+  let peak = 0;
+  for (let w = 0; w < wins; w++) {
+    let e = 0, z = 0;
+    for (let i = w * W, end = i + W; i < end; i++) {
+      e += src[i] * src[i];
+      if (i > w * W && (src[i] >= 0) !== (src[i - 1] >= 0)) z++;
+    }
+    rms[w] = Math.sqrt(e / W);
+    zcr[w] = z / W;
+    if (rms[w] > peak) peak = rms[w];
+  }
+  if (peak < 300) return buf;
+  const quiet = (w) => rms[w] < peak * 0.05;
+  const hiss = (w) => zcr[w] > 0.22 && rms[w] < peak * 0.3;
   let a = 0;
-  while (a < n && Math.abs(src[a]) < TH) a++;
-  let b = n - 1;
-  while (b > a && Math.abs(src[b]) < TH) b--;
-  if (b - a < rate / 20) return buf; // тым қысқа — өзгертпейміз
-  a = Math.max(0, a - Math.round(rate * 0.04));
-  // Сөну дыбыстың нақты соңына келеді (үнсіздікке емес) — кенет үзілген жерде де шырт етпейді
-  b = Math.min(n - 1, b + Math.round(rate * 0.015));
-  const body = src.slice(a, b + 1);
+  while (a < wins && quiet(a)) a++;
+  let b = wins - 1;
+  // Соңынан: үнсіздік пен ысылды кесеміз (бірақ сөздің өзінен 40%-дан артық емес)
+  const minB = a + Math.floor((wins - a) * 0.6);
+  while (b > minB && (quiet(b) || hiss(b))) b--;
+  if (b <= a) return buf;
+  let s0 = Math.max(0, a * W - Math.round(rate * 0.03));
+  let s1 = Math.min(n, (b + 1) * W + Math.round(rate * 0.01));
+  const body = src.slice(s0, s1);
   const fin = Math.min(Math.round(rate * 0.012), body.length >> 2);
-  const fout = Math.min(Math.round(rate * 0.07), body.length >> 2);
+  const fout = Math.min(Math.round(rate * 0.06), body.length >> 2);
   for (let i = 0; i < fin; i++) body[i] = Math.round(body[i] * (i / fin));
   for (let i = 0; i < fout; i++) {
     const k = body.length - 1 - i;
-    const g = i / fout;
-    body[k] = Math.round(body[k] * g * g);
+    const g = 0.5 - 0.5 * Math.cos((Math.PI * i) / fout); // жұмсақ (косинус) сөну
+    body[k] = Math.round(body[k] * g);
   }
   const padStart = Math.round(rate * 0.03);
-  const padEnd = Math.round(rate * 0.18);
+  const padEnd = Math.round(rate * 0.15);
   const out = new Int16Array(padStart + body.length + padEnd);
   out.set(body, padStart);
   return Buffer.from(out.buffer);
@@ -90,15 +112,24 @@ export async function POST(req) {
   let last = "";
   for (const m of models) {
     try {
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } },
-        }),
-        signal: AbortSignal.timeout(40_000),
-      });
+      const call = (withLang) =>
+        fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              responseModalities: ["AUDIO"],
+              speechConfig: { ...(withLang ? { languageCode: LANG } : {}), voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } },
+            },
+          }),
+          signal: AbortSignal.timeout(40_000),
+        });
+      let r = await call(!noLang.has(m));
+      if (r.status === 400 && !noLang.has(m)) {
+        noLang.add(m);
+        r = await call(false);
+      }
       if (!r.ok) {
         last = `${m} (${r.status})`;
         continue;
