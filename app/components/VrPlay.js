@@ -13,6 +13,7 @@ import { useAnimGate } from "./AnimGate";
 import { L } from "../../lib/i18n";
 import { sayKk, stopKk, prefetchKk } from "../../lib/speak";
 import { toWav } from "../../lib/audio";
+import { atmo, atmoKk } from "../../lib/vr/atmo";
 
 // Түсіндірме: орысша түсіндірме — ru, қалғаны — en (сахна деректері kk/ru/en ғана)
 export const trLang = (explain) => (explain === "ru" ? "ru" : "en");
@@ -123,6 +124,32 @@ function Reward({ xp, coins, t }) {
   );
 }
 
+const SND = "qd_vr_snd_v1";
+const sndOn = () => { try { return localStorage.getItem(SND) !== "0"; } catch { return true; } };
+const loadAudio = () => import("../../lib/vrAudio");
+
+// Ауа райы белгісі (кадрдағы жазудың кішкентай суреті)
+export function WxIcon({ a }) {
+  const p = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" };
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+      {a.wx === "snow" ? <path {...p} d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5 12 7l2.5-2.5M9.5 19.5 12 17l2.5 2.5" />
+        : a.wx === "rain" ? <><path {...p} d="M7 14a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8a3 3 0 0 1 0 6Z" /><path {...p} d="M8 17l-1 3M12 17l-1 3M16 17l-1 3" /></>
+        : a.wx === "cloud" ? <path {...p} d="M7 18a4.5 4.5 0 0 1 .6-9A6 6 0 0 1 19 11a3.5 3.5 0 0 1-.5 7Z" />
+        : a.tod === "night" || a.tod === "evening" ? <path {...p} d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5Z" />
+        : <><circle {...p} cx="12" cy="12" r="4" /><path {...p} d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></>}
+    </svg>
+  );
+}
+function SndIcon({ on }) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5Z" />
+      {on ? <path d="M15 9.5a3.5 3.5 0 0 1 0 5m2.5-8a7 7 0 0 1 0 11" /> : <path d="M16 9.5l5 5m0-5-5 5" />}
+    </svg>
+  );
+}
+
 const starsFor = (m) => (m === 0 ? 3 : m <= 2 ? 2 : 1);
 const canRecord = () => typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined" && !!(window.AudioContext || window.webkitAudioContext);
 
@@ -190,6 +217,14 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const advTimer = useRef(null);
   const awarded = useRef(false);
   const mounted = useRef(true);
+  // Әлемнің «тынысы»: ауа райы мен тәулік уақыты (бір кіруге тұрақты) және айнала дыбысы
+  const [wx] = useState(() => atmo(scene.place));
+  const [snd, setSnd] = useState(sndOn);
+  const au = useRef(null); // lib/vrAudio (жалқау жүктеледі)
+  const lastCue = useRef(null);
+  const lip = useRef(null); // ойнап тұрған дыбыстың қаттылығы (ерін үшін)
+  const waveRef = useRef(null);
+  const meterRef = useRef(null);
 
   // «Өмір» қабаты: орынның жеке файлы болса — кинематографиялық сахна (жүктелмесе — бұрынғы сурет)
   const art = place?.art || scene.place;
@@ -221,12 +256,24 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   }, []);
 
   useEffect(() => {
+    let live = true;
+    loadAudio().then((m) => {
+      if (!live) return;
+      au.current = m;
+      m.enter({ place: art, wx: wx.wx, tod: wx.tod });
+      if (lastCue.current) m.cue(lastCue.current);
+    }, () => {});
+    return () => { live = false; lip.current?.stop(); lip.current = null; au.current?.leave(); au.current = null; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     mounted.current = true;
     setMicOk(canRecord());
     return () => {
       mounted.current = false;
       clearTimeout(advTimer.current);
       try { recRef.current?.state === "recording" && recRef.current.stop(); } catch {}
+      meterRef.current?.stop(); meterRef.current = null;
       stopKk();
     };
   }, []);
@@ -238,12 +285,20 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     const end = () => { if (fin) return; fin = true; done && done(); };
     sayKk(text, {
       slow,
-      onState: (s) => {
+      onState: (s, el) => {
         if (!mounted.current || my !== tok.current) return end();
-        if (s === "playing") { setAudioErr(false); npc && setTalk(true); }
-        if (s === "idle" || s === "error") { setTalk(false); if (s === "error") setAudioErr(true); end(); }
+        if (s === "playing") {
+          setAudioErr(false); npc && setTalk(true);
+          au.current?.duck(true);
+          lip.current?.stop(); lip.current = npc && el ? au.current?.tap(el) || null : null;
+        }
+        if (s === "idle" || s === "error") {
+          setTalk(false); if (s === "error") setAudioErr(true);
+          au.current?.duck(false); lip.current?.stop(); lip.current = null;
+          end();
+        }
       },
-    }).catch(() => { if (my === tok.current) { setTalk(false); setAudioErr(true); } end(); });
+    }).catch(() => { if (my === tok.current) { setTalk(false); setAudioErr(true); au.current?.duck(false); } end(); });
     return end;
   }, []);
 
@@ -275,6 +330,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     const first = !prev;
     const xp = first ? 12 : 3, coins = first ? 6 : 1;
     setResult({ stars, first, xp, coins });
+    au.current?.play("win", stars);
     if (awarded.current) return;
     awarded.current = true;
     update((s) => {
@@ -302,6 +358,34 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const onLifeFree = useCallback(() => { if (mounted.current) setBusy(false); }, []);
   const onIntroSeen = useCallback(() => { markIntro(scene.id); setIntroOn(false); }, [scene.id]);
   const skipLife = useCallback(() => lifeCtl.current?.skip?.(), []);
+  const onCue = useCallback((c) => { lastCue.current = c; au.current?.cue(c); }, []);
+  const toggleSnd = () => {
+    const on = !snd;
+    setSnd(on);
+    if (au.current) au.current.setSound(on);
+    else { try { localStorage.setItem(SND, on ? "1" : "0"); } catch {} }
+  };
+
+  // Ерін қозғалысы нақты дыбыстан (Chrome: captureStream). Мәлімет жоқ болса — бұрынғы CSS циклы.
+  useEffect(() => {
+    const host = stageRef.current;
+    if (!talk || !host) return;
+    let raf = 0, mouths = [], at = 0;
+    const clear = () => { host.removeAttribute("data-amp"); mouths.forEach((m) => (m.style.transform = "")); };
+    const loop = (t) => {
+      const lv = lip.current ? lip.current.level() : -1;
+      if (lv < 0) { if (host.hasAttribute("data-amp")) clear(); }
+      else {
+        if (!mouths.length || t - at > 600) { mouths = [...host.querySelectorAll(".lf-fig.is-talk .lf-mouth")]; at = t; }
+        host.setAttribute("data-amp", "");
+        const k = Math.min(1, lv * 1.3);
+        mouths.forEach((m) => (m.style.transform = `scale(${(0.85 + k * 0.35).toFixed(3)}, ${(0.18 + k * 1.1).toFixed(3)})`));
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => { cancelAnimationFrame(raf); clear(); };
+  }, [talk]);
 
   const goNext = useCallback((r) => {
     clearTimeout(advTimer.current);
@@ -321,6 +405,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     if (r.ok) {
       setPicked({ i: k, ok: true });
       setGoodK((g) => g + 1);
+      au.current?.play("ok");
       setLog((l) => [...l, { me: true, kk: r.kk, tr: L(r, tl) }]);
       // Жауап айтылып біткен соң келесі қадамға өтеміз (ең көбі 6 с)
       // Өз сөзің осы бетте бірден айтылады; ол біткенше келесі бетке өтпейміз (дыбыс жүктелмесе — ең көбі 9 с)
@@ -331,6 +416,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     } else {
       setPicked({ i: k, ok: false });
       setTried((x) => [...x, k]);
+      au.current?.play("bad");
       setMistakes((m) => m + 1);
     }
   }
@@ -406,12 +492,14 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
       return;
     }
     stopKk();
+    au.current?.duck(false);
     const chunks = [];
     const r = new MediaRecorder(stream);
     recRef.current = r;
     r.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     r.onstop = async () => {
       stream.getTracks().forEach((x) => x.stop());
+      meterRef.current?.stop(); meterRef.current = null;
       if (!mounted.current) return;
       setRec("busy");
       try {
@@ -423,7 +511,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
         const text = String(d.text || "").trim();
         const k = text ? bestMatch(text, pickedRef.current.replies) : -1;
         if (k >= 0) { setHeard({ text, miss: false }); pickedRef.current.choose(k); }
-        else setHeard({ text, miss: true });
+        else setHeard({ text, miss: true, err: text ? "" : T.silent });
       } catch (e) {
         if (mounted.current) setHeard({ text: "", miss: true, err: e.message || T.micErr });
       } finally {
@@ -433,10 +521,31 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
     r.start();
     setRec("rec");
     setTimeout(() => r.state === "recording" && r.stop(), 10000);
+    // Толқын және үнсіздікте өзі тоқтау (сөйлеп болған соң 1,4 с тыныштық)
+    const m = au.current || (await loadAudio().catch(() => null));
+    const met = r.state === "recording" ? m?.micMeter?.(stream) : null;
+    if (!met) return;
+    meterRef.current = met;
+    const t0 = performance.now();
+    let spoke = false, quiet = 0;
+    const loop = (t) => {
+      if (r.state !== "recording" || meterRef.current !== met) return;
+      const lv = met.level();
+      const bars = waveRef.current?.children || [];
+      for (let i = 0; i < bars.length; i++) bars[i].style.transform = `scaleY(${Math.max(0.15, Math.min(1, 0.12 + lv * (0.75 + 0.45 * Math.sin(t / 95 + i * 1.9)))).toFixed(3)})`;
+      if (lv > 0.1) { spoke = true; quiet = 0; }
+      else if (spoke) {
+        quiet ||= t;
+        if (t - quiet > 1400 && t - t0 > 1000) { try { r.stop(); } catch {} return; }
+      }
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
   }
 
   function replay(withIntro = false) {
     clearTimeout(advTimer.current);
+    au.current?.duck(false);
     if (withIntro) setIntroOn(true);
     if (lifeOnRef.current) setBusy(true);
     stopKk();
@@ -457,7 +566,8 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   const line = n.npc || { kk: "" };
   const good = T.good[goodK % T.good.length];
   const fb = picked && (picked.ok ? { ok: true } : { ok: false, note: L(replies[picked.i]?.note, tl) || T.defaultNote });
-  const mood = result ? "ok" : picked ? (picked.ok ? "ok" : "bad") : null;
+  const line0 = n.npc?.kk || "";
+  const mood = result ? "ok" : picked ? (picked.ok ? "ok" : "bad") : /\?\s*$/.test(line0) ? "ask" : null;
   const said = log.filter((x) => x.me);
   const doneSteps = result ? total : said.length;
   const bubbleLead = lifeOn ? 120 : intro ? INTRO_MS - 60 : 300;
@@ -475,6 +585,9 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
         </div>
         <div className="vr-bar-r">
           {!result && <span className="vr-step" aria-live="polite">{vf(T.step, Math.max(1, step), `${total}`)}</span>}
+          <button type="button" className="btn ghost small vr-snd" onClick={toggleSnd} aria-pressed={snd} aria-label={T.sound} title={T.sound}>
+            <SndIcon on={snd} />
+          </button>
           <button type="button" className="btn ghost small" onClick={() => drawerRef.current?.showModal?.()} aria-haspopup="dialog">
             <ShellGlyph name="chest" size={18} /> <span className="vr-hide-s">{T.words}</span>
           </button>
@@ -499,7 +612,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
         {lifeOn ? (
           lifeMod && (
             <VrLife mod={lifeMod} scene={scene} node={node} run={run} intro={introOn} talk={talk} mood={mood} label={lifeLabel}
-              ctl={lifeCtl} onSay={onLifeSay} onFree={onLifeFree} onIntroSeen={onIntroSeen} />
+              ctl={lifeCtl} onSay={onLifeSay} onFree={onLifeFree} onIntroSeen={onIntroSeen} onCue={onCue} wx={wx} />
           )
         ) : (
           <>
@@ -509,6 +622,12 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
           </>
         )}
         <span className="vr-vignette" aria-hidden="true" />
+        {lifeOn && !picked?.ok && (
+          <span className="vr-atmo" title={`${T.wxLbl}: ${T.tod?.[wx.tod] || ""}, ${T.wx?.[wx.wx] || ""}`}>
+            <WxIcon a={wx} />
+            <span lang="kk">{atmoKk(wx)}</span>
+          </span>
+        )}
         {lifeOn && !result && (busy || (node === scene.start && !picked)) && (
           <div className="vr-life-ctl">
             {busy ? (
@@ -652,7 +771,8 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
                 <div className="vr-voice">
                   <button type="button" className={`vr-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy" || !!picked?.ok} aria-pressed={rec === "rec"}>
                     <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
-                    <span>{rec === "rec" ? T.listening : rec === "busy" ? T.recog : T.voice}</span>
+                    {rec === "rec" && <span className="vr-wave" ref={waveRef} aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /></span>}
+                    <span>{rec === "rec" ? T.listening : rec === "busy" ? T.recog : heard?.miss ? T.micAgain : T.voice}</span>
                   </button>
                   {heard && (heard.text || heard.err) && (
                     <p className={`vr-heard ${heard.miss ? "miss" : ""}`} role="status">

@@ -147,7 +147,7 @@ export function Person({ o = {}, pose = "stand", talk = false, mood = null, look
                   <circle cx="-10" cy="-258" r="1.1" fill="#fff" />
                   <circle cx="12" cy="-258" r="1.1" fill="#fff" />
                 </g>
-                <path d={o.f ? "M-18 -266Q-11 -270-5 -266M5 -266Q11 -270 18 -266" : "M-19 -265Q-11 -271-4 -266M4 -266Q11 -271 19 -265"} fill="none" stroke={o.brow || hair} strokeWidth={o.f ? 2.4 : 3.6} strokeLinecap="round" />
+                <path className="lf-brow" d={o.f ? "M-18 -266Q-11 -270-5 -266M5 -266Q11 -270 18 -266" : "M-19 -265Q-11 -271-4 -266M4 -266Q11 -271 19 -265"} fill="none" stroke={o.brow || hair} strokeWidth={o.f ? 2.4 : 3.6} strokeLinecap="round" />
                 <path d="M1 -251Q5 -244-1 -242" fill="none" stroke={skd} strokeWidth="2.2" strokeLinecap="round" />
                 <circle cx="-19" cy="-242" r="6" fill="#E07B6A" opacity=".3" />
                 <circle cx="19" cy="-242" r="6" fill="#E07B6A" opacity=".3" />

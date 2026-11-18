@@ -46,6 +46,21 @@ export function applyBeat(st, b, mod) {
   return n;
 }
 const applyAll = (st, beats, mod) => beats.reduce((s, b) => applyBeat(s, b, mod), st);
+// Ауа райы қабаты (экран кеңістігінде, камерадан тәуелсіз): қар үлпектері / жаңбыр тамшылары. Орындары тұрақты (псевдокездейсоқ).
+const PR = (i, k) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
+const FLAKES = Array.from({ length: 44 }, (_, i) => ({ x: PR(i, 1) * 820 - 10, y: PR(i, 2) * 450, r: 1.4 + PR(i, 3) * 2.6, d: 6 + PR(i, 4) * 7, dl: -PR(i, 5) * 12, dx: (PR(i, 6) - 0.5) * 70 }));
+const DROPS = Array.from({ length: 40 }, (_, i) => ({ x: PR(i, 7) * 860 - 30, y: PR(i, 8) * 450, d: 0.55 + PR(i, 9) * 0.35, dl: -PR(i, 10) * 2 }));
+function Weather({ wx, out }) {
+  if (wx !== "snow" && wx !== "rain") return null;
+  return (
+    <g className={`lf-wx lf-wx-${wx}${out ? " on" : ""}`} aria-hidden="true">
+      {wx === "snow"
+        ? FLAKES.map((f, i) => <circle key={i} cx={f.x} cy={f.y} r={f.r} style={{ "--y": f.y, "--dx": `${f.dx}px`, animationDuration: `${f.d}s`, animationDelay: `${f.dl}s` }} />)
+        : DROPS.map((f, i) => <path key={i} d={`M${f.x} ${f.y}l-7 22`} style={{ "--y": f.y, animationDuration: `${f.d}s`, animationDelay: `${f.dl}s` }} />)}
+    </g>
+  );
+}
+
 const initState = (mod) => applyBeat({ set: "out", cam: "wide", camMs: 0, walk: false, dip: false, hand: null, a: {}, p: {} }, { ...(mod.init || {}), ms: 0 }, mod);
 
 // Түйін әрекеті: scenes.js ішіндегі node.act → орын файлындағы script[сцена][түйін] → acts.talk → бос
@@ -57,7 +72,7 @@ function actBeats(mod, scene, nodeId, st) {
   return Array.isArray(a) ? a : [];
 }
 
-export default function VrLife({ mod, scene, node, run, intro, talk, mood, label, ctl, onSay, onFree, onIntroSeen }) {
+export default function VrLife({ mod, scene, node, run, intro, talk, mood, label, ctl, onSay, onFree, onIntroSeen, onCue, wx }) {
   const [st, setSt] = useState(() => initState(mod));
   const [instant, setInstant] = useState(false);
   const [xf, setXf] = useState(0);
@@ -77,7 +92,7 @@ export default function VrLife({ mod, scene, node, run, intro, talk, mood, label
   const R = useRef({ id: 0, beats: null, i: 0, said: true, freed: true, node: null, run: null, intro: false });
   const T = useRef({ h: 0, fn: null, left: 0, at: 0 });
   const cb = useRef({});
-  cb.current = { onSay, onFree, onIntroSeen };
+  cb.current = { onSay, onFree, onIntroSeen, onCue };
 
   const put = (s) => { stRef.current = s; setSt(s); };
   const fire = (r) => {
@@ -177,16 +192,26 @@ export default function VrLife({ mod, scene, node, run, intro, talk, mood, label
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Дыбыс белгілері: көше/іші ауысуы, қадам, есіктен өту
+  useEffect(() => { cb.current.onCue?.({ set: st.set, walk: !!st.walk, dip: !!st.dip }); }, [st.set, st.walk, st.dip]);
+
   const shot = (typeof st.cam === "string" ? mod.shots?.[st.cam] : st.cam) || SHOT0;
   const Stage = mod.Stage;
+  const npc = st.a?.npc;
+  const out = st.set === "out";
   return (
     <svg ref={svgRef} className={`vr-art lf-art${instant ? " lf-instant" : ""}`} viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" role="img" aria-label={label} focusable="false">
       {mod.css && <style>{mod.css}</style>}
       <g className={`lf-cam${st.walk ? " is-walk" : ""}`} style={{ transform: camT(shot, hv), transitionDuration: `${st.camMs || 0}ms` }}>
         <g className="lf-bob">
-          <Stage st={st} talk={talk} mood={mood} scene={scene} />
+          {/* Кейіпкер сөйлегенде камера оған ақырын жақындайды (фокус) */}
+          <g className={`lf-push${talk && npc && !npc.hide && !st.walk ? " on" : ""}`} style={npc ? { transformOrigin: `${npc.x ?? 400}px ${(npc.y ?? 400) - 210 * (npc.s ?? 1)}px` } : undefined}>
+            <Stage st={st} talk={talk} mood={mood} scene={scene} />
+          </g>
         </g>
       </g>
+      {wx && <rect className={`lf-tint t-${wx.tod}${out ? " out" : ""}`} x="-20" y="-20" width="840" height="490" aria-hidden="true" />}
+      {wx && <Weather wx={wx.wx} out={out} />}
       <MyHand item={st.hand} />
       <rect className={`lf-dip${st.dip ? " on" : ""}`} x="-20" y="-20" width="840" height="490" fill={mod.dip || "#FBE9C8"} />
       {xf > 0 && <rect key={xf} className="lf-xf" x="-20" y="-20" width="840" height="490" fill={mod.dip || "#FBE9C8"} />}

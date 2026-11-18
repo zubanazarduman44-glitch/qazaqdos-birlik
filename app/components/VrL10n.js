@@ -16,6 +16,8 @@ const L = {
     defaultNote: "Бұл жауап жағдаятқа сай емес. Әңгімені тағы оқып көр.", finish: "Нәтижені көру", dialog: "Әңгіме барысы", you: "Сен", stars: "{n} жұлдыз", audioFail: "Дыбыс ойнатылмады",
     resume: "Тоқтаған жерден жалғастыр", startHere: "Осыдан баста", entering: "Кіру…", phrases: "Сен айтқан тіркестер",
     skip: "Өткізіп жіберу", rewatch: "Кіруді қайта көру",
+    sound: "Айналадағы дыбыстар", wxLbl: "Ауа райы мен уақыт", micAgain: "Қайта айтып көр", silent: "Ештеңе естілмеді — қаттырақ айтып көр",
+    tod: { morning: "таң", day: "күндіз", evening: "кеш", night: "түн" }, wx: { snow: "қар жауып тұр", rain: "жаңбыр жауып тұр", cloud: "бұлтты", clear: "ашық" },
   },
   ru: {
     kicker: "Виртуальные ситуации", sub: "Зайдите в магазин, придите в школу, отправьтесь в поездку — говорите по-казахски в жизненных ситуациях.",
@@ -32,6 +34,8 @@ const L = {
     defaultNote: "Этот ответ не подходит к ситуации. Перечитайте реплику.", finish: "Посмотреть итог", dialog: "Ход разговора", you: "Вы", stars: "Звёзд: {n}", audioFail: "Звук не воспроизвёлся",
     resume: "Продолжите с того места, где остановились", startHere: "Начните отсюда", entering: "Входим…", phrases: "Фразы, которые вы сказали",
     skip: "Пропустить", rewatch: "Смотреть вход заново",
+    sound: "Звуки окружения", wxLbl: "Погода и время суток", micAgain: "Сказать ещё раз", silent: "Ничего не слышно — скажите громче",
+    tod: { morning: "утро", day: "день", evening: "вечер", night: "ночь" }, wx: { snow: "идёт снег", rain: "идёт дождь", cloud: "облачно", clear: "ясно" },
   },
   en: {
     kicker: "Virtual situations", sub: "Walk into a shop, a classroom, a station — and speak Kazakh in real-life situations.",
@@ -48,6 +52,8 @@ const L = {
     defaultNote: "This reply doesn't fit the situation. Read the line again.", finish: "See the result", dialog: "Conversation so far", you: "You", stars: "{n} stars", audioFail: "Audio didn't play",
     resume: "Pick up where you left off", startHere: "Start here", entering: "Entering…", phrases: "Phrases you used",
     skip: "Skip", rewatch: "Watch the entrance again",
+    sound: "Ambient sound", wxLbl: "Weather and time of day", micAgain: "Say it again", silent: "Didn’t catch anything — try a bit louder",
+    tod: { morning: "morning", day: "daytime", evening: "evening", night: "night" }, wx: { snow: "snowing", rain: "raining", cloud: "cloudy", clear: "clear" },
   },
   zh: {
     kicker: "虚拟情景", sub: "走进商店、教室、车站——在真实生活情景中说哈萨克语。",
@@ -64,6 +70,8 @@ const L = {
     defaultNote: "这个回答不符合情景。请再读一遍对方的话。", finish: "查看结果", dialog: "对话记录", you: "你", stars: "{n} 颗星", audioFail: "音频无法播放",
     resume: "从上次停下的地方继续", startHere: "从这里开始", entering: "正在进入…", phrases: "你说过的句子",
     skip: "跳过", rewatch: "重看进门过程",
+    sound: "环境音", wxLbl: "天气与时间", micAgain: "再说一次", silent: "没有听到声音——请大声一点",
+    tod: { morning: "早晨", day: "白天", evening: "傍晚", night: "夜晚" }, wx: { snow: "下雪", rain: "下雨", cloud: "多云", clear: "晴朗" },
   },
   es: {
     kicker: "Situaciones virtuales", sub: "Entra en una tienda, un aula, una estación… y habla kazajo en situaciones de la vida real.",
@@ -80,6 +88,8 @@ const L = {
     defaultNote: "Esta respuesta no encaja en la situación. Vuelve a leer la frase.", finish: "Ver el resultado", dialog: "La conversación", you: "Tú", stars: "{n} estrellas", audioFail: "No se pudo reproducir el audio",
     resume: "Sigue donde lo dejaste", startHere: "Empieza aquí", entering: "Entrando…", phrases: "Frases que usaste",
     skip: "Saltar", rewatch: "Ver la entrada otra vez",
+    sound: "Sonido ambiente", wxLbl: "Clima y hora del día", micAgain: "Dilo otra vez", silent: "No se oyó nada: habla un poco más alto",
+    tod: { morning: "mañana", day: "día", evening: "tarde", night: "noche" }, wx: { snow: "nieva", rain: "llueve", cloud: "nublado", clear: "despejado" },
   },
   de: {
     kicker: "Virtuelle Situationen", sub: "Geh in einen Laden, ein Klassenzimmer, einen Bahnhof – und sprich Kasachisch in echten Alltagssituationen.",
@@ -96,6 +106,8 @@ const L = {
     defaultNote: "Diese Antwort passt nicht zur Situation. Lies den Satz noch einmal.", finish: "Ergebnis ansehen", dialog: "Bisheriges Gespräch", you: "Du", stars: "{n} Sterne", audioFail: "Audio konnte nicht abgespielt werden",
     resume: "Mach da weiter, wo du aufgehört hast", startHere: "Starte hier", entering: "Eintreten…", phrases: "Sätze, die du benutzt hast",
     skip: "Überspringen", rewatch: "Eintreten noch mal ansehen",
+    sound: "Umgebungsgeräusche", wxLbl: "Wetter und Tageszeit", micAgain: "Noch einmal sagen", silent: "Nichts gehört – bitte etwas lauter",
+    tod: { morning: "Morgen", day: "Tag", evening: "Abend", night: "Nacht" }, wx: { snow: "es schneit", rain: "es regnet", cloud: "bewölkt", clear: "klar" },
   },
   fr: {
     kicker: "Situations virtuelles", sub: "Entre dans un magasin, une classe, une gare… et parle kazakh dans des situations de la vie réelle.",
@@ -112,6 +124,8 @@ const L = {
     defaultNote: "Cette réponse ne convient pas à la situation. Relis la réplique.", finish: "Voir le résultat", dialog: "La conversation", you: "Toi", stars: "{n} étoiles", audioFail: "Le son n'a pas pu être lu",
     resume: "Reprends là où tu t’es arrêté", startHere: "Commence ici", entering: "On entre…", phrases: "Les phrases que tu as dites",
     skip: "Passer", rewatch: "Revoir l’entrée",
+    sound: "Sons d’ambiance", wxLbl: "Météo et moment de la journée", micAgain: "Redire", silent: "Rien entendu — parlez un peu plus fort",
+    tod: { morning: "matin", day: "journée", evening: "soir", night: "nuit" }, wx: { snow: "il neige", rain: "il pleut", cloud: "nuageux", clear: "dégagé" },
   },
   tr: {
     kicker: "Sanal durumlar", sub: "Bir dükkâna, sınıfa, istasyona gir — gerçek hayat durumlarında Kazakça konuş.",
@@ -128,6 +142,8 @@ const L = {
     defaultNote: "Bu cevap duruma uymuyor. Cümleyi yeniden oku.", finish: "Sonucu gör", dialog: "Konuşmanın akışı", you: "Sen", stars: "{n} yıldız", audioFail: "Ses çalınamadı",
     resume: "Kaldığın yerden devam et", startHere: "Buradan başla", entering: "Giriliyor…", phrases: "Kullandığın ifadeler",
     skip: "Geç", rewatch: "Girişi yeniden izle",
+    sound: "Ortam sesleri", wxLbl: "Hava durumu ve gün saati", micAgain: "Tekrar söyle", silent: "Hiçbir şey duyulmadı — biraz daha yüksek sesle dene",
+    tod: { morning: "sabah", day: "gündüz", evening: "akşam", night: "gece" }, wx: { snow: "kar yağıyor", rain: "yağmur yağıyor", cloud: "bulutlu", clear: "açık" },
   },
   ar: {
     kicker: "مواقف افتراضية", sub: "ادخل متجرًا أو صفًّا أو محطة — وتحدّث بالكازاخية في مواقف من الحياة اليومية.",
@@ -144,6 +160,8 @@ const L = {
     defaultNote: "هذا الرد لا يناسب الموقف. أعد قراءة العبارة.", finish: "عرض النتيجة", dialog: "مجرى الحديث", you: "أنت", stars: "{n} نجوم", audioFail: "تعذّر تشغيل الصوت",
     resume: "تابع من حيث توقفت", startHere: "ابدأ من هنا", entering: "جارٍ الدخول…", phrases: "العبارات التي قلتها",
     skip: "تخطٍّ", rewatch: "شاهد الدخول مجددًا",
+    sound: "أصوات المحيط", wxLbl: "الطقس ووقت اليوم", micAgain: "قلها مرة أخرى", silent: "لم يُسمع شيء — تكلّم بصوت أعلى قليلًا",
+    tod: { morning: "صباح", day: "نهار", evening: "مساء", night: "ليل" }, wx: { snow: "تتساقط الثلوج", rain: "تمطر", cloud: "غائم", clear: "صافٍ" },
   },
   ko: {
     kicker: "가상 상황", sub: "가게, 교실, 역에 들어가서 실제 생활 상황에서 카자흐어로 말해 보세요.",
@@ -160,6 +178,8 @@ const L = {
     defaultNote: "이 대답은 상황에 맞지 않아요. 상대의 말을 다시 읽어 보세요.", finish: "결과 보기", dialog: "지금까지의 대화", you: "나", stars: "별 {n}개", audioFail: "소리를 재생하지 못했어요",
     resume: "멈춘 곳에서 이어 하기", startHere: "여기서 시작하세요", entering: "들어가는 중…", phrases: "내가 말한 표현",
     skip: "건너뛰기", rewatch: "입장 장면 다시 보기",
+    sound: "주변 소리", wxLbl: "날씨와 시간대", micAgain: "다시 말하기", silent: "아무 소리도 들리지 않았어요 — 조금 더 크게 말해 보세요",
+    tod: { morning: "아침", day: "낮", evening: "저녁", night: "밤" }, wx: { snow: "눈이 내림", rain: "비가 내림", cloud: "흐림", clear: "맑음" },
   },
   ja: {
     kicker: "バーチャルな場面", sub: "お店、教室、駅に入って、実際の生活場面でカザフ語を話そう。",
@@ -176,6 +196,8 @@ const L = {
     defaultNote: "この返事は場面に合いません。相手のせりふをもう一度読んでみよう。", finish: "結果を見る", dialog: "これまでの会話", you: "あなた", stars: "星 {n} 個", audioFail: "音声を再生できませんでした",
     resume: "前回の続きから", startHere: "ここから始めよう", entering: "入ります…", phrases: "あなたが使ったフレーズ",
     skip: "スキップ", rewatch: "入る場面をもう一度見る",
+    sound: "環境音", wxLbl: "天気と時間帯", micAgain: "もう一度話す", silent: "何も聞こえませんでした。もう少し大きな声で",
+    tod: { morning: "朝", day: "昼", evening: "夕方", night: "夜" }, wx: { snow: "雪", rain: "雨", cloud: "くもり", clear: "晴れ" },
   },
 };
 

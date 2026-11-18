@@ -28,6 +28,9 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
   const [rec, setRec] = useState(null);
   const [micOk, setMicOk] = useState(false);
   const [talk, setTalk] = useState(false);
+  const [micMsg, setMicMsg] = useState("");
+  const waveRef = useRef(null);
+  const meterRef = useRef(null);
   const listRef = useRef(null);
   const recRef = useRef(null);
   const mounted = useRef(true);
@@ -40,7 +43,7 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
   useEffect(() => {
     mounted.current = true;
     setMicOk(typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined");
-    return () => { mounted.current = false; stopKk(); };
+    return () => { mounted.current = false; stopKk(); meterRef.current?.stop(); try { recRef.current?.state === "recording" && recRef.current.stop(); } catch {} };
   }, []);
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -94,11 +97,13 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
   async function mic() {
     if (rec === "rec") return recRef.current?.stop();
     if (rec || busy) return;
+    setMicMsg("");
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
       setMicOk(false);
+      setMicMsg(T.micErr);
       return;
     }
     stopKk();
@@ -108,6 +113,7 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
     r.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     r.onstop = async () => {
       stream.getTracks().forEach((x) => x.stop());
+      meterRef.current?.stop(); meterRef.current = null;
       if (!mounted.current) return;
       setRec("busy");
       try {
@@ -115,9 +121,12 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
         const res = await fetch("/api/transcribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ audio }) });
         const d = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(d.error);
-        if (d.text && mounted.current) send(d.text);
+        const heard = String(d.text || "").trim();
+        if (!mounted.current) return;
+        if (heard) send(heard);
+        else setMicMsg(T.silent);
       } catch {
-        if (mounted.current) setErr(T.micErr);
+        if (mounted.current) setMicMsg(T.micErr);
       } finally {
         if (mounted.current) setRec(null);
       }
@@ -125,6 +134,26 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
     r.start();
     setRec("rec");
     setTimeout(() => r.state === "recording" && r.stop(), 15000);
+    // Толқын және сөйлеп болған соң 1,5 с тыныштықта өзі тоқтау
+    const m = await import("../../lib/vrAudio").catch(() => null);
+    const met = r.state === "recording" ? m?.micMeter?.(stream) : null;
+    if (!met) return;
+    meterRef.current = met;
+    const t0 = performance.now();
+    let spoke = false, quiet = 0;
+    const loop = (t) => {
+      if (r.state !== "recording" || meterRef.current !== met) return;
+      const lv = met.level();
+      const bars = waveRef.current?.children || [];
+      for (let i = 0; i < bars.length; i++) bars[i].style.transform = `scaleY(${Math.max(0.15, Math.min(1, 0.12 + lv * (0.75 + 0.45 * Math.sin(t / 95 + i * 1.9)))).toFixed(3)})`;
+      if (lv > 0.1) { spoke = true; quiet = 0; }
+      else if (spoke) {
+        quiet ||= t;
+        if (t - quiet > 1500 && t - t0 > 1000) { try { r.stop(); } catch {} return; }
+      }
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
   }
 
   return (
@@ -199,7 +228,7 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
       <form className={`vr-compose ${rec === "rec" ? "is-rec" : ""}`} onSubmit={(e) => { e.preventDefault(); send(); }}>
         {micOk && (
           <button type="button" className={`vr-mic sq ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-pressed={rec === "rec"} aria-label={rec === "rec" ? T.listening : T.voice} title={T.voice}>
-            <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
+            {rec === "rec" ? <span className="vr-wave" ref={waveRef} aria-hidden="true"><i /><i /><i /><i /><i /></span> : <Icon name="mic" size={20} />}
           </button>
         )}
         <textarea
@@ -207,13 +236,19 @@ export default function VrTalk({ places, scenes, scene, place: place0, level: le
           lang="kk"
           value={text}
           maxLength={600}
-          placeholder={rec === "busy" ? T.recog : T.freePh}
+          placeholder={rec === "busy" ? T.recog : rec === "rec" ? T.listening : T.freePh}
           aria-label={T.freePh}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
         />
         <button className="btn primary vr-send" disabled={busy || !text.trim()} aria-label={T.send}><Icon name="send" size={20} className="vr-flip" /></button>
       </form>
+      {micMsg && (
+        <p className="vr-heard miss vr-talk-mic" role="status">
+          <span>{micMsg}</span>
+          {micOk && <button type="button" className="btn ghost small" onClick={mic}><Icon name="mic" size={16} /> {T.micAgain}</button>}
+        </p>
+      )}
     </section>
   );
 }

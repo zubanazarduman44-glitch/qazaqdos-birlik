@@ -4,13 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
 import ShellGlyph from "../../components/ShellGlyph";
-import VrPlay, { Stars, trLang } from "../../components/VrPlay";
+import VrPlay, { Stars, trLang, WxIcon } from "../../components/VrPlay";
 import VrTalk from "../../components/VrTalk";
 import { VrScene, VrBuilding, VrTownBg } from "../../components/VrArt";
 import { vrL, vf } from "../../components/VrL10n";
 import { useAnimGate } from "../../components/AnimGate";
 import { L } from "../../../lib/i18n";
 import { PLACES, SCENES } from "../../../lib/vr/scenes";
+import { atmo, atmoKk } from "../../../lib/vr/atmo";
 
 const LEVELS = ["A1", "A2", "B1", "B2"];
 // Картадағы орындар: [x%, y%] — үлкен экран және телефон (төменгі ортасы)
@@ -31,6 +32,9 @@ export default function Vr() {
   const [place, setPlace] = useState(null);
   const boardRef = useRef(null);
   const gate = useAnimGate(boardRef);
+  // Қаланың бүгінгі ауа райы мен уақыты (тек клиентте — SSR-мен сәйкессіздік болмасын)
+  const [wx, setWx] = useState(null);
+  useEffect(() => setWx(atmo("hub")), []);
 
   // ?s=<жағдаят> немесе ?p=<орын> сілтемесі
   useEffect(() => {
@@ -144,6 +148,13 @@ export default function Vr() {
         </div>
         <div className="vr-board" ref={gate}>
           <VrTownBg />
+          {wx && <span className={`vr-board-wx t-${wx.tod} w-${wx.wx}`} aria-hidden="true" />}
+          {wx && (
+            <span className="vr-atmo vr-atmo-hub" title={`${T.wxLbl}: ${T.tod?.[wx.tod] || ""}, ${T.wx?.[wx.wx] || ""}`}>
+              <WxIcon a={wx} />
+              <span lang="kk">{atmoKk(wx)}</span>
+            </span>
+          )}
           {Object.entries(PLACES).map(([k, p], idx) => {
             const [d, m] = POS[k] || [[50, 50], [50, 50]];
             const all = byPlace[k] || [];
