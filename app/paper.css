@@ -166,3 +166,8 @@ main[data-section] :focus-visible { outline-color: var(--sec-deep, var(--pp-red-
     radial-gradient(circle at 50% 52%, var(--sec-soft, var(--pp-felt)) 0 46%, transparent 47%);
 }
 .sx .vr-empty { border: 0; border-radius: var(--pp-r); background: var(--pp-paper); box-shadow: var(--pp-card); }
+
+/* ═══ Фон: «Ақ киіз» — таза ақшыл (иесінің таңдауы, 2026-11-18). Сары-қоңыр реңк пен ою тұсқағазы алынды. ═══ */
+:root, :root[data-theme="light"] { --bg: #fcfaf6; }
+html, body { background: #fcfaf6; }
+body::after { display: none; }
