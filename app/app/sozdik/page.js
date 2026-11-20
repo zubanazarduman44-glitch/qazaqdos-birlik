@@ -12,6 +12,7 @@ import { sayKk } from "../../../lib/speak";
 import Quiz from "../../components/Quiz";
 import { shuffle } from "../../../lib/words";
 import { useMounted } from "../../../lib/useClientDate";
+import { pickForGoal, goalTopics, goalTx } from "../../../lib/goals";
 
 // Әр рет басқаша сұрақтар: түрі де, нұсқалары да кездейсоқ
 function mkTest(words, explain) {
@@ -112,8 +113,9 @@ export default function Sozdik() {
       if (cur.days?.[today]) return s;
       const rnd = seeded(today);
       const fresh = uniq.filter((w) => !cur.learned?.[w.kk]);
-      const pool = (fresh.length >= 10 ? fresh : uniq).map((w) => [rnd(), w]).sort((a, b) => a[0] - b[0]).map((p) => p[1].kk);
-      return { ...s, sozdik: { ...cur, days: { ...cur.days, [today]: pool.slice(0, 10) } } };
+      const pool = (fresh.length >= 10 ? fresh : uniq).map((w) => [rnd(), w]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
+      // Сөздердің көбі пайдаланушының мақсатына сай (саяхат, жұмыс, оқу, күнделікті өмір)
+      return { ...s, sozdik: { ...cur, days: { ...cur.days, [today]: pickForGoal(pool, s.profile?.goal).map((w) => w.kk) } } };
     });
   }, [today, sz.days, update]);
 
@@ -149,7 +151,7 @@ export default function Sozdik() {
       const old = new Set(cur.days?.[today] || []);
       const fresh = uniq.filter((w) => !cur.learned?.[w.kk] && !old.has(w.kk));
       const base = fresh.length >= 10 ? fresh : uniq.filter((w) => !old.has(w.kk));
-      return { ...s, sozdik: { ...cur, days: { ...cur.days, [today]: shuffle(base).slice(0, 10).map((w) => w.kk) } } };
+      return { ...s, sozdik: { ...cur, days: { ...cur.days, [today]: pickForGoal(shuffle(base), s.profile?.goal).map((w) => w.kk) } } };
     });
     setFlip({}); setTest(null); setTres(null);
   }
@@ -234,6 +236,9 @@ export default function Sozdik() {
 
           {allDone && <p className="szk-done" role="status"><Icon name="sparkle" size={18} /> {x.szDone}</p>}
 
+          {words.filter((w) => goalTopics(state.profile?.goal).has(w.t)).length >= 5 && (
+            <p className="szk-tap szk-goal"><Icon name="target" size={14} /> {goalTx(lang).daily}</p>
+          )}
           <p className="szk-tap"><Icon name="refresh" size={14} /> {x.szTap}</p>
           <ul className="szk-deck">
             {words.map((w, i) => (

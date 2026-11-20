@@ -37,6 +37,39 @@ function wav(pcm, rate = 24000) {
   return Buffer.concat([h, pcm]);
 }
 
+// «Чы-чық» шуылы: сөз біткен соң ~0,3 с үнсіздік, сосын екі қатты қысқа дыбыс, араларында дәл нөл.
+// Соңынан қараймыз: үнсіз аралықтан (≥100 мс) кейінгі қысқа соңғы бөлік артефакт болса — кесеміз.
+// Артефакт белгісі: ішінде дәл нөл терезелер бар (≤400 мс) немесе ұзақ үнсіздіктен кейінгі өте қысқа дыбыс.
+function cutTailBurst(rms, zero, wins, peak) {
+  const silent = (k) => rms[k] < peak * 0.02 && !zero[k];
+  const low = (k) => rms[k] < peak * 0.02;
+  let end = wins;
+  for (let pass = 0; pass < 2; pass++) {
+    let k = end - 1;
+    while (k >= 0 && low(k)) k--;
+    if (k < 0) break;
+    const tailEnd = k;
+    let j = k, run = 0;
+    for (; j >= 0; j--) {
+      if (silent(j)) { if (++run >= 10) break; } else run = 0;
+    }
+    if (j < 0) break; // үнсіз аралық жоқ — бәрі бір сөз
+    const tailStart = j + 10;
+    let g = j;
+    while (g >= 0 && low(g)) g--;
+    const gapLen = tailStart - (g + 1);
+    const tailLen = tailEnd - tailStart + 1;
+    let loudBefore = 0;
+    for (let i = 0; i <= g; i++) if (rms[i] >= peak * 0.05) loudBefore++;
+    let zeroIn = false;
+    for (let i = tailStart + 1; i <= tailEnd; i++) if (zero[i] && zero[i - 1]) zeroIn = true;
+    const burst = (zeroIn && tailLen <= 40) || (gapLen >= 25 && tailLen <= 20);
+    if (!burst || loudBefore < 15) break;
+    end = g + 1 + Math.min(gapLen, 5);
+  }
+  return end;
+}
+
 // Дыбысты тазалау. Gemini кейде сөздің соңына дем шығару / «шш» деген шуыл қосады — соны кесеміз.
 // 10 мс терезелермен қараймыз: қуаты (RMS) мен нөлден өту жиілігі (ZCR). Соңынан бастап
 // тым әлсіз терезелерді және «ысылдаған» (ZCR жоғары, қуаты төмен) терезелерді алып тастаймыз.
@@ -45,29 +78,33 @@ function cleanPcm(buf, rate = 24000) {
   if (n < rate / 10) return buf;
   const src = new Int16Array(buf.buffer.slice(buf.byteOffset, buf.byteOffset + n * 2));
   const W = Math.round(rate * 0.01);
-  const wins = Math.floor(n / W);
+  let wins = Math.floor(n / W);
   const rms = new Float64Array(wins);
   const zcr = new Float64Array(wins);
+  const zero = new Uint8Array(wins); // терезедегі барлық сэмпл дәл 0 (табиғи сөзде болмайды)
   let peak = 0;
   for (let w = 0; w < wins; w++) {
-    let e = 0, z = 0;
+    let e = 0, z = 0, nz = 0;
     for (let i = w * W, end = i + W; i < end; i++) {
       e += src[i] * src[i];
+      if (src[i] !== 0) nz++;
       if (i > w * W && (src[i] >= 0) !== (src[i - 1] >= 0)) z++;
     }
     rms[w] = Math.sqrt(e / W);
     zcr[w] = z / W;
+    zero[w] = nz === 0 ? 1 : 0;
     if (rms[w] > peak) peak = rms[w];
   }
   if (peak < 300) return buf;
-  const quiet = (w) => rms[w] < peak * 0.05;
-  const hiss = (w) => zcr[w] > 0.22 && rms[w] < peak * 0.3;
+  wins = cutTailBurst(rms, zero, wins, peak);
+  // Соңынан тек үнсіздікті кесеміз. Бұрынғы «ысыл» кескіш (ZCR) соңғы дауыссыз дыбысты (с, ш, қ, п)
+  // жеп қоятын — нақты шуылды енді cutTailBurst алып тастайды.
+  const quiet = (w) => rms[w] < peak * 0.02;
   let a = 0;
-  while (a < wins && quiet(a)) a++;
+  while (a < wins && rms[a] < peak * 0.05) a++;
   let b = wins - 1;
-  // Соңынан: үнсіздік пен ысылды кесеміз (бірақ сөздің өзінен 40%-дан артық емес)
   const minB = a + Math.floor((wins - a) * 0.6);
-  while (b > minB && (quiet(b) || hiss(b))) b--;
+  while (b > minB && quiet(b)) b--;
   if (b <= a) return buf;
   let s0 = Math.max(0, a * W - Math.round(rate * 0.03));
   let s1 = Math.min(n, (b + 1) * W + Math.round(rate * 0.01));

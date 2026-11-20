@@ -188,6 +188,10 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .aul-n { position: absolute; right: 0; top: -2px; font-family: var(--head); font-weight: 800; font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--tone) 22%, transparent); }
 .aul-body h3 { margin: 0; padding-right: 44px; font-family: var(--head); font-weight: 600; font-size: 19px; }
 .aul-meta { margin: 0; font-size: 13.5px; color: var(--muted); }
+/* Мақсатқа сай тақырып белгісі (teal — мәтін үшін рұқсат етілген түс) */
+.aul-goal { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; margin: 2px 0 4px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: #0b6e7e; background: #e3f1f3; }
+.crs-goal { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 14px; padding: 10px 14px; border-radius: 14px; font-size: 14px; font-weight: 600; line-height: 1.4; color: #0b6e7e; background: #e3f1f3; }
+.crs-goal svg { flex: none; margin-top: 2px; }
 .trail { display: flex; flex-wrap: wrap; gap: 8px 6px; align-items: center; padding: 4px 0 2px; }
 .stop { position: relative; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; color: #5a3d00; background: var(--altyn-soft); box-shadow: inset 0 0 0 1.5px #e8b23a; transition: transform 0.12s var(--ease); }
 .stop.phrases { border-radius: 14px; }

@@ -7,6 +7,7 @@ import TopicArt from "../../components/TopicArt";
 import { useApp } from "../../components/Store";
 // Жол картасына тек жеңіл индекс керек (сабақ id-лері, тақырып атаулары); сөздер мен сөйлемдер (lib/course.js) сабақ ашылғанда жүктеледі
 import { ALL_LESSONS, LEVELS, UNITS, TOPICS, levelStats, lessonTitle } from "../../../lib/courseIndex";
+import { goalTopics, goalTx } from "../../../lib/goals";
 import { L } from "../../../lib/i18n";
 import { whenIdle } from "../../../lib/idle";
 
@@ -102,8 +103,12 @@ function Player({ lesson, onClose, onNext, hasNext }) {
 }
 
 export default function Course() {
-  const { lang, state } = useApp();
+  const { lang, state, t } = useApp();
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
+  // Пайдаланушының мақсаты (Профильде өзгертіледі) → сол мақсатқа керек тақырыптарды белгілейміз
+  const mine = goalTopics(state.profile?.goal);
+  const goalName = (t.goals || []).find((g) => g.id === state.profile?.goal)?.t;
+  const gx = goalTx(lang);
   const T = (k) => TXT[k][li];
   const done = state.course?.done || {};
   const [lv, setLv] = useState(state.cefr && LEVELS.some((l) => l.id === state.cefr) ? state.cefr : "A1");
@@ -135,6 +140,9 @@ export default function Course() {
         </div>
       </header>
       <SectionIntro icon="map" {...(INTRO[lang] || INTRO.en)} />
+      {goalName && mine.size > 0 && (
+        <p className="crs-goal"><Icon name="target" size={16} /> <span>{gx.note(goalName)}</span></p>
+      )}
 
       <div className="kosh-levels" role="tablist">
         {LEVELS.map((l, i) => {
@@ -164,6 +172,7 @@ export default function Course() {
               <div className="aul-body">
                 <span className="aul-n">{ui + 1}</span>
                 <h3>{L(m, lang)}</h3>
+                {mine.has(u) && <span className="aul-goal"><Icon name="target" size={13} /> {gx.badge}</span>}
                 <p className="aul-meta">{nDone} / {unit.lessons.length} {T("lessons")}{full ? ` · ${T("unitDone")}` : ""}</p>
                 <div className="trail">
                   {unit.lessons.map((l, i) => {
