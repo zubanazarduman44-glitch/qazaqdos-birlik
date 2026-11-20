@@ -279,7 +279,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
   }, []);
 
   // Дыбыс: әр сөйлеуге жаңа белгі (ескі қоңыраулар елеусіз қалады)
-  const speak = useCallback((text, { slow = false, npc = true, done } = {}) => {
+  const speak = useCallback((text, { slow = false, npc = true, done, onPlay } = {}) => {
     const my = ++tok.current;
     let fin = false;
     const end = () => { if (fin) return; fin = true; done && done(); };
@@ -291,6 +291,7 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
           setAudioErr(false); npc && setTalk(true);
           au.current?.duck(true);
           lip.current?.stop(); lip.current = npc && el ? au.current?.tap(el) || null : null;
+          onPlay && onPlay(el);
         }
         if (s === "idle" || s === "error") {
           setTalk(false); if (s === "error") setAudioErr(true);
@@ -407,12 +408,22 @@ export default function VrPlay({ scene, place, onBack, onNext, hasNext, onTalk }
       setGoodK((g) => g + 1);
       au.current?.play("ok");
       setLog((l) => [...l, { me: true, kk: r.kk, tr: L(r, tl) }]);
-      // Жауап айтылып біткен соң келесі қадамға өтеміз (ең көбі 6 с)
-      // Өз сөзің осы бетте бірден айтылады; ол біткенше келесі бетке өтпейміз (дыбыс жүктелмесе — ең көбі 9 с)
+      // Өз сөзің осы бетте айтылады; ол толық біткенше келесі қадамға өтпейміз.
+      // Бұрын 9 с таймер басқан сәттен басталатын: дыбыс жүктелуі ұзаққа созылса, сөз ортасында үзіліп кететін.
+      // Енді: жүктелу кезінде — тек қауіпсіздік таймері (20 с), ойнай бастаған соң — дыбыстың нақты ұзақтығы + қор.
       let gone = false;
       const go = () => { if (gone || !mounted.current) return; gone = true; goNext(r); };
-      speak(r.kk, { npc: false, done: () => { clearTimeout(advTimer.current); advTimer.current = setTimeout(go, 450); } });
-      advTimer.current = setTimeout(go, 9000);
+      const arm = (el) => {
+        const set = () => {
+          const d = el && el.duration > 0 && isFinite(el.duration) ? (el.duration * 1000) / (el.playbackRate || 1) : 8000;
+          clearTimeout(advTimer.current);
+          advTimer.current = setTimeout(go, d + 1500);
+        };
+        if (el && !(el.duration > 0)) el.addEventListener("loadedmetadata", set, { once: true });
+        else set();
+      };
+      speak(r.kk, { npc: false, onPlay: arm, done: () => { clearTimeout(advTimer.current); advTimer.current = setTimeout(go, 700); } });
+      advTimer.current = setTimeout(go, 20000);
     } else {
       setPicked({ i: k, ok: false });
       setTried((x) => [...x, k]);
