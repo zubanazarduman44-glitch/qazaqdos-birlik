@@ -2,7 +2,7 @@
 export const maxDuration = 60;
 
 const FALLBACK = [process.env.GEMINI_TTS_MODEL, "gemini-3.8-flash-tts", "gemini-2.5-flash-preview-tts", "gemini-3.8-flash-lite-tts"].filter(Boolean);
-// Тілді нақты көрсетеміз: әйтпесе модель кириллицаны кейде орысша оқиды. Қолдамаса — бір рет онсыз қайталаймыз.
+// Тілді нақты көрсетеміз: әйтпесе модель кириллицаны кейде орысша оқиды. Қолдамаған модель — келесі модельге өтеміз.
 const LANG = "kk-KZ";
 const noLang = new Set();
 const cache = new Map();
@@ -109,27 +109,29 @@ export async function POST(req) {
   if (cache.has(ckey)) return Response.json({ audio: cache.get(ckey) });
 
   const models = [...new Set([...FALLBACK, ...(await ttsModels(key))])].slice(0, 5);
+  // Алдымен kk-KZ қабылдайтын модельдердің бәрін байқаймыз. Бұрын бірінші модель kk-KZ-ті
+  // қабылдамаса, тілсіз сол модельмен оқылатын — сөз орыс акцентімен шығатын.
+  // Тілсіз оқу — тек ешбір модель kk-KZ-пен жауап бермесе ғана (соңғы амал).
+  const tries = [
+    ...models.filter((m) => !noLang.has(m)).map((m) => [m, true]),
+    ...models.map((m) => [m, false]),
+  ];
   let last = "";
-  for (const m of models) {
+  for (const [m, withLang] of tries) {
     try {
-      const call = (withLang) =>
-        fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              responseModalities: ["AUDIO"],
-              speechConfig: { ...(withLang ? { languageCode: LANG } : {}), voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } },
-            },
-          }),
-          signal: AbortSignal.timeout(40_000),
-        });
-      let r = await call(!noLang.has(m));
-      if (r.status === 400 && !noLang.has(m)) {
-        noLang.add(m);
-        r = await call(false);
-      }
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
+            speechConfig: { ...(withLang ? { languageCode: LANG } : {}), voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } },
+          },
+        }),
+        signal: AbortSignal.timeout(40_000),
+      });
+      if (r.status === 400 && withLang) noLang.add(m);
       if (!r.ok) {
         last = `${m} (${r.status})`;
         continue;
@@ -142,9 +144,13 @@ export async function POST(req) {
         continue;
       }
       const audio = wav(cleanPcm(Buffer.from(b64, "base64"))).toString("base64");
-      if (cache.size > 40) cache.clear();
-      cache.set(ckey, audio);
-      return Response.json({ audio });
+      // Тілсіз (акцент болуы мүмкін) жазбаны сақтамаймыз — келесі жолы kk-KZ-пен қайта байқалады.
+      if (withLang) {
+        if (cache.size > 40) cache.clear();
+        cache.set(ckey, audio);
+      }
+      // Тексеру үшін: қай модель, қазақ тілі қосулы ма (құпия емес)
+      return Response.json({ audio, kk: withLang }, { headers: { "X-TTS-Model": m, "X-TTS-Lang": withLang ? LANG : "auto" } });
     } catch (e) {
       last = `${m}: ${e.message}`;
     }
