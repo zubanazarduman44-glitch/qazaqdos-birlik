@@ -77,6 +77,12 @@
 }
 .szk-tap { position: relative; display: flex; align-items: center; gap: 6px; margin: 0 4px 12px; font-size: 14px; font-weight: 600; color: var(--szk-muted); }
 .szk-tap.szk-goal { margin-bottom: 4px; color: #0b6e7e; }
+/* Қайталау: бүгін қайталанатын сөздер саны — алтын белгі (мәтіні қою, алтын тек фон) */
+.szk-tabs button em.szk-due { background: #e8b23a; color: #1f2430; }
+.szk-tabs button.on em.szk-due { background: #e8b23a; color: #1f2430; }
+.szk-review .szk-start .szk-tap { justify-content: center; text-align: center; margin: 0 0 10px; }
+.szk-review-empty { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.szk-review-empty p { max-width: 42ch; margin: 0; color: var(--szk-muted); font-weight: 600; line-height: 1.5; }
 
 /* Карта палубасы: желпуіш тәрізді аздап қисайтылған */
 .szk-deck { position: relative; list-style: none; margin: 0; padding: 4px 2px 6px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px 14px; }

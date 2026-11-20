@@ -86,7 +86,7 @@ a { color: var(--kok); }
 .btn.ghost { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--rim); }
 .btn.ghost:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--kok); filter: none; }
 .btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
-.link-btn { border: 0; background: none; padding: 6px 0; min-height: 32px; font: inherit; font-size: 13px; font-weight: 600; color: var(--kok); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.link-btn { border: 0; background: none; padding: 6px 0; min-height: 44px; font: inherit; font-size: 13px; font-weight: 600; color: var(--kok); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .link-btn:disabled { color: var(--faint); text-decoration: none; cursor: not-allowed; }
 
 .chip { min-height: 36px; border-radius: 99px; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rim); font-weight: 600; }
@@ -95,7 +95,7 @@ a { color: var(--kok); }
 .pill { background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim); }
 .input, select.input, textarea.input { min-height: 44px; border-radius: var(--r-sm); background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--rim); font-family: var(--body); font-size: 16px; }
 .input:focus { box-shadow: inset 0 0 0 2px var(--kok); outline: none; }
-.icon-btn { min-width: 40px; min-height: 40px; }
+.icon-btn { min-width: 44px; min-height: 44px; }
 .badge { background: var(--altyn-soft); color: #5a3d00; }
 .alert { border-radius: var(--r-sm); }
 
@@ -119,7 +119,7 @@ a { color: var(--kok); }
 }
 .side-me { background: var(--surface-2); box-shadow: none; border-radius: 12px; }
 .seg { background: var(--surface-2); box-shadow: none; }
-.seg button { min-height: 36px; }
+.seg button { min-height: 44px; }
 .seg button.on { background: var(--kok); color: #fff; }
 
 /* ── Жоғарғы жолақ пен төменгі мәзір ── */
@@ -163,7 +163,7 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .kosh-levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 6px 0 22px; }
 .kosh-lv { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 14px 16px 18px; border: 0; border-radius: var(--r); text-align: left; cursor: pointer; font: inherit; color: var(--ink); background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--rim); overflow: hidden; }
 .kosh-lv-id { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; font-family: var(--head); font-weight: 800; font-size: 16px; color: #fff; background: var(--tone); }
-.kosh-lv.s0 { --tone: #2f6b4f; } .kosh-lv.s1 { --tone: #0b6e7e; } .kosh-lv.s2 { --tone: #a63a2b; }
+.kosh-lv.s0 { --tone: #2f6b4f; } .kosh-lv.s1 { --tone: #0b6e7e; } .kosh-lv.s2 { --tone: #a3242b; }
 .kosh-lv-t { display: grid; min-width: 0; } .kosh-lv-t b { font-size: 16px; } .kosh-lv-t small { color: var(--muted); font-size: 13px; }
 .kosh-lv-n { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .kosh-lv-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--surface-2); } .kosh-lv-bar i { display: block; height: 100%; background: var(--tone); }
@@ -173,7 +173,7 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 
 /* Жол: ауылдар бір-біріне із арқылы жалғанады */
 .kosh { --tone: #2f6b4f; list-style: none; margin: 0; padding: 0 0 20px; display: grid; gap: 34px; position: relative; max-width: 980px; }
-.kosh.s1 { --tone: #0b6e7e; } .kosh.s2 { --tone: #a63a2b; }
+.kosh.s1 { --tone: #0b6e7e; } .kosh.s2 { --tone: #a3242b; }
 .kosh::before { /* керуен ізі */
   content: ""; position: absolute; top: 60px; bottom: 60px; left: 50%; width: 0; border-left: 4px dashed color-mix(in srgb, var(--tone) 38%, transparent); transform: translateX(-2px);
 }
@@ -198,7 +198,10 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .stop:hover:not(:disabled) { transform: translateY(-2px); }
 .stop.done { color: #fff; background: var(--ok); box-shadow: none; }
 .stop.lock { color: var(--faint); background: #ebe5d6; box-shadow: inset 0 0 0 1.5px #cfc6b0; cursor: not-allowed; }
-.stop.cur { color: #fff; background: var(--tone); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone) 25%, transparent); animation: stopPulse 2.2s ease-in-out infinite; }
+.stop.cur { color: #fff; background: var(--tone); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone) 25%, transparent); }
+/* Ағымдағы аялдама «тыныс алады»: тек opacity/transform (бұрынғы box-shadow анимациясы ауыр еді) */
+.stop.cur::after { content: ""; position: absolute; inset: -5px; border-radius: inherit; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone) 45%, transparent); pointer-events: none; animation: stopHalo 2.2s ease-in-out infinite; }
+@keyframes stopHalo { 0%, 100% { opacity: 0.2; transform: scale(0.96); } 50% { opacity: 0.9; transform: scale(1.1); } }
 @keyframes stopPulse { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--tone) 0%, transparent); } }
 .aul-cta { justify-self: start; margin-top: 4px; }
 .aul.here .aul-cta { background: var(--tone); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25); }

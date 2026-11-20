@@ -294,7 +294,7 @@
 .lit-say { background: rgba(15, 94, 122, 0.08); }
 .lit-say:hover, .lit-row-tr:hover { background: rgba(15, 94, 122, 0.15); }
 .lit-say.is-on { background: var(--lit-blue); color: #fff; }
-.lit-say-n { position: absolute; inset-block-end: 2px; inset-inline-end: 4px; font-family: var(--head); font-size: 9.5px; line-height: 1; color: #8a6a1e; }
+.lit-say-n { position: absolute; inset-block-end: 2px; inset-inline-end: 4px; font-family: var(--head); font-size: 11px; line-height: 1; color: #6b4f12; }
 .lit-say.is-on .lit-say-n { color: #fff; }
 .lit-row-tr { color: var(--lit-muted); }
 .lit-row-tr.is-on { color: var(--lit-blue); background: rgba(15, 94, 122, 0.12); }

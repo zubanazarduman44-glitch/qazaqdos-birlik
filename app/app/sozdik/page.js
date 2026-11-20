@@ -13,6 +13,8 @@ import Quiz from "../../components/Quiz";
 import { shuffle } from "../../../lib/words";
 import { useMounted } from "../../../lib/useClientDate";
 import { pickForGoal, goalTopics, goalTx } from "../../../lib/goals";
+import { reviewTx, dueWords, grade, addMistakes } from "../../../lib/review";
+import { localDayIndex } from "../../components/Store";
 
 // Әр рет басқаша сұрақтар: түрі де, нұсқалары да кездейсоқ
 function mkTest(words, explain) {
@@ -102,8 +104,32 @@ export default function Sozdik() {
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
   const T = { test: ["Тест", "Тест", "Quiz"][li], newSet: ["Жаңа 10 сөз", "Новые 10 слов", "New 10 words"][li], again: ["Қайта тапсыру (жаңа сұрақтар)", "Пройти заново (новые вопросы)", "Retake (new questions)"][li], start: ["Тестті бастау", "Начать тест", "Start the quiz"][li] };
   // Күн кілті тек клиентте (гидрациядан кейін): сервер/гидрация рендерінде "" — бүгінгі 10 сөз әлі жоқ
-  const today = useMounted() ? dayKey() : "";
+  const mounted = useMounted();
+  const today = mounted ? dayKey() : "";
   const sz = state.sozdik || { days: {}, learned: {}, done: {} };
+
+  // ── Қайталау (lib/review.js): сабақта қате кеткен сөздер аралықпен қайта шығады ──
+  const rx = reviewTx(lang);
+  const dayIdx = mounted ? localDayIndex() : null;
+  const due = useMemo(() => (dayIdx == null ? [] : dueWords(state.review, dayIdx).map((k) => uniq.find((w) => w.kk === k)).filter(Boolean)), [state.review, dayIdx]);
+  const [rtest, setRtest] = useState(null);
+  const [rdone, setRdone] = useState(false);
+  const [rround, setRround] = useState(0);
+  useEffect(() => {
+    if (!mounted) return;
+    try {
+      // ?tab=review — Aqyl кеңесінен келгенде бірден қайталауды ашамыз
+      const want = new URLSearchParams(window.location.search).get("tab");
+      if (want === "review") setTab("review");
+      // Бұрынғы нұсқадан қалған «әлсіз сөздер» тізімін бір рет қайталауға көшіреміз
+      const old = JSON.parse(localStorage.getItem("qd_aqyl_weak") || "null");
+      if (old?.words?.length && !old.moved) {
+        update((s) => ({ ...s, review: addMistakes(s.review, old.words, localDayIndex()) }));
+        localStorage.setItem("qd_aqyl_weak", JSON.stringify({ ...old, moved: true }));
+      }
+    } catch {}
+  }, [mounted]); // eslint-disable-line react-hooks/exhaustive-deps
+  function startReview() { setRround((n) => n + 1); setRdone(false); setRtest(mkTest(due.slice(0, 10), explain)); }
 
   // Бүгінгі 10 сөзді бір рет таңдап сақтаймыз (үйренген сөздер қайталанбайды)
   useEffect(() => {
@@ -195,7 +221,7 @@ export default function Sozdik() {
   const tname = (t) => (t === "other" ? pick(OTHER, lang) : TOPIC_NAME(t, lang) || pick(OTHER, lang));
 
   const mood = allDone ? "cheer" : known >= 5 ? "happy" : known > 0 ? "support" : "idle";
-  const TABS = [["day", "sun", x.szDay], ["test", "target", T.test], ["mine", "book", x.szMine]];
+  const TABS = [["day", "sun", x.szDay], ["review", "refresh", rx.tab], ["test", "target", T.test], ["mine", "book", x.szMine]];
 
   return (
     <div className="sozdik szk" data-notap>
@@ -214,6 +240,7 @@ export default function Sozdik() {
             <Icon name={ic} size={17} /> <span>{label}</span>
             {id === "day" && words.length > 0 && <em>{known}/10</em>}
             {id === "mine" && <em>{vocab.length}</em>}
+            {id === "review" && due.length > 0 && <em className="szk-due">{due.length}</em>}
           </button>
         ))}
       </div>
@@ -249,6 +276,49 @@ export default function Sozdik() {
           </ul>
           <div className="szk-foot-row">
             <button type="button" className="btn ghost small" onClick={newSet}><Icon name="refresh" size={15} /> {T.newSet}</button>
+          </div>
+        </section>
+      )}
+
+      {tab === "review" && (
+        <section className="szk-game szk-review">
+          <div className="szk-game-in">
+            {rtest ? (
+              <>
+                <Quiz
+                  key={`r${rround}`}
+                  questions={rtest}
+                  onEach={(qq, ok) => dayIdx != null && update((s) => ({ ...s, review: grade(s.review, qq.answer, ok, dayIdx) }))}
+                  onDone={(r, t2) => { setRdone(true); award(r >= t2 - 1 ? 10 : 4, r >= t2 - 1 ? 5 : 1); }}
+                />
+                {rdone && (
+                  <div className="szk-again">
+                    {due.length > 0
+                      ? <button type="button" className="btn gold" onClick={startReview}><Icon name="refresh" size={15} /> {rx.due(due.length)}</button>
+                      : <p className="szk-tap"><Icon name="check" size={15} stroke={3} /> {rx.done}</p>}
+                  </div>
+                )}
+              </>
+            ) : due.length > 0 ? (
+              <div className="szk-start">
+                <h2 className="szk-start-h">{rx.due(due.length)}</h2>
+                <p className="szk-tap">{rx.hint}</p>
+                <div className="szk-fan" aria-hidden="true">
+                  {due.slice(0, 5).map((w, i) => (
+                    <span key={w.kk} style={{ "--k": i - 2, "--tint": tintOf(w.t) }}><TopicArt topic={w.t} size={64} /><i /><i /></span>
+                  ))}
+                </div>
+                <div className="szk-start-row">
+                  <span className="szk-chip"><Icon name="refresh" size={15} /> {Math.min(10, due.length)}</span>
+                  <button type="button" className="btn gold big" onClick={startReview}>{rx.start}</button>
+                </div>
+              </div>
+            ) : (
+              <div className="szk-start szk-review-empty">
+                <Qyran mood="idle" size={96} />
+                <p>{rx.none}</p>
+              </div>
+            )}
           </div>
         </section>
       )}

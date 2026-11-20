@@ -4,6 +4,7 @@ import { useApp } from "./Store";
 import { whenIdle } from "../../lib/idle";
 import { tx } from "../../lib/tx";
 import { sayKk } from "../../lib/speak";
+import Icon from "./Icon";
 
 const WORD = /[\p{L}\p{M}][\p{L}\p{M}'’-]*/u;
 const SKIP = "button,a,input,textarea,select,label,summary,[data-notap],svg,.wt-pop,.toasts,nav,.msg-input,.composer";
@@ -121,10 +122,10 @@ export default function WordTap() {
           </dl>
           {d.form && <p className="wt-form">{d.form}</p>}
           <div className="wt-row">
-            <button className="btn small ghost" onClick={() => say(d.kk)}>🔊 {x.listen}</button>
-            <button className="btn small ghost" onClick={() => sayKk(d.kk, { slow: true })} title="slow">🐢</button>
+            <button className="btn small ghost" onClick={() => say(d.kk)}><Icon name="volume" size={16} /> {x.listen}</button>
+            <button className="btn small ghost" onClick={() => sayKk(d.kk, { slow: true })} title="slow" aria-label="slow"><Icon name="slow" size={18} /></button>
           <button className={`btn small ${saved ? "ghost" : "gold"}`} disabled={saved} onClick={() => saveWord({ kk: d.kk, tr, e: d.e || "💬", src: "tap" })}>
-            {saved ? `✓ ${x.tapSaved}` : `+ ${x.tapSave}`}
+            <Icon name={saved ? "check" : "plus"} size={15} stroke={2.6} /> {saved ? x.tapSaved : x.tapSave}
           </button>
           </div>
         </>

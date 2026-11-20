@@ -118,7 +118,7 @@ h1, h2, h3 { color: #14263f; }
 @keyframes sunSpin { to { transform: rotate(360deg); } }
 .sky .reg { fill: hsl(calc(26 + var(--tone) * 0.35), 62%, calc(76% + var(--tone) * 0.08%)); stroke: rgba(130, 60, 30, 0.55); stroke-width: 1; }
 .sky .reg:hover, .sky .reg:focus-visible { fill: #6fd6e0; filter: drop-shadow(0 6px 10px rgba(10, 100, 120, 0.45)); transform: translateY(-2px); }
-.sky .reg.done { fill: url(#stampG); stroke: #a3242b; stroke-width: 1.4; filter: drop-shadow(0 3px 6px rgba(184, 100, 0, 0.55)); animation: doneShine 3.2s ease-in-out infinite alternate; }
+.sky .reg.done { fill: url(#stampG); stroke: #a3242b; stroke-width: 1.4; filter: drop-shadow(0 3px 6px rgba(184, 100, 0, 0.55)); }
 .sky .reg.sel { fill: url(#selG); stroke: #fff7e2; stroke-width: 2; filter: drop-shadow(0 8px 14px rgba(10, 100, 130, 0.6)); transform: translateY(-3px); }
 @keyframes doneShine { to { filter: drop-shadow(0 3px 12px rgba(255, 190, 40, 0.95)); } }
 .const { stroke: rgba(130, 60, 30, 0.35); stroke-dasharray: 2 6; }
@@ -298,7 +298,7 @@ h1, h2, h3 { color: #14263f; }
 /* Көкпар */
 .kokpar { padding: 14px; display: grid; gap: 10px; }
 .kk-score { display: flex; justify-content: space-between; align-items: center; }
-.kk-score .chip.bad { background: #f6d4cf; color: #a3242b; animation: qBad 0.6s infinite; }
+.kk-score .chip.bad { background: #f3e3e6; color: #6e1e2e; animation: qBad 0.6s 1; }
 .kk-field { position: relative; height: 150px; border-radius: 22px; overflow: hidden; background: linear-gradient(#bfe6f2 0 38%, #9bc94f 38%, #6fa63a); box-shadow: inset 0 0 0 3px #ffd35a, inset 0 0 0 5px #7a3a12; }
 .kk-field::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 46px, rgba(255, 255, 255, 0.08) 46px 92px); }
 .kk-mid { position: absolute; left: 50%; top: 38%; bottom: 0; width: 3px; background: rgba(255, 255, 255, 0.5); }
@@ -319,7 +319,7 @@ h1, h2, h3 { color: #14263f; }
 .item { background: linear-gradient(180deg, #fffaf0, #fbefd2); box-shadow: inset 0 0 0 1.5px #e8c77a, 0 12px 22px -16px rgba(122, 58, 18, 0.55); transition: transform 0.3s var(--ease), box-shadow 0.3s; }
 .item:hover { transform: translateY(-6px); box-shadow: inset 0 0 0 2px #e8a400, 0 20px 30px -16px rgba(122, 58, 18, 0.6); }
 .item.on { background: linear-gradient(180deg, #fff6cf, #ffe9a0); }
-.item .btn.gold:not(:disabled) { animation: btnGlow 2.2s ease-in-out infinite; }
+.item .btn.gold:not(:disabled) { animation: none; }
 @keyframes btnGlow { 50% { box-shadow: 0 0 0 5px rgba(255, 211, 90, 0.4); } }
 @media (prefers-reduced-motion: reduce) { .item .btn.gold { animation: none !important; } }
 

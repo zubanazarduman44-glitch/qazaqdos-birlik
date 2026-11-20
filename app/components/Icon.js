@@ -36,6 +36,8 @@ const P = {
   stop: "M7 7h10v10H7z",
   eagle: "M3 8c3 0 5 1 7 3 1-3 3-5 6-6l-1 4c2 0 4 1 6 3-3 0-5 1-6 3l2 5-5-2-5 2 1-5c-3 0-5-1-5-3Z",
   stamp: "M9 4h6v4l-1.5 3h-3L9 8V4Zm-4 9h14v4H5v-4Zm1 6h12",
+  // Баяу айту (тасбақа): күмбез сауыт, бас, аяқтар
+  slow: "M3.5 15a7 6 0 0 1 14 0h-14Zm14-1.5h1.5a2 2 0 1 0-1.8-2.9M6 15v3m3.5-3v3m3-3v3m3-3v3M7.5 12.5l3-2.5 3 2.5",
 };
 
 export default function Icon({ name, size = 20, stroke = 2, className = "" }) {

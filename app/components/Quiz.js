@@ -8,7 +8,8 @@ import { AqylWhy } from "./AqylExplain";
 import { aqylL, useAqylL } from "./AqylL10n";
 
 // Жалпы тест: questions = [{ prompt, options: [{key,label,e}], answer }]
-export default function Quiz({ questions, onDone, pass = Math.ceil(questions.length * 0.8) }) {
+// onEach(question, ok) — әр жауаптан кейін (мысалы, қайталау жүйесі әр сөзді жеке бағалайды)
+export default function Quiz({ questions, onDone, onEach, pass = Math.ceil(questions.length * 0.8) }) {
   const { t, lang, explain, state } = useApp();
   const AL = useAqylL(lang);
   const [i, setI] = useState(0);
@@ -21,6 +22,7 @@ export default function Quiz({ questions, onDone, pass = Math.ceil(questions.len
     if (picked) return;
     setPicked(key);
     if (key === q.answer) setRight((r) => r + 1);
+    onEach?.(q, key === q.answer);
   }
   function next() {
     if (i + 1 >= questions.length) {
@@ -50,7 +52,7 @@ export default function Quiz({ questions, onDone, pass = Math.ceil(questions.len
       <div className="quiz-top">
         <span className="badge">{t.quizQ(i + 1, questions.length)}</span>
         <div className="bar blue quiz-bar">
-          <i style={{ width: `${(i / questions.length) * 100}%` }} />
+          <i style={{ width: "100%", transform: `scaleX(${i / questions.length})`, transformOrigin: "left center" }} />
         </div>
       </div>
       <h3 className="quiz-q">{q.prompt}</h3>

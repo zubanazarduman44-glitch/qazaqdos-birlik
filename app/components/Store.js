@@ -7,6 +7,7 @@ import { tx, setTxOverride } from "../../lib/tx";
 import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut, upsertWeekly } from "../../lib/auth";
 import { weekKey } from "../../lib/week";
 import { setSkin } from "../../lib/skin";
+import { mergeReview } from "../../lib/review";
 import Qyran from "./Qyran";
 
 const KEY = "qd_state_v1";
@@ -50,6 +51,7 @@ export const EMPTY = {
   course: { done: {} },
   lit: {},
   speaking: { level: null, best: {}, log: [] },
+  review: {}, // қайталау жүйесі (lib/review.js): { kk: { box, due, miss } }
   updatedAt: 0,
 };
 
@@ -104,6 +106,7 @@ function merge(a, b) {
     // Өтілген сабақтар мен VR жағдайлары екі құрылғыдан да жиналады (тек соңғысы емес)
     course: { ...(newer.course || {}), done: { ...(b.course?.done || {}), ...(a.course?.done || {}) } },
     vr: { ...(newer.vr || {}), done: { ...(b.vr?.done || {}), ...(a.vr?.done || {}) } },
+    review: mergeReview(a.review, b.review),
     games,
     vocab: byKk(a.vocab, b.vocab),
     vision: byKk(a.vision, b.vision),

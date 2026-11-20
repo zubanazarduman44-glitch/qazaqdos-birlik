@@ -18,7 +18,8 @@
 .lp-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
 
 /* ── Жоғарғы жолақ: жабу + домбыра пернелері ── */
-.lp-top { display: flex; align-items: center; gap: 12px; }
+/* Жолақ бет айналғанда да көрініп тұрады: жоғарғы мәзірдің астында жабысып қалады */
+.lp-top { position: sticky; top: 72px; z-index: 5; display: flex; align-items: center; gap: 12px; margin: -4px -6px 0; padding: 4px 6px; border-radius: 14px; background: var(--bg-page, #fcfaf6); }
 .lp-close {
   flex: none; width: 48px; height: 48px; margin-left: -10px; display: grid; place-items: center;
   border: 0; border-radius: 12px; background: transparent; color: var(--muted);

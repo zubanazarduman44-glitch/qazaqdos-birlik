@@ -4,10 +4,11 @@ import SectionIntro from "../../components/SectionIntro";
 import Icon from "../../components/Icon";
 import dynamic from "next/dynamic";
 import TopicArt from "../../components/TopicArt";
-import { useApp } from "../../components/Store";
+import { useApp, localDayIndex } from "../../components/Store";
 // Жол картасына тек жеңіл индекс керек (сабақ id-лері, тақырып атаулары); сөздер мен сөйлемдер (lib/course.js) сабақ ашылғанда жүктеледі
 import { ALL_LESSONS, LEVELS, UNITS, TOPICS, levelStats, lessonTitle } from "../../../lib/courseIndex";
 import { goalTopics, goalTx } from "../../../lib/goals";
+import { addMistakes } from "../../../lib/review";
 import { L } from "../../../lib/i18n";
 import { whenIdle } from "../../../lib/idle";
 
@@ -71,9 +72,11 @@ function Player({ lesson, onClose, onNext, hasNext }) {
     return () => { on = false; };
   }, [lesson.id]);
 
-  function finish({ right, total }) {
+  function finish({ right, total, mistakes }) {
     const ok = total > 0 && right / total >= 0.7;
     setRes({ ok, right, total });
+    // Қате кеткен сөздер Сөздіктегі «Қайталау» бөліміне түседі (1, 3, 7, 14, 30 күннен кейін қайта шығады)
+    if (mistakes?.length) update((s) => ({ ...s, review: addMistakes(s.review, mistakes, localDayIndex()) }));
     if (!ok) return;
     const first = !state.course?.done?.[lesson.id];
     update((s) => ({ ...s, course: { ...(s.course || {}), done: { ...(s.course?.done || {}), [lesson.id]: { score: Math.round((right / total) * 100), at: Date.now() } } } }));

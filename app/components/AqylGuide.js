@@ -27,7 +27,7 @@ export default function AqylGuide({ state, lang, today, todayXp = 0, goal = 50, 
   let g;
   if (!state.cefr) g = { mood: "wow", txt: L.level, href: "/app/level", icon: "chart" };
   else if (today && state.streak > 0 && state.lastDay !== today && hour >= 17) g = { mood: "support", txt: L.streak(state.streak), href: next ? `/app/course?l=${next.id}` : "/app/course", icon: "flame" };
-  else if (weak && todayXp < goal) g = { mood: "explaining", txt: L.weak(weak.length), href: "/app/sozdik", icon: "refresh" };
+  else if (weak && todayXp < goal) g = { mood: "explaining", txt: L.weak(weak.length), href: "/app/sozdik?tab=review", icon: "refresh" };
   else if (todayXp === 0 && next) g = { mood: "talking", txt: L.start(nextTitle || ""), href: `/app/course?l=${next.id}`, icon: "book" };
   else if (todayXp > 0 && todayXp < goal) g = { mood: "happy", txt: L.more(goal - todayXp), href: next ? `/app/course?l=${next.id}` : "/app/games", icon: "right" };
   else if (todayXp >= goal && !Object.keys(state.vr?.done || {}).length) g = { mood: "cheer", txt: L.vr, href: "/app/vr", icon: "globe" };

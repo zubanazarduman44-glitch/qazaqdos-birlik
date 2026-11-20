@@ -114,7 +114,7 @@ function SayButtons({ text, snd, say, T, big = false }) {
         {!big && <span>{T("listen")}</span>}
       </button>
       <button type="button" className={`lp-say lp-turtle ${st(true)}`} aria-label={T("slow")} aria-busy={st(true) === "loading"} onClick={() => say(text, true)}>
-        <span className="lp-turtle-e" aria-hidden="true">🐢</span>
+        <Icon name="slow" size={20} />
         <span>{T("slowShort")}</span>
       </button>
     </div>
