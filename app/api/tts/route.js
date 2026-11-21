@@ -1,4 +1,4 @@
-// Қазақша дауыстап оқу (құрылғыда қазақша дауыс болмаса): Gemini TTS
+// Қазақша дауыстап оқу (құрылғыда қазақша дауыс болмаса): негізгісі Azure қазақ дауысы (бапталса), қосалқысы Gemini TTS
 export const maxDuration = 60;
 
 const FALLBACK = [process.env.GEMINI_TTS_MODEL, "gemini-3.8-flash-tts", "gemini-2.5-flash-preview-tts", "gemini-3.8-flash-lite-tts"].filter(Boolean);
@@ -124,9 +124,35 @@ function cleanPcm(buf, rate = 24000) {
   return Buffer.from(out.buffer);
 }
 
+// ── Azure AI Speech: қазақ тілінің нейрондық дауыстары (kk-KZ-AigulNeural әйел, kk-KZ-DauletNeural ер) ──
+// Қазақша табиғи айтылады (і, ә, ө, ү, ұ, қ, ғ, ң). Vercel-де AZURE_SPEECH_KEY мен AZURE_SPEECH_REGION
+// берілсе — негізгі дауыс осы; берілмесе не қате болса — бұрынғыдай Gemini. AZURE_SPEECH_VOICE — дауысты ауыстыру үшін (міндетті емес).
+const AZ_VOICES = new Set(["kk-KZ-AigulNeural", "kk-KZ-DauletNeural"]);
+const azureOn = () => Boolean(process.env.AZURE_SPEECH_KEY && /^[a-z0-9]+$/.test(process.env.AZURE_SPEECH_REGION || ""));
+const xml = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+async function azureTts(text) {
+  const voice = AZ_VOICES.has(process.env.AZURE_SPEECH_VOICE) ? process.env.AZURE_SPEECH_VOICE : "kk-KZ-AigulNeural";
+  const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="kk-KZ"><voice name="${voice}">${xml(text)}</voice></speak>`;
+  const r = await fetch(`https://${process.env.AZURE_SPEECH_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+    method: "POST",
+    headers: {
+      "Ocp-Apim-Subscription-Key": process.env.AZURE_SPEECH_KEY,
+      "Content-Type": "application/ssml+xml",
+      "X-Microsoft-OutputFormat": "riff-24khz-16bit-mono-pcm",
+      "User-Agent": "qyzyl-til",
+    },
+    body: ssml,
+    signal: AbortSignal.timeout(25_000),
+  });
+  if (!r.ok) throw new Error(`azure ${r.status}`);
+  const buf = Buffer.from(await r.arrayBuffer());
+  if (buf.length < 1000 || buf.toString("ascii", 0, 4) !== "RIFF") throw new Error("azure: empty audio");
+  return { audio: buf.toString("base64"), voice };
+}
+
 export async function POST(req) {
   const key = process.env.GEMINI_API_KEY;
-  if (!key) return Response.json({ error: "GEMINI_API_KEY missing" }, { status: 500 });
+  if (!key && !azureOn()) return Response.json({ error: "TTS key missing" }, { status: 500 });
   let body;
   try {
     body = await req.json();
@@ -142,8 +168,22 @@ export async function POST(req) {
     .replace(/[*_#`~]/g, "")
     .replace(/\s+/g, " ")
     .trim();
+  // Негізгі дауыс — Azure (бапталса). p — қай дауыс екені: клиент дауыс ауысқанда ескі кэшті тазалайды.
+  if (azureOn()) {
+    const akey = `az|${prompt}`;
+    if (cache.has(akey)) return Response.json({ audio: cache.get(akey), kk: true, p: "azure" });
+    try {
+      const { audio, voice } = await azureTts(prompt);
+      if (cache.size > 40) cache.clear();
+      cache.set(akey, audio);
+      return Response.json({ audio, kk: true, p: "azure" }, { headers: { "X-TTS-Model": voice, "X-TTS-Lang": LANG } });
+    } catch (e) {
+      console.warn("Azure TTS failed, falling back to Gemini:", e.message);
+      if (!key) return Response.json({ error: `TTS unavailable — ${e.message}` }, { status: 502 });
+    }
+  }
   const ckey = prompt;
-  if (cache.has(ckey)) return Response.json({ audio: cache.get(ckey) });
+  if (cache.has(ckey)) return Response.json({ audio: cache.get(ckey), p: "gemini" });
 
   const models = [...new Set([...FALLBACK, ...(await ttsModels(key))])].slice(0, 5);
   // Алдымен kk-KZ қабылдайтын модельдердің бәрін байқаймыз. Бұрын бірінші модель kk-KZ-ті
@@ -187,7 +227,7 @@ export async function POST(req) {
         cache.set(ckey, audio);
       }
       // Тексеру үшін: қай модель, қазақ тілі қосулы ма (құпия емес)
-      return Response.json({ audio, kk: withLang }, { headers: { "X-TTS-Model": m, "X-TTS-Lang": withLang ? LANG : "auto" } });
+      return Response.json({ audio, kk: withLang, p: "gemini" }, { headers: { "X-TTS-Model": m, "X-TTS-Lang": withLang ? LANG : "auto" } });
     } catch (e) {
       last = `${m}: ${e.message}`;
     }
