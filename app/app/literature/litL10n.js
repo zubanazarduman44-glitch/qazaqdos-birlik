@@ -54,5 +54,65 @@ const T = {
     kk: "Эпизод", ru: "Эпизод", en: "Episode", zh: "片段", es: "Episodio", de: "Episode",
     fr: "Épisode", tr: "Bölüm", ar: "مقطع", ko: "에피소드", ja: "場面",
   },
+  // Деңгей ауыстырғыш (бір оқиға — бірнеше деңгейде)
+  level: {
+    kk: "Мәтін деңгейі", ru: "Уровень текста", en: "Text level", zh: "文本难度", es: "Nivel del texto", de: "Textniveau",
+    fr: "Niveau du texte", tr: "Metin seviyesi", ar: "مستوى النص", ko: "텍스트 수준", ja: "文章のレベル",
+  },
+  levelHint: {
+    kk: "Оқиға бірдей — деңгей жоғарылаған сайын тілі күрделене түседі.",
+    ru: "История та же — чем выше уровень, тем сложнее язык.",
+    en: "Same story — the higher the level, the richer the language.",
+    zh: "故事相同——级别越高，语言越丰富。",
+    es: "La misma historia: cuanto más alto el nivel, más rico el lenguaje.",
+    de: "Dieselbe Geschichte – je höher das Niveau, desto reicher die Sprache.",
+    fr: "Même histoire : plus le niveau est élevé, plus la langue est riche.",
+    tr: "Hikâye aynı; seviye yükseldikçe dil zenginleşir.",
+    ar: "القصة نفسها، وكلما ارتفع المستوى ازدادت اللغة ثراءً.",
+    ko: "이야기는 같고, 수준이 높을수록 표현이 풍부해집니다.",
+    ja: "物語は同じで、レベルが上がるほど表現が豊かになります。",
+  },
+  // Дауыстап оқу жылдамдығы
+  speed: {
+    kk: "Оқу жылдамдығы", ru: "Скорость чтения", en: "Reading speed", zh: "朗读速度", es: "Velocidad de lectura", de: "Lesetempo",
+    fr: "Vitesse de lecture", tr: "Okuma hızı", ar: "سرعة القراءة", ko: "읽기 속도", ja: "読み上げ速度",
+  },
+  loadErr: {
+    kk: "Мәтін жүктелмеді. Қайта көріңіз.", ru: "Текст не загрузился. Попробуйте ещё раз.", en: "The text didn’t load. Please try again.",
+    zh: "文本未能加载，请重试。", es: "No se pudo cargar el texto. Inténtalo de nuevo.", de: "Der Text wurde nicht geladen. Bitte versuche es erneut.",
+    fr: "Le texte ne s’est pas chargé. Réessayez.", tr: "Metin yüklenmedi. Lütfen tekrar dene.", ar: "تعذّر تحميل النص. حاول مرة أخرى.",
+    ko: "텍스트를 불러오지 못했습니다. 다시 시도해 주세요.", ja: "文章を読み込めませんでした。もう一度お試しください。",
+  },
+  // Кітапхана тақырыбының түсініктемесі (шығарма саны өзгерсе де дұрыс)
+  sub: {
+    kk: "Қазақ классикасы төрт деңгейде: деңгейіңді таңда, оқы, тыңда, сосын сұрақтарға жауап бер.",
+    ru: "Казахская классика на четырёх уровнях: выберите свой уровень, читайте, слушайте и отвечайте на вопросы.",
+    en: "Kazakh classics at four levels: pick your level, read, listen, then answer questions.",
+    zh: "四个级别的哈萨克经典：选择你的级别，阅读、收听，然后回答问题。",
+    es: "Clásicos kazajos en cuatro niveles: elige tu nivel, lee, escucha y responde a las preguntas.",
+    de: "Kasachische Klassiker in vier Stufen: Wähle dein Niveau, lies, hör zu und beantworte die Fragen.",
+    fr: "Classiques kazakhs en quatre niveaux : choisissez votre niveau, lisez, écoutez, puis répondez aux questions.",
+    tr: "Dört seviyede Kazak klasikleri: seviyeni seç, oku, dinle, sonra soruları yanıtla.",
+    ar: "روائع الأدب الكازاخي في أربعة مستويات: اختر مستواك، اقرأ واستمع، ثم أجب عن الأسئلة.",
+    ko: "네 단계로 읽는 카자흐 고전: 수준을 고르고, 읽고 듣고, 질문에 답해 보세요.",
+    ja: "4つのレベルで読むカザフの名作：レベルを選び、読んで聞いて、質問に答えましょう。",
+  },
+  // Деңгей сөрелері
+  shelfA1: {
+    kk: "Алғашқы қадам", ru: "Первые шаги", en: "First steps", zh: "起步", es: "Primeros pasos", de: "Erste Schritte",
+    fr: "Premiers pas", tr: "İlk adımlar", ar: "الخطوات الأولى", ko: "첫걸음", ja: "はじめの一歩",
+  },
+  shelfA2: {
+    kk: "Негізгі деңгей", ru: "Базовый уровень", en: "Elementary", zh: "初级", es: "Nivel básico", de: "Grundstufe",
+    fr: "Niveau élémentaire", tr: "Temel seviye", ar: "المستوى الأساسي", ko: "기초", ja: "初級",
+  },
+  shelfB1: {
+    kk: "Орта деңгей", ru: "Средний уровень", en: "Intermediate", zh: "中级", es: "Nivel intermedio", de: "Mittelstufe",
+    fr: "Niveau intermédiaire", tr: "Orta seviye", ar: "المستوى المتوسط", ko: "중급", ja: "中級",
+  },
+  shelfB2: {
+    kk: "Ортадан жоғары", ru: "Выше среднего", en: "Upper intermediate", zh: "中高级", es: "Intermedio alto", de: "Obere Mittelstufe",
+    fr: "Intermédiaire avancé", tr: "Orta üstü", ar: "فوق المتوسط", ko: "중상급", ja: "中上級",
+  },
 };
 export const LT = (lang) => new Proxy({}, { get: (_, k) => T[k]?.[lang] || T[k]?.en || "" });

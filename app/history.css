@@ -284,3 +284,83 @@
 .history .kz-lm-art, .history .kz-river-flow, .history .kz-badge, .history .silk-road, .history .hm-halo, .history .rw { animation: none; }
 /* Телефонда өңір сілтемесі де ыңғайлы басылатындай */
 .history .site-reg { min-height: 44px; }
+
+/* ════════════════════════════════════════════════════════════════════
+   Тірі әсерлер (transform / opacity ғана; JS: app/app/travel/fx.js)
+   data-fx="on" — тек JS жұмыс істеп, «қозғалысты азайту» өшік болғанда қосылады.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Айналдырғанда пайда болу ── */
+.history[data-fx="on"] [data-rv] { transition: opacity 0.7s var(--hz-ease), transform 0.7s var(--hz-ease); }
+.history[data-fx="on"] [data-rv=""] { opacity: 0; transform: translateY(26px); }
+/* Қазына каталогы: карта көрінгенде кезекпен шығады */
+.history[data-fx="on"] .hm-treasures li { transition: opacity 0.5s var(--hz-ease), transform 0.5s var(--hz-ease); transition-delay: calc(0.25s + var(--i, 0) * 0.05s); }
+.history[data-fx="on"] [data-rv=""] .hm-treasures li { opacity: 0; transform: translateY(14px); }
+
+/* ── Уақыт өзені: түйіндер кезекпен шығып, өткен дәуірлер «жанады» ── */
+.history[data-fx="on"] .tl-node { animation: none; transition: opacity 0.55s var(--hz-ease), transform 0.55s var(--hz-ease); transition-delay: calc(0.15s + var(--i, 0) * 0.06s); }
+.history[data-fx="on"] [data-rv=""] .tl-node { opacity: 0; transform: translateY(18px); }
+.history .tl-dot::after {
+  content: ""; position: absolute; inset: -5px; border-radius: 50%; pointer-events: none;
+  box-shadow: 0 0 0 2px rgba(232, 178, 58, 0.85), 0 0 16px 2px rgba(232, 178, 58, 0.45);
+  opacity: 0; transform: scale(0.82);
+  transition: opacity 0.6s var(--hz-ease), transform 0.6s var(--hz-ease); transition-delay: calc(0.3s + var(--i, 0) * 0.05s);
+}
+.history .tl-node.past .tl-dot::after { opacity: 0.55; transform: scale(1); }
+.history[data-fx="on"] [data-rv=""] .tl-node.past .tl-dot::after { opacity: 0; transform: scale(0.82); }
+/* Таңдалған түйін: бір рет толқын жіберіп жанады */
+.history .tl-node.on .tl-dot::after { opacity: 0; transition: none; animation: hzPing 1.1s var(--hz-ease) both; }
+@keyframes hzPing { 0% { opacity: 0.95; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.65); } }
+.history .rw-mask { transform-box: view-box; transform-origin: 0 0; transition: transform 0.9s var(--hz-ease); }
+.history .rw-fill { transition: none; }
+
+/* ── Дәуір таспасы: таңдалған дәуір белгісі мен нүктелері жанады ── */
+.hr-seg::after {
+  content: ""; position: absolute; inset-inline: 14px; bottom: 5px; height: 3px; border-radius: 3px;
+  background: var(--hz-gold); transform: scaleX(0); opacity: 0; transition: transform 0.45s var(--hz-ease), opacity 0.3s;
+}
+.hr-seg.on::after { transform: scaleX(1); opacity: 1; }
+.hr-seg.on .hr-dots i { animation: hzDot 0.5s calc(0.1s + var(--d, 0) * 0.06s) var(--hz-ease) both; }
+@keyframes hzDot { 0% { opacity: 0; transform: scale(0.2); } 70% { transform: scale(1.35); } 100% { opacity: 1; transform: scale(1); } }
+
+/* ── 3D еңкею: тінтуір карточканың қай жерінде тұрса, сол жаққа иіледі ── */
+.history .hm-treasures button[data-tilting], .history .word-chip[data-tilting] {
+  transform: perspective(640px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-2px);
+  transition: transform 0.12s linear, box-shadow 0.25s, background-color 0.25s;
+}
+
+/* ── Жәдігер: тереңдік (медальон кері жылжиды), жарқыл, 3D бұрылыс ── */
+.history .hf-depth { position: absolute; inset: 0; transition: transform 0.6s var(--hz-ease); }
+.history .art-e { transition: transform 0.6s var(--hz-ease); }
+.history .artifact[data-tilting] .art-e { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(22px) scale(1.04); transition: transform 0.15s linear; }
+.history .artifact[data-tilting] .hf-depth { transform: translate(calc(var(--mx, 0) * -6px), calc(var(--my, 0) * -6px)); transition: transform 0.15s linear; }
+.art-glare { position: absolute; inset: 20px; z-index: 2; border-radius: 50%; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.35s; }
+.art-glare i { position: absolute; inset: -30%; background: radial-gradient(closest-side, rgba(255, 253, 247, 0.75), rgba(255, 253, 247, 0) 70%); transform: translate(calc(var(--mx, 0) * 28%), calc(var(--my, 0) * 28%)); }
+.history .artifact[data-tilting] .art-glare { opacity: 0.6; }
+
+/* ── Оқиға жолдары: бұлдыр сүзгі орнына тек мөлдірлік ── */
+.history .story-lines span { animation-name: hzLineIn; }
+@keyframes hzLineIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Тест сәтті: мөр басылып, алтын ұшқындар шашырайды ── */
+.history .hz-win { position: relative; align-items: center; overflow: visible; }
+.hz-burst { position: relative; flex: none; display: grid; place-items: center; width: 52px; height: 52px; }
+.hzb-seal { position: relative; z-index: 1; display: grid; animation: hzPress 0.75s 0.1s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+.hzb-ring { position: absolute; inset: 2px; border-radius: 50%; box-shadow: 0 0 0 3px var(--hz-gold); opacity: 0; animation: hzRing 0.9s 0.45s ease-out both; }
+.hz-burst > i {
+  position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 2px; background: var(--hz-gold);
+  opacity: 0; transform: rotate(var(--a)) translateY(0) scale(0.4); animation: hzSpark 0.9s 0.45s var(--hz-ease) both;
+}
+.hz-burst > i:nth-of-type(even) { background: #a3242b; width: 4px; height: 9px; margin: -4.5px -2px; }
+@keyframes hzPress { 0% { opacity: 0; transform: scale(2.4) rotate(-28deg); } 55% { opacity: 1; transform: scale(0.88) rotate(-6deg); } 100% { opacity: 1; transform: scale(1) rotate(-8deg); } }
+@keyframes hzRing { 0% { opacity: 0.9; transform: scale(0.7); } 100% { opacity: 0; transform: scale(1.9); } }
+@keyframes hzSpark { 0% { opacity: 0; transform: rotate(var(--a)) translateY(-8px) scale(0.4); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-40px) scale(1); } }
+.history .hz-win .hist-res .hist-seal { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .history [data-rv], .history .tl-node, .history .hm-treasures li { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .history .tl-dot::after, .hr-seg::after, .history .rw-mask, .history .hf-depth, .history .art-e, .art-glare { transition: none !important; }
+  .history .tl-node.on .tl-dot::after, .hr-seg.on .hr-dots i, .hzb-seal, .hzb-ring, .hz-burst > i { animation: none !important; }
+  .hz-burst > i, .hzb-ring { display: none; }
+  .hzb-seal { transform: rotate(-8deg); }
+}

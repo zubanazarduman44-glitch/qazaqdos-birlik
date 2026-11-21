@@ -1,4 +1,5 @@
 "use client";
+import "../../tuzel.css";
 import "../../chat.css";
 import { useEffect, useRef, useState } from "react";
 import { useAnimGate } from "../../components/AnimGate";
@@ -10,6 +11,11 @@ import Qyran from "../../components/Qyran";
 import { AqylSays, aqylMood } from "../../components/Aqyl";
 import { aqylL, useAqylL } from "../../components/AqylL10n";
 import Icon from "../../components/Icon";
+import AqylSpeak from "../../components/AqylSpeak";
+import TuzelWriteResult from "../../components/TuzelWriteResult";
+import TuzelSpeakResult from "../../components/TuzelSpeakResult";
+import { MODES, modeL } from "../../components/AqylModesL10n";
+import { SP_PASS } from "../../../lib/phrases";
 import { toWav } from "../../../lib/audio";
 import { sayKk } from "../../../lib/speak";
 import { tx } from "../../../lib/tx";
@@ -75,6 +81,10 @@ function VisionCard({ v, t, saved, onSave }) {
 
 // Бос чаттағы бастау карталарының киіз суреттері (t.chatSuggest ретімен)
 const START_ART = ["numbers", "food", "school", "greet"];
+
+// Чат режимдері: сөйлесу · жазуды түзету (/api/writing) · айтылымды тексеру (/api/speaking)
+const MODE_IC = { chat: "chat", write: "pen", speak: "mic" };
+const W_LEVELS = ["A1", "A2", "B1", "B2", "C1"];
 
 // Қауіпсіз форматтау (HTML енгізілмейді): **жуан**, *көлбеу*, `код`, ### тақырып, тізімдер, кесте
 function inline(str) {
@@ -180,6 +190,31 @@ export default function Chat() {
   const pageRef = useRef(null);
 
   const AL = useAqylL(lang);
+  const ML = modeL(lang);
+  // Режим: "chat" | "write" | "speak" — ?mode=write / ?mode=speak сілтемесімен де ашылады (ескі Түзел беттері осында әкеледі)
+  const [mode, setModeRaw] = useState("chat");
+  const [wLevel, setWLevel] = useState("A1");
+  const [spPhase, setSpPhase] = useState("idle");
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    try {
+      const m = new URLSearchParams(window.location.search).get("mode");
+      if (MODES.includes(m)) setModeRaw(m);
+    } catch {}
+  }, []);
+  function setMode(m) {
+    if (m === mode) return;
+    if (rec === "rec") recRef.current?.stop();
+    if (m === "speak" && cam) stopCam();
+    setModeRaw(m);
+    setErr("");
+    try {
+      const u = new URL(window.location.href);
+      if (m === "chat") u.searchParams.delete("mode");
+      else u.searchParams.set("mode", m);
+      window.history.replaceState(null, "", u.pathname + u.search);
+    } catch {}
+  }
   const taRef = useRef(null);
   const [copied, setCopied] = useState(-1);
   // Жаңа жауап келгенде Aqyl біраз «сөйлейді» (talking), сосын түсіндіру не қуаныш қалпына өтеді
@@ -195,7 +230,7 @@ export default function Chat() {
   // Aqyl-дың көңіл-күйі әңгімеге ілеседі
   const last = msgs[msgs.length - 1];
   const rich = last?.role === "assistant" && !last.kind && /(^|\n)\s*(#{1,4}\s|\|.*\||\d+[.)]\s|[-*•]\s)/.test(last.text || "");
-  const aqState = busy ? "thinking" : rec === "rec" ? "listening" : cam ? "looking" : err ? "oops" : talking ? "talking" : rich ? "explaining" : last?.role === "assistant" ? "happy" : "idle";
+  const aqState = busy ? "thinking" : rec === "rec" || spPhase === "rec" ? "listening" : cam ? "looking" : err ? "oops" : talking ? "talking" : rich ? "explaining" : last?.role === "assistant" ? "happy" : "idle";
   const mood = { thinking: "think", listening: "support", looking: "wow", oops: "support", talking: "happy", explaining: "happy", happy: "happy", idle: "idle" }[aqState];
   function copy(textIn, i) {
     try {
@@ -226,9 +261,46 @@ export default function Chat() {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [msgs.length, busy, live.length >> 6]);
 
-  async function send(q) {
+  // «Жазуымды түзет»: мәтін /api/writing-ке барады, нәтиже чатқа түзетілген дәптер беті болып түседі
+  async function checkWrite(msg) {
+    setText("");
+    setErr("");
+    update((s) => ({ ...s, chat: [...(s.chat || []), { role: "user", kind: "write", lvl: wLevel, text: msg }].slice(-40) }));
+    setBusy(true);
+    try {
+      const r = await fetch("/api/writing", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: msg, level: wLevel, explain }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+      update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", kind: "write", src: msg, res: d, text: `${t.corrected}: ${d.corrected || msg}` }].slice(-40) }));
+      setTalkTick((n) => n + 1);
+      award(5, 2);
+    } catch (e) {
+      setErr(e.message || t.errGeneric);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // «Айтылымды тексер»: AqylSpeak жазып, бағалайды; чатқа фраза мен нәтиже түседі
+  function speakAsk(target) {
+    setErr("");
+    update((s) => ({ ...s, chat: [...(s.chat || []), { role: "user", kind: "speak", text: target }].slice(-40) }));
+    setBusy(true);
+  }
+  function speakDone(target, res, fail) {
+    setBusy(false);
+    if (!res) return setErr(fail || t.errGeneric);
+    const score = Math.round(Number(res.score) || 0);
+    update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", kind: "speak", target, res, text: `${x.spScore}: ${score}/100. ${res.verdict || ""}`.trim() }].slice(-40) }));
+    setTalkTick((n) => n + 1);
+  }
+
+  // asChat: ұсыныс түймелерінен келген сұрақ әрқашан сөйлесу режиміне барады
+  async function send(q, asChat = false) {
     const msg = (q ?? text).trim();
     if (!msg || busy) return;
+    if (asChat && mode !== "chat") setMode("chat");
+    else if (mode === "write") return checkWrite(msg);
     setText("");
     setErr("");
     const next = [...msgs, { role: "user", text: msg }];
@@ -289,6 +361,7 @@ export default function Chat() {
   async function openCam() {
     if (busy) return;
     setErr("");
+    if (mode === "speak") setMode("chat");
     try {
       if (!navigator.mediaDevices?.getUserMedia) throw new Error("no cam");
       const st = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 } }, audio: false });
@@ -390,6 +463,7 @@ export default function Chat() {
   const prompts = [...(t.chatSuggest || []), ...AL.chat.more];
   const status = AL.chat[aqState] || AL.chat.idle;
   const lastBot = (() => { for (let k = msgs.length - 1; k >= 0; k--) if (msgs[k].role === "assistant") return k; return -1; })();
+  const lastSpeak = lastBot >= 0 && msgs[lastBot].kind === "speak" ? lastBot : -1;
 
   const camBtn = (cls, withLabel) => (
     <button type="button" className={cls} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-pressed={cam} aria-label={vl.cam} title={vl.cam}>
@@ -419,7 +493,7 @@ export default function Chat() {
           <b className="cx-topics-t">{AL.chat.tryAsk}</b>
           <div className="cx-topics-list">
             {prompts.map((q) => (
-              <button key={q} type="button" className="cx-topic" onClick={() => send(q)} disabled={busy}>
+              <button key={q} type="button" className="cx-topic" onClick={() => send(q, true)} disabled={busy}>
                 <span>{q}</span>
                 <Icon name="right" size={16} />
               </button>
@@ -438,13 +512,21 @@ export default function Chat() {
 
       {/* ── Әңгіме ── */}
       <section className="chat" aria-label={t.chatTitle}>
+        <div className="cx-modes" role="group" aria-label={ML.group}>
+          {MODES.map((id) => (
+            <button key={id} type="button" className={`cx-mode ${mode === id ? "on" : ""}`} aria-pressed={mode === id} onClick={() => setMode(id)}>
+              <Icon name={MODE_IC[id]} size={18} />
+              <span>{ML[id]}</span>
+            </button>
+          ))}
+        </div>
         <div className="chat-list" ref={listRef}>
           <div className="cx-welcome">
             <AqylSays mood={empty ? "talking" : "happy"} size={72} title="Aqyl">
-              <p>{t.chatHi}</p>
+              <p key={mode}>{mode === "write" ? t.writingSub : mode === "speak" ? x.spSub : t.chatHi}</p>
             </AqylSays>
           </div>
-          {empty && !cam && (
+          {empty && !cam && mode === "chat" && (
             <div className="cx-starts">
               <button type="button" className="cx-start cx-start-cam" onClick={openCam}>
                 <ChatCamArt size={56} />
@@ -452,7 +534,7 @@ export default function Chat() {
                 <Icon name="right" size={18} className="cx-start-go" />
               </button>
               {(t.chatSuggest || []).map((q, k) => (
-                <button key={q} type="button" className="cx-start" onClick={() => send(q)} style={{ "--d": `${(k + 1) * 70}ms` }}>
+                <button key={q} type="button" className="cx-start" onClick={() => send(q, true)} style={{ "--d": `${(k + 1) * 70}ms` }}>
                   <TopicArt topic={START_ART[k % START_ART.length]} size={44} />
                   <span className="cx-start-t">{q}</span>
                 </button>
@@ -478,6 +560,17 @@ export default function Chat() {
                   </div>
                 ) : m.kind === "vision" && m.v ? (
                   <div className="msg-b msg-vision"><VisionCard v={m.v} t={t} saved={!!state.vision?.some((z) => z.kk === m.v.kk)} onSave={() => keep(m.v)} /></div>
+                ) : bot && m.kind === "write" && m.res ? (
+                  <div className="msg-tz tzw"><TuzelWriteResult t={t} text={m.src || ""} res={m.res} compact /></div>
+                ) : bot && m.kind === "speak" && m.res ? (
+                  <div className="msg-tz tzs">
+                    <TuzelSpeakResult x={x} res={m.res} pass={SP_PASS} target={m.target} compact onRetry={i === lastSpeak && mode === "speak" && !busy ? () => setRetry((n) => n + 1) : undefined} />
+                  </div>
+                ) : !bot && (m.kind === "write" || m.kind === "speak") ? (
+                  <div className="msg-b msg-mode">
+                    <span className="msg-tag"><Icon name={MODE_IC[m.kind]} size={14} /> {ML[m.kind]}{m.lvl ? ` · ${m.lvl}` : ""}</span>
+                    <span dir="auto" lang="kk">{m.text}</span>
+                  </div>
                 ) : bot ? (
                   <div className="msg-col">
                     <div className="msg-b"><Rich text={m.text} /></div>
@@ -536,49 +629,65 @@ export default function Chat() {
           </div>
         )}
 
-        {!empty && !cam && (
+        {!empty && !cam && mode === "chat" && (
           <div className="cx-chips" role="group" aria-label={AL.chat.tryAsk}>
             {prompts.map((q) => (
-              <button key={q} type="button" className="cx-chip" onClick={() => send(q)} disabled={busy}>{q}</button>
+              <button key={q} type="button" className="cx-chip" onClick={() => send(q, true)} disabled={busy}>{q}</button>
             ))}
           </div>
         )}
-
-        <form
-          className={`composer ${rec === "rec" ? "is-rec" : ""} ${rec === "busy" ? "is-stt" : ""}`}
-          onSubmit={(e) => {
-            e.preventDefault();
-            send();
-          }}
-        >
-          <div className="cx-tools">
-            {camBtn(`cx-tool ${cam ? "on" : ""}`, false)}
-            <button type="button" className={`cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic" aria-pressed={rec === "rec"}>
-              <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
-            </button>
+        {!cam && mode === "write" && (
+          <div className="cx-chips cx-wlv" role="group" aria-label={t.yourLevel}>
+            <span className="cx-wlv-l">{t.yourLevel}</span>
+            {W_LEVELS.map((l) => (
+              <button key={l} type="button" className={`cx-chip ${wLevel === l ? "on" : ""}`} aria-pressed={wLevel === l} onClick={() => setWLevel(l)}>{l}</button>
+            ))}
           </div>
-          <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
-          <textarea
-            ref={taRef}
-            className="input"
-            rows={1}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send();
-              }
+        )}
+        {mode === "speak" && (
+          <AqylSpeak x={x} busy={busy} retry={retry} onAsk={speakAsk} onDone={speakDone} onPhase={setSpPhase} />
+        )}
+
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
+        {mode !== "speak" && (
+          <form
+            className={`composer ${rec === "rec" ? "is-rec" : ""} ${rec === "busy" ? "is-stt" : ""} ${mode === "write" ? "is-write" : ""}`}
+            onSubmit={(e) => {
+              e.preventDefault();
+              send();
             }}
-            placeholder={t.chatPh}
-            aria-label={t.chatPh}
-            maxLength={1500}
-            enterKeyHint="send"
-          />
-          <button className="cx-send" disabled={busy || !text.trim()} aria-label={t.send}>
-            <Icon name="send" size={20} />
-          </button>
-        </form>
+          >
+            <div className="cx-tools">
+              {camBtn(`cx-tool ${cam ? "on" : ""}`, false)}
+              <button type="button" className={`cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic" aria-pressed={rec === "rec"}>
+                <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
+              </button>
+            </div>
+            <textarea
+              ref={taRef}
+              className="input"
+              rows={1}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                // Жазу режимінде Enter — жаңа жол (бірнеше сөйлем), Ctrl/⌘+Enter — тексеру
+                if (e.key === "Enter" && !e.shiftKey && (mode !== "write" || e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  send();
+                }
+              }}
+              placeholder={mode === "write" ? t.writingPh : t.chatPh}
+              aria-label={mode === "write" ? t.writingTitle : t.chatPh}
+              lang={mode === "write" ? "kk" : undefined}
+              dir={mode === "write" ? "auto" : undefined}
+              maxLength={mode === "write" ? 2000 : 1500}
+              enterKeyHint={mode === "write" ? "enter" : "send"}
+            />
+            <button className="cx-send" disabled={busy || !text.trim()} aria-label={mode === "write" ? t.improve : t.send} title={mode === "write" ? t.improve : undefined}>
+              <Icon name={mode === "write" ? "sparkle" : "send"} size={20} />
+            </button>
+          </form>
+        )}
       </section>
     </div>
   );

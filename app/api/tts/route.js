@@ -142,13 +142,7 @@ export async function POST(req) {
     .replace(/[*_#`~]/g, "")
     .replace(/\s+/g, " ")
     .trim();
-  // ── ТӘЖІРИБЕ (тек preview): дауыс пен айтылым нұсқасын салыстыру. Тірі сайтта бұл параметрлер елеусіз қалады ──
-  const exp = process.env.VERCEL_ENV === "preview";
-  const VOICES = ["Kore", "Zephyr", "Puck", "Leda", "Charon", "Aoede", "Achird", "Sulafat"];
-  const voice = exp && VOICES.includes(body?.voice) ? body.voice : "Kore";
-  const style = exp && body?.style === "hint" ? "hint" : "plain";
-  const say = style === "hint" ? `Read the following Kazakh text aloud with native Kazakh pronunciation (front vowels і, ә, ө, ү; ұ, қ, ғ, ң as in Kazakh, not Russian): ${prompt}` : prompt;
-  const ckey = `${voice}|${style}|${prompt}`;
+  const ckey = prompt;
   if (cache.has(ckey)) return Response.json({ audio: cache.get(ckey) });
 
   const models = [...new Set([...FALLBACK, ...(await ttsModels(key))])].slice(0, 5);
@@ -166,10 +160,10 @@ export async function POST(req) {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: say }] }],
+          contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             responseModalities: ["AUDIO"],
-            speechConfig: { ...(withLang ? { languageCode: LANG } : {}), voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } },
+            speechConfig: { ...(withLang ? { languageCode: LANG } : {}), voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } },
           },
         }),
         signal: AbortSignal.timeout(40_000),

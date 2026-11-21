@@ -23,6 +23,7 @@ import { L } from "../../lib/i18n";
 import { lessonTitle } from "../../lib/courseIndex";
 import AqylGuide from "../components/AqylGuide";
 import ShellGlyph from "../components/ShellGlyph";
+import { modeL } from "../components/AqylModesL10n";
 import { SECTIONS, SECTION_HINT, pickL, secVars } from "../../lib/sections";
 
 // Дәстүр карточкасының суреті (TRADITIONS ретімен): киіз үй, қонақжайлылық, Наурыз, домбыра, бүркітші, тұсау кесу, көкпар, шапан
@@ -93,7 +94,7 @@ export default function Home() {
       { k: "history", art: "bowl", t: t.nav.history },
       { k: "games", art: "kamshy", t: t.nav.games },
       { k: "chat", art: "dombyra", t: t.navLong.chat },
-      { k: "tuzel", art: "taqiya", t: t.navLong.tuzel },
+      { k: "tuzel", art: "taqiya", t: modeL(lang).write }, // Түзел енді Aqyl чатында: жазу режимі
     ].map((q) => ({ ...q, href: SECTIONS[q.k].href, glyph: SECTIONS[q.k].glyph, hint: pickL(SECTION_HINT[q.k], lang) })),
     [t, lang]
   );

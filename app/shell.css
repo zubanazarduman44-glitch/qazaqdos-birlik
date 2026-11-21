@@ -22,7 +22,7 @@
 
 /* ══════════ Бүйір мәзір ══════════ */
 /* ою жиегі барлық жағынан (RTL-де де) */
-.shell.sx .side { border: 5px solid transparent; border-image: none; }
+.shell.sx .side { border: 1px solid rgba(31, 36, 48, 0.1); border-image: none; }
 .sx .side { gap: clamp(4px, 1vh, 12px); padding: clamp(8px, 1.5vh, 16px) 10px clamp(8px, 1.3vh, 12px); }
 .sx .side > .logo { padding-inline-start: 6px; }
 .sx .side-nav { gap: clamp(1px, 0.7vh, 9px); }

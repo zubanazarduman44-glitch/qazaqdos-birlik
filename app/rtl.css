@@ -9,9 +9,6 @@
 [dir="rtl"] body *:not([lang="kk"]) { letter-spacing: normal; }
 
 /* ── Бүйір мәзір мен жоғарғы жолақ ── */
-[dir="rtl"] .side { box-shadow: -1px 0 0 var(--line); }
-/* kiiz.css/nat.css: оюлы жиек оң жақта → сол жаққа */
-[dir="rtl"] .side { border-right: 0; border-left: 14px solid transparent; border-image: var(--oyu-band) 0 0 0 20 / 0 0 0 14px repeat; }
 [dir="rtl"] .side-link.on::after { right: auto; left: 10px; }
 [dir="rtl"] .sheet-link { text-align: right; }
 @media (min-width: 861px) {

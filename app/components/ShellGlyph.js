@@ -10,7 +10,7 @@ const G = {
       <path d="M12 9.2 14.8 12 12 14.8 9.2 12Z" fill="currentColor" />
     </>
   ),
-  // Көш жолы (Tilbil)
+  // Көш жолы (Жаттығу)
   trail: (
     <>
       <path d="M6.5 21c-.6-4 3-4.6 6.2-5.4 3.4-.9 5.4-2.6 4.2-5.2-1.2-2.5-5.4-1.6-6.6-4.2" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />

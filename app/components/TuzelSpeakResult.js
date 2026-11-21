@@ -4,14 +4,14 @@ import Icon from "./Icon";
 import Qyran from "./Qyran";
 import { TuzelMeter, band } from "./TuzelKit";
 
-export default function TuzelSpeakResult({ x, res, pass = 70, target, onRetry }) {
+export default function TuzelSpeakResult({ x, res, pass = 70, target, onRetry, compact = false }) {
   const score = Math.max(0, Math.min(100, Math.round(Number(res?.score) || 0)));
   const good = score >= pass;
   const tips = Array.isArray(res?.tips) ? res.tips : [];
   return (
-    <section className={`tzs-res rise b-${band(score)}`} aria-live="polite">
+    <section className={`tzs-res rise b-${band(score)}${compact ? " compact" : ""}`} aria-live="polite">
       <div className="tzs-res-top">
-        <TuzelMeter value={score} label={x.spScore} size={168} />
+        <TuzelMeter value={score} label={x.spScore} size={compact ? 96 : 168} />
         <div className="tzs-verdict">
           <span className={`tzs-badge ${good ? "ok" : ""}`}>
             <Icon name={good ? "trophy" : "target"} size={16} /> {score} / 100
@@ -29,9 +29,11 @@ export default function TuzelSpeakResult({ x, res, pass = 70, target, onRetry })
             )}
           </div>
         </div>
-        <span className="tzs-res-bird">
-          <Qyran mood={good ? "cheer" : "support"} size={110} />
-        </span>
+        {!compact && (
+          <span className="tzs-res-bird">
+            <Qyran mood={good ? "cheer" : "support"} size={110} />
+          </span>
+        )}
       </div>
 
       {tips.length > 0 && (
@@ -48,11 +50,13 @@ export default function TuzelSpeakResult({ x, res, pass = 70, target, onRetry })
         </div>
       )}
 
-      <div className="tzs-res-act">
-        <button type="button" className="tz-cta" onClick={onRetry}>
-          <Icon name="refresh" size={18} /> {x.spTryAgain}
-        </button>
-      </div>
+      {onRetry && (
+        <div className="tzs-res-act">
+          <button type="button" className="tz-cta" onClick={onRetry}>
+            <Icon name="refresh" size={18} /> {x.spTryAgain}
+          </button>
+        </div>
+      )}
     </section>
   );
 }

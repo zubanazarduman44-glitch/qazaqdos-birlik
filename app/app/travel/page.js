@@ -17,6 +17,7 @@ import { KZ_CENTERS, KZ_PATHS, KZ_VIEW } from "../../../lib/kzmap";
 import { L } from "../../../lib/i18n";
 import { useTravelL10n } from "../../../lib/l10nTravel";
 import { shuffle, tr } from "../../../lib/wordTools";
+import { useReveal, useTilt, reducedMotion } from "./fx";
 
 // Өңір атласы (көрікті жерлер мәтіндерімен) тек өңір таңдалғанда керек: бөлек чанк, бет ашылған соң алдын ала жүктеледі
 const loadAtlas = () => import("../../components/RegionAtlas");
@@ -107,6 +108,26 @@ function Travel() {
   const [hov, setHov] = useState(null);
   const prevRef = useRef(null);
   const [trail, setTrail] = useState(null);
+  const rootRef = useRef(null);
+  // Жаңа ғана мөр басылған өңір: паспорттағы мөр көрінгенде «басылып» түседі
+  const [fresh, setFresh] = useState(null);
+  useReveal(rootRef);
+  useTilt(rootRef);
+  useEffect(() => {
+    if (!fresh || typeof IntersectionObserver === "undefined") return;
+    const el = rootRef.current?.querySelector(`.trip-passport .stamp[data-id="${fresh}"]`);
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        el.setAttribute("data-press", "");
+        io.disconnect();
+      },
+      { threshold: 0.6 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [fresh]);
 
   useEffect(() => whenIdle(loadAtlas), []);
   // «Өңір туралы» мәтіндері ауыр: өңір таңдалғанда ғана жүктеледі (атлас чанкімен бірге алдын ала да келеді)
@@ -137,7 +158,7 @@ function Travel() {
     setFlipped({});
     setQuiz(null);
     setResult(null);
-    if (scroll) setTimeout(() => panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    if (scroll) setTimeout(() => panelRef.current?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" }), 60);
   }
 
   const ctr = (r) => KZ_CENTERS[r.map];
@@ -166,13 +187,13 @@ function Travel() {
   }, []);
   // Саяхат жолың: мөр басқан өңірлер реті бойынша алтын сызық
   const route = REGIONS.filter((r) => stamps[r.id] && ctr(r)).sort((a, b) => stamps[a.id] - stamps[b.id]).map(ctr);
-  const routeD = route.reduce((d, p, i) => {
-    if (!i) return `M${p[0]} ${p[1]}`;
-    const q = route[i - 1];
+  // Жол бөлек кесінділерден тұрады: әрқайсысы кезекпен (opacity) пайда болады, аялдамалар (transform) «шығады»
+  const routeSegs = route.slice(1).map((p, i) => {
+    const q = route[i];
     const mx = (p[0] + q[0]) / 2;
     const my = (p[1] + q[1]) / 2 - Math.hypot(p[0] - q[0], p[1] - q[1]) * 0.18;
-    return `${d} Q${mx} ${my} ${p[0]} ${p[1]}`;
-  }, "");
+    return `M${q[0]} ${q[1]} Q${mx} ${my} ${p[0]} ${p[1]}`;
+  });
   const eagleAt = (region && ctr(region)) || KZ_CENTERS["Астана"] || [500, 200];
   const hovR = hov && REGIONS.find((r) => r.id === hov);
   const x = tx(lang);
@@ -222,6 +243,7 @@ function Travel() {
     const ok = right >= 4;
     setResult({ right, total, ok });
     if (ok && !stamps[region.id]) {
+      if (!reducedMotion()) setFresh(region.id);
       update((s) => ({ ...s, stamps: { ...s.stamps, [region.id]: Date.now() } }));
       award(30, 15, `${t.stampGot} +30 XP`);
     } else if (ok) award(5, 2);
@@ -231,7 +253,7 @@ function Travel() {
   const order = ORDER;
 
   return (
-    <div className="travel">
+    <div className="travel" ref={rootRef}>
       <header className="page-head trip-head">
         <div className="trip-head-t">
           <span className="kicker">{t.travelKicker}</span>
@@ -270,8 +292,30 @@ function Travel() {
             ))}
             <g pointerEvents="none">
               {MAP_DECOR}
-              {routeD && <path d={routeD} className="journey" />}
-              {trail && <path key={trail.k} className="flight" d={`M${trail.from[0]} ${trail.from[1]} Q${(trail.from[0] + trail.to[0]) / 2} ${(trail.from[1] + trail.to[1]) / 2 - 60} ${trail.to[0]} ${trail.to[1]}`} />}
+              {routeSegs.length > 0 && (
+                <g className="jr">
+                  {routeSegs.map((d, i) => <path key={i} d={d} className="journey jr-seg" style={{ "--i": i }} />)}
+                  {route.map((p, i) => (
+                    <circle key={i} className="jr-pt" cx={p[0]} cy={p[1]} r="4.5" style={{ "--i": i, transformOrigin: `${p[0]}px ${p[1]}px` }} />
+                  ))}
+                </g>
+              )}
+              {trail && (
+                // Ұшу ізі: stroke-dashoffset орнына маска ішіндегі шеңбер бастапқы нүктеден scale арқылы өседі
+                <g key={trail.k}>
+                  <mask id="tpFlightM" maskUnits="userSpaceOnUse" x="-100" y="-160" width="1200" height="860">
+                    <circle
+                      className="fl-grow"
+                      cx={trail.from[0]}
+                      cy={trail.from[1]}
+                      r={Math.hypot(trail.to[0] - trail.from[0], trail.to[1] - trail.from[1]) + 70}
+                      fill="#fff"
+                      style={{ transformOrigin: `${trail.from[0]}px ${trail.from[1]}px` }}
+                    />
+                  </mask>
+                  <path className="flight" mask="url(#tpFlightM)" d={`M${trail.from[0]} ${trail.from[1]} Q${(trail.from[0] + trail.to[0]) / 2} ${(trail.from[1] + trail.to[1]) / 2 - 60} ${trail.to[0]} ${trail.to[1]}`} />
+                </g>
+              )}
             </g>
             {/* Өңірлердің үлкен белгілері */}
             {REGIONS.map((r) => {
@@ -310,7 +354,7 @@ function Travel() {
           <div className="sky-hint">{x.tapHint}</div>
         </div>
         </div>
-        <aside className="map-side">
+        <aside className="map-side" data-rv="">
           <div className="side-prog">
             <div className="ring trip-ring" style={{ "--p": `${Math.round((count / REGIONS.length) * 100)}%` }}><b>{count}</b><small>/ {REGIONS.length}</small></div>
             <div><h3>{t.stamps(count, REGIONS.length)}</h3><div className="map-legend"><span><i className="lg-done" /> {t.visited}</span><span><i className="lg-todo" /> {t.notVisited}</span></div></div>
@@ -346,9 +390,9 @@ function Travel() {
           </div>
         </div>
           <ul className="reg-list trip-cards">
-            {order.map((r) => (
-              <li key={r.id}>
-                <button className={`${sel === r.id ? "on" : ""} ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} onMouseEnter={() => setHov(r.id)} onMouseLeave={() => setHov(null)}>
+            {order.map((r, i) => (
+              <li key={r.id} style={{ "--i": i }}>
+                <button className={`${sel === r.id ? "on" : ""} ${stamps[r.id] ? "got" : ""}`} data-tilt="6" onClick={() => pick(r.id)} onMouseEnter={() => setHov(r.id)} onMouseLeave={() => setHov(null)}>
                   <span className="rl-e"><SightArt kind={kindOf(r.sights[0])} mini />{stamps[r.id] && <span className="rl-ok"><Icon name="stamp" size={13} /></span>}</span>
                   <span className="rl-t"><b>{L(r.name, lang)}</b><small>{L(r.center, lang)}</small></span>
                 </button>
@@ -373,7 +417,7 @@ function Travel() {
               </span>
               {about?.[region.id] && <p className="region-tease">{teaser(L(about[region.id], lang))}</p>}
             </div>
-            {stamps[region.id] && <span className="stamp-mark pop"><Icon name="stamp" size={16} /> {t.visited}</span>}
+            {stamps[region.id] && <span className={`stamp-mark ${fresh === region.id ? "press" : "pop"}`}><Icon name="stamp" size={16} /> {t.visited}</span>}
           </div>
 
           <RegionAtlas region={region} lang={lang} />
@@ -421,7 +465,13 @@ function Travel() {
               <>
                 <Quiz questions={quiz} onDone={finishQuiz} pass={4} />
                 {result && (
-                  <div className={`alert ${result.ok ? "ok" : ""} rise`}>
+                  <div className={`alert ${result.ok ? "ok tp-win" : ""} rise`}>
+                    {result.ok && (
+                      <span className="tp-press" aria-hidden="true">
+                        <span className="tpp-ink" />
+                        <span className="stamp-e"><SightArt kind={kindOf(region.sights[0])} mini /></span>
+                      </span>
+                    )}
                     {result.ok ? t.stampGot : t.stampMiss}
                     <button className="btn ghost small" onClick={() => { setQuiz(buildQuiz(region, t, lang, explain)); setResult(null); }}>
                       <Icon name="refresh" size={15} /> {t.retry}
@@ -437,14 +487,14 @@ function Travel() {
           </div>
         </section>
       ) : (
-        <section className="card pick-hint trip-hint">
+        <section className="card pick-hint trip-hint" data-rv="">
           <Qyran mood="think" size={90} />
           <p>{t.travelSub}</p>
           <TripCompass className="th-compass" />
         </section>
       )}
 
-      <section className="passport trip-passport">
+      <section className="passport trip-passport" data-rv="">
         <div className="tp-cover">
           <span className="tp-emblem" aria-hidden="true"><Icon name="eagle" size={26} /></span>
           <h2>
@@ -455,7 +505,7 @@ function Travel() {
         <div className="tp-pages">
           <div className="stamp-grid">
             {REGIONS.map((r, i) => (
-              <button key={r.id} className={`stamp ${stamps[r.id] ? "got" : ""}`} onClick={() => pick(r.id)} title={L(r.name, lang)} aria-label={`${L(r.center, lang)} · ${L(r.name, lang)}: ${stamps[r.id] ? t.visited : t.notVisited}`} style={{ "--i": i, "--r": `${((i * 37) % 17) - 8}deg` }}>
+              <button key={r.id} className={`stamp ${stamps[r.id] ? "got" : ""}`} data-id={r.id} data-fresh={fresh === r.id ? "" : undefined} onClick={() => pick(r.id)} title={L(r.name, lang)} aria-label={`${L(r.center, lang)} · ${L(r.name, lang)}: ${stamps[r.id] ? t.visited : t.notVisited}`} style={{ "--i": i, "--r": `${((i * 37) % 17) - 8}deg` }}>
                 <span className="stamp-e"><SightArt kind={kindOf(r.sights[0])} mini /></span>
                 <span className="stamp-n">{L(r.center, lang)}</span>
               </button>

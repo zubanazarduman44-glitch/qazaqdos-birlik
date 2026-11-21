@@ -1,7 +1,7 @@
 "use client";
 // «Түзел · Жазу» нәтижесі: тексерілген дәптер беті (сызылған қате → жасыл түзету),
 // жиектегі ескертпелер (әр түзетудің себебі) және Aqyl мөрі (ұпай).
-import { useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import Icon from "./Icon";
 import { TuzelMeter, TuzelSay, diffWords, matchChanges, splitWord } from "./TuzelKit";
 
@@ -26,12 +26,13 @@ function Fix({ p }) {
   );
 }
 
-export default function TuzelWriteResult({ t, text, res }) {
+export default function TuzelWriteResult({ t, text, res, compact = false }) {
   const score = Math.max(0, Math.min(100, Number(res?.score) || 0));
   const changes = Array.isArray(res?.changes) ? res.changes : [];
   const parts = useMemo(() => matchChanges(diffWords(text, res?.corrected || ""), changes), [text, res, changes]);
   const [act, setAct] = useState(-1);
   const notes = useRef([]);
+  const uid = useId(); // чатта бірнеше нәтиже болғанда id қайталанбасын
   const mood = score >= 85 ? "cheer" : score >= 60 ? "happy" : "support";
 
   function pick(k, scroll) {
@@ -41,21 +42,21 @@ export default function TuzelWriteResult({ t, text, res }) {
   }
 
   return (
-    <section className="tzw-out rise" aria-live="polite">
+    <section className={`tzw-out rise${compact ? " compact" : ""}`} aria-live="polite">
       <div className="tzw-verdict">
         <div className="tzw-seal">
-          <TuzelMeter value={score} label="/100" size={132} />
+          <TuzelMeter value={score} label="/100" size={compact ? 84 : 132} />
           <Icon name="stamp" size={20} className="tzw-seal-ic" />
         </div>
-        <TuzelSay mood={mood} size={84} tone={score >= 60 ? "ok" : ""}>
+        <TuzelSay mood={mood} size={84} tone={score >= 60 ? "ok" : ""} hideBird={compact}>
           {res?.praise ? <p className="tzw-praise">{res.praise}</p> : <p className="tzw-praise">{changes.length ? t.changes : t.noChanges}</p>}
         </TuzelSay>
       </div>
 
       <div className={`tzw-check ${changes.length ? "" : "clean"}`}>
-        <article className="tzw-page" aria-labelledby="tzw-page-h">
+        <article className="tzw-page" aria-labelledby={`${uid}-page`}>
           <header className="tzw-page-head">
-            <h3 id="tzw-page-h">{t.corrected}</h3>
+            <h3 id={`${uid}-page`}>{t.corrected}</h3>
             {changes.length > 0 && (
               <span className="tzw-legend" aria-hidden="true">
                 <span className="lg-del">{t.original}</span>
@@ -92,8 +93,8 @@ export default function TuzelWriteResult({ t, text, res }) {
           </details>
         </article>
 
-        <aside className="tzw-notes" aria-labelledby="tzw-notes-h">
-          <h3 id="tzw-notes-h">
+        <aside className="tzw-notes" aria-labelledby={`${uid}-notes`}>
+          <h3 id={`${uid}-notes`}>
             <Icon name="book" size={18} /> {t.changes}
           </h3>
           {changes.length ? (
@@ -121,7 +122,7 @@ export default function TuzelWriteResult({ t, text, res }) {
       </div>
 
       {res?.tip && (
-        <TuzelSay mood="idle" size={56} className="tzw-tip">
+        <TuzelSay mood="idle" size={56} className="tzw-tip" hideBird={compact}>
           <p>
             <b>{t.tip}: </b>
             {res.tip}

@@ -17,7 +17,7 @@ import { AVATARS, EXPLAIN_LANGS } from "../../../lib/i18n";
 
 // Бөлімдердің жалпы саны үшін ауыр деректер модульдері (өңірлер, тарих, сабақтар, шығармалар) бет ашылған соң жүктеледі.
 // Оған дейін соңғы белгілі сандар көрсетіледі — жүктелгенде нақты мәнмен ауысады.
-const TOTALS0 = { course: 282, travel: 20, history: 11, lit: 15, works: null };
+const TOTALS0 = { course: 282, travel: 20, history: 11, lit: 14, works: null };
 let totalsCache = null;
 const loadTotals = () =>
   (totalsCache ||= Promise.all([import("../../../lib/courseIndex"), import("../../../lib/regions"), import("../../../lib/history"), import("../../../lib/literature")]).then(([c, r, h, l]) => ({

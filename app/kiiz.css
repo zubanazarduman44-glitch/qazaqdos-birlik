@@ -86,7 +86,7 @@ a { color: var(--kok); }
 
 /* ── Бүйір мәзір: топталған, белсенді бөлімде қошқар мүйіз белгісі ── */
 @media (min-width: 861px) { .shell { grid-template-columns: 248px minmax(0, 1fr); } }
-.side { background: var(--surface); gap: 10px; padding: 14px 12px; border-right: 14px solid transparent; border-image: var(--oyu-band) 0 20 0 0 / 0 14px 0 0 repeat; }
+.side { background: var(--surface); gap: 10px; padding: 14px 12px; }
 .side-nav { display: flex; flex-direction: column; gap: clamp(2px, 0.9vh, 10px); flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; }
 .side-group { display: grid; gap: 1px; }
 .side-cap { padding: 2px 12px 1px; font-size: 11.5px; font-weight: 700; color: var(--faint); }
@@ -103,7 +103,8 @@ a { color: var(--kok); }
 .seg button.on { background: var(--kok); color: #fff; }
 
 /* ── Жоғарғы жолақ пен төменгі мәзір ── */
-.topbar { top: 10px; margin: 10px clamp(14px, 3vw, 32px) 4px; padding: 5px 10px; border-width: 4px; border-radius: 16px; background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--oyu-band) border-box; background-size: auto, auto 8px; box-shadow: var(--shadow); }
+/* Жоғарғы жолақ пен бүйір мәзір — карточкалармен бірдей таза «қағаз» стилі (оюлы жиек алынды: ою — шағын екпін, жиек-жолақ емес) */
+.topbar { top: 10px; margin: 10px clamp(14px, 3vw, 32px) 4px; padding: 5px 10px; border: 1px solid rgba(31, 36, 48, 0.1); border-image: none; border-radius: 16px; background: var(--surface); background-size: auto; box-shadow: 0 1px 2px rgba(31, 36, 48, 0.05), 0 14px 30px -22px rgba(31, 36, 48, 0.4); }
 .bottom-nav { background: var(--surface); box-shadow: 0 -1px 0 var(--rim), 0 -10px 24px -18px rgba(45, 38, 36, 0.4); }
 .bottom-nav a, .bottom-nav button { min-height: 52px; color: var(--muted); font-weight: 600; }
 .bottom-nav a.on, .bottom-nav button.on { color: var(--kok); background: none; box-shadow: none; outline: 0; border-color: transparent; }
@@ -258,8 +259,8 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 @media (max-width: 520px) { .sec-intro { padding: 14px; gap: 12px; } .sec-intro-ic { width: 38px; height: 38px; } .sec-intro-body ul { flex-direction: column; } }
 .sec-intro-body li svg { flex: none; margin-top: 3px; }
 
-/* ── Бүйір мәзір: ою жиегі бүкіл пішінді айнала қоршайды (жоғарғы жолақ сияқты) ── */
-.side { border: 5px solid transparent; border-image: none; border-radius: 24px; background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--oyu-band) border-box; background-size: auto, auto 10px; }
+/* ── Бүйір мәзір: жоғарғы жолақпен бірдей таза карточка ── */
+.side { border: 1px solid rgba(31, 36, 48, 0.1); border-image: none; border-radius: 24px; background: var(--surface); background-size: auto; box-shadow: 0 1px 2px rgba(31, 36, 48, 0.05), 0 14px 30px -22px rgba(31, 36, 48, 0.4); }
 
 /* ── Тіркелгеннен кейінгі деңгей тесті: мәзірсіз, бір бағанда ── */
 .shell-focus { min-height: 100vh; display: flex; flex-direction: column; }

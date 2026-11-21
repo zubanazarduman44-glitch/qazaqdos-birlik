@@ -33,10 +33,6 @@
   content: ""; position: absolute; inset: 8px; border-radius: 18px; pointer-events: none;
   border: 1.5px dashed var(--lit-felt-2);
 }
-.lit-hero::after {
-  content: ""; position: absolute; inset-inline: 0; bottom: 0; height: 10px;
-  background: var(--oyu-band) repeat-x left center; background-size: auto 10px; opacity: 0.9;
-}
 .lit-hero-txt { position: relative; z-index: 1; display: grid; justify-items: start; gap: 2px; min-width: 0; }
 .lit-hero h1 { margin: 0; font-size: clamp(34px, 5vw, 56px); letter-spacing: -0.02em; color: var(--lit-ink); }
 .lit-epi {
@@ -63,7 +59,7 @@
 /* ── Сөрелер ──────────────────────────────────────────────────────── */
 .lit-shelf { display: grid; gap: 14px; padding-inline: 10px; }
 .lit-shelf-h { display: flex; align-items: center; gap: 12px; margin: 6px 0 0; font-family: var(--head); font-size: clamp(17px, 2vw, 21px); font-weight: 600; color: var(--lit-ink); }
-.lit-shelf-ic { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--anar-soft, #f6e1e2); color: var(--lit-red-d); }
+.lit-shelf-lv { display: grid; place-items: center; flex: none; min-width: 44px; height: 36px; padding-inline: 8px; border-radius: 12px; background: var(--lit-red); color: #fff; font-family: var(--body); font-size: 15px; font-weight: 800; letter-spacing: 0.02em; }
 .lit-shelf-h small { font-family: var(--body); font-size: 13px; font-weight: 800; color: var(--lit-muted); padding: 2px 10px; border-radius: 99px; background: var(--lit-felt); }
 .lit-shelf-h::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--lit-felt-2) 0 6px, transparent 6px 11px); }
 
@@ -130,18 +126,6 @@
 .lit-book:active .lit-cover { transform: translateY(-3px); }
 .lit-book:focus-visible { outline: 3px solid var(--lit-red); outline-offset: 4px; box-shadow: none; }
 
-/* Уақыт сызығы */
-.lit-line { position: relative; height: 54px; margin: 0 14px 4px; }
-.lit-line-axis { position: absolute; inset-inline: 0; top: 30px; height: 3px; border-radius: 3px; background: var(--lit-felt-2); }
-.lit-tick { position: absolute; top: 38px; transform: translateX(-50%); font-family: var(--head); font-size: 10.5px; color: var(--lit-muted); }
-[dir="rtl"] .lit-tick { transform: translateX(50%); }
-.lit-tick::before { content: ""; position: absolute; top: -10px; left: 50%; width: 2px; height: 7px; margin-left: -1px; background: var(--lit-felt-2); }
-.lit-dot {
-  position: absolute; top: calc(25px - var(--k, 0) * 13px); width: 13px; height: 13px; margin-inline-start: -6.5px; border-radius: 50%;
-  background: var(--lc); box-shadow: 0 0 0 2px var(--lit-paper);
-}
-.lit-dot.on { box-shadow: 0 0 0 2px var(--lit-paper), 0 0 0 4px var(--lit-gold); }
-
 /* ── Оқу: ашық кітап ──────────────────────────────────────────────── */
 .lit-read { gap: 18px; }
 .lit-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -203,13 +187,7 @@
 }
 
 /* Қатар аударма */
-.lit-par { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; max-width: 70ch; }
-.lit-row { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 10px; row-gap: 6px; padding: 8px 10px 10px 4px; border-radius: 12px; }
-.lit-row.now { background: rgba(224, 165, 38, 0.13); }
-.lit-n { grid-row: span 2; padding-top: 4px; text-align: end; font-family: var(--head); font-size: 11.5px; color: #8a6a1e; }
-.lit-kk { font-size: clamp(18px, 1.6vw, 20px); line-height: 1.6; color: var(--lit-ink); }
 .lit-tr { padding-inline-start: 12px; border-inline-start: 3px solid var(--lit-felt-2); font-size: 15.5px; line-height: 1.55; color: var(--lit-muted); }
-.lit-row.now .lit-tr { border-inline-start-color: var(--lit-gold); }
 .lit-read .lit-trans {
   margin: 0; max-width: 66ch; padding: 16px 18px; border-radius: 14px; font-size: 16.5px; line-height: 1.7; color: var(--lit-ink);
   background: var(--lit-felt); box-shadow: none; border-inline-start: 4px solid var(--lit-blue);
@@ -277,33 +255,14 @@
 .btn.lit-go { padding-inline: 22px; background: var(--lit-red); color: #fff; font-size: 16.5px; font-weight: 800; box-shadow: 0 3px 0 var(--lit-red-d); }
 .btn.lit-go:hover { background: #a42b24; }
 .btn.lit-go:active { background: var(--lit-red-d); box-shadow: none; }
-.lit-ep-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .lit-ep-back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px; border: 0; background: none; color: var(--lit-blue); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
 .lit-ep-back:hover { text-decoration: underline; }
 [dir="rtl"] .lit-ep-back svg { transform: scaleX(-1); }
-.lit-ep-head { display: grid; gap: 6px; max-width: 66ch; }
-.lit-ep-head h3 { margin: 0; font-family: var(--head); font-size: clamp(22px, 2.2vw, 27px); line-height: 1.2; color: var(--lit-red-d); text-wrap: balance; }
 .lit-ep-ttr { margin: 0; color: var(--lit-muted); font-size: 14.5px; }
 .lit-lead { margin: 6px 0 0; font-size: 17px; line-height: 1.6; font-style: italic; color: var(--lit-wood-d); }
 .lit-lead-tr { margin-top: 2px; }
-.lit-eps { gap: 6px; }
-.lit-eps .lit-row { grid-template-columns: 44px minmax(0, 1fr) auto; align-items: start; padding: 6px 6px 8px; }
-.lit-eps .lit-row.past .lit-kk { color: var(--lit-muted); }
-.lit-eps .lit-tr { grid-column: 2 / -1; }
-.lit-say, .lit-row-tr { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 12px; background: transparent; color: var(--lit-blue); cursor: pointer; position: relative; }
-.lit-say { background: rgba(15, 94, 122, 0.08); }
-.lit-say:hover, .lit-row-tr:hover { background: rgba(15, 94, 122, 0.15); }
-.lit-say.is-on { background: var(--lit-blue); color: #fff; }
-.lit-say-n { position: absolute; inset-block-end: 2px; inset-inline-end: 4px; font-family: var(--head); font-size: 11px; line-height: 1; color: #6b4f12; }
-.lit-say.is-on .lit-say-n { color: #fff; }
-.lit-row-tr { color: var(--lit-muted); }
-.lit-row-tr.is-on { color: var(--lit-blue); background: rgba(15, 94, 122, 0.12); }
-.lit-eps .lit-kk { padding-top: 7px; }
-.lit-eps .lit-tr.is-loading { animation: litPulse 1.4s ease-in-out infinite; }
 .lit-adapt-note svg { color: var(--lit-wood); }
-@media (prefers-reduced-motion: reduce) { .lit-eps .lit-tr.is-loading { animation: none; } }
 @media (max-width: 640px) {
-  .lit-eps .lit-row { grid-template-columns: 44px minmax(0, 1fr) auto; column-gap: 6px; padding-inline: 2px; }
   .lit-start { padding: 16px; }
   .lit-start-row, .lit-start-row .btn { width: 100%; }
   .lit-start-row .btn { justify-content: center; }
@@ -339,28 +298,68 @@
   }
   .lit-slot { scroll-snap-align: start; }
   .lit-kind { margin-inline: -8px; }
-  .lit-line { margin-inline: 8px; }
   .lit-recto { padding: 24px 18px 22px; gap: 16px; }
   .lit-text { font-size: 18px; line-height: 1.72; }
-  .lit-row { grid-template-columns: 22px minmax(0, 1fr); column-gap: 8px; padding-inline-end: 6px; }
-  .lit-kk { font-size: 18px; }
-  .lit-dock { padding: 8px; gap: 8px; }
-  .lit-dock { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .lit-dock { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 8px; gap: 8px; }
   .lit-dock .btn { justify-content: center; padding-inline: 10px; font-size: 14.5px; }
-  .lit-dock .lit-play { grid-column: 1 / -1; }
-  .lit-dock:has(.lit-pos) .lit-play { grid-column: 1; }
-  .lit-dock:has(.lit-pos) .lit-tbtn, .lit-dock:has(.lit-pos) .lit-done { grid-row: 2; }
-  .lit-pos { grid-column: 2; grid-row: 1; justify-self: end; align-self: center; margin: 0; }
+  .lit-dock .lit-play, .lit-dock .lit-speed { grid-column: 1 / -1; }
+  .lit-dock .lit-speed { justify-content: center; }
+  .lit-dock .lit-speed button { flex: 1; }
+  .lit-dock:not(:has(.lit-tbtn)) .lit-done { grid-column: 1 / -1; }
+  .lit-dock-aqyl, .lit-pos { display: none; }
 }
 
-/* ═══ Эпизод — кәдімгі мәтін (нөмірленген жолдардың орнына) ═══ */
-.lit-flow { display: grid; gap: 18px; margin-top: 6px; }
-.lit-para .lit-text { margin: 0; font-size: clamp(18px, 1.6vw, 20px); line-height: 1.75; text-indent: 1.4em; }
-.lit-flow .snt { cursor: pointer; border-radius: 6px; padding: 1px 0; transition: background-color 0.2s, color 0.2s; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.lit-flow .snt:hover { background: rgba(224, 165, 38, 0.14); }
-.lit-flow .snt.now { background: rgba(224, 165, 38, 0.3); }
-.lit-flow .snt.past { color: inherit; }
-.lit-para-tr { margin: 8px 0 0; padding-inline-start: 14px; border-inline-start: 3px solid rgba(224, 165, 38, 0.55); font-size: 15px; line-height: 1.6; color: var(--lit-muted, #5f6470); }
-@media (max-width: 600px) { .lit-para .lit-text { font-size: 17px; text-indent: 1em; } }
-.lit-para:first-child .lit-text { text-indent: 0; }
+/* ═══ Оқу картасы: таза ақ қағаз, қысқа абзацтар, бір оқиға — бірнеше деңгей ═══ */
+.lit-card {
+  position: relative; display: grid; gap: 18px; width: 100%; max-width: 780px; margin-inline: auto; overflow: hidden;
+  padding: 34px clamp(18px, 5vw, 56px) 30px; border-radius: var(--pp-r-lg, 24px);
+  background: var(--lit-paper); box-shadow: var(--pp-card, inset 0 0 0 1px var(--rim)), 0 3px 0 var(--ld);
+}
+.lit-card-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.lit-card-head { display: grid; gap: 6px; max-width: 65ch; }
+.lit-label { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; color: var(--lit-red-d); }
+.lit-label b { padding: 2px 9px; border-radius: 99px; background: var(--lit-gold); color: var(--lit-ink); font-weight: 800; }
+.lit-card-head h2 { margin: 2px 0 0; font-family: var(--head); font-size: clamp(24px, 3vw, 32px); line-height: 1.18; color: var(--lit-ink); text-wrap: balance; }
+.lit-card-by { margin: 0; font-size: 14.5px; font-weight: 700; color: var(--lit-muted); }
+.lit-card .lit-lead { margin-top: 10px; }
+.lit-wait-t { animation: litPulse 1.2s ease-in-out infinite; }
+.lit-card .lit-warn { flex-wrap: wrap; align-items: center; justify-content: space-between; }
+
+/* Абзацтар: тұрақты ішкі шегініс — белгіленгенде орны жылжымайды */
+.lit-flow { display: grid; gap: 6px; margin-top: 4px; }
+.lit-para { max-width: calc(65ch + 28px); margin-inline: -14px; padding: 8px 14px; border-radius: 14px; transition: background-color var(--pp-t2, 0.25s) ease; }
+.lit-para.is-now { background-color: rgba(232, 178, 58, 0.14); }
+.lit-para .lit-text { max-width: 65ch; margin: 0; font-size: clamp(18px, 1.6vw, 20px); line-height: 1.75; }
 .lit-para + .lit-para .lit-text::first-letter { float: none; margin: 0; font: inherit; color: inherit; line-height: inherit; padding: 0; }
+.lit-flow .snt { cursor: pointer; border-radius: 6px; padding: 1px 0; transition: background-color 0.2s; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.lit-flow .snt:hover { background: rgba(224, 165, 38, 0.14); }
+.lit-flow .snt.now { background: rgba(224, 165, 38, 0.32); }
+.lit-para-tr { margin: 8px 0 0; padding-inline-start: 14px; border-inline-start: 3px solid rgba(224, 165, 38, 0.55); font-size: 15px; line-height: 1.6; color: var(--lit-muted); }
+
+/* Сегментті таңдағыш (деңгей, жылдамдық): әр батырма ≥44px */
+.lit-seg { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 14px; background: var(--lit-felt); box-shadow: inset 0 0 0 1px var(--lit-felt-2); }
+.lit-seg button {
+  min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 11px; background: transparent;
+  font: inherit; font-size: 14.5px; font-weight: 800; color: var(--lit-muted); cursor: pointer; transition: background-color 0.2s, color 0.2s;
+}
+.lit-seg button:hover { color: var(--lit-blue); }
+.lit-seg button.is-on { background: var(--lit-paper); color: var(--lit-blue); box-shadow: 0 1px 2px rgba(45, 38, 36, 0.12), inset 0 0 0 1.5px var(--lit-blue); }
+.lit-seg button:focus-visible { outline: 3px solid var(--lit-blue); outline-offset: 1px; }
+.lit-speed > svg { flex: none; margin-inline: 8px 2px; color: var(--lit-blue); }
+.lit-start-lv { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 6px; }
+.lit-start-lvt { font-size: 13.5px; font-weight: 700; color: var(--lit-muted); }
+
+/* Әрекет жолағындағы Aqyl */
+.lit-dock-aqyl { display: grid; place-items: center; width: 44px; height: 44px; line-height: 0; }
+.lit-dock-aqyl.is-on > * { animation: litBob 1.1s ease-in-out infinite; }
+
+@media (max-width: 640px) {
+  .lit-card { padding: 24px 18px 22px; gap: 16px; }
+  .lit-para { margin-inline: -10px; padding-inline: 10px; }
+  .lit-para .lit-text { font-size: 18px; line-height: 1.72; }
+  .lit-card-bar .lit-lvls { margin-inline-start: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lit-para, .lit-flow .snt, .lit-seg button { transition: none; }
+  .lit-dock-aqyl.is-on > *, .lit-wait-t { animation: none; }
+}

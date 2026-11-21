@@ -17,11 +17,18 @@ import { useTravelL10n } from "../../../lib/l10nTravel";
 import { L } from "../../../lib/i18n";
 import { shuffle, tr } from "../../../lib/wordTools";
 import { tx } from "../../../lib/tx";
+import { useReveal, useTilt, reducedMotion } from "../travel/fx";
 
 function useCountUp(target, ms = 1100) {
   const [v, setV] = useState(target);
   const from = useRef(target);
   useEffect(() => {
+    // «Қозғалысты азайту» қосулы болса — жыл бірден ауысады
+    if (reducedMotion()) {
+      from.current = target;
+      setV(target);
+      return;
+    }
     const a = from.current;
     const t0 = performance.now();
     let raf;
@@ -108,6 +115,19 @@ function HistFelt() {
   );
 }
 
+// Тест сәтті біткенде: балауыз мөр басылып, айналасына алтын ұшқындар шашырайды (тек transform/opacity)
+function HistBurst() {
+  return (
+    <span className="hz-burst" aria-hidden="true">
+      <span className="hzb-ring" />
+      {Array.from({ length: 10 }, (_, k) => (
+        <i key={k} style={{ "--a": `${k * 36}deg` }} />
+      ))}
+      <span className="hzb-seal"><HistSeal size={40} /></span>
+    </span>
+  );
+}
+
 function HistSeals({ done, label }) {
   return (
     <div className="hist-seals" role="img" aria-label={label}>
@@ -145,7 +165,7 @@ export default function History() {
   const [res, setRes] = useState(null);
   const panel = useRef(null);
   const riverRef = useRef(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const rootRef = useRef(null);
   const site = SITES.find((s) => s.id === sel);
   const done = state.sites || {};
   const count = Object.keys(done).length;
@@ -158,6 +178,8 @@ export default function History() {
   const eraF = ERAS.find((e) => e.id === era);
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
   const order = ORDER;
+  useReveal(rootRef);
+  useTilt(rootRef);
   // Картаның өзгермейтін қабаттары бір рет салынады (шекара деректері DOM-да бір рет, қалғаны <use>)
   const MAP_DEFS = useMemo(() => (
     <defs>
@@ -199,14 +221,14 @@ export default function History() {
 
   useEffect(() => {
     const el = riverRef.current?.querySelector(".tl-node.on");
-    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    el?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", inline: "center", block: "nearest" });
   }, [sel]);
 
   function pick(id) {
     setSel(id);
     setQuiz(null);
     setRes(null);
-    setTimeout(() => panel.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    setTimeout(() => panel.current?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" }), 60);
   }
   function finish(right, total) {
     const ok = right >= total - 1;
@@ -218,7 +240,7 @@ export default function History() {
   }
 
   return (
-    <div className="history" style={{ "--h": 18 + idx * 34 }}>
+    <div className="history" ref={rootRef} style={{ "--h": 18 + idx * 34 }}>
       <div className="h-bg" aria-hidden />
       <header className="page-head hist-head">
         <div className="hist-head-t">
@@ -232,7 +254,7 @@ export default function History() {
         <HistSeals done={done} label={t.sitesDone(count, SITES.length)} />
       </header>
 
-      <section className="card map-card hist-map">
+      <section className="card map-card hist-map" data-rv="">
         <div className="hm-eras hist-ribbon">
           {ERAS.map((e, k) => {
             const list = SORTED.filter((st) => e.f(st.year));
@@ -240,7 +262,7 @@ export default function History() {
               <button key={e.id} className={`hr-seg ${era === e.id ? "on" : ""}`} aria-pressed={era === e.id} onClick={() => setEra(e.id)} style={{ "--k": k }}>
                 <b>{HIST_UI[lang]?.[`ERA.${e.id}`] || e.n[li]}</b>
                 {list.length > 0 && <small>{fmtYear(list[0].year, lang)} – {fmtYear(list[list.length - 1].year, lang)}</small>}
-                <span className="hr-dots" aria-hidden="true">{list.map((st) => <i key={st.id} className={done[st.id] ? "got" : ""} />)}</span>
+                <span className="hr-dots" aria-hidden="true">{list.map((st, d) => <i key={st.id} className={done[st.id] ? "got" : ""} style={{ "--d": d }} />)}</span>
               </button>
             );
           })}
@@ -273,9 +295,9 @@ export default function History() {
           <div className="sky-hint">{x.tapHint}</div>
         </div>
         <ul className="hm-treasures">
-          {SORTED.filter((st) => eraF.f(st.year)).map((st) => (
-            <li key={st.id}>
-              <button className={sel === st.id ? "on" : ""} onClick={() => pick(st.id)}>
+          {SORTED.filter((st) => eraF.f(st.year)).map((st, i) => (
+            <li key={st.id} style={{ "--i": i }}>
+              <button className={sel === st.id ? "on" : ""} onClick={() => pick(st.id)} data-tilt="6">
                 <span className="hm-tr-art"><svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true"><use href={`#${st.tsym}`} /></svg>{done[st.id] && <HistSeal size={18} />}</span>
                 <span><b>{L(st.treasure, lang)}</b><small>{L(st.name, lang)} · {fmtYear(st.year, lang)}</small></span>
               </button>
@@ -284,7 +306,7 @@ export default function History() {
         </ul>
       </section>
 
-      <section className="card portal">
+      <section className="card portal" data-rv="">
         <div className="portal-year" aria-live="polite">
           <small>{L(site.era, lang)}</small>
           <b>{fmtYear(year, lang)}</b>
@@ -293,11 +315,17 @@ export default function History() {
           <svg className="river-wave" viewBox="0 0 1000 80" preserveAspectRatio="none" aria-hidden>
             <path className="rw rw1" d="M0 40 C 80 10, 160 70, 250 40 S 420 10, 500 40 S 660 70, 750 40 S 920 10, 1000 40" />
             <path className="rw rw2" d="M0 44 C 90 74, 170 14, 260 44 S 430 74, 510 44 S 670 14, 760 44 S 930 74, 1000 44" />
-            <path className="rw-fill" style={{ clipPath: `inset(0 ${100 - ((idx + 0.5) / SORTED.length) * 100}% 0 0)` }} d="M0 42 C 80 12, 160 72, 250 42 S 420 12, 500 42 S 660 72, 750 42 S 920 12, 1000 42" />
+            {/* Өткен уақыт сызығы: clip-path орнына масканың ішіндегі тіктөртбұрыш scaleX-пен өседі (тек transform) */}
+            <defs>
+              <mask id="hzRiverM" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="80">
+                <rect className="rw-mask" width="1000" height="80" fill="#fff" style={{ transform: `scaleX(${(idx + 0.5) / SORTED.length})` }} />
+              </mask>
+            </defs>
+            <path className="rw-fill" mask="url(#hzRiverM)" d="M0 42 C 80 12, 160 72, 250 42 S 420 12, 500 42 S 660 72, 750 42 S 920 12, 1000 42" />
           </svg>
           <div className="timeline">
             {SORTED.map((s, i) => (
-              <button key={s.id} className={`tl-node ${sel === s.id ? "on" : ""} ${done[s.id] ? "done" : ""} ${i < idx ? "past" : ""}`} onClick={() => pick(s.id)} style={{ animationDelay: `${i * 0.07}s`, "--n": 18 + i * 34 }}>
+              <button key={s.id} className={`tl-node ${sel === s.id ? "on" : ""} ${done[s.id] ? "done" : ""} ${i < idx ? "past" : ""}`} onClick={() => pick(s.id)} style={{ animationDelay: `${i * 0.07}s`, "--n": 18 + i * 34, "--i": i }}>
                 <span className="tl-dot"><svg viewBox="0 0 64 64" aria-hidden="true"><use href={`#${s.tsym}`} /></svg>{done[s.id] && <HistSeal size={20} />}</span>
                 <b>{L(s.name, lang)}</b>
                 <small>{fmtYear(s.year, lang)}</small>
@@ -322,18 +350,12 @@ export default function History() {
         <HistCorner c="bl" />
         <HistCorner c="br" />
         <div className="site-head">
-          <div
-            className="artifact"
-            onMouseMove={(e) => {
-              const r = e.currentTarget.getBoundingClientRect();
-              setTilt({ x: ((e.clientY - r.top) / r.height - 0.5) * -26, y: ((e.clientX - r.left) / r.width - 0.5) * 26 });
-            }}
-            onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-          >
-            <HistFelt />
+          <div className="artifact" data-tilt="14">
+            <span className="hf-depth" aria-hidden="true"><HistFelt /></span>
             <i className="ar a1" />
             <i className="ar a2" />
-            <span className="art-e" style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}><svg viewBox="0 0 64 64" width="84" height="84"><use href={`#${site.tsym}`} /></svg></span>
+            <span className="art-e"><svg viewBox="0 0 64 64" width="84" height="84" aria-hidden="true"><use href={`#${site.tsym}`} /></svg></span>
+            <i className="art-glare" aria-hidden="true"><i /></i>
           </div>
           <div>
             <span className="badge">{L(site.era, lang)}</span>
@@ -360,7 +382,7 @@ export default function History() {
             {site.words.map((w) => {
               const saved = state.vocab?.some((v) => v.kk === w.kk);
               return (
-                <button key={w.kk} className={`word-chip ${saved ? "saved" : ""}`} onClick={() => saveWord({ kk: w.kk, tr: trW(w, explain), e: w.e, src: site.id })}>
+                <button key={w.kk} className={`word-chip ${saved ? "saved" : ""}`} data-tilt="5" onClick={() => saveWord({ kk: w.kk, tr: trW(w, explain), e: w.e, src: site.id })}>
                   <span className="wc-e hist-tamga" aria-hidden="true">{w.kk.charAt(0).toUpperCase()}</span>
                   <span>
                     <b>{w.kk}</b>
@@ -376,7 +398,8 @@ export default function History() {
               <>
                 <Quiz questions={quiz} onDone={finish} pass={quiz.length - 1} />
                 {res && (
-                  <div className={`alert ${res.ok ? "ok" : ""} rise`}>
+                  <div className={`alert ${res.ok ? "ok hz-win" : ""} rise`}>
+                    {res.ok && <HistBurst />}
                     <span className="hist-res">{res.ok ? <><HistSeal size={26} /> {t.badge}</> : t.score(res.right, res.total)}</span>
                     <button className="btn ghost small" onClick={() => { setQuiz(buildQuiz(site, lang, explain)); setRes(null); }}>
                       <Icon name="refresh" size={15} /> {t.retry}

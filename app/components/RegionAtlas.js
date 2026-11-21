@@ -134,7 +134,7 @@ function SightCard({ s, i, lang }) {
   const text = info && info.text ? L(info.text, lang) : "";
   const name = L(s, lang);
   return (
-    <article className="ra-card" style={{ "--i": i }}>
+    <article className="ra-card" style={{ "--i": i }} data-tilt="4">
       <div className="ra-art">
         <SightArt kind={kindOf(s)} title={name} />
         <span className="ra-n">{i + 1}</span>
