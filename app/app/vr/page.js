@@ -4,14 +4,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Icon from "../../components/Icon";
 import ShellGlyph from "../../components/ShellGlyph";
-import VrPlay, { Stars, trLang, WxIcon } from "../../components/VrPlay";
-import VrTalk from "../../components/VrTalk";
+import dynamic from "next/dynamic";
+import { Stars, trLang, WxIcon } from "../../components/VrBits";
 import { VrScene, VrBuilding, VrTownBg } from "../../components/VrArt";
 import { vrL, vf } from "../../components/VrL10n";
 import { useAnimGate } from "../../components/AnimGate";
 import { L } from "../../../lib/i18n";
-import { PLACES, SCENES } from "../../../lib/vr/scenes";
+import { whenIdle } from "../../../lib/idle";
+// Карта тек жеңіл индексті алады (~5 KB). Ойнатқыш пен толық диалогтар (~250 KB) жағдаят ашылғанда ғана жүктеледі,
+// ал карта ашық тұрғанда браузер бос кезде алдын ала жүктеп қояды — жағдаят бәрібір лезде ашылады.
+import { PLACES, SCENES } from "../../../lib/vr/sceneIndex";
 import { atmo, atmoKk } from "../../../lib/vr/atmo";
+
+const Busy = () => <section className="vr-loading" aria-busy="true" />;
+const loadPlay = () => import("../../components/VrPlay");
+const loadScenes = () => import("../../../lib/vr/scenes");
+const VrPlay = dynamic(loadPlay, { loading: Busy });
+const VrTalk = dynamic(() => import("../../components/VrTalk"), { loading: Busy });
 
 const LEVELS = ["A1", "A2", "B1", "B2"];
 // Картадағы орындар: [x%, y%] — үлкен экран және телефон (төменгі ортасы)
@@ -50,6 +59,13 @@ export default function Vr() {
     try { window.scrollTo({ top: 0 }); } catch {}
   }, [view.kind, view.id]);
 
+  // Толық жағдаяттар (диалог түйіндері): карта ашылғанда — бос уақытта, жағдаят ашылғанда — бірден
+  const [full, setFull] = useState(null);
+  useEffect(() => whenIdle(() => Promise.all([loadPlay(), loadScenes().then((m) => setFull(m.SCENES))])), []);
+  useEffect(() => {
+    if (view.kind === "scene" && !full) loadScenes().then((m) => setFull(m.SCENES)).catch(() => {});
+  }, [view.kind, full]);
+
   const list = useMemo(() => SCENES.filter((s) => (lv === "all" || s.level === lv) && (!place || s.place === place)), [lv, place]);
   const byPlace = useMemo(() => {
     const m = {};
@@ -65,11 +81,13 @@ export default function Vr() {
       const i = SCENES.indexOf(sc);
       const rest = [...SCENES.slice(i + 1), ...SCENES.slice(0, i)];
       const nx = rest.find((s) => s.level === sc.level && !done[s.id]) || rest.find((s) => !done[s.id]) || rest[0];
+      const fsc = full?.find((s) => s.id === sc.id);
+      if (!fsc) return <div className="vr" data-view="scene"><Busy /></div>;
       return (
         <div className="vr" data-view="scene">
           <VrPlay
             key={sc.id}
-            scene={sc}
+            scene={fsc}
             place={PLACES[sc.place]}
             hasNext={!!nx}
             onNext={() => nx && setView({ kind: "scene", id: nx.id })}

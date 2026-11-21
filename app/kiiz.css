@@ -38,8 +38,8 @@
   --btn-blue: var(--kok);
   --btn-gold: var(--altyn);
   /* Қаріп: тақырып — Unbounded, мәтін — Golos Text (қазақ әріптері толық) */
-  --head: "Unbounded", "Golos Text", "Segoe UI", system-ui, sans-serif;
-  --body: "Golos Text", "Segoe UI", Roboto, "Noto Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --head: var(--font-unbounded, "Unbounded"), var(--font-golos, "Golos Text"), "Segoe UI", system-ui, sans-serif;
+  --body: var(--font-golos, "Golos Text"), "Segoe UI", Roboto, "Noto Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
   /* Аралық шкаласы */
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
 }
@@ -298,3 +298,8 @@ li.done .q-mark { background: var(--ok); box-shadow: none; } li.done .q-name { c
 .kosh.s3::before { border-left-color: color-mix(in srgb, var(--tone) 30%, transparent); }
 @media (min-width: 761px) { .kosh-levels:has(> .kosh-lv.s3) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1240px) { .kosh-levels:has(> .kosh-lv.s3) { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* SVG суреттеріндегі қаріп атаулары (fontFamily="Golos Text" / "Unbounded") — сайттың өз қаріптеріне бағытталады
+   (next/font қаріптерге ішкі атау береді; CSS ережесі SVG атрибутынан күшті) */
+svg text[font-family*="Unbounded"] { font-family: var(--head); }
+svg text[font-family*="Golos"] { font-family: var(--body); }

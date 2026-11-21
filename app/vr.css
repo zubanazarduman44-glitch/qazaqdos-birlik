@@ -877,3 +877,6 @@
   .vr .vr-board-wx.w-snow::before, .vr .vr-board-wx.w-snow::after { animation: none !important; }
 }
 .vr-talk-mic { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; }
+
+/* Жағдаят жүктеліп жатқанда — орын сақталады, бет секірмейді */
+.vr-loading { min-height: min(640px, 80vh); border-radius: 24px; background: color-mix(in srgb, #1f2430 4%, #fcfaf6); }

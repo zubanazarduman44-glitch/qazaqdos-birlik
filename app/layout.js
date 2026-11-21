@@ -12,8 +12,13 @@ import "./paper.css";
 import "./anim.css";
 import "./rtl.css";
 import { AppProvider } from "./components/Store";
+import { Golos_Text, Unbounded } from "next/font/google";
 
-const FONT_CSS = "https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Unbounded:wght@600;800&display=swap";
+// Қаріптер сайттың өз доменінен беріледі (next/font): Google-ге бөлек қосылу жоқ, алдын ала жүктеледі,
+// ал қаріп келгенше көрсетілетін жүйелік қаріп өлшемі сәйкестендірілген — мәтін «секірмейді».
+// cyrillic-ext — қазақтың ә, ғ, қ, ң, ө, ұ, ү, һ, і әріптері үшін.
+const golos = Golos_Text({ subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"], weight: ["400", "500", "600", "700"], display: "swap", variable: "--font-golos" });
+const unbounded = Unbounded({ subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"], weight: ["600", "800"], display: "swap", variable: "--font-unbounded" });
 
 export const metadata = {
   title: "Qyzyl til — қазақ тілін Aqyl-мен бірге үйрен",
@@ -33,14 +38,9 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="kk" data-theme="light" suppressHydrationWarning>
+    <html lang="kk" data-theme="light" className={`${golos.variable} ${unbounded.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="preconnect" href="https://images.unsplash.com" />
-        {/* Қаріп CSS-і бетті салуды бөгемейді: алдын ала жүктеліп, скрипт арқылы қосылады (display=swap — алдымен жүйелік қаріп) */}
-        <link rel="preload" as="style" href={FONT_CSS} />
-        <script dangerouslySetInnerHTML={{ __html: `(function(){var l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(FONT_CSS)};document.head.appendChild(l)})()` }} />
       </head>
       <body>
         <AppProvider>{children}</AppProvider>

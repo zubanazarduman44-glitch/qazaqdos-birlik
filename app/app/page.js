@@ -12,7 +12,9 @@ import Icon from "../components/Icon";
 import Avatar from "../components/Avatar";
 import TopicArt from "../components/TopicArt";
 import { NatArt } from "../components/NatArt";
-import { RegionScene } from "../components/SightArt";
+import dynamic from "next/dynamic";
+// Өңір суреті (SightArt ~68 KB) — тек «келесі өңір» карточкасына керек: бөлек чанкпен жүктеледі
+const RegionScene = dynamic(() => import("../components/SightArt").then((m) => m.RegionScene), { loading: () => null });
 import HomeYurt, { useDayPhase } from "../components/HomeArt";
 import { useAnimGate } from "../components/AnimGate";
 import { REGIONS } from "../../lib/regions";

@@ -7,8 +7,12 @@ import Qyran from "./components/Qyran";
 import Icon from "./components/Icon";
 import QyzylMark from "./components/QyzylMark";
 import { LangSeg, Logo } from "./components/Shell";
-import SightArt, { RegionScene } from "./components/SightArt";
-import { GameScene } from "./components/games/GameArt";
+import dynamic from "next/dynamic";
+// Ауыр суреттер (SightArt ~68 KB, GameArt ~18 KB) бөлек чанкпен: сервер HTML-ге бәрібір салады,
+// ал браузер негізгі JS-ті жеңіл алады — бет тезірек интерактивті болады
+const SightArt = dynamic(() => import("./components/SightArt"));
+const RegionScene = dynamic(() => import("./components/SightArt").then((m) => m.RegionScene));
+const GameScene = dynamic(() => import("./components/games/GameArt").then((m) => m.GameScene));
 import { LandingRibbon, LandingSwoosh, LandingTyped, LandingChatArt, LandingVisionArt, useLandingFx } from "./components/LandingArt";
 import { REGIONS } from "../lib/regions";
 import { L } from "../lib/i18n";
