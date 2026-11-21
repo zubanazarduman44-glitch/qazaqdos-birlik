@@ -10,9 +10,9 @@
   --cl-muted: var(--pp-muted, #4a5160);
   --cl-felt: var(--pp-felt, #f1eee8);
   --cl-hair: var(--pp-hair, rgba(60, 52, 48, 0.16));
-  --cl-ok: #2f6b4f;
-  --cl-wine: #6e1e2e;
-  --cl-wine-soft: #f3e3e6;
+  --cl-ok: var(--ok);
+  --cl-wine: var(--shie);
+  --cl-wine-soft: var(--shie-soft);
   color: var(--cl-ink);
 }
 .cl .card { padding: 22px; }

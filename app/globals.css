@@ -1,107 +1,10 @@
 /* TILIM — дизайн жүйесі: «қырауланған шаңырақ». Түсті шамдар үстінде шыны панельдер. */
 :root {
-  --ink: #072a3b;
-  --muted: #3f606e;
-  --brand: #0a9fb4;
-  --brand-2: #12c9bd;
-  --brand-ink: #065f73;
-  --lapis: #3558e6;
-  --gold: #ffb020;
-  --gold-2: #ffd36a;
-  --gold-ink: #4a2b00;
-  --bg: #d9f1ee;
-  --sky-grad: linear-gradient(160deg, #e7f9f4 0%, #d2ebf3 50%, #e6dcf8 100%);
   /* Шамдар (фондағы түсті дақтар) */
-  --o1: #19d3c5;
-  --o2: #ffb36b;
-  --o3: #8d9bff;
-  --o-op: 0.62;
   /* Шыны */
-  --paper: rgba(255, 255, 255, 0.42);
-  --paper-solid: rgba(255, 255, 255, 0.6);
-  --paper-2: rgba(255, 255, 255, 0.32);
-  --paper-strong: rgba(255, 255, 255, 0.86);
-  --sheen-a: rgba(255, 255, 255, 0.66);
-  --sheen-b: rgba(255, 255, 255, 0.24);
-  --edge: rgba(255, 255, 255, 0.95);
-  --rim: rgba(255, 255, 255, 0.8);
-  --line: rgba(6, 80, 100, 0.14);
-  --ok: #138a5c;
   --ok-soft: rgba(19, 138, 92, 0.14);
-  --bad: #cf3d4a;
-  --bad-soft: rgba(207, 61, 74, 0.12);
-  --shadow: 0 26px 50px -30px rgba(6, 80, 110, 0.5), 0 2px 8px rgba(6, 80, 110, 0.06);
-  --shadow-lg: 0 40px 76px -36px rgba(6, 80, 110, 0.6), 0 2px 10px rgba(6, 80, 110, 0.08);
-  --blur: blur(28px) saturate(1.8);
-  --blur-s: blur(14px) saturate(1.6);
-  --r: 26px;
-  --r-sm: 16px;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --head: "Unbounded", "Nunito", system-ui, sans-serif;
-  --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --btn-blue: linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 50%), linear-gradient(135deg, #12c9bd, #3558e6);
-  --btn-gold: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 52%), linear-gradient(135deg, #ffd873, #ff9f1c);
   color-scheme: light;
-}
-:root[data-theme="dark"] {
-  --ink: #eaf4ff;
-  --muted: #a9b9d8;
-  --brand: #3fe0d2;
-  --brand-ink: #8ff3ea;
-  --gold: #ffc447;
-  --bg: #050818;
-  --sky-grad: linear-gradient(160deg, #050818 0%, #0a1038 55%, #14082f 100%);
-  --o1: #2f3fe0;
-  --o2: #0fc4b8;
-  --o3: #b4349c;
-  --o-op: 0.5;
-  --paper: rgba(255, 255, 255, 0.075);
-  --paper-solid: rgba(255, 255, 255, 0.115);
-  --paper-2: rgba(255, 255, 255, 0.05);
-  --paper-strong: rgba(14, 20, 56, 0.9);
-  --sheen-a: rgba(255, 255, 255, 0.14);
-  --sheen-b: rgba(255, 255, 255, 0.04);
-  --edge: rgba(255, 255, 255, 0.3);
-  --rim: rgba(255, 255, 255, 0.24);
-  --line: rgba(255, 255, 255, 0.14);
-  --ok: #3fd9a0;
-  --ok-soft: rgba(63, 217, 160, 0.16);
-  --bad: #ff7d88;
-  --bad-soft: rgba(255, 125, 136, 0.16);
-  --shadow: 0 26px 56px -28px rgba(0, 0, 0, 0.75);
-  --shadow-lg: 0 40px 84px -34px rgba(0, 0, 0, 0.85);
-  color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --ink: #eaf4ff;
-    --muted: #a9b9d8;
-    --brand: #3fe0d2;
-    --brand-ink: #8ff3ea;
-    --gold: #ffc447;
-    --bg: #050818;
-    --sky-grad: linear-gradient(160deg, #050818 0%, #0a1038 55%, #14082f 100%);
-    --o1: #2f3fe0;
-    --o2: #0fc4b8;
-    --o3: #b4349c;
-    --o-op: 0.5;
-    --paper: rgba(255, 255, 255, 0.075);
-    --paper-solid: rgba(255, 255, 255, 0.115);
-    --paper-2: rgba(255, 255, 255, 0.05);
-    --paper-strong: rgba(14, 20, 56, 0.9);
-    --sheen-a: rgba(255, 255, 255, 0.14);
-    --sheen-b: rgba(255, 255, 255, 0.04);
-    --edge: rgba(255, 255, 255, 0.3);
-    --rim: rgba(255, 255, 255, 0.24);
-    --line: rgba(255, 255, 255, 0.14);
-    --ok: #3fd9a0;
-    --ok-soft: rgba(63, 217, 160, 0.16);
-    --bad: #ff7d88;
-    --bad-soft: rgba(255, 125, 136, 0.16);
-    --shadow: 0 26px 56px -28px rgba(0, 0, 0, 0.75);
-    --shadow-lg: 0 40px 84px -34px rgba(0, 0, 0, 0.85);
-    color-scheme: dark;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -136,8 +39,7 @@ p { margin: 0 0 0.8em; }
 .card {
   position: relative;
   background: linear-gradient(155deg, var(--sheen-a), var(--sheen-b));
-  -webkit-backdrop-filter: var(--blur);
-  backdrop-filter: var(--blur);
+
   border-radius: var(--r);
   box-shadow: inset 0 1px 0 var(--edge), var(--shadow);
   padding: 22px;
@@ -150,8 +52,6 @@ p { margin: 0 0 0.8em; }
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
   opacity: 0.9;
 }
-:root[data-theme="dark"] .card::after { opacity: 0.45; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card::after { opacity: 0.45; } }
 
 /* Батырмалар: түсті шыны */
 .btn {
@@ -163,7 +63,7 @@ p { margin: 0 0 0.8em; }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn.blue { background: var(--btn-blue); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(0, 20, 60, 0.18), 0 14px 28px -12px rgba(40, 90, 230, 0.75); text-shadow: 0 1px 2px rgba(0, 30, 80, 0.25); }
 .btn.gold { background: var(--btn-gold); color: var(--gold-ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(120, 60, 0, 0.18), 0 14px 28px -12px rgba(255, 150, 20, 0.8); }
-.btn.ghost { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s); }
+.btn.ghost { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); }
 .btn.ghost:hover { box-shadow: inset 0 0 0 1.5px var(--brand), inset 0 1px 0 var(--edge); }
 .btn.big { min-height: 56px; padding: 14px 26px; font-size: 17px; border-radius: 18px; }
 .btn.small { min-height: 36px; padding: 7px 14px; font-size: 14px; border-radius: 12px; }
@@ -173,12 +73,11 @@ p { margin: 0 0 0.8em; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
   background: var(--paper); box-shadow: inset 0 0 0 1px var(--rim), inset 0 1px 0 var(--edge); font-weight: 700; font-size: 13.5px; white-space: nowrap;
-  -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s);
+
 }
 .chip.on { background: var(--btn-blue); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6); }
 .chip.gold { background: rgba(255, 176, 32, 0.24); color: #7a4700; box-shadow: inset 0 0 0 1px rgba(255, 190, 70, 0.5); }
-:root[data-theme="dark"] .chip.gold { color: var(--gold); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.gold { color: var(--gold); } }
+
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 800; background: rgba(10, 159, 180, 0.16); color: var(--brand-ink); box-shadow: inset 0 0 0 1px rgba(10, 159, 180, 0.2); }
 
 /* Өріс */
@@ -187,7 +86,7 @@ p { margin: 0 0 0.8em; }
 .input {
   width: 100%; min-height: 50px; padding: 12px 16px; border-radius: 16px; border: 0;
   background: var(--paper-solid); box-shadow: inset 0 0 0 1px var(--rim), inset 0 2px 8px rgba(6, 80, 100, 0.08); outline: none; transition: box-shadow 0.2s;
-  -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s);
+
 }
 .input:focus { box-shadow: inset 0 0 0 2px var(--brand), 0 0 0 5px rgba(10, 159, 180, 0.18); }
 textarea.input { min-height: 120px; resize: vertical; line-height: 1.5; }
@@ -195,7 +94,6 @@ textarea.input { min-height: 120px; resize: vertical; line-height: 1.5; }
 .alert.ok { background: var(--ok-soft); color: var(--ok); box-shadow: inset 0 0 0 1px rgba(19, 138, 92, 0.22); }
 
 /* Ою-өрнек жолағы */
-.orn { display: block; width: 100%; height: 18px; color: var(--gold); opacity: 0.85; }
 
 /* Aqyl анимациялары */
 .qyran { overflow: visible; display: block; }
@@ -230,7 +128,7 @@ textarea.input { min-height: 120px; resize: vertical; line-height: 1.5; }
 .bubble {
   position: relative; padding: 12px 16px; border-radius: 20px; background: var(--paper-strong);
   box-shadow: inset 0 1px 0 var(--edge), 0 0 0 1px var(--rim), var(--shadow); font-weight: 600; max-width: 320px;
-  -webkit-backdrop-filter: var(--blur-s); backdrop-filter: var(--blur-s);
+
 }
 .bubble::after {
   content: ""; position: absolute; left: -8px; bottom: 16px; width: 16px; height: 16px; background: var(--paper-strong);

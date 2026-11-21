@@ -5,9 +5,9 @@
    Тек осы бет: барлық класс .sh / sh- арқылы.
    ════════════════════════════════════════════════════════════════════ */
 .sh {
-  --sh-red: #a3242b; --sh-deep: #741820; --sh-cream: #fcfaf6; --sh-surf: #ffffff; --sh-felt: #f1eee8;
-  --sh-ink: #1f2430; --sh-muted: #4a5160; --sh-gold: #e8b23a; --sh-gold-ink: #6b4500; --sh-blue: #0b6e7e;
-  --sh-ok: #2f6b4f; --sh-wine: #6e1e2e; --sh-wine-soft: #f3e3e6; --sh-thread: #3a2210;
+  --sh-red: var(--qyzyl); --sh-deep: var(--qyzyl-2); --sh-cream: var(--bg); --sh-surf: #ffffff; --sh-felt: #f1eee8;
+  --sh-ink: var(--sia); --sh-muted: #4a5160; --sh-gold: var(--altyn); --sh-gold-ink: #6b4500; --sh-blue: var(--kok);
+  --sh-ok: var(--ok); --sh-wine: var(--shie); --sh-wine-soft: var(--shie-soft); --sh-thread: #3a2210;
   --sh-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .3 0 0 0 0 .12 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   position: relative; color: var(--sh-ink);
 }

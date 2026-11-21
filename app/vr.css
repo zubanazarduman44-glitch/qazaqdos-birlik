@@ -5,9 +5,9 @@
    Бөлім реңі Shell береді: --sec / --sec-deep / --sec-soft. Тек осы бет: .vr / vr-.
    ════════════════════════════════════════════════════════════════════ */
 .vr {
-  --vr-red: #a3242b; --vr-deep: #741820; --vr-cream: #faf6ee; --vr-surf: #ffffff; --vr-felt: #f1eee8;
-  --vr-ink: #1f2430; --vr-muted: #4a5160; --vr-gold: #e8b23a; --vr-gold-ink: #6b4500; --vr-blue: #0b6e7e;
-  --vr-ok: #2f6b4f; --vr-ok-soft: #e3efe7; --vr-wine: #6e1e2e; --vr-wine-soft: #f3e3e6; --vr-thread: #3a2210;
+  --vr-red: var(--qyzyl); --vr-deep: var(--qyzyl-2); --vr-cream: #faf6ee; --vr-surf: #ffffff; --vr-felt: #f1eee8;
+  --vr-ink: var(--sia); --vr-muted: #4a5160; --vr-gold: var(--altyn); --vr-gold-ink: #6b4500; --vr-blue: var(--kok);
+  --vr-ok: var(--ok); --vr-ok-soft: #e3efe7; --vr-wine: var(--shie); --vr-wine-soft: var(--shie-soft); --vr-thread: #3a2210;
   --vr-line: rgba(31, 36, 48, 0.12); --vr-rim: rgba(122, 86, 22, 0.22);
   --vr-sec: var(--sec, #5b3fa8); --vr-sec-deep: var(--sec-deep, #432c80); --vr-sec-soft: var(--sec-soft, #ebe6f3);
   position: relative; color: var(--vr-ink);
@@ -815,7 +815,7 @@
 @media (max-width: 720px) {
   .vr-life-ctl { top: 6px; right: 6px; bottom: auto; }
   .vr .vr-life-btn { width: 44px; height: 44px; min-height: 44px; padding: 0; gap: 0; justify-content: center; font-size: 0; letter-spacing: 0;
-    background: rgba(255, 253, 247, 0.78); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    background: rgba(255, 253, 247, 0.78); }
   .vr-life-btn svg { width: 20px; height: 20px; }
 }
 
@@ -848,7 +848,7 @@
 /* Кадрдағы ауа райы жазуы (қазақша) */
 .vr-atmo { position: absolute; z-index: 4; left: 10px; top: 10px; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100% - 80px);
   padding: 4px 10px 4px 8px; border-radius: 999px; background: rgba(31, 36, 48, 0.5); color: #fff; font-size: 12.5px; font-weight: 700; line-height: 1.3;
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); pointer-events: none; white-space: nowrap; direction: ltr; overflow: hidden; text-overflow: ellipsis; }
+ pointer-events: none; white-space: nowrap; direction: ltr; overflow: hidden; text-overflow: ellipsis; }
 .vr-atmo svg { flex: none; }
 /* Дыбыс түймесі */
 .vr-snd { min-width: 44px; min-height: 44px; justify-content: center; }

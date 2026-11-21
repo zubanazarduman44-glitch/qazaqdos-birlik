@@ -5,9 +5,9 @@
    Тек осы бет: барлық класс .pf / pf- арқылы.
    ════════════════════════════════════════════════════════════════════ */
 .pf {
-  --pf-red: #a3242b; --pf-deep: #741820; --pf-cream: #fcfaf6; --pf-surf: #ffffff; --pf-felt: #f1eee8;
-  --pf-ink: #1f2430; --pf-muted: #4a5160; --pf-gold: #e8b23a; --pf-gold-ink: #6b4500; --pf-blue: #0b6e7e;
-  --pf-ok: #2f6b4f; --pf-wine: #6e1e2e; --pf-wine-soft: #f3e3e6; --pf-thread: #3a2210; --pf-line: #e3d6b8;
+  --pf-red: var(--qyzyl); --pf-deep: var(--qyzyl-2); --pf-cream: var(--bg); --pf-surf: #ffffff; --pf-felt: #f1eee8;
+  --pf-ink: var(--sia); --pf-muted: #4a5160; --pf-gold: var(--altyn); --pf-gold-ink: #6b4500; --pf-blue: var(--kok);
+  --pf-ok: var(--ok); --pf-wine: var(--shie); --pf-wine-soft: var(--shie-soft); --pf-thread: #3a2210; --pf-line: #e3d6b8;
   --pf-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   display: grid; gap: 22px; max-width: none; color: var(--pf-ink);
 }

@@ -4,18 +4,18 @@
    Қозғалыс: тек transform/opacity; prefers-reduced-motion — жұмсақ ауысу.
    ════════════════════════════════════════════════════════════════════ */
 .szk {
-  --szk-red: #a3242b;
-  --szk-red-d: #741820;
-  --szk-cream: #fcfaf6;
+  --szk-red: var(--qyzyl);
+  --szk-red-d: var(--qyzyl-2);
+  --szk-cream: var(--bg);
   --szk-surface: #ffffff;
   --szk-sand: #f1eee8;
   --szk-sand-d: #e3ddd2;
-  --szk-ink: #1f2430;
+  --szk-ink: var(--sia);
   --szk-muted: #4a5160;
-  --szk-gold: #e8b23a;
-  --szk-blue: #0b6e7e;
+  --szk-gold: var(--altyn);
+  --szk-blue: var(--kok);
   --szk-blue-d: #0a4a61;
-  --szk-ok: #2f6b4f;
+  --szk-ok: var(--ok);
   --szk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --szk-felt: radial-gradient(rgba(60, 52, 48, 0.07) 1px, transparent 1.4px) 0 0 / 7px 7px,
     radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1.4px) 3px 4px / 9px 9px;

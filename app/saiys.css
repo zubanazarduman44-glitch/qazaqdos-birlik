@@ -5,11 +5,11 @@
    Барлық ереже .sy ішінде — басқа беттерге әсер етпейді.
    ════════════════════════════════════════════════════════════════════ */
 .saiys.sy {
-  --sy-red: #a3242b; --sy-red-d: #741820; --sy-red-soft: #f6e1e2;
-  --sy-gold: #e8b23a; --sy-gold-l: #f8e6b8; --sy-gold-ink: #3a2500;
+  --sy-red: var(--qyzyl); --sy-red-d: var(--qyzyl-2); --sy-red-soft: #f6e1e2;
+  --sy-gold: var(--altyn); --sy-gold-l: #f8e6b8; --sy-gold-ink: #3a2500;
   --sy-silver: #cfcbc2; --sy-bronze: #c98450;
-  --sy-ink: #1f2430; --sy-cream: #ffffff; --sy-sand: #f1eee8;
-  --sy-blue: #0b6e7e; --sy-ok: #2f6b4f;
+  --sy-ink: var(--sia); --sy-cream: #ffffff; --sy-sand: #f1eee8;
+  --sy-blue: var(--kok); --sy-ok: var(--ok);
   --sy-dir: 1;
   max-width: 1080px; gap: 18px; min-width: 0;
 }

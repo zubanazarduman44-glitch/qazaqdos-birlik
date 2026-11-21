@@ -4,23 +4,23 @@
    Қозғалыс — тек transform/opacity. Логикалық қасиеттер (RTL қолдауы).
    ════════════════════════════════════════════════════════════════════ */
 .tuzel, .tzw, .tzs {
-  --tz-red: #a3242b;
-  --tz-red-d: #741820;
-  --tz-cream: #fcfaf6;
+  --tz-red: var(--qyzyl);
+  --tz-red-d: var(--qyzyl-2);
+  --tz-cream: var(--bg);
   --tz-surf: #ffffff;
   --tz-sand: #f1eee8;
   --tz-sand-2: #ebdfc4;
-  --tz-ink: #1f2430;
+  --tz-ink: var(--sia);
   --tz-mut: #4a5160;
-  --tz-gold: #e8b23a;
+  --tz-gold: var(--altyn);
   --tz-gold-s: #f8e6b8;
-  --tz-blue: #0b6e7e;
+  --tz-blue: var(--kok);
   --tz-blue-d: #0a4a61;
   --tz-blue-s: #dbf1f4;
-  --tz-ok: #2f6b4f;
+  --tz-ok: var(--ok);
   --tz-ok-s: #e1eee6;
-  --tz-wine: #6e1e2e;
-  --tz-wine-s: #f3e3e6;
+  --tz-wine: var(--shie);
+  --tz-wine-s: var(--shie-soft);
   --tz-rim: rgba(60, 52, 48, 0.22);
   --tz-rule: #d3e3e8;
   --tz-lift: 0 1px 0 rgba(45, 38, 36, 0.06), 0 14px 28px -20px rgba(45, 38, 36, 0.45);

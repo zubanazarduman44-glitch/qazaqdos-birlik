@@ -6,9 +6,9 @@
    Барлық стиль .ld ішінде; ескі .landing/.hero ережелеріне тәуелсіз.
    ════════════════════════════════════════════════════════════════════ */
 .ld {
-  --red: #a3242b; --red-2: #741820; --red-3: #6e1e2e;
-  --cream: #ffffff; --cream-2: #fcfaf6; --sand: #f1eee8;
-  --ink: #1f2430; --mut: #4a5160; --gold: #e8b23a; --gold-soft: #f8e6b8; --blue: #0b6e7e;
+  --red: var(--qyzyl); --red-2: var(--qyzyl-2); --red-3: var(--shie);
+  --cream: #ffffff; --cream-2: var(--bg); --sand: #f1eee8;
+  --ink: var(--sia); --mut: #4a5160; --gold: var(--altyn); --gold-soft: #f8e6b8; --blue: var(--kok);
   --ribH: 180px; --ribS: 1;           /* лента биіктігі мен масштабы (180 бірлік = ribH) */
   --ease-out: cubic-bezier(0.2, 0.75, 0.2, 1);
   --spring: cubic-bezier(0.34, 1.45, 0.5, 1);

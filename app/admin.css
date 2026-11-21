@@ -9,8 +9,8 @@
   --a-hair: var(--pp-hair, rgba(60, 52, 48, 0.16));
   --a-red: var(--pp-red, #a3242b);
   --a-red-d: var(--pp-red-d, #741820);
-  --a-blue: #0b6e7e;
-  --a-ok: #2f6b4f;
+  --a-blue: var(--kok);
+  --a-ok: var(--ok);
   color: var(--a-ink);
 }
 .adm .card { padding: 20px; }

@@ -15,12 +15,12 @@
   --pp-paper: #ffffff;
   --pp-felt: #f1eee8;
   --pp-felt-2: #e3ddd2;
-  --pp-ink: #1f2430;
+  --pp-ink: var(--sia);
   --pp-muted: #4a5160;
-  --pp-gold: #e8b23a;
+  --pp-gold: var(--altyn);
   --pp-gold-soft: #f8e6b8;
-  --pp-red: #a3242b;
-  --pp-red-d: #741820;
+  --pp-red: var(--qyzyl);
+  --pp-red-d: var(--qyzyl-2);
   --pp-wood: #7a4a22;
   --pp-wood-d: #4f2e14;
   --pp-rim: rgba(60, 52, 48, 0.22);
@@ -40,9 +40,8 @@
   /* Ортақ қағаз беті */
   --pp-card: inset 0 0 0 1px var(--pp-rim), var(--pp-sh-2);
   /* Рөлдік түстер: дұрыс — шалғын жасылы, қате — шарап (ешқашан бренд қызылы емес), ақпарат/дыбыс — көк */
-  --pp-ok: #2f6b4f; --pp-ok-soft: #e3efe6;
-  --pp-wine: #6e1e2e; --pp-wine-soft: #f3e3e6;
-  --pp-blue: #0b6e7e; --pp-blue-soft: #dbf1f4;
+  --pp-ok-soft: #e3efe6;
+  --pp-blue-soft: #dbf1f4;
   /* Прогресс жолағының төсеніші */
   --pp-track: #e6e1d8;
   /* Қозғалыс: бір қисық, үш ұзақтық */
@@ -143,7 +142,7 @@ main[data-section] :focus-visible { outline-color: var(--sec-deep, var(--pp-red-
 .toast {
   padding-block: 6px; padding-inline: 6px 20px; gap: 12px; background: var(--pp-paper); color: var(--pp-ink);
   box-shadow: inset 0 0 0 1px var(--pp-rim), 0 0 0 4px rgba(232, 178, 58, 0.16), var(--pp-sh-3);
-  -webkit-backdrop-filter: none; backdrop-filter: none; font-variant-numeric: tabular-nums;
+ font-variant-numeric: tabular-nums;
 }
 .toast > :first-child { flex: none; border-radius: 50%; background: radial-gradient(circle at 50% 62%, var(--pp-gold-soft), var(--pp-felt) 72%); box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.5); }
 

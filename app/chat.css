@@ -4,17 +4,17 @@
    Тек /app/qyran бетінде жүктеледі. Барлық ереже .cx ішінде — басқа беттерге әсер етпейді.
    ════════════════════════════════════════════════════════════════════ */
 .cx {
-  --cx-red: #a3242b;
-  --cx-red-2: #741820;
-  --cx-cream: #fcfaf6;
+  --cx-red: var(--qyzyl);
+  --cx-red-2: var(--qyzyl-2);
+  --cx-cream: var(--bg);
   --cx-surf: #ffffff;
   --cx-sand: #f1eee8;
   --cx-sand-2: #e3ddd2;
-  --cx-ink: #1f2430;
+  --cx-ink: var(--sia);
   --cx-muted: #4a5160;
-  --cx-gold: #e8b23a;
+  --cx-gold: var(--altyn);
   --cx-gold-soft: #f8e6b8;
-  --cx-blue: #0b6e7e;
+  --cx-blue: var(--kok);
   --cx-blue-2: #0a4a61;
   --cx-rim: rgba(60, 52, 48, 0.22);
   --cx-card: inset 0 0 0 1px var(--cx-rim), 0 1px 2px rgba(45, 38, 36, 0.06), 0 10px 24px -18px rgba(45, 38, 36, 0.35);

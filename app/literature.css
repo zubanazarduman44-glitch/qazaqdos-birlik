@@ -15,7 +15,7 @@
   --lit-gold-soft: var(--pp-gold-soft, #f8e6b8);
   --lit-red: var(--pp-red, #a3242b);
   --lit-red-d: var(--pp-red-d, #741820);
-  --lit-blue: #0b6e7e;
+  --lit-blue: var(--kok);
   --lit-blue-d: #0a4a61;
   --lit-ink: var(--pp-ink, #1f2430);
   --lit-muted: var(--pp-muted, #4a5160);

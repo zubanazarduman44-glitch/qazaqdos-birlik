@@ -9,7 +9,7 @@
    Мәзір элементтерінде сол үштік --it / --it-deep / --it-soft атымен беріледі.
    ════════════════════════════════════════════════════════════════════ */
 
-.sx, .sx-focus { --sx-cream: #ffffff; --sx-cream-2: #f1eee8; --sx-ink: #1f2430; --sx-muted: #4a5160; --sx-rim: rgba(60, 52, 48, 0.24); }
+.sx, .sx-focus { --sx-cream: #ffffff; --sx-cream-2: #f1eee8; --sx-ink: var(--sia); --sx-muted: #4a5160; --sx-rim: rgba(60, 52, 48, 0.24); }
 
 /* ── Киіз белгі тақтайшасы ── */
 .sx-g { display: block; flex: none; }
@@ -167,7 +167,7 @@
 
   .sx .bottom-nav {
     left: 8px; right: 8px; padding: 5px 4px; border-radius: 22px; gap: 0;
-    background: var(--sx-cream); -webkit-backdrop-filter: none; backdrop-filter: none;
+    background: var(--sx-cream);
     box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 -1px 0 rgba(255, 255, 255, 0.6), 0 12px 28px -12px rgba(45, 38, 36, 0.55);
   }
   .sx .bottom-nav a, .sx .bottom-nav button {
@@ -184,12 +184,12 @@
   .sx .bottom-nav a:active .sx-gl, .sx .bottom-nav button:active .sx-gl { transform: scale(0.92); }
   .sx .bottom-nav a:active, .sx .bottom-nav button:active { transform: none; }
 
-  .shell.sx .sheet-wrap { background: rgba(31, 36, 48, 0.5); -webkit-backdrop-filter: none; backdrop-filter: none; animation: sxFade 0.2s both; }
+  .shell.sx .sheet-wrap { background: rgba(31, 36, 48, 0.5); animation: sxFade 0.2s both; }
   .shell.sx .sheet {
     left: 8px; right: 8px; top: auto; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 72px); width: auto;
     display: grid; gap: 8px; padding: 30px 12px 12px; border-radius: 24px;
     max-height: calc(100dvh - 110px); overflow-y: auto; overscroll-behavior: contain;
-    background: var(--sx-cream); -webkit-backdrop-filter: none; backdrop-filter: none;
+    background: var(--sx-cream);
     box-shadow: inset 0 0 0 1.5px var(--sx-rim), 0 18px 40px -14px rgba(31, 36, 48, 0.6);
   }
   /* жоғарғы тұтқа (ою жолағы емес) */

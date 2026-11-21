@@ -3,8 +3,8 @@
    Тек осы бетке (.history) қатысты. Қозғалыс: transform / opacity.
    ════════════════════════════════════════════════════════════════════ */
 .history {
-  --hz-red: #876519; --hz-deep: #644a0e; --hz-cream: #fcfaf6; --hz-surface: #ffffff; --hz-parch: #f1eee8;
-  --hz-ink: #1f2430; --hz-muted: #4a5160; --hz-gold: #e8b23a; --hz-gold-ink: #6b4a00; --hz-ok: #2f6b4f;
+  --hz-red: #876519; --hz-deep: #644a0e; --hz-cream: var(--bg); --hz-surface: #ffffff; --hz-parch: #f1eee8;
+  --hz-ink: var(--sia); --hz-muted: #4a5160; --hz-gold: var(--altyn); --hz-gold-ink: #6b4a00; --hz-ok: var(--ok);
   --hz-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -201,7 +201,7 @@
 }
 .history .wc-e.hist-tamga { font-size: 17px; }
 .history .word-chip:hover .hist-tamga::before { transform: rotate(135deg); }
-.history .word-chip:nth-child(3n + 2) .hist-tamga { --tg: #0b6e7e; }
+.history .word-chip:nth-child(3n + 2) .hist-tamga { --tg: var(--kok); }
 .history .word-chip:nth-child(3n) .hist-tamga { --tg: var(--hz-gold); --tg-ink: #3a2500; }
 
 /* ── Сұрақ: мөрлі жауап тақташалары ── */

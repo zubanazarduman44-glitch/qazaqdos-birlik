@@ -4,7 +4,7 @@
    ════════════════════════════════════════════════════════════════════ */
 .lp {
   --lp-ok-soft: color-mix(in srgb, var(--ok, #2f6b4f) 12%, var(--surface, #ffffff));
-  --lp-bad-soft: #f3e3e6;
+  --lp-bad-soft: var(--shie-soft);
   --lp-kok-soft: color-mix(in srgb, var(--kok, #0b6e7e) 9%, var(--surface, #ffffff));
   display: flex; flex-direction: column; gap: 20px;
   width: 100%; max-width: 640px; margin: 0 auto; padding: 4px 0 8px;

@@ -1,7 +1,7 @@
 /* ════════ Qyzyl til · Алғашқы жол: кіру, тіркелу, онбординг ════════
    Сол жақта қызыл киіз қабырға (логотип, Aqyl, мақал), оң жақта ақ киіз карточка. */
 .au {
-  --au-red: #a3242b; --au-deep: #741820; --au-cream: #ffffff; --au-cream-2: #f1eee8; --au-ink: #1f2430; --au-muted: #4a5160; --au-gold: #e8b23a;
+  --au-red: var(--qyzyl); --au-deep: var(--qyzyl-2); --au-cream: #ffffff; --au-cream-2: #f1eee8; --au-ink: var(--sia); --au-muted: #4a5160; --au-gold: var(--altyn);
   --au-rim: rgba(60, 52, 48, 0.24);
   min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: minmax(340px, 0.9fr) minmax(0, 1.1fr);
   background: #fcfaf6; color: var(--au-ink);
@@ -123,7 +123,7 @@
 
 .obx-goals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .obx-goal { align-items: flex-start; min-height: 96px; flex-direction: column; gap: 8px; padding: 14px; }
-.obx-gl { --gl2: #e8b23a; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--it-soft); color: var(--it-deep); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.obx-gl { --gl2: var(--altyn); display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--it-soft); color: var(--it-deep); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1); }
 .obx-goal:hover { box-shadow: inset 0 0 0 1.5px var(--it), 0 4px 0 rgba(60, 52, 48, 0.14); }
 .obx-goal.on { background: var(--it-soft); box-shadow: inset 0 0 0 2.5px var(--it), 0 3px 0 var(--it-deep); }
 .obx-goal.on .obx-gl { --gl2: #ffd98a; background: var(--it); color: #fff; transform: rotate(-6deg) scale(1.05); }
@@ -145,7 +145,7 @@
 .obx-av.on .avatar { border-radius: 50%; box-shadow: 0 0 0 3px var(--au-cream), 0 0 0 6px var(--au-red); }
 .obx-av .obx-ok { top: auto; bottom: -2px; inset-inline-end: -2px; transform: scale(0.4); }
 .obx-av.on .obx-ok { transform: none; }
-.obx-after { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; background: #e7ede1; color: #24522b; font-weight: 600; font-size: 14px; --gl2: #e8b23a; }
+.obx-after { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; background: #e7ede1; color: #24522b; font-weight: 600; font-size: 14px; --gl2: var(--altyn); }
 .obx-after .sx-g { color: #3a7440; flex: none; }
 
 .obx-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; }

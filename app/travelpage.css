@@ -4,8 +4,8 @@
    (Өңір атласы — travel.css, оны өзгертпейміз.)
    ════════════════════════════════════════════════════════════════════ */
 .travel {
-  --tp-red: #a3242b; --tp-deep: #741820; --tp-cream: #fcfaf6; --tp-surface: #ffffff; --tp-parch: #f1eee8;
-  --tp-ink: #1f2430; --tp-muted: #4a5160; --tp-gold: #e8b23a; --tp-blue: #0b6e7e; --tp-ok: #2f6b4f;
+  --tp-red: var(--qyzyl); --tp-deep: var(--qyzyl-2); --tp-cream: var(--bg); --tp-surface: #ffffff; --tp-parch: #f1eee8;
+  --tp-ink: var(--sia); --tp-muted: #4a5160; --tp-gold: var(--altyn); --tp-blue: var(--kok); --tp-ok: var(--ok);
   --tp-rim: rgba(60, 52, 48, 0.24);
   --tp-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }

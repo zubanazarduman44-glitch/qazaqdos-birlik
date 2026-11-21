@@ -1,5 +1,5 @@
 /* ════════ Qyzyl til · Деңгей тесті: «деңгей сапары» ════════ */
-.lvx { --lv-red: #a3242b; --lv-deep: #741820; --lv-cream: #ffffff; --lv-cream-2: #f1eee8; --lv-ink: #1f2430; --lv-muted: #4a5160; --lv-rim: rgba(60, 52, 48, 0.24); max-width: 760px; }
+.lvx { --lv-red: var(--qyzyl); --lv-deep: var(--qyzyl-2); --lv-cream: #ffffff; --lv-cream-2: #f1eee8; --lv-ink: var(--sia); --lv-muted: #4a5160; --lv-rim: rgba(60, 52, 48, 0.24); max-width: 760px; }
 
 /* Сапар белгілері: A1 → B2 */
 .lvx-trail { position: relative; display: flex; justify-content: space-between; margin: 6px 18px 14px; }
@@ -27,7 +27,7 @@
 .lvx .lv-opt.bad i { background: #6e1e2e; color: #fff; }
 .lvx .lv-opt:disabled:not(.right):not(.bad) { opacity: 0.62; }
 .lvx-dont { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid var(--pp-hair, rgba(60, 52, 48, 0.16)); }
-.lvx-dont-b { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 0; border-radius: 999px; font: inherit; font-weight: 700; cursor: pointer; background: #efe8dd; color: #583212; box-shadow: inset 0 0 0 1.5px rgba(122, 74, 33, 0.35); --gl2: #e8b23a; margin-top: 10px; }
+.lvx-dont-b { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 0; border-radius: 999px; font: inherit; font-weight: 700; cursor: pointer; background: #efe8dd; color: #583212; box-shadow: inset 0 0 0 1.5px rgba(122, 74, 33, 0.35); --gl2: var(--altyn); margin-top: 10px; }
 .lvx-dont-b:hover:not(:disabled) { background: #e6dccb; }
 .lvx-dont-b.on { background: #7a4a21; color: #fff; }
 .lvx-dont-b:disabled:not(.on) { opacity: 0.6; cursor: default; }

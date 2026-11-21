@@ -42,26 +42,6 @@ const GROUPS = [
 const groupOf = (key) => GROUPS.find((g) => g.keys.includes(key));
 const PROVERB = "Өнер алды — қызыл тіл";
 
-// Қошқар мүйіз өрнегі (алтын жолақ)
-export function Orn({ className = "" }) {
-  return (
-    <svg className={`orn ${className}`} viewBox="0 0 240 18" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <pattern id="ornp" width="40" height="18" patternUnits="userSpaceOnUse">
-          <path
-            d="M20 15c0-5-4-8-7-6s-1 6 2 5M20 15c0-5 4-8 7-6s1 6-2 5M0 15h8M32 15h8"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
-        </pattern>
-      </defs>
-      <rect width="240" height="18" fill="url(#ornp)" />
-    </svg>
-  );
-}
-
 export function Logo({ small }) {
   return (
     <Link href="/" className={`logo ${small ? "sm" : ""}`} aria-label="Qyzyl til">

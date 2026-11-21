@@ -78,8 +78,8 @@
 /* ═════ Aqyl — мұғалім-кейіпкер компоненттері (Aqyl.js, AqylExplain.js, AqylGuide.js) ═════
    Әдебиет қағаз стилі: кілегей қағаз, жіңішке алтын жиек, бір екпін. Қате — шарап түсі (#6E1E2E), қызыл емес. */
 .aq-says {
-  --aq-paper: #ffffff; --aq-rim: rgba(60, 52, 48, 0.22); --aq-ink: #1f2430; --aq-muted: #4a5160;
-  --aq-red: #a3242b; --aq-red-d: #741820; --aq-gold: #e8b23a; --aq-gold-soft: #f8e6b8;
+  --aq-paper: #ffffff; --aq-rim: rgba(60, 52, 48, 0.22); --aq-ink: var(--sia); --aq-muted: #4a5160;
+  --aq-red: var(--qyzyl); --aq-red-d: var(--qyzyl-2); --aq-gold: var(--altyn); --aq-gold-soft: #f8e6b8;
   display: flex; align-items: flex-end; gap: 10px; min-width: 0; text-align: start; color: var(--aq-ink);
 }
 .aq-says-av { flex: none; display: grid; place-items: end center; line-height: 0; }
