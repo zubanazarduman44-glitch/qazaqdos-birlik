@@ -856,7 +856,7 @@ export function AqSuiek({ game }) {
   };
   const riddleDone = (ok) => {
     setScore((s) => ({ good: s.good + (ok ? 1 : 0), total: s.total + 1 }));
-    award(8 + (level - 1) * 4, 4 + (level - 1) * 2);
+    award(8 + (level - 1) * 4, 8 + (level - 1) * 4); // әр жұмбақ: тиын екі есе (квест қиын)
     setPhase("piece");
   };
   const nextNight = () => {
@@ -868,7 +868,7 @@ export function AqSuiek({ game }) {
     const total = score.total + 1;
     setScore({ good, total });
     finish(true, good, level);
-    setResult({ win: true, stars: starsFor(good, total), text: fmt(q.result, { a: good, b: total }) });
+    setResult({ win: true, stars: starsFor(good, total), text: fmt(q.result, { a: good, b: total }), level });
     setPhase("done");
   };
 

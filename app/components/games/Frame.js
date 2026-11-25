@@ -10,6 +10,13 @@ import { L } from "../../../lib/i18n";
 import { TOPICS, makeQuestion, wordsByTopic } from "../../../lib/words";
 
 // Ойын нәтижесін сақтау + марапат
+// Ұтыс марапаты [XP, тиын]. Ақсүйек — ұзақ әрі қиын квест (бірнеше түн, жұмбақтар), сондықтан марапаты көбірек.
+const BONUS = { aqsuiek: { xp: 2, coins: 3 } };
+export function winReward(id, level = 1) {
+  const b = BONUS[id] || { xp: 1, coins: 1 };
+  return [Math.round((20 + (level - 1) * 10) * b.xp), Math.round((10 + (level - 1) * 5) * b.coins)];
+}
+
 export function useFinish(id) {
   const { update, award } = useApp();
   const doneRef = useRef(false);
@@ -22,7 +29,7 @@ export function useFinish(id) {
         const g = s.games?.[id] || {};
         return { ...s, games: { ...s.games, [id]: { wins: (g.wins || 0) + (win ? 1 : 0), plays: (g.plays || 0) + 1, best: Math.max(g.best || 0, score), lv: win ? Math.max(g.lv || 0, level) : g.lv || 0 } } };
       });
-      if (win) award(20 + (level - 1) * 10, 10 + (level - 1) * 5);
+      if (win) award(...winReward(id, level));
       else award(5, 1);
     },
     [id, update, award]
@@ -316,7 +323,7 @@ export default function Frame({ game, children, result, onRestart }) {
             </p>
           )}
           <span className="chip gold gr-reward">
-            <CoinIcon size={16} /> {result.win ? t.reward(20, 10) : t.reward(5, 1)}
+            <CoinIcon size={16} /> {result.win ? t.reward(...winReward(game?.id, result.level || 1)) : t.reward(5, 1)}
           </span>
           <div className="row-btns">
             <button className="btn gold big" onClick={onRestart} autoFocus>

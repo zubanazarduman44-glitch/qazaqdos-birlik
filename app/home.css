@@ -277,55 +277,105 @@
 .hm-trad h3 { margin: 8px 0 4px; font-family: var(--head); font-size: 18px; font-weight: 600; }
 .hm-trad p { margin: 0; color: var(--pp-muted, #4a5160); font-size: 14.5px; line-height: 1.5; }
 
-/* ════ 5 · Жылдам өту ════
-   Әр карточка — өз бөлімінің реңінде (secVars: --sec / --sec-deep / --sec-soft).
-   Сурет киіз үй есігіндей доғал «сахнада» тұрады; бұрышта шағын қошқар мүйіз белгісі. */
+/* ════ 5 · Жылдам өту — «Есіктер» ════
+   Төрт есік, төрт әлем: әр тақтайша өз бөлімінің реңінде (secVars: --sec / --sec-deep / --sec-soft).
+   Сурет киіз үй есігіндей доғал терезеде тұрады (back қабаты терезеге қиылады), басты кейіпкер
+   (front қабаты) терезеден асып шығады. Үстелде: үлкен Тарих + екі тік + бір кең тақтайша (бенто).
+   Тышқанмен — қабаттар сәл жылжиды (--px/--py, JS), сенсорда және reduced-motion кезінде — қозғалыссыз. */
 .hm-sec { display: flex; align-items: center; gap: 12px; margin: 4px 0 -8px; font-family: var(--head); font-size: var(--pp-h2, 19px); font-weight: 600; color: var(--pp-ink, #1f2430); }
 .hm-sec::after { content: ""; flex: 1; height: 0; border-top: 1px solid var(--pp-hair, rgba(60, 52, 48, 0.16)); }
-.hm-quick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.hm-qcard {
-  position: relative; display: grid; grid-template-rows: auto 1fr; gap: 12px; padding: 12px 12px 16px;
-  border-radius: var(--hm-r); text-decoration: none; color: var(--pp-ink, #1f2430); overflow: hidden; isolation: isolate;
+.hm-quick {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-areas: "qa qa qb qc" "qa qa qd qd";
+}
+.hm-qt:nth-child(1) { grid-area: qa; }
+.hm-qt:nth-child(2) { grid-area: qb; }
+.hm-qt:nth-child(3) { grid-area: qc; }
+.hm-qt:nth-child(4) { grid-area: qd; }
+.hm-qt {
+  --wt: 16;              /* терезе сахнаның жоғарғы 16%-ынан басталады: үстіндегі бос орынға кейіпкер шығады */
+  --arch: 96px;          /* доғаның биіктігі */
+  --stage: 150px;
+  position: relative; display: grid; grid-template-rows: auto 1fr; gap: 12px; min-height: 44px;
+  padding: 10px 12px 16px; border-radius: var(--hm-r); overflow: hidden; isolation: isolate;
+  text-decoration: none; color: var(--pp-ink, #1f2430);
   background: var(--pp-paper, #ffffff); box-shadow: var(--hm-card);
   transition: transform var(--pp-t2, 0.25s) var(--hm-ease), box-shadow var(--pp-t2, 0.25s);
 }
-/* доғал сахна: бөлімнің ашық реңі, ортасында жұмсақ жарық, табанында көлеңке */
-.hm-qstage {
-  position: relative; display: grid; place-items: end center; height: 124px; padding-block-end: 10px;
-  border-radius: 64px 64px var(--pp-r, 18px) var(--pp-r, 18px);
-  background: radial-gradient(60% 70% at 50% 36%, rgba(255, 253, 247, 0.85), transparent 72%), var(--sec-soft, #f1eee8);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 16%, transparent);
-  overflow: hidden;
+/* бөлім реңіндегі жұмсақ жарық — тақтайшаның өз «ауасы» */
+.hm-qt::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--sec-soft, #f1eee8) 70%, transparent), transparent 70%);
 }
-.hm-qstage::after {
-  content: ""; position: absolute; inset-inline: 22%; bottom: 10px; height: 12px; border-radius: 50%; z-index: 0;
-  background: color-mix(in srgb, var(--sec-deep, #741820) 22%, transparent); filter: blur(3px);
-  transition: transform var(--pp-t3, 0.45s) var(--hm-ease), opacity var(--pp-t3, 0.45s);
+.hm-qt-stage { position: relative; display: block; height: var(--stage); }
+.hm-qt-win {
+  position: absolute; inset: calc(var(--wt) * 1%) 0 0; overflow: hidden;
+  border-radius: 50% 50% var(--pp-r, 16px) var(--pp-r, 16px) / var(--arch) var(--arch) var(--pp-r, 16px) var(--pp-r, 16px);
+  background:
+    radial-gradient(70% 70% at 50% 18%, rgba(255, 253, 247, 0.9), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--sec-soft, #f1eee8) 55%, #fff), var(--sec-soft, #f1eee8));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 20%, transparent);
 }
-.hm-qart { position: relative; z-index: 1; display: block; transition: transform var(--pp-t3, 0.45s) var(--hm-ease); }
-.hm-qart svg { display: block; }
-.hm-qmark {
-  position: absolute; inset-block-start: 9px; inset-inline-end: 9px; z-index: 2;
-  color: var(--sec, #a3242b); opacity: 0.55; transition: opacity var(--pp-t2, 0.25s), transform var(--pp-t3, 0.45s) var(--hm-ease);
+/* back қабаты терезе ішінде, бірақ бүкіл сахнаның өлшемінде — front-пен дәл беттеседі */
+.hm-qt-back, .hm-qt-front { position: absolute; inset-inline: 0; display: block; width: 100%; overflow: visible; }
+.hm-qt-back {
+  top: calc(-100% * var(--wt) / (100 - var(--wt)));
+  height: calc(100% * 100 / (100 - var(--wt)));
+  transform: translate3d(calc(var(--px, 0) * -5px), calc(var(--py, 0) * -3px), 0);
+  transition: transform 0.5s var(--hm-ease);
+}
+.hm-qt-front {
+  top: 0; height: 100%; z-index: 1; pointer-events: none;
+  transform: translate3d(calc(var(--px, 0) * 8px), calc(var(--py, 0) * 5px), 0);
+  transition: transform 0.5s var(--hm-ease), translate var(--pp-t3, 0.45s) var(--hm-ease);
 }
 .hm-qtxt { display: grid; align-content: start; gap: 4px; padding-inline: 6px 46px; min-width: 0; }
 .hm-qtxt b { display: flex; align-items: center; gap: 8px; font-family: var(--head); font-size: 15.5px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .hm-qgl { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: var(--sec-soft); color: var(--sec-deep); }
 .hm-qtxt small { font-size: 13px; line-height: 1.4; color: var(--pp-muted, #4a5160); }
 .hm-qgo {
-  position: absolute; inset-inline-end: 14px; bottom: 14px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  position: absolute; inset-inline-end: 14px; bottom: 14px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
   background: var(--sec-soft); color: var(--sec-deep);
   transition: background-color var(--pp-t2, 0.25s), color var(--pp-t2, 0.25s), transform var(--pp-t2, 0.25s) var(--hm-ease);
 }
-.hm-qcard:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 45%, transparent), var(--pp-sh-3); }
-.hm-qcard:hover .hm-qart { transform: translateY(-8px) rotate(-4deg); }
-.hm-qcard:hover .hm-qstage::after { transform: scaleX(0.78); opacity: 0.6; }
-.hm-qcard:hover .hm-qmark { opacity: 1; transform: rotate(-8deg) scale(1.08); }
-.hm-qcard:hover .hm-qgo { background: var(--sec); color: #fff; transform: translateX(3px); }
-[dir="rtl"] .hm-qcard:hover .hm-qgo { transform: translateX(-3px); }
-[dir="rtl"] .hm-qcard:hover .hm-qart { transform: translateY(-8px) rotate(4deg); }
-.hm-qcard:active { transform: translateY(-1px) scale(0.985); transition-duration: var(--pp-t1, 0.15s); }
-.hm .hm-qcard:focus-visible { outline-color: var(--sec-deep); }
+
+/* Басты (үлкен) тақтайша: сурет бүкіл биіктікті алады */
+.hm-qt-feat { --arch: 150px; grid-template-rows: minmax(0, 1fr) auto; padding: 28px 14px 20px; } /* үстіңгі орын — күмбез ұшы мен құстарға */
+.hm-qt-feat .hm-qt-stage { height: auto; min-height: 250px; }
+.hm-qt-feat .hm-qtxt { padding-inline: 8px 56px; }
+.hm-qt-feat .hm-qtxt b { font-size: 21px; gap: 10px; }
+.hm-qt-feat .hm-qtxt small { font-size: 14px; }
+.hm-qt-feat .hm-qgo { width: 44px; height: 44px; inset-inline-end: 18px; bottom: 18px; background: var(--sec); color: #fff; }
+
+/* Кең тақтайша: мәтін бір жақта, сурет есік жақта */
+.hm-qt-wide { --arch: 80px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-rows: none; align-items: center; gap: 14px; padding: 10px 12px; }
+.hm-qt-wide .hm-qt-stage { order: 2; height: 138px; }
+.hm-qt-wide .hm-qtxt { padding: 6px 6px 50px; }
+.hm-qt-wide .hm-qgo { inset-inline-end: auto; inset-inline-start: 18px; bottom: 16px; }
+
+/* Шексіз ұсақ қимылдар (экраннан тыс — AnimGate кідіртеді) */
+.hm-qt .qa-float { animation: qaFloat 3.6s ease-in-out infinite alternate; }
+.hm-qt .qa-d2 { animation-delay: -1.8s; }
+.hm-qt .qa-tw { animation: qaTw 2.4s ease-in-out infinite alternate; }
+.hm-qt .qa-pulse { transform-box: fill-box; transform-origin: center; animation: qaPulse 4s ease-in-out infinite alternate; }
+@keyframes qaFloat { to { transform: translateY(-4px); } }
+@keyframes qaTw { from { opacity: 0.35; } to { opacity: 1; } }
+@keyframes qaPulse { from { opacity: 0.7; transform: scale(0.94); } to { opacity: 1; transform: scale(1.04); } }
+
+/* Тінтуір/тачпад бар құрылғыда ғана: көтерілу, кейіпкер сәл жоғары шығады */
+@media (hover: hover) and (pointer: fine) {
+  .hm-qt:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 45%, transparent), var(--pp-sh-3); }
+  .hm-qt:hover .hm-qt-front { translate: 0 -6px; }
+  .hm-qt:hover .hm-qgo { background: var(--sec); color: #fff; transform: translateX(3px); }
+  [dir="rtl"] .hm-qt:hover .hm-qgo { transform: translateX(-3px); }
+}
+.hm-qt:active { transform: scale(0.985); transition-duration: var(--pp-t1, 0.15s); }
+.hm .hm-qt:focus-visible { outline-color: var(--sec-deep); }
+@media (prefers-reduced-motion: reduce) {
+  .hm-qt-back, .hm-qt-front { transform: none !important; translate: none !important; }
+  .hm-qt:hover, .hm-qt:active { transform: none; }
+}
 
 /* ════ Кіру қозғалысы ════ */
 .hm-in { animation: hmRise 0.7s var(--hm-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
@@ -363,7 +413,12 @@
   .hm-stats { grid-column: 1 / -1; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 @media (max-width: 1100px) {
-  .hm-quick { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hm-quick { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "qa qa" "qb qc" "qd qd"; }
+  /* басты тақтайша кең пішінге көшеді */
+  .hm-qt-feat { --arch: 84px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-rows: none; align-items: center; gap: 14px; padding: 16px 12px 10px; }
+  .hm-qt-feat .hm-qt-stage { order: 2; height: 170px; min-height: 0; }
+  .hm-qt-feat .hm-qtxt { padding: 6px 6px 62px; }
+  .hm-qt-feat .hm-qgo { inset-inline-end: auto; inset-inline-start: 18px; bottom: 16px; }
 }
 @media (max-width: 900px) {
   .hm-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "greet" "scene" "lesson"; grid-template-rows: auto; padding: 20px 20px 0; }
@@ -408,16 +463,19 @@
   .hm-trad-art svg { max-width: 76px; }
   .hm-wod-art { width: 76px; height: 76px; }
   .hm-wod-art svg { width: 60px; height: auto; }
-  .hm-quick { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .hm-qcard { padding: 8px 8px 12px; gap: 10px; border-radius: var(--pp-r, 18px); }
-  .hm-qstage { height: 100px; border-radius: 48px 48px 12px 12px; padding-block-end: 8px; }
-  .hm-qart svg { width: 76px; height: auto; }
-  .hm-qmark { inset-block-start: 5px; inset-inline-end: 5px; width: 18px; height: 18px; }
+  .hm-quick { gap: 12px; }
+  .hm-qt { --stage: 116px; --arch: 64px; padding: 8px 8px 12px; gap: 10px; border-radius: var(--pp-r, 18px); }
   .hm-qtxt { padding-inline: 4px; }
   .hm-qtxt b { font-size: 14px; gap: 6px; }
   .hm-qgl { width: 24px; height: 24px; border-radius: 8px; }
   .hm-qgl svg { width: 14px; height: 14px; }
   .hm-qtxt small { font-size: 12.5px; padding-inline-end: 34px; }
   .hm-qgo { width: 30px; height: 30px; inset-inline-end: 10px; bottom: 10px; }
+  .hm-qt-wide, .hm-qt-feat { --arch: 60px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 12px 8px 8px; }
+  .hm-qt-wide .hm-qt-stage, .hm-qt-feat .hm-qt-stage { height: 124px; }
+  .hm-qt-wide .hm-qtxt, .hm-qt-feat .hm-qtxt { padding: 4px 4px 46px; }
+  .hm-qt-wide .hm-qtxt small, .hm-qt-feat .hm-qtxt small { padding-inline-end: 0; font-size: 12.5px; }
+  .hm-qt-feat .hm-qtxt b { font-size: 17px; }
+  .hm-qt-wide .hm-qgo, .hm-qt-feat .hm-qgo { inset-inline-start: 12px; bottom: 12px; width: 34px; height: 34px; }
   .hm-level b { font-size: 14px; }
 }

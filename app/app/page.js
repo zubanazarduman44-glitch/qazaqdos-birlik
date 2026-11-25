@@ -23,7 +23,7 @@ import { L } from "../../lib/i18n";
 import { lessonTitle } from "../../lib/courseIndex";
 import AqylGuide from "../components/AqylGuide";
 import ShellGlyph from "../components/ShellGlyph";
-import { modeL } from "../components/AqylModesL10n";
+import QuickArt from "../components/QuickArt";
 import { SECTIONS, SECTION_HINT, pickL, secVars } from "../../lib/sections";
 
 // Дәстүр карточкасының суреті (TRADITIONS ретімен): киіз үй, қонақжайлылық, Наурыз, домбыра, бүркітші, тұсау кесу, көкпар, шапан
@@ -38,13 +38,17 @@ function TradArt({ i }) {
   return <NatArt name={a.nat} size={120} />;
 }
 
-// Жылдам өту картасының бұрыштағы белгісі — шағын қошқар мүйіз (бөлім реңімен)
-const Horn = () => (
-  <svg className="hm-qmark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
-    <path d="M12 21v-9M12 12c0-5-5.5-7-8-4.2-1.6 1.8-.2 4.6 2.2 3.6M12 12c0-5 5.5-7 8-4.2 1.6 1.8.2 4.6-2.2 3.6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 2.5l1.6 1.9L12 6.3l-1.6-1.9z" fill="var(--pp-gold, #e8b23a)" />
-  </svg>
-);
+// Жылдам өту: тышқан жүргенде сурет қабаттары сәл жылжиды (параллакс). Сенсорда және reduced-motion кезінде — жоқ.
+function qtMove(e) {
+  if (e.pointerType !== "mouse" || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  const el = e.currentTarget, r = el.getBoundingClientRect();
+  el.style.setProperty("--px", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+  el.style.setProperty("--py", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+}
+function qtLeave(e) {
+  e.currentTarget.style.removeProperty("--px");
+  e.currentTarget.style.removeProperty("--py");
+}
 
 // Мазмұн күн белгілі болғанша (SSR/гидрация) қаңқа сызықтары ретінде көрінеді: мәтін орнын ұстайды, бос карточка көрінбейді
 const Sk = ({ on, children }) => <span className={on ? "hm-skl" : undefined}>{children}</span>;
@@ -91,10 +95,11 @@ export default function Home() {
 
   const quick = useMemo(
     () => [
-      { k: "history", art: "bowl", t: t.nav.history },
-      { k: "games", art: "kamshy", t: t.nav.games },
-      { k: "chat", art: "dombyra", t: t.navLong.chat },
-      { k: "tuzel", art: "taqiya", t: modeL(lang).write }, // Түзел енді Aqyl чатында: жазу режимі
+      // Тарих — үлкен басты тақтайша; VR Әлем — кең тақтайша (Түзел Aqyl чатына қосылғандықтан, оның орнына)
+      { k: "history", shape: "feat", t: t.nav.history },
+      { k: "games", shape: "tall", t: t.nav.games },
+      { k: "chat", shape: "tall", t: t.navLong.chat },
+      { k: "vr", shape: "wide", t: t.navLong.vr },
     ].map((q) => ({ ...q, href: SECTIONS[q.k].href, glyph: SECTIONS[q.k].glyph, hint: pickL(SECTION_HINT[q.k], lang) })),
     [t, lang]
   );
@@ -241,11 +246,18 @@ export default function Home() {
       <h3 className="hm-sec hm-in" style={{ "--i": 9 }}>{t.quick}</h3>
       <nav ref={gQuick} className="hm-quick hm-in" style={{ "--i": 10 }} aria-label={t.quick}>
         {quick.map((q, i) => (
-          <Link key={q.href} href={q.href} className="hm-qcard" style={{ ...secVars(q.k), "--j": i }}>
-            <span className="hm-qstage" aria-hidden="true">
-              <span className="hm-qart"><NatArt name={q.art} size={96} /></span>
+          <Link
+            key={q.href}
+            href={q.href}
+            className={`hm-qt hm-qt-${q.shape}`}
+            style={{ ...secVars(q.k), "--j": i }}
+            onPointerMove={qtMove}
+            onPointerLeave={qtLeave}
+          >
+            <span className="hm-qt-stage" aria-hidden="true">
+              <span className="hm-qt-win"><QuickArt name={q.k} layer="back" /></span>
+              <QuickArt name={q.k} layer="front" />
             </span>
-            <Horn />
             <span className="hm-qtxt">
               <b><span className="hm-qgl" aria-hidden="true"><ShellGlyph name={q.glyph} size={16} /></span>{q.t}</b>
               <small>{q.hint}</small>
