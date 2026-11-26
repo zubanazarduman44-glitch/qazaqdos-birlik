@@ -1,6 +1,7 @@
 "use client";
 import "../../history.css";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -18,6 +19,15 @@ import { L } from "../../../lib/i18n";
 import { shuffle, tr } from "../../../lib/wordTools";
 import { tx } from "../../../lib/tx";
 import { useReveal, useTilt, reducedMotion } from "../travel/fx";
+import { hm3t } from "../../components/HistMap3DL10n";
+// Галерея беттің соңында — оның коды мен мәтіндері (~20 KB) бөлек чанкпен жүктеледі, бірінші ашылу жеңіл қалады
+const ArtifactGallery = dynamic(() => import("../../components/ArtifactGallery"), { ssr: false, loading: () => <section className="card ag-loading" aria-busy="true" style={{ minHeight: 420 }} /> });
+
+// 3D карта (three.js) тек клиентте және тек осы бетте жүктеледі; WebGL болмаса — бұрынғы 2D SVG карта
+const HistMap3D = dynamic(() => import("../../components/HistMap3D"), {
+  ssr: false,
+  loading: () => <div className="hm3-wrap hm3-boot" aria-busy="true"><div className="hm3-loading"><span className="hm3-spin" aria-hidden="true" /></div></div>,
+});
 
 function useCountUp(target, ms = 1100) {
   const [v, setV] = useState(target);
@@ -71,6 +81,7 @@ const pos = (st) => {
   const c = (r && KZ_CENTERS[r.map]) || [500, 280];
   return [c[0] + (st.dx || 0), c[1] + (st.dy || 0)];
 };
+const SILK_PTS = SILK.map((id) => SITES.find((q) => q.id === id)).filter(Boolean).map(pos);
 const SILK_D = SILK.map((id) => SITES.find((q) => q.id === id)).filter(Boolean).map(pos).reduce((d, p, i, a) => (i ? `${d} Q${(p[0] + a[i - 1][0]) / 2} ${(p[1] + a[i - 1][1]) / 2 - 26} ${p[0]} ${p[1]}` : `M${p[0]} ${p[1]}`), "");
 
 const trW = tr;
@@ -178,6 +189,12 @@ export default function History() {
   const eraF = ERAS.find((e) => e.id === era);
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
   const order = ORDER;
+  const [map2d, setMap2d] = useState(false);
+  const sites3d = useMemo(() => SORTED.map((st) => {
+    const [mx, my] = pos(st);
+    return { id: st.id, sym: symId(st.sym), tsym: st.tsym, name: L(st.name, lang), year: fmtYear(st.year, lang), x: mx, y: my, on: eraF.f(st.year), done: !!done[st.id] };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [lang, era, state.sites]);
   useReveal(rootRef);
   useTilt(rootRef);
   // Картаның өзгермейтін қабаттары бір рет салынады (шекара деректері DOM-да бір рет, қалғаны <use>)
@@ -267,6 +284,7 @@ export default function History() {
             );
           })}
         </div>
+        {map2d ? (<>
         <div className="kzmap-wrap sky hist">
           <div className="sky-stars" aria-hidden />
           <div className="map-sun" aria-hidden />
@@ -294,6 +312,12 @@ export default function History() {
           </svg>
           <div className="sky-hint">{x.tapHint}</div>
         </div>
+        <p className="hm3-note">{hm3t(lang).fallback}</p>
+        </>) : (<>
+          {/* 2D карта көрсетілмегенде де белгілер (<symbol>) қазына тізімі мен мөрлерге керек */}
+          <svg className="hm3-defs" width="0" height="0" aria-hidden="true" focusable="false">{MAP_DEFS}</svg>
+          <HistMap3D sites={sites3d} sel={sel} onPick={pick} silk={SILK_PTS} lang={lang} label={t.histTitle} onFallback={() => setMap2d(true)} />
+        </>)}
         <ul className="hm-treasures">
           {SORTED.filter((st) => eraF.f(st.year)).map((st, i) => (
             <li key={st.id} style={{ "--i": i }}>
@@ -415,6 +439,9 @@ export default function History() {
           </div>
         </div>
       </section>
+
+      {/* Жәдігерлер галереясы: 3D модельдер (three.js тек көрінгенде/ашқанда жүктеледі) */}
+      <ArtifactGallery />
     </div>
   );
 }
