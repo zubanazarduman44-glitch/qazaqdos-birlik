@@ -19,8 +19,8 @@
   --sia: #1f2430;           /* сия: негізгі мәтін түсі */
   --shie: #6e1e2e;          /* шие: қате жауап мәтіні/жиегі */
   --shie-soft: #f3e3e6;     /* шие: қате жауап фоны */
-  /* Қаріп: тақырып — Unbounded, мәтін — Golos Text (қазақ әріптері толық) */
-  --head: var(--font-unbounded, "Unbounded"), var(--font-golos, "Golos Text"), "Segoe UI", system-ui, sans-serif;
+  /* Қаріп: тақырып — Montserrat, мәтін — Golos Text (екеуінде де қазақ әріптері толық) */
+  --head: var(--font-head, "Montserrat"), var(--font-golos, "Golos Text"), "Segoe UI", system-ui, sans-serif;
   --body: var(--font-golos, "Golos Text"), "Segoe UI", Roboto, "Noto Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
 }
 
