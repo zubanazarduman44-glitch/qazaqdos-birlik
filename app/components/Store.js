@@ -6,7 +6,6 @@ import { flatten, apply } from "../../lib/uitr";
 import { tx, setTxOverride } from "../../lib/tx";
 import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut, upsertWeekly } from "../../lib/auth";
 import { weekKey } from "../../lib/week";
-import { setSkin } from "../../lib/skin";
 import { mergeReview } from "../../lib/review";
 import Qyran from "./Qyran";
 
@@ -175,11 +174,10 @@ export function AppProvider({ children }) {
   useEffect(() => {
     document.documentElement.dataset.theme = "light";
     try { localStorage.removeItem("qd_theme"); } catch {}
-    setSkin(state.profile.skin || "eagle");
     const ui = state.profile.ui || "kk";
     document.documentElement.lang = ui === "zh" ? "zh-Hans" : ui;
     document.documentElement.dir = RTL.includes(ui) ? "rtl" : "ltr";
-  }, [state.profile.ui, state.profile.skin]);
+  }, [state.profile.ui]);
 
   const tRef = useRef(T.kk); // award() үшін ағымдағы тіл мәтіндері
   const update = useCallback((fn) => {

@@ -1,6 +1,5 @@
 "use client";
 import "../../profile.css";
-import { ANIMALS } from "../../components/Animals";
 import { tx } from "../../../lib/tx";
 import { L } from "../../../lib/i18n";
 import Link from "next/link";
@@ -76,7 +75,6 @@ export default function Profile() {
   const cefr = state.cefr;
   const cefrName = cefr ? x.lvlNames?.[cefr] : null;
   const wear = state.shop?.wear || {};
-  const skin = state.profile.skin || "eagle";
   const streak = state.streak || 0;
   const embers = state.embers || 0;
   const todayXp = now && state.today?.date === dayKey(now) ? state.today.xp || 0 : 0;
@@ -183,7 +181,7 @@ export default function Profile() {
             </span>
           </Link>
           <Link href="/app/shop" className="pf-mate" aria-label={t.nav.shop}>
-            <DressUp skin={skin} wear={wear} size={96} mood="happy" />
+            <DressUp wear={wear} size={96} mood="happy" />
             <span><Icon name="bag" size={15} /> {t.nav.shop}</span>
           </Link>
         </div>
@@ -291,19 +289,6 @@ export default function Profile() {
                 <button key={a} type="button" className={`pf-av ${state.profile.avatar === a ? "on" : ""}`} onClick={() => setProfile({ avatar: a })} aria-label={a.replace("av:", "")} aria-pressed={state.profile.avatar === a}>
                   <Avatar value={a} size={56} />
                   {state.profile.avatar === a && <span className="pf-tick"><Icon name="check" size={12} stroke={3} /></span>}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          <fieldset className="pf-field">
-            <legend>{x.chPick}</legend>
-            <p className="pf-note">{x.chNote}</p>
-            <div className="pf-skins">
-              {ANIMALS.map((a) => (
-                <button key={a.id} type="button" className={`pf-skin ${skin === a.id ? "on" : ""}`} onClick={() => setProfile({ skin: a.id })} aria-pressed={skin === a.id}>
-                  <Qyran skin={a.id} mood="idle" size={58} />
-                  <b>{L(a.name, lang)}</b>
-                  {skin === a.id && <span className="pf-tick"><Icon name="check" size={12} stroke={3} /></span>}
                 </button>
               ))}
             </div>

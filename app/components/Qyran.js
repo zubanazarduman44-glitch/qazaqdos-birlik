@@ -6,8 +6,6 @@
 // Қалып ауысқанда бір реттік қысқа реакция ойнайды (.aq-react, reduced-motion кезінде өшеді).
 // Семантикалық атаулар да қабылданады: thinking → think, talking → talk, explaining → explain.
 import { useId } from "react";
-import { useSkin } from "../../lib/skin";
-import { AnimalArt } from "./Animals";
 
 // Палитра
 const INK = "#2A1A10"; // қою қоңыр-қара (қас, қарашық)
@@ -79,44 +77,10 @@ function Eye({ cx, cy, mood, side, look, lid }) {
 }
 
 const ALIAS = { thinking: "think", talking: "talk", explaining: "explain", praise: "cheer", celebrate: "cheer", surprised: "wow", encouraging: "support", encourage: "support", sleepy: "sleep", sad: "oops", wrong: "oops" };
-// Басқа кейіпкерлерде (Animals) жоқ қалыптар — ең жақын қалыпқа
-const ANIMAL_MOOD = { talk: "happy", explain: "support", proud: "cheer", oops: "think" };
-
-export default function Qyran({ mood: moodIn = "idle", size = 160, className = "", title = "Aqyl", skin: skinProp }) {
+// Сайтта бір ғана кейіпкер — Aqyl (басқа кейіпкерлер алынды)
+export default function Qyran({ mood: moodIn = "idle", size = 160, className = "", title = "Aqyl" }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
-  const cur = useSkin();
-  const skin = skinProp || cur;
   const mood = ALIAS[moodIn] || moodIn;
-  if (skin !== "eagle") {
-    const am = ANIMAL_MOOD[mood] || mood;
-    return (
-      <svg className={`qyran bk-${am} ${className}`} viewBox="0 0 200 230" width={size} height={(size * 230) / 200} role="img" aria-label={title}>
-        <ellipse className="bk-shadow" cx="100" cy="226" rx="56" ry="5" fill="#2a1708" opacity=".16" />
-        <g className="bk-float">
-          <AnimalArt id={skin} mood={am} uid={uid} />
-        </g>
-        {am === "think" && (
-          <g className="bk-fx">
-            <circle cx="170" cy="30" r="4.5" fill="#fff" stroke="#e0b56a" strokeWidth="2" />
-            <circle cx="180" cy="14" r="9" fill="#fff" stroke="#e0b56a" strokeWidth="2" />
-            <text x="180" y="19" textAnchor="middle" fontSize="13" fontWeight="800" fill="#a8601b">?</text>
-          </g>
-        )}
-        {(am === "wow" || am === "cheer") && (
-          <g className="bk-fx bk-sparkle" fill="#ffc83d">
-            <path d="M24 70 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" />
-            <path d="M172 24 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" />
-          </g>
-        )}
-        {am === "sleep" && (
-          <g className="bk-fx bk-zzz" fill="#a8601b" fontWeight="800">
-            <text x="150" y="36" fontSize="18">z</text><text x="164" y="20" fontSize="14">z</text>
-          </g>
-        )}
-      </svg>
-    );
-  }
-
   // ── Қалып параметрлері ──
   const P = {
     idle: { l: 4, r: 4, look: { x: 0.5, y: 0.5 }, lid: 0, beak: "smile", blush: false },

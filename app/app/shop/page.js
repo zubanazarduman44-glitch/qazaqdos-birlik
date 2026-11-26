@@ -106,7 +106,6 @@ export default function Shop() {
   const shown = cat === "all" ? cats : [cat];
   const ownedIn = (c) => ITEMS.filter((i) => i.cat === c && shop.owned?.includes(i.id)).length;
   const totalIn = (c) => ITEMS.filter((i) => i.cat === c).length;
-  const skin = state.profile?.skin || "eagle";
 
   const tryBar = tryIt && (
     <div className="sh-try" role="status">
@@ -150,7 +149,7 @@ export default function Shop() {
               <span className="sh-tassel s1" aria-hidden="true" /><span className="sh-tassel s2" aria-hidden="true" />
               <div className="sh-model">
                 <ShopRug />
-                <div className="sh-model-fig"><DressUp skin={skin} wear={look} size={210} mood={sewn ? "happy" : "idle"} /></div>
+                <div className="sh-model-fig"><DressUp wear={look} size={210} mood={sewn ? "happy" : "idle"} /></div>
                 <span className="sh-stitch" aria-hidden="true" />
                 <span className="sh-spark k1" aria-hidden="true" /><span className="sh-spark k2" aria-hidden="true" /><span className="sh-spark k3" aria-hidden="true" />
               </div>
@@ -254,7 +253,7 @@ export default function Shop() {
       {/* Кіші экран: айна көрінбегенде — қалқымалы кішкене айна */}
       <div className={`sh-dock ${dock ? "show" : ""} ${tryIt ? "wide" : ""} ${sewn ? "sewn" : ""}`} ref={dockRef}>
         <button className="sh-dock-mirror" onClick={() => stageRef.current?.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" })} aria-label={t("toMirror")}>
-          <DressUp skin={skin} wear={look} size={46} mood="idle" />
+          <DressUp wear={look} size={46} mood="idle" />
         </button>
         <span className="sh-dock-coins"><ShopCoin size={16} />{coins}</span>
         {tryIt && (
