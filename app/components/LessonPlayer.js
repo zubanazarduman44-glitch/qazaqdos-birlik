@@ -2,7 +2,9 @@
 // Сабақ ойнатқышы: танысу → әртүрлі жаттығулар → «Қайта орал» → қорытынды.
 // Дүкенге (useApp) тәуелді емес: бәрі props арқылы келеді. Логика — lib/lessonPlan.js ішінде.
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import Link from "next/link";
 import Icon from "./Icon";
+import { lessonPractice } from "./AqylModesL10n";
 import Qyran from "./Qyran";
 import { AqylPraise } from "./Aqyl";
 import { AqylExplainPanel, AqylWhy } from "./AqylExplain";
@@ -437,9 +439,11 @@ export function praiseFor(pct, lang) {
   return pct >= 100 ? P.perfect : pct >= 80 ? P.great : pct >= 60 ? P.good : P.keep;
 }
 
-function Summary({ items, result, phrases, T, lang }) {
+function Summary({ items, result, phrases, T, lang, lessonId }) {
   const pct = result.total ? Math.round((result.right / result.total) * 100) : 100;
   const bad = new Set(result.mistakes);
+  // Сабақ сәтті өтсе (≥70%) — Aqyl-мен жаттығуға шақыру: чат дайын мәтінмен ашылады, жіберуді пайдаланушы өзі шешеді
+  const practice = result.total > 0 && result.right / result.total >= 0.7 ? lessonPractice(lessonId, lang) : null;
   return (
     <div className="lp-sum">
       <div className="lp-sum-head">
@@ -448,6 +452,18 @@ function Summary({ items, result, phrases, T, lang }) {
         <h2 tabIndex={-1}>{T("done")}</h2>
         <p className="lp-sum-score"><b>{pct}%</b><span>{result.right} / {result.total} · {T("firstTry")}</span></p>
       </div>
+      {practice && (
+        <div className="lp-practice">
+          <span className="lp-practice-av" aria-hidden="true"><Qyran mood="happy" size={44} /></span>
+          <div className="lp-practice-t">
+            <p>{practice.hint}</p>
+            <b className="lp-practice-say">«{practice.say}»</b>
+          </div>
+          <Link href={practice.href} className="btn big lp-practice-btn">
+            <Icon name="chat" size={18} /> {practice.btn}
+          </Link>
+        </div>
+      )}
       <h3 className="lp-sum-cap">{phrases ? T("sumPhrases") : T("sumWords")}</h3>
       <ul className="lp-sum-list">
         {items.map((it) => {
@@ -597,7 +613,7 @@ export default function LessonPlayer({ lesson, lang, explain, level, onFinish, o
       <div className="lp-stage" ref={stageRef} tabIndex={-1} key={viewKey}>
         {s.phase === "intro" && items[s.introIdx] && <Intro item={items[s.introIdx]} idx={s.introIdx} total={s.introN} phrases={phrases} T={T} snd={snd} say={say} aq={aq} />}
         {Step && <Step step={step} T={T} answered={s.answered} onAnswer={onAnswer} keys={keys} snd={snd} say={say} preset={presetRef.current} live={!debug} />}
-        {s.phase === "summary" && <Summary items={items} result={result} phrases={phrases} T={T} lang={lang} />}
+        {s.phase === "summary" && <Summary items={items} result={result} phrases={phrases} T={T} lang={lang} lessonId={lesson.id} />}
       </div>
 
       {s.phase === "intro" && (

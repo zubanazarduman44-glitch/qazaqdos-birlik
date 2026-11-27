@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAnimGate } from "../../components/AnimGate";
 import { NatEmpty } from "../../components/NatArt";
 import TopicArt from "../../components/TopicArt";
-import { ChatCamArt, ChatDisc } from "../../components/ChatArt";
+import { ChatDisc } from "../../components/ChatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import { AqylLookButton } from "../../components/AqylPicker";
@@ -15,7 +15,7 @@ import Icon from "../../components/Icon";
 import AqylSpeak from "../../components/AqylSpeak";
 import TuzelWriteResult from "../../components/TuzelWriteResult";
 import TuzelSpeakResult from "../../components/TuzelSpeakResult";
-import { MODES, modeL } from "../../components/AqylModesL10n";
+import { MODES, modeL, chatToolL, friendlyErr } from "../../components/AqylModesL10n";
 import { SP_PASS } from "../../../lib/phrases";
 import { toWav } from "../../../lib/audio";
 import { sayKk } from "../../../lib/speak";
@@ -175,6 +175,7 @@ export default function Chat() {
   const gHead = useAnimGate();
   const x = tx(lang);
   const vl = VL[lang] || VL.en;
+  const CT = chatToolL(lang);
   const [cam, setCam] = useState(false);
   const [imgs, setImgs] = useState({}); // id → суреттің өзі (тек осы сессияда, сақталмайды)
   const videoRef = useRef(null);
@@ -199,8 +200,24 @@ export default function Chat() {
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     try {
-      const m = new URLSearchParams(window.location.search).get("mode");
-      if (MODES.includes(m)) setModeRaw(m);
+      const qs = new URLSearchParams(window.location.search);
+      const m = qs.get("mode");
+      // ?say=… — сабақ соңынан келген дайын жаттығу: жазу алаңына қойылады, пайдаланушы өзі жібереді (бұрынғы әңгіме сақталады)
+      const say = (qs.get("say") || "").trim().slice(0, 300);
+      if (say) {
+        setModeRaw("chat");
+        setText((cur) => cur || say);
+        const u = new URL(window.location.href);
+        u.searchParams.delete("say");
+        u.searchParams.delete("mode");
+        window.history.replaceState(null, "", u.pathname + u.search);
+        setTimeout(() => {
+          const ta = taRef.current;
+          if (!ta) return;
+          ta.focus({ preventScroll: true });
+          ta.setSelectionRange(ta.value.length, ta.value.length);
+        }, 60);
+      } else if (MODES.includes(m)) setModeRaw(m);
     } catch {}
   }, []);
   function setMode(m) {
@@ -276,7 +293,7 @@ export default function Chat() {
       setTalkTick((n) => n + 1);
       award(5, 2);
     } catch (e) {
-      setErr(e.message || t.errGeneric);
+      setErr(friendlyErr(lang, e));
     } finally {
       setBusy(false);
     }
@@ -290,7 +307,7 @@ export default function Chat() {
   }
   function speakDone(target, res, fail) {
     setBusy(false);
-    if (!res) return setErr(fail || t.errGeneric);
+    if (!res) return setErr(friendlyErr(lang, fail));
     const score = Math.round(Number(res.score) || 0);
     update((s) => ({ ...s, chat: [...(s.chat || []), { role: "assistant", kind: "speak", target, res, text: `${x.spScore}: ${score}/100. ${res.verdict || ""}`.trim() }].slice(-40) }));
     setTalkTick((n) => n + 1);
@@ -346,7 +363,7 @@ export default function Chat() {
       setTalkTick((n) => n + 1);
       award(2, 1);
     } catch (e) {
-      setErr(e.message || t.errGeneric);
+      setErr(friendlyErr(lang, e));
     } finally {
       setBusy(false);
       setLive("");
@@ -375,7 +392,8 @@ export default function Chat() {
         }
       }, 30);
     } catch {
-      // Камера жоқ не рұқсат жоқ — бірден галереядан таңдатамыз
+      // Камера жоқ не рұқсат жоқ — бірден галереядан таңдатамыз және себебін айтамыз
+      setErr(CT.camOff);
       fileRef.current?.click();
     }
   }
@@ -413,7 +431,7 @@ export default function Chat() {
       setTalkTick((n) => n + 1);
       award(2, 1);
     } catch (e) {
-      setErr(e.message || t.errGeneric);
+      setErr(friendlyErr(lang, e));
     } finally {
       setBusy(false);
     }
@@ -429,12 +447,13 @@ export default function Chat() {
     if (rec === "rec") return recRef.current?.stop();
     if (rec) return;
     setErr("");
-    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") return setErr("Mic not supported");
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") return setErr(CT.noMic);
     let stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch {
-      return setErr("Mic denied");
+    } catch (e) {
+      // Рұқсат берілмеді не микрофон табылмады
+      return setErr(e?.name === "NotFoundError" ? CT.noMic : CT.micDenied);
     }
     const chunks = [];
     const r = new MediaRecorder(stream);
@@ -450,7 +469,7 @@ export default function Chat() {
         if (!res.ok) throw new Error(d.error || `HTTP ${res.status}`);
         if (d.text) send(d.text);
       } catch (e) {
-        setErr(e.message || t.errGeneric);
+        setErr(friendlyErr(lang, e));
       } finally {
         setRec(null);
       }
@@ -467,11 +486,6 @@ export default function Chat() {
   const lastBot = (() => { for (let k = msgs.length - 1; k >= 0; k--) if (msgs[k].role === "assistant") return k; return -1; })();
   const lastSpeak = lastBot >= 0 && msgs[lastBot].kind === "speak" ? lastBot : -1;
 
-  const camBtn = (cls, withLabel) => (
-    <button type="button" className={cls} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-pressed={cam} aria-label={vl.cam} title={vl.cam}>
-      <Icon name="camera" size={withLabel ? 18 : 20} /> {withLabel && <span>{vl.cam}</span>}
-    </button>
-  );
 
   return (
     <div className={`chat-page cx ${empty ? "is-empty" : ""}`} data-mood={mood} data-aq={aqState} ref={pageRef}>
@@ -505,7 +519,6 @@ export default function Chat() {
         </div>
         <div className="cx-stage-tools">
           <AqylLookButton className="cx-look" />
-          {camBtn("cx-side-cam", true)}
           {msgs.length > 0 && (
             <button type="button" className="cx-clear" title={t.chatClear} aria-label={t.chatClear} onClick={() => update((s) => ({ ...s, chat: [] }))}>
               <Icon name="refresh" size={18} />
@@ -544,11 +557,6 @@ export default function Chat() {
           ) : null}
           {empty && !cam && mode === "chat" && (
             <div className="cx-starts">
-              <button type="button" className="cx-start cx-start-cam" onClick={openCam}>
-                <ChatCamArt size={56} />
-                <span className="cx-start-t">{vl.cam}</span>
-                <Icon name="right" size={18} className="cx-start-go" />
-              </button>
               {(t.chatSuggest || []).map((q, k) => (
                 <button key={q} type="button" className="cx-start" onClick={() => send(q, true)} style={{ "--d": `${(k + 1) * 70}ms` }}>
                   <TopicArt topic={START_ART[k % START_ART.length]} size={44} />
@@ -674,8 +682,12 @@ export default function Chat() {
             }}
           >
             <div className="cx-tools">
-              {camBtn(`cx-tool ${cam ? "on" : ""}`, false)}
-              <button type="button" className={`cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic" aria-pressed={rec === "rec"}>
+              {/* Суретпен сұрау — чаттағы жалғыз фото әрекеті: камера, ол болмаса галерея */}
+              <button type="button" className={`cx-tool cx-photo ${cam ? "on" : ""}`} onClick={() => (cam ? stopCam() : openCam())} disabled={busy} aria-pressed={cam} aria-label={CT.photoAsk} title={CT.photoAsk}>
+                <Icon name="camera" size={20} />
+                <span className="cx-photo-t" aria-hidden="true">{CT.photo}</span>
+              </button>
+              <button type="button" className={`cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label={rec === "rec" ? CT.micStop : CT.mic} title={rec === "rec" ? CT.micStop : CT.mic} aria-pressed={rec === "rec"}>
                 <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
               </button>
             </div>
