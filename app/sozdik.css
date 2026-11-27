@@ -3,9 +3,11 @@
    Тек осы бетке арналған (app/app/sozdik/page.js импорттайды).
    Қозғалыс: тек transform/opacity; prefers-reduced-motion — жұмсақ ауысу.
    ════════════════════════════════════════════════════════════════════ */
+/* Бөлім реңі (--sec / --sec-deep / --sec-soft) Shell-ден келеді: Сөздік — сия көгі. Дыбыс түймелері көк (--kok), дұрыс — жасыл. */
 .szk {
-  --szk-red: var(--qyzyl);
-  --szk-red-d: var(--qyzyl-2);
+  --szk-red: var(--sec, #3a4fb0);
+  --szk-red-d: var(--sec-deep, #283784);
+  --szk-soft: var(--sec-soft, #e7eafa);
   --szk-cream: var(--bg);
   --szk-surface: #ffffff;
   --szk-sand: #f1eee8;
@@ -17,8 +19,8 @@
   --szk-blue-d: #0a4a61;
   --szk-ok: var(--ok);
   --szk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --szk-felt: radial-gradient(rgba(60, 52, 48, 0.07) 1px, transparent 1.4px) 0 0 / 7px 7px,
-    radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1.4px) 3px 4px / 9px 9px;
+  /* Бұрын нүктелі киіз текстурасы еді — бет таза болсын деп алынды (айнымалы үйлесімділік үшін қалды) */
+  --szk-felt: linear-gradient(transparent, transparent);
 }
 
 /* ── Қойындылар: киіз жапсырма ── */
@@ -40,20 +42,14 @@
   background: var(--szk-felt), var(--szk-sand);
   box-shadow: inset 0 0 0 1px var(--szk-sand-d), 0 1px 2px rgba(45, 38, 36, 0.06), 0 14px 30px -22px rgba(45, 38, 36, 0.45);
 }
-.szk-table::before { content: ""; position: absolute; inset: 8px; border-radius: 16px; border: 1.5px dashed rgba(116, 24, 32, 0.22); pointer-events: none; }
-
-/* Сандық қақпағы: қызыл киіз, алтын тігіс, тұмар-моншақ прогресс */
+/* Сандық қақпағы: бөлім реңіндегі киіз, алтын тігіс, тұмар-моншақ прогресс (үлкен мүйіз су таңбасы алынды) */
 .szk-hero {
   position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px;
   margin: 0 -18px 16px; padding: 18px 22px 16px; border-radius: 22px 22px 18px 18px;
-  background: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.4px) 0 0 / 6px 6px, linear-gradient(160deg, #a3242b, #741820);
+  background: linear-gradient(160deg, var(--szk-red), var(--szk-red-d));
   color: #fff; overflow: hidden;
 }
-.szk-hero::before { content: ""; position: absolute; inset: 7px; border-radius: 16px 16px 12px 12px; border: 1.5px dashed rgba(246, 227, 176, 0.55); pointer-events: none; }
-.szk-hero::after {
-  content: ""; position: absolute; inset-inline-end: -30px; inset-block-start: -40px; inline-size: 210px; block-size: 210px; opacity: 0.12; pointer-events: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23f8e6b8' stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M60 104c0-30-24-44-42-30-14 12-6 34 14 28 12-4 12-20 0-20'/%3E%3Cpath d='M60 104c0-30 24-44 42-30 14 12 6 34-14 28-12-4-12-20 0-20'/%3E%3Cpath d='M60 104V60'/%3E%3Cpath d='M60 16l14 14-14 14-14-14z'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
-}
+.szk-hero::before { content: ""; position: absolute; inset: 7px; border-radius: 16px 16px 12px 12px; border: 1.5px dashed rgba(246, 227, 176, 0.5); pointer-events: none; }
 .szk-hero-txt { position: relative; z-index: 1; display: grid; gap: 6px; min-inline-size: 0; }
 .szk-eyebrow { font-size: 13px; font-weight: 700; color: #f8e6b8; letter-spacing: 0.02em; }
 .szk-count { font-family: var(--head); font-weight: 700; font-size: clamp(20px, 2.6vw, 28px); line-height: 1.15; color: #fff; }
@@ -76,7 +72,7 @@
   animation: szk-rise 0.5s var(--szk-ease) both;
 }
 .szk-tap { position: relative; display: flex; align-items: center; gap: 6px; margin: 0 4px 12px; font-size: 14px; font-weight: 600; color: var(--szk-muted); }
-.szk-tap.szk-goal { margin-bottom: 4px; color: #0b6e7e; }
+.szk-tap.szk-goal { margin-bottom: 12px; color: var(--szk-red-d); }
 /* Қайталау: бүгін қайталанатын сөздер саны — алтын белгі (мәтіні қою, алтын тек фон) */
 .szk-tabs button em.szk-due { background: #e8b23a; color: #1f2430; }
 .szk-tabs button.on em.szk-due { background: #e8b23a; color: #1f2430; }
@@ -124,14 +120,13 @@
   background: var(--szk-felt), var(--szk-surface); color: var(--szk-ink);
   box-shadow: inset 0 5px 0 var(--tint, #d9d2c2), inset 0 0 0 1.5px var(--szk-sand-d), 0 2px 0 var(--szk-sand-d), 0 10px 22px -14px rgba(45, 38, 36, 0.5);
 }
-.szk-front::after, .szk-back::after { content: ""; position: absolute; inset: 6px; inset-block-start: 10px; border-radius: 13px; border: 1.3px dashed rgba(31, 36, 48, 0.14); pointer-events: none; }
 .szk-topic { max-inline-size: 100%; margin-block-start: 4px; font-size: 12px; font-weight: 700; color: var(--szk-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .szk-art { margin-block: 6px 4px; line-height: 0; transition: transform 0.4s var(--szk-ease); }
 .szk-art .topic-art { filter: drop-shadow(0 3px 0 rgba(45, 38, 36, 0.12)); }
 @media (hover: hover) { .szk-card:hover .szk-art { transform: rotate(-4deg) scale(1.05); } }
 .szk-front b { flex: 1; display: grid; place-items: center; font-family: var(--head); font-weight: 700; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.2; color: var(--szk-ink); overflow-wrap: anywhere; hyphens: auto; }
 .szk-foot { position: relative; z-index: 1; align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-.szk-hint { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--szk-blue); min-inline-size: 0; }
+.szk-hint { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--szk-red-d); min-inline-size: 0; }
 
 .szk-say {
   flex: none; display: grid; place-items: center; inline-size: 40px; block-size: 40px; border-radius: 50%; border: 0; cursor: pointer;
@@ -142,13 +137,12 @@
 .szk-say:active { transform: scale(0.9); }
 .szk-say:focus-visible, .szk-know:focus-visible, .szk-del:focus-visible { outline: 3px solid var(--szk-red); outline-offset: 2px; }
 
-/* Арт жақ: көк киіз */
+/* Арт жақ: бөлім реңіндегі киіз */
 .szk-back {
   transform: rotateY(180deg); justify-content: space-between; color: #fff;
-  background: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.4px) 0 0 / 6px 6px, linear-gradient(165deg, #0b6e7e, #0a4a61);
-  box-shadow: inset 0 5px 0 var(--szk-gold), 0 2px 0 #08394b, 0 10px 22px -14px rgba(10, 40, 60, 0.6);
+  background: linear-gradient(165deg, var(--szk-red), var(--szk-red-d));
+  box-shadow: inset 0 5px 0 var(--szk-gold), 0 2px 0 color-mix(in srgb, var(--szk-red-d) 80%, #000), 0 10px 22px -14px rgba(20, 30, 60, 0.6);
 }
-.szk-back::after { border-color: rgba(246, 227, 176, 0.4); }
 .szk-backtop { margin-block-start: 6px; max-inline-size: 100%; font-size: 13px; font-weight: 700; color: #f8e6b8; overflow-wrap: anywhere; }
 .szk-back b { flex: 1; display: grid; place-items: center; font-family: var(--head); font-weight: 700; font-size: clamp(16px, 1.6vw, 19px); line-height: 1.25; overflow-wrap: anywhere; }
 .szk-acts { position: relative; z-index: 1; align-self: stretch; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
@@ -177,11 +171,11 @@
 
 .szk-foot-row { position: relative; display: flex; justify-content: center; margin-block-start: 18px; }
 
-/* ── Тест: көк киіз ойын үстелі ── */
+/* ── Тест: бөлім реңіндегі киіз ойын үстелі ── */
 .szk-game {
   position: relative; padding: 14px; border-radius: 22px;
-  background: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.4px) 0 0 / 6px 6px, linear-gradient(160deg, #0b6e7e, #0a4a61);
-  box-shadow: 0 3px 0 #08394b, 0 16px 30px -22px rgba(10, 40, 60, 0.7);
+  background: linear-gradient(160deg, var(--szk-red), var(--szk-red-d));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--szk-red-d) 80%, #000), 0 16px 30px -22px rgba(20, 30, 60, 0.7);
 }
 .szk-game::before { content: ""; position: absolute; inset: 6px; border-radius: 17px; border: 1.5px dashed rgba(246, 227, 176, 0.5); pointer-events: none; }
 .szk-game-in { position: relative; padding: clamp(16px, 3vw, 26px); border-radius: 16px; background: var(--szk-felt), var(--szk-surface); box-shadow: inset 0 0 0 1px var(--szk-sand-d); }
@@ -201,7 +195,7 @@
 .szk-start-h { margin: 0; font-size: clamp(18px, 2.2vw, 22px); text-align: center; }
 @keyframes szk-fan { from { opacity: 0; transform: translateY(20px) rotate(0); } }
 .szk-start-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.szk-chip { display: inline-flex; align-items: center; gap: 6px; min-block-size: 40px; padding: 0 14px; border-radius: 999px; font-weight: 800; color: var(--szk-blue); background: #e3eef2; box-shadow: inset 0 0 0 1.5px rgba(14, 143, 163, 0.25); }
+.szk-chip { display: inline-flex; align-items: center; gap: 6px; min-block-size: 40px; padding: 0 14px; border-radius: 999px; font-weight: 800; color: var(--szk-red-d); background: var(--szk-soft); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--szk-red) 25%, transparent); }
 
 /* ── Менің сөздерім: тақырып бойынша жиынтық ── */
 .szk-chest { padding: clamp(14px, 2.4vw, 22px); border-radius: 22px; background: var(--szk-surface); box-shadow: inset 0 0 0 1px var(--szk-sand-d), 0 1px 2px rgba(45, 38, 36, 0.06), 0 14px 30px -24px rgba(45, 38, 36, 0.45); }
@@ -215,7 +209,7 @@
   background: var(--szk-sand); color: var(--szk-ink); font: inherit; font-size: 14px; font-weight: 700; box-shadow: inset 0 0 0 1px var(--szk-sand-d); transition: background 0.2s, color 0.2s;
 }
 .szk-filters button:first-child { padding-inline-start: 14px; }
-.szk-filters button:hover { background: #ede2c9; }
+.szk-filters button:hover { background: var(--szk-soft); }
 .szk-filters button.on { background: var(--szk-red); color: #fff; box-shadow: 0 2px 0 var(--szk-red-d); }
 .szk-filters em, .szk-group h2 em { font-style: normal; font-size: 12px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: rgba(31, 36, 48, 0.08); }
 .szk-filters button.on em { background: rgba(255, 255, 255, 0.2); }

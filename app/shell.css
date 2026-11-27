@@ -101,7 +101,6 @@
 }
 
 /* ══════════ Жоғарғы жолақ ══════════ */
-.sx .main-col { background: radial-gradient(120% 300px at 50% 0, color-mix(in srgb, var(--sec) 7%, transparent), transparent 100%) no-repeat; }
 .sx .topbar { padding: 5px 10px; gap: 10px; }
 .sx .top-left { gap: 10px; flex: 1 1 auto; min-width: 0; }
 .sx-crest { display: flex; align-items: center; gap: 10px; min-width: 0; animation: sxCrest 0.36s cubic-bezier(0.2, 0.8, 0.25, 1) both; }
@@ -218,6 +217,35 @@
 }
 @keyframes sxPop { 0% { transform: scale(0.7); } 60% { transform: scale(1.08); } 100% { transform: none; } }
 @keyframes sxFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ══════════ Бөлім қолтаңбасы: әр бөлімнің өз түсі ══════════
+   Shell <div class="shell sx" data-section> мен <main data-section> ішіне --sec / --sec-deep / --sec-soft береді.
+   Төмендегі ережелер ортақ сыныптарды (фон, тақырып, белгі, түйме, чип, прогресс, сілтеме) бөлім реңіне бояйды —
+   әр бет өздігінен танылады. :where() ерекшелікті төмен ұстайды: беттің өз CSS-і әрқашан жеңеді.
+   Қате (шарап) мен дұрыс (жасыл) түстеріне тиіспейміз. */
+
+/* Фон: беттің жоғарғы жағы бөлімнің ашық реңінен басталып, «Ақ киіз» #fcfaf6-ға біртіндеп сіңеді */
+.shell.sx[data-section] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sec-soft) 88%, #fcfaf6) 0, color-mix(in srgb, var(--sec-soft) 42%, #fcfaf6) 220px, #fcfaf6 480px) no-repeat, #fcfaf6;
+}
+/* Жоғарғы жолақ пен бүйір мәзірдің жиегі — бөлім реңіне сәл боялған */
+.shell.sx[data-section] .topbar { border-color: color-mix(in srgb, var(--sec) 22%, rgba(31, 36, 48, 0.08)); }
+
+/* Тақырып: бет атауы бөлімнің қою реңінде, белгі (kicker) мәтіні де сонда; алтын сызықша-тұмар өзгермейді */
+:where(.sx .main) h1, .sx .main .page-head h1, .sx .main .vr-head h1 { color: var(--sec-deep); }
+:where(.sx .main) .kicker, :where(.sx .main) .vr-kicker { color: var(--sec-deep); }
+
+/* Негізгі түйме: бөлім реңі, астында қою реңнің «табаны» */
+:where(.sx .main) .btn.primary, :where(.sx .main) .btn.blue { background: var(--sec); color: #fff; box-shadow: 0 3px 0 var(--sec-deep); }
+:where(.sx .main) .btn.primary:hover:not(:disabled), :where(.sx .main) .btn.blue:hover:not(:disabled) { background: color-mix(in srgb, var(--sec) 86%, #000); }
+:where(.sx .main) .btn.primary:active:not(:disabled), :where(.sx .main) .btn.blue:active:not(:disabled) { background: var(--sec-deep); box-shadow: none; }
+:where(.sx .main) .btn.ghost:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--sec); }
+
+/* Таңдалған чип, таб, сегмент — бөлім реңі */
+:where(.sx .main) .chip.on, :where(.sx .main) .chip.tab.on, :where(.sx .main) .seg button.on { background: var(--sec); color: #fff; box-shadow: none; }
+/* Прогресс (тест жолағы т.б.) және мәтін ішіндегі сілтеме-түйме */
+:where(.sx .main) .bar.blue > i { background: var(--sec); }
+:where(.sx .main) .link-btn { color: var(--sec-deep); }
 
 /* ══════════ Деңгей тестінің «фокус» қабығы (мәзірсіз) ══════════ */
 .sx-focus { background: radial-gradient(120% 320px at 50% 0, rgba(163, 36, 43, 0.07), transparent 100%) no-repeat; }

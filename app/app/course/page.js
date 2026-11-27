@@ -142,7 +142,8 @@ export default function Course() {
           <h1>{T("title")}</h1>
         </div>
       </header>
-      <SectionIntro icon="map" {...(INTRO[lang] || INTRO.en)} />
+      {/* Түсіндірме тек жаңадан бастағанда: бір сабақ өткен соң жол бірден көрінеді */}
+      {Object.keys(done).length === 0 && <SectionIntro icon="map" {...(INTRO[lang] || INTRO.en)} />}
       {goalName && mine.size > 0 && (
         <p className="crs-goal"><Icon name="target" size={16} /> <span>{gx.note(goalName)}</span></p>
       )}

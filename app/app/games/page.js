@@ -31,7 +31,6 @@ export default function Games() {
             <Link key={g.id} href={`/app/games/${g.id}`} className={`gl-card ${g.featured ? "feat" : ""}`} style={{ "--gc": g.color, "--i": i }}>
               <span className="gl-art">
                 <GameScene id={g.id} />
-                <span className="gl-n">0{i + 1}</span>
                 {g.tag && <span className="gl-tag">{L(g.tag, lang)}</span>}
               </span>
               <span className="gl-body">
@@ -39,8 +38,8 @@ export default function Games() {
                   <Muiz color={g.color} w={14} />
                   <b>{L(g.name, lang)}</b>
                 </span>
+                {/* Ойын ережесі (how) ойынның өз бетінде көрсетіледі — тізімде тек қысқа сипаттама */}
                 <span className="gl-desc">{L(g.desc, lang)}</span>
-                <span className="gl-how">{L(g.how, lang)}</span>
                 <span className="gl-foot">
                   <span className="gl-wins">
                     <Icon name="trophy" size={16} /> {t.wins}: <b>{s?.wins || 0}</b>

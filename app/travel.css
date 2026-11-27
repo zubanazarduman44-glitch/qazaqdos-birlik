@@ -136,7 +136,7 @@
 
 /* «Өңір туралы» */
 .ra-about { display: grid; gap: 14px; align-content: start; animation: raUp 0.7s 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.ra-kicker { color: var(--qyzyl); }
+.ra-kicker { color: var(--sec-deep, var(--qyzyl)); } /* бөлім реңі; картадағы түйреуіштер мен нөмірлер — дәстүрлі қызыл */
 .ra-lead { margin: -6px 0 0; font-size: 16.5px; line-height: 1.6; color: var(--ink); }
 .ra-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
 .ra-facts div { padding: 10px 14px; border-radius: 12px; background: var(--surface-2); }

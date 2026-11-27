@@ -260,9 +260,7 @@ function Travel() {
           <h1>{t.travelTitle}</h1>
           <p>{t.travelSub}</p>
         </div>
-        <div className="head-tools">
-          <span className="chip gold"><Icon name="stamp" size={16} /> {t.stamps(count, REGIONS.length)}</span>
-        </div>
+        {/* Мөр саны картаның жанында (сақина) және паспортта көрсетіледі — тақырыпта қайталанбайды */}
         <TripWindow region={lastR} lang={lang} got={Boolean(stamps[lastR.id])} t={t} />
       </header>
 
@@ -380,14 +378,6 @@ function Travel() {
               </div>
             )}
           </div>
-          <div className="map-legend">
-            <span>
-              <i className="lg-done" /> {t.visited}
-            </span>
-            <span>
-              <i className="lg-todo" /> {t.notVisited}
-            </span>
-          </div>
         </div>
           <ul className="reg-list trip-cards">
             {order.map((r, i) => (
@@ -486,13 +476,7 @@ function Travel() {
             )}
           </div>
         </section>
-      ) : (
-        <section className="card pick-hint trip-hint" data-rv="">
-          <Qyran mood="think" size={90} />
-          <p>{t.travelSub}</p>
-          <TripCompass className="th-compass" />
-        </section>
-      )}
+      ) : null /* Өңір таңдалмаса — бос орын: нұсқау тақырыпта және картада бар, бөлек «билет» карточкасы қайталамайды */}
 
       <section className="passport trip-passport" data-rv="">
         <div className="tp-cover">
