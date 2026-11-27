@@ -1,45 +1,48 @@
 /* ════════════════════════════════════════════════════════════════════
-   Qyzyl til · Басты бет («Басты», /app) — «Төр»: киіз үйдің іші.
-   Идея: оқушының өз киіз үйі. Шаңырақтағы аспан — тәулік уақыты,
-   уықтар бүгінгі XP-мен алтынға боялады, ошақ оты — серия,
-   тұс киіздегі жамаулар — саяхат мөрлері. Қызыл — тек басты әрекетте.
+   Qyzyl til · Басты бет («Бүгін», /app) — ықшам нұсқа.
+   Үлгі: Duolingo / Babbel / Khan Academy — жоғарыда жіңішке сәлем жолы (мақсат + серия),
+   бір басты әрекет (сабақты жалғастыру), одан кейін қысқа, тығыз карточкалар.
+   Бөлім реңі (--sec / --sec-deep / --sec-soft) — Shell <main data-section="home"> береді;
+   басқа бөлімдерге апаратын карточкаларда — сол бөлімнің реңі (secVars).
    Тек transform/opacity анимациясы; prefers-reduced-motion құрметтеледі.
    ════════════════════════════════════════════════════════════════════ */
 .hm {
-  --hm-r: var(--pp-r-lg, 24px);
-  --hm-red: var(--anar, #a3242b);
-  --hm-red-d: var(--anar-2, #741820);
+  --hm-r: var(--pp-r, 18px);
+  --hm-red: var(--sec, #a3242b);       /* paper.css тұмар-қадамдары осы айнымалыны оқиды */
   --hm-gold: var(--altyn, #e8b23a);
   --hm-gold-soft: var(--altyn-soft, #f8e6b8);
   --hm-blue: var(--kok, #0b6e7e);
   --hm-ok: var(--ok, #2f6b4f);
+  --hm-ink: var(--pp-ink, #1f2430);
+  --hm-muted: var(--pp-muted, #4a5160);
   --hm-ease: var(--pp-ease, cubic-bezier(0.2, 0.8, 0.25, 1));
-  --hm-card: var(--pp-card, inset 0 0 0 1px rgba(60, 52, 48, 0.22), 0 10px 24px -18px rgba(45, 38, 36, 0.35));
+  --hm-card: inset 0 0 0 1px rgba(60, 52, 48, 0.17), 0 8px 18px -16px rgba(45, 38, 36, 0.45);
   --hm-rim: var(--pp-rim, rgba(60, 52, 48, 0.22));
   --hm-track: var(--pp-track, #e6e1d8);
+  --hm-gap: 12px;
   display: grid;
-  gap: var(--pp-gap, 22px);
+  gap: var(--hm-gap);
   min-width: 0;
+  color: var(--hm-ink);
 }
 .hm > *, .hm-bento > * { min-width: 0; }
 
 /* ── Ортақ ── */
 .hm-kicker {
   display: inline-flex; align-items: center; gap: 8px;
-  font-size: 14px; font-weight: 800; letter-spacing: 0; text-transform: none;
-  color: var(--hm-red-d);
+  font-size: 12.5px; font-weight: 800; line-height: 1.2; letter-spacing: 0; text-transform: none;
+  color: var(--sec-deep, #741820);
 }
-/* Әдебиеттегідей белгі: алтын сызықша */
 .hm-kicker::before { content: ""; width: 22px; height: 3px; background: var(--hm-gold); border-radius: 2px; flex: none; }
 .hm-tile {
   position: relative; display: block;
-  background: var(--pp-paper, #ffffff); color: var(--pp-ink, #1f2430);
-  border-radius: var(--hm-r); padding: var(--pp-pad, 22px);
+  background: var(--pp-paper, #ffffff); color: var(--hm-ink);
+  border-radius: var(--hm-r); padding: 14px;
   box-shadow: var(--hm-card);
   text-decoration: none;
 }
-.hm a:focus-visible, .hm button:focus-visible { outline: 3px solid var(--hm-red); outline-offset: 3px; }
-.hm-bento { display: grid; gap: var(--pp-gap, 22px); }
+.hm a:focus-visible, .hm button:focus-visible { outline: 3px solid var(--sec, #a3242b); outline-offset: 3px; }
+.hm-bento { display: grid; gap: 10px; }
 
 /* Қаңқа (skeleton): күн белгілі болғанша мәтін орнын ұстайтын жұмсақ сызықтар */
 .hm-skl {
@@ -48,101 +51,74 @@
   animation: hmSk 1.4s ease-in-out infinite alternate;
 }
 .hm-proverb.is-wait blockquote::before, .hm-proverb.is-wait blockquote::after { visibility: hidden; }
-.hm-wod.is-wait .hm-wod-art svg, .hm-wod.is-wait .hm-wod-save { opacity: 0; }
-.hm-wod.is-wait .hm-wod-art { animation: hmSk 1.4s ease-in-out infinite alternate; }
-.hm-trad.is-wait .hm-trad-art { animation: hmSk 1.4s ease-in-out infinite alternate; }
-@keyframes hmSk { from { opacity: 1; } to { opacity: 0.55; } }
-
-/* Aqyl кеңесі (AqylGuide) — басты беттегі қағаз карточка; күту кезінде қаңқа */
-.hm .aq-guide { border-radius: var(--hm-r); box-shadow: var(--hm-card); background: var(--pp-paper, #ffffff); }
-.hm .aq-guide .aq-says-b { background: var(--pp-felt, #f1eee8); }
-.hm .aq-guide-go { color: var(--hm-red-d); font-weight: 800; }
-.hm .aq-guide-go:hover { box-shadow: inset 0 0 0 1.5px var(--hm-red); }
-.hm .aq-guide-arrow { transition: transform var(--pp-t2, 0.25s) var(--hm-ease); }
-.hm .aq-guide-go:hover .aq-guide-arrow { transform: translateX(3px); }
-[dir="rtl"] .hm .aq-guide-go:hover .aq-guide-arrow { transform: scaleX(-1) translateX(3px); }
+.hm-wod.is-wait .hm-wod-art svg { opacity: 0; }
+.hm-wod.is-wait .hm-wod-art, .hm-trad.is-wait .hm-trad-art { animation: hmSk 1.4s ease-in-out infinite alternate; }
 .aq-sk { display: block; height: 0.9em; margin-block: 0.28em; width: 92%; border-radius: 6px; background: var(--hm-track); animation: hmSk 1.4s ease-in-out infinite alternate; }
 .aq-sk-2 { width: 58%; }
-.aq-guide.is-wait .aq-guide-go { color: transparent; pointer-events: none; }
-.aq-guide.is-wait .aq-guide-go svg { opacity: 0; }
+@keyframes hmSk { from { opacity: 1; } to { opacity: 0.55; } }
 
-/* ════ 1 · Төр (hero) ════ */
-.hm-hero {
-  position: relative; isolation: isolate;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  grid-template-areas: "greet scene" "lesson scene";
-  grid-template-rows: auto 1fr;
-  column-gap: 20px;
-  padding: 28px 28px 0;
-  border-radius: var(--hm-r);
-  background:
-    radial-gradient(120% 90% at 80% 110%, rgba(232, 178, 58, 0.22), transparent 60%),
-    radial-gradient(70% 60% at 0% 0%, rgba(163, 36, 43, 0.07), transparent 70%),
-    var(--pp-paper, #ffffff);
-  box-shadow: inset 0 0 0 1px var(--hm-rim), var(--pp-sh-3, var(--shadow-lg));
-  overflow: hidden;
-}
-.hm-greet { grid-area: greet; display: flex; align-items: center; gap: 14px; padding-block-end: 18px; }
-.hm-greet .avatar, .hm-greet svg { flex: none; }
-.hm-greet h1 { font-family: var(--head); font-size: clamp(22px, 2.3vw, 28px); line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 2px; }
-.hm-greet p { margin: 0; color: var(--pp-muted, #4a5160); font-size: var(--pp-lead, 15.5px); }
+/* ════ 1 · Төр: сәлем жолы + бүгінгі сабақ ════ */
+.hm-hero { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
 
-/* Сабақ */
-.hm-lesson { grid-area: lesson; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding-block: 8px 30px; align-self: center; }
-.hm-l-head { display: flex; align-items: center; gap: 16px; }
-.hm-l-art { flex: none; filter: drop-shadow(0 6px 10px rgba(60, 30, 10, 0.18)); }
-.hm-l-tt { min-width: 0; }
-.hm-lesson h2 { font-family: var(--head); font-size: clamp(26px, 3.1vw, 40px); line-height: 1.08; margin: 0 0 6px; letter-spacing: -0.02em; overflow-wrap: anywhere; }
-.hm-l-done { font-size: clamp(20px, 2.2vw, 26px) !important; }
-.hm-l-meta { margin: 0; color: var(--muted); font-size: 14.5px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.hm-lv { display: inline-grid; place-items: center; min-width: 30px; height: 22px; padding: 0 7px; border-radius: 7px; background: var(--hm-blue); color: #fff; font-size: 12px; font-weight: 800; }
-.hm-frets { display: flex; gap: 6px; width: 100%; max-width: 420px; }
-.hm-frets i {
-  flex: 1; height: 10px; border-radius: 999px;
-  background: var(--hm-track);
-  transform-origin: 0 50%;
-  animation: hmFret 0.45s var(--hm-ease) both; animation-delay: calc(0.35s + var(--i) * 60ms);
+/* Сәлем жолы: аватар · сәлем + бүгінгі мақсат · серия */
+.hm-top { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.hm-top .avatar { flex: none; }
+.hm-hi { flex: 1; min-width: 0; display: grid; gap: 5px; }
+.hm-hi h1 {
+  margin: 0; font-family: var(--head); font-size: 20px; line-height: 1.15; letter-spacing: -0.015em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.hm-frets i.on { background: var(--hm-red); box-shadow: none; }
-.hm-frets i.cur { background: var(--hm-gold); box-shadow: 0 0 0 3px rgba(232, 178, 58, 0.25); animation: hmFret 0.45s var(--hm-ease) both, hmPulse 1.6s 1.2s ease-in-out infinite alternate; }
-.hm-cta.btn { min-width: 240px; justify-content: center; gap: 10px; margin-block-start: 4px; font-size: 17px; }
-.hm-cta svg { transition: transform 0.25s var(--hm-ease); }
-.hm-cta:hover svg { transform: translateX(4px); }
-[dir="rtl"] .hm-cta svg, [dir="rtl"] .hm-qgo svg, [dir="rtl"] .hm-level-go svg, [dir="rtl"] .hm-next-btn svg { transform: scaleX(-1); }
-[dir="rtl"] .hm-cta:hover svg { transform: scaleX(-1) translateX(4px); }
-
-/* Сахна */
-.hm-scene { grid-area: scene; position: relative; align-self: end; margin-inline-end: -10px; }
-.hm-yurt { display: block; width: 100%; height: auto; overflow: visible; }
-.hm-goal {
-  position: absolute; left: 0.5%; top: 2%; z-index: 2;
-  display: grid; gap: 2px; padding: 9px 13px 10px; min-width: 128px;
-  background: var(--pp-paper, #ffffff); border-radius: var(--pp-r-sm, 12px);
-  box-shadow: inset 0 0 0 1px rgba(60, 52, 48, 0.3), var(--pp-sh-3);
-}
-.hm-goal-n { direction: ltr; unicode-bidi: isolate; text-align: start; font-family: var(--head); font-weight: 700; font-size: 17px; color: var(--ink); white-space: nowrap; }
-.hm-goal-l { font-size: 12px; color: var(--muted); font-weight: 600; }
-.hm-goal-bar { display: block; height: 6px; border-radius: 999px; background: var(--hm-track); overflow: hidden; margin-block-start: 4px; }
-.hm-goal-bar i { display: block; height: 100%; background: var(--hm-gold); transform-origin: 0 50%; animation: hmGrow 1s 0.6s var(--hm-ease) backwards; }
+.hm-goal { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.hm-goal-bar { flex: 0 1 150px; min-width: 64px; display: block; height: 6px; border-radius: 999px; background: var(--hm-track); overflow: hidden; }
+.hm-goal-bar i { display: block; height: 100%; background: var(--sec, #a3242b); transform-origin: 0 50%; animation: hmGrow 0.9s 0.3s var(--hm-ease) backwards; }
+.hm-goal.is-done .hm-goal-bar i { background: var(--hm-ok); }
 [dir="rtl"] .hm-goal-bar i, [dir="rtl"] .q-bar i { transform-origin: 100% 50%; }
-.hm-aqyl { position: absolute; left: 72.6%; bottom: 23.6%; width: 20%; z-index: 2; pointer-events: none; }
-.hm-aqyl svg { display: block; width: 100%; height: auto; }
-.hm-tip {
-  position: absolute; right: 0.5%; top: 2%; z-index: 2; margin: 0;
-  max-width: 36%; padding: 10px 14px;
-  background: var(--pp-paper, #ffffff); color: var(--pp-ink, #1f2430);
-  border-radius: var(--pp-r) var(--pp-r) 4px var(--pp-r); font-size: 14px; font-weight: 600; line-height: 1.35;
-  box-shadow: inset 0 0 0 1px var(--hm-rim), var(--pp-sh-2);
-  animation: hmTip 0.6s 1.1s var(--hm-ease) backwards;
+.hm-goal-n { flex: none; direction: ltr; unicode-bidi: isolate; font-size: 12.5px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hm-goal-l { min-width: 0; font-size: 12.5px; color: var(--hm-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hm-streak {
+  flex: none; display: inline-flex; align-items: center; gap: 5px; height: 44px; padding: 0 14px 0 12px;
+  border-radius: 999px; background: var(--pp-felt, #f1eee8); color: var(--hm-muted);
 }
-.hm-tip::after {
-  content: ""; position: absolute; right: 22%; bottom: -9px; width: 16px; height: 16px;
-  background: inherit; transform: rotate(45deg); border-radius: 0 0 4px 0;
-  box-shadow: 1px 1px 0 var(--hm-rim);
-}
+.hm-streak b { font-family: var(--head); font-size: 17px; line-height: 1; color: var(--hm-ink); font-variant-numeric: tabular-nums; }
+.hm-streak.is-lit { background: var(--sec-soft, #f6e1e2); color: var(--sec, #a3242b); }
+.hm-streak.is-lit b { color: var(--sec-deep, #741820); }
 
-/* Сахна ішіндегі қозғалыс */
+/* Бүгінгі сабақ — беттің жалғыз басты әрекеті (TorLesson) */
+.hm-lesson {
+  position: relative; display: grid; gap: 12px; padding: 14px 16px 16px; min-width: 0;
+  border-radius: var(--pp-r-lg, 22px);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sec-soft, #f6e1e2) 75%, #fff), #fff 65%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 22%, transparent), 0 12px 24px -20px color-mix(in srgb, var(--sec-deep, #741820) 80%, transparent);
+}
+.hm-l-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.hm-l-art { flex: none; width: 48px; height: 48px; }
+.hm-l-tt { min-width: 0; }
+.hm-lesson h2 { margin: 0 0 4px; font-family: var(--head); font-size: 21px; line-height: 1.15; letter-spacing: -0.015em; overflow-wrap: anywhere; }
+.hm-lesson h2.hm-l-done { font-size: 17px; line-height: 1.3; }
+.hm-l-meta { margin: 0; color: var(--hm-muted); font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.hm-lv { display: inline-grid; place-items: center; min-width: 28px; height: 20px; padding: 0 6px; border-radius: 6px; background: var(--hm-blue); color: #fff; font-size: 11.5px; font-weight: 800; }
+.hm-frets { display: flex; gap: 5px; width: 100%; }
+.hm-frets i {
+  flex: 1; height: 6px; border-radius: 999px; background: var(--hm-track); transform-origin: 0 50%;
+  animation: hmGrow 0.4s var(--hm-ease) both; animation-delay: calc(0.25s + var(--i) * 50ms);
+}
+.hm-frets i.on { background: var(--sec, #a3242b); }
+.hm-frets i.cur { background: var(--hm-gold); }
+.hm-cta.btn {
+  width: 100%; min-width: 0; min-height: 50px; justify-content: center; gap: 8px; font-size: 16px;
+  background: var(--sec, #a3242b); color: #fff; box-shadow: 0 3px 0 var(--sec-deep, #741820);
+}
+.hm-cta.btn:hover:not(:disabled) { background: color-mix(in srgb, var(--sec, #a3242b) 88%, #000); }
+.hm-cta svg { transition: transform 0.25s var(--hm-ease); }
+.hm-cta:hover svg { transform: translateX(3px); }
+[dir="rtl"] .hm-cta svg, [dir="rtl"] .hm-go svg, [dir="rtl"] .hm-arrow { transform: scaleX(-1); }
+[dir="rtl"] .hm-cta:hover svg { transform: scaleX(-1) translateX(3px); }
+
+/* Киіз үй — тек кең экранда (≥ 900px), сабақтың жанында шағын сурет */
+.hm-scene { display: none; }
+.hm-yurt { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* Сахна ішіндегі қозғалыс (HomeYurt / HomeFlame) */
 .hy-pole-on { animation: hmFade 0.5s ease-out both; }
 .hy-patch { transform-box: fill-box; transform-origin: center; animation: hmPop 0.45s var(--hm-ease) both; }
 .hy-crown { animation: hmPulse 1.8s ease-in-out infinite alternate; }
@@ -159,235 +135,194 @@
 .hf-off .hf-coal { opacity: 0.55; animation: hmPulse 2.6s ease-in-out infinite alternate; }
 .hf-on .hf-coal { opacity: 0.9; }
 
-/* ════ Деңгей тесті ════ */
-.hm-level {
-  display: flex; align-items: center; gap: 14px; padding: 10px 16px 10px 12px;
-  border-radius: 20px; text-decoration: none; color: var(--ink);
-  background: var(--hm-gold-soft);
-  box-shadow: inset 0 0 0 1.5px rgba(176, 124, 16, 0.45);
-  transition: transform 0.25s var(--hm-ease);
+/* ════ Aqyl кеңесі: шағын кейіпкер + бір сөйлем (+ басқа жерге апарса ғана — батырма) ════ */
+.hm-guide {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  padding: 8px 12px 8px 8px; padding-inline: 8px 12px;
+  border-radius: var(--hm-r); background: var(--pp-paper, #ffffff); box-shadow: var(--hm-card);
 }
-.hm-level b { flex: 1; font-size: 15.5px; }
-.hm-level-go { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; background: var(--hm-red); color: #fff; box-shadow: 0 3px 0 var(--hm-red-d); }
-.hm-level:hover { transform: translateY(-2px); }
+.hm-guide .aq-says { flex: 1 1 240px; align-items: center; gap: 8px; }
+/* Слот: ені 52px, биіктігі ≤ 64px — тік (ұзын бойлы) кейіпкер де сыяды */
+.hm-guide .aq-says-av { width: 52px; max-height: 64px; place-items: end center; overflow: hidden; }
+.hm-guide .aq-says-av > * { width: auto; height: auto; max-width: 52px; max-height: 64px; }
+.hm-guide .aq-says-b {
+  padding: 8px 12px; border-radius: 14px; border-end-start-radius: 6px;
+  background: color-mix(in srgb, var(--sec-soft, #f6e1e2) 70%, #fff); box-shadow: none;
+  font-size: 14.5px; line-height: 1.4;
+}
+.hm-guide .aq-says-b::before { box-shadow: none; bottom: 14px; }
+.hm-guide-say { margin: 0; font-weight: 600; }
+.hm-guide.is-wait .aq-says-b { min-height: 3.2em; }
+.hm-guide-go {
+  flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 14px; border-radius: 12px;
+  color: var(--sec-deep, #741820); background: var(--pp-paper, #ffffff); font-weight: 700; font-size: 14.5px; text-decoration: none;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--sec, #a3242b) 40%, transparent);
+  transition: background-color var(--pp-t2, 0.25s);
+}
+.hm-guide-go:hover { background: var(--sec-soft, #f6e1e2); }
+.hm-arrow { transition: transform var(--pp-t2, 0.25s) var(--hm-ease); }
+.hm-guide-go:hover .hm-arrow { transform: translateX(3px); }
+[dir="rtl"] .hm-guide-go:hover .hm-arrow { transform: scaleX(-1) translateX(3px); }
 
-/* ════ 2 · Күн ════ */
-.hm-day { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr) minmax(0, 0.78fr); align-items: stretch; }
+/* ════ 2 · Күн: ошақ, тапсырмалар, есеп ════ */
+.hm-day { grid-template-columns: minmax(0, 1fr); }
 .hm-day > div { display: grid; }
 
 /* Ошақ — қараңғы киіз, от жарқырайды */
 .hm-hearth {
-  display: grid; grid-template-columns: 112px minmax(0, 1fr); grid-template-areas: "art body" "emb emb";
-  gap: 4px 14px; align-items: center;
-  background: radial-gradient(90% 80% at 15% 30%, rgba(240, 138, 44, 0.28), transparent 65%), #3a2418;
+  display: grid; grid-template-columns: 56px minmax(0, 1fr); grid-template-areas: "art body" "emb emb";
+  gap: 0 12px; align-items: center; padding: 10px 14px 0;
+  background: radial-gradient(90% 90% at 10% 30%, rgba(240, 138, 44, 0.28), transparent 65%), #3a2418;
   color: #fff6e2;
-  box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.14), var(--pp-sh-2);
+  box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.14), 0 8px 18px -14px rgba(45, 38, 36, 0.6);
 }
-.hm-hearth.is-out { background: radial-gradient(90% 80% at 15% 30%, rgba(240, 138, 44, 0.1), transparent 65%), #2f2925; }
-.hm-hearth .hm-kicker { color: #f0be45; }
+.hm-hearth.is-out { background: radial-gradient(90% 90% at 10% 30%, rgba(240, 138, 44, 0.1), transparent 65%), #2f2925; }
+.hm-hearth .hm-kicker { display: none; color: #f0be45; }
 .hm-h-art { grid-area: art; }
-.hm-flame { display: block; width: 112px; height: 112px; overflow: visible; }
-.hm-h-body { grid-area: body; min-width: 0; }
-.hm-h-num { margin: 4px 0 2px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.hm-h-num b { font-family: var(--head); font-size: 46px; line-height: 1; letter-spacing: -0.03em; }
-.hm-h-num span { font-weight: 700; color: #ead9bd; }
-.hm-h-state { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 14px; color: #ead9bd; line-height: 1.35; }
+.hm-flame { display: block; width: 56px; height: 56px; overflow: visible; }
+.hm-h-body { grid-area: body; min-width: 0; display: grid; gap: 2px; }
+.hm-h-num { margin: 0; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.hm-h-num b { font-family: var(--head); font-size: 28px; line-height: 1; letter-spacing: -0.02em; }
+.hm-h-num span { font-weight: 700; font-size: 14px; color: #ead9bd; }
+.hm-h-state { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 13px; color: #ead9bd; line-height: 1.35; }
 .hm-h-state svg { flex: none; margin-block-start: 1px; color: #f0be45; }
 .hm-embers {
-  grid-area: emb; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; align-items: center;
-  margin-block-start: 10px; padding-block-start: 12px; border-top: 1px solid rgba(255, 230, 190, 0.16);
+  grid-area: emb; display: flex; align-items: center; gap: 10px; min-height: 44px;
+  margin-block-start: 8px; border-top: 1px solid rgba(255, 230, 190, 0.16);
 }
-.hm-embers small { font-size: 12.5px; color: #d9c6a5; line-height: 1.35; }
-.hm-embers .link-btn { grid-column: 1 / -1; justify-self: start; min-height: 44px; color: #f0be45; font-size: 13.5px; font-weight: 700; }
+/* Шоқ туралы түсініктеме — тек title-да (бұрын карточканы екі есе биіктетіп тұрған) */
+.hm-embers small { display: none; }
+.hm-embers .link-btn { margin: 0; margin-inline-start: auto; min-height: 44px; padding: 0; color: #f0be45; font-size: 13.5px; font-weight: 700; }
 .hm-embers .link-btn:disabled { color: #a8987e; }
-.hm-coals { display: inline-flex; gap: 6px; }
-.hm-coals i { width: 18px; height: 14px; border-radius: 50% 50% 45% 45%; background: #5a4a40; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25); }
-.hm-coals i.on { background: radial-gradient(circle at 50% 60%, #ffd27a, #f08a2c 55%, #a3242b); box-shadow: 0 0 10px rgba(240, 138, 44, 0.7); animation: hmPulse 1.8s ease-in-out infinite alternate; }
+.hm-coals { flex: none; display: inline-flex; gap: 6px; }
+.hm-coals i { width: 16px; height: 12px; border-radius: 50% 50% 45% 45%; background: #5a4a40; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25); }
+.hm-coals i.on { background: radial-gradient(circle at 50% 60%, #ffd27a, #f08a2c 55%, #a3242b); box-shadow: 0 0 8px rgba(240, 138, 44, 0.7); animation: hmPulse 1.8s ease-in-out infinite alternate; }
 
 /* Тапсырмалар */
-.hm-quests { display: flex; flex-direction: column; gap: 12px; }
-.hm-q-top { display: flex; align-items: center; gap: 10px; }
-.hm-q-top h3 { margin: 0; font-family: var(--head); font-size: var(--pp-h2, 19px); font-weight: 600; letter-spacing: -0.01em; flex: 1; }
-.hm-q-count { font-family: var(--head); font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--pp-felt, #f1eee8); color: var(--pp-ink, #1f2430); }
-.hm-chest { flex: none; margin-block: -6px; }
+.hm-quests { display: grid; gap: 10px; padding: 10px 14px 14px; }
+.hm-q-top { display: flex; align-items: center; gap: 8px; min-height: 32px; }
+.hm-q-top h3 { margin: 0; flex: 1; min-width: 0; font-family: var(--head); font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.hm-q-count { font-family: var(--head); font-weight: 700; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: var(--sec-soft, #f6e1e2); color: var(--sec-deep, #741820); }
+.hm-chest { flex: none; width: 36px; height: 32px; margin-block: -4px; }
 .hm-chest.ready { animation: hmBob 1.2s ease-in-out infinite alternate; }
-.hm-quests ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.hm-quests li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; grid-template-areas: "mark name num" "mark bar bar"; gap: 6px 10px; align-items: center; animation: hmRise 0.5s var(--hm-ease) both; animation-delay: calc(0.45s + var(--i) * 80ms); }
-.hm-quests .q-mark { grid-area: mark; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 2px var(--pp-felt-2, #e3ddd2); color: #fff; align-self: start; }
+.hm-quests ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.hm-quests li {
+  display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; grid-template-areas: "mark name num" "mark bar bar";
+  gap: 4px 10px; align-items: center;
+}
+.hm-quests .q-mark { grid-area: mark; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 2px var(--pp-felt-2, #e3ddd2); color: #fff; }
+.hm-quests .q-mark svg { width: 12px; height: 12px; }
 .hm-quests li.done .q-mark { background: var(--hm-ok); box-shadow: none; }
-.hm-quests .q-name { grid-area: name; font-weight: 600; font-size: 14.5px; }
-.hm-quests li.done .q-name { color: var(--muted); }
-.hm-quests .q-num { grid-area: num; font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 700; color: var(--muted); }
-.hm-quests .q-bar { grid-area: bar; display: block; height: 8px; border-radius: 999px; background: var(--hm-track); overflow: hidden; }
-.hm-quests .q-bar i { display: block; height: 100%; width: 100%; background: var(--hm-red); transform-origin: 0 50%; animation: hmGrow 0.9s var(--hm-ease) backwards; animation-delay: calc(0.6s + var(--i) * 100ms); }
+.hm-quests .q-name { grid-area: name; min-width: 0; font-weight: 600; font-size: 14px; line-height: 1.3; }
+.hm-quests li.done .q-name { color: var(--hm-muted); }
+.hm-quests .q-num { grid-area: num; font-variant-numeric: tabular-nums; font-size: 12.5px; font-weight: 700; color: var(--hm-muted); }
+.hm-quests .q-bar { grid-area: bar; display: block; height: 5px; border-radius: 999px; background: var(--hm-track); overflow: hidden; }
+.hm-quests .q-bar i { display: block; height: 100%; width: 100%; background: var(--sec, #a3242b); transform-origin: 0 50%; animation: hmGrow 0.8s var(--hm-ease) backwards; animation-delay: 0.4s; }
 .hm-quests li.done .q-bar i { background: var(--hm-ok); }
-.hm-claim { align-self: flex-start; gap: 6px; }
-.hm-q-note { color: var(--muted); font-size: 13px; }
+.hm-claim { justify-self: start; gap: 6px; }
+.hm-q-note { color: var(--hm-muted); font-size: 12.5px; }
 
-/* Есеп */
-.hm-stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+/* Есеп: бір жол, үш көрсеткіш */
+.hm-stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .hm-stat {
-  display: grid; align-content: start; gap: 2px; padding: 14px; border-radius: var(--pp-r, 18px);
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "i b" "l l";
+  align-items: center; gap: 4px 8px; padding: 10px 12px; border-radius: 14px;
   background: var(--pp-paper, #ffffff); box-shadow: var(--hm-card);
 }
-.hm-stat-i { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; margin-block-end: 4px; }
+.hm-stat-i { grid-area: i; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; }
 .c-gold .hm-stat-i { background: var(--hm-gold-soft); color: #7a4a00; }
-.c-red .hm-stat-i { background: var(--anar-soft, #f6e1e2); color: var(--hm-red-d); }
 .c-blue .hm-stat-i { background: var(--pp-blue-soft, #dbf1f4); color: var(--hm-blue); }
-.hm-stat b { font-family: var(--head); font-size: 20px; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.hm-stat small { font-size: 12.5px; color: var(--pp-muted, #4a5160); line-height: 1.25; }
+.hm-stat b { grid-area: b; min-width: 0; font-family: var(--head); font-size: 17px; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.hm-stat small { grid-area: l; font-size: 12px; color: var(--hm-muted); line-height: 1.25; }
 
 /* ════ 3 · Жол мен сөз ════ */
-.hm-discover { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
-.hm-next { padding: 0; overflow: hidden; display: grid; grid-template-rows: 180px auto; transition: transform 0.3s var(--hm-ease), box-shadow 0.3s; }
-.hm-next:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px rgba(11, 122, 144, 0.45), var(--pp-sh-3); }
-.hm-next:active { transform: translateY(-1px) scale(0.995); }
-.hm-next-art { position: relative; display: block; overflow: hidden; }
-.hm-next-art .sa { position: absolute; inset: 0; transition: transform 0.6s var(--hm-ease); }
-.hm-next:hover .hm-next-art .sa { transform: scale(1.04); }
-.hm-next-body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 20px 20px; }
-.hm-next h2 { font-family: var(--head); font-size: clamp(19px, 1.8vw, 23px); margin: 2px 0 0; }
-.hm-next-sub { color: var(--pp-muted, #4a5160); font-size: 15px; }
-.hm-next-btn { margin-block-start: 8px; gap: 8px; }
-.hm-next-all { background: radial-gradient(80% 120% at 0% 50%, rgba(232, 178, 58, 0.18), transparent 70%), var(--surface, #ffffff); grid-template-rows: auto; grid-template-columns: auto minmax(0, 1fr); align-items: center; padding-inline-start: 20px; }
-.hm-next-trophy { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 28px; background: var(--hm-gold-soft); color: #7a4a00; }
+.hm-discover { grid-template-columns: minmax(0, 1fr); }
+.hm-next {
+  display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 12px 10px 10px;
+  transition: transform 0.25s var(--hm-ease), box-shadow 0.25s;
+}
+.hm-next-art { position: relative; display: block; width: 88px; height: 72px; border-radius: 12px; overflow: hidden; background: var(--sec-soft, #e2edeb); }
+.hm-next-art .sa { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hm-next-body { display: grid; gap: 3px; min-width: 0; }
+.hm-next h2 { margin: 0; font-family: var(--head); font-size: 16px; line-height: 1.2; letter-spacing: -0.01em; color: var(--hm-ink); }
+.hm-next-sub { color: var(--hm-muted); font-size: 13px; line-height: 1.3; }
+.hm-next-trophy { display: grid; place-items: center; width: 56px; height: 56px; color: var(--sec-deep, #873a06); }
+.hm-next-all { grid-template-columns: 56px minmax(0, 1fr) auto; }
+.hm-go {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--sec-soft, #e2edeb); color: var(--sec-deep, #075a6b);
+  transition: background-color var(--pp-t2, 0.25s), color var(--pp-t2, 0.25s);
+}
 
-.hm-wod { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; background: radial-gradient(90% 70% at 100% 100%, rgba(232, 178, 58, 0.14), transparent 70%), var(--pp-paper, #ffffff); }
-.hm-wod-art { flex: none; display: grid; place-items: center; width: 92px; height: 92px; border-radius: 50%; background: radial-gradient(circle at 50% 62%, var(--pp-gold-soft, #f8e6b8), var(--pp-felt, #f1eee8) 72%); transition: opacity var(--pp-t3, 0.45s); }
-.hm-wod-word { display: flex; align-items: center; gap: 16px; margin-block-start: auto; }
-.hm-wod > .hm-wod-save { margin-block-end: auto; }
-.hm-wod-word svg { flex: none; }
-.hm-wod-word b { display: block; font-family: var(--head); font-size: clamp(26px, 2.6vw, 34px); line-height: 1.1; letter-spacing: -0.02em; color: var(--hm-red-d); overflow-wrap: anywhere; }
-.hm-wod-word > div > span { display: block; color: var(--pp-muted, #4a5160); font-size: 15px; margin-block-start: 4px; }
-.hm-wod-save { gap: 6px; }
-.hm-vocab { margin-block-start: auto; display: flex; flex-wrap: wrap; gap: 6px; padding-block-start: 12px; border-top: 1px solid var(--pp-hair, rgba(60, 52, 48, 0.16)); width: 100%; }
-.hm-vchip { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--pp-felt, #f1eee8); color: var(--ink); }
+.hm-wod { display: grid; gap: 4px; padding: 6px 14px 12px; }
+.hm-wod-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.hm-wod-save {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; margin-inline-end: -6px;
+  border: 0; border-radius: 12px; background: transparent; color: var(--sec-deep, #7a1634);
+  font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  transition: background-color var(--pp-t2, 0.25s);
+}
+.hm-wod-save:hover:not(:disabled) { background: var(--sec-soft, #f4e3e2); }
+.hm-wod-save:disabled { cursor: default; }
+.hm-wod-save.is-saved { color: var(--hm-ok); }
+.hm-wod-word { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.hm-wod-art { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--sec-soft, #f4e3e2); }
+.hm-wod-word > div { min-width: 0; }
+.hm-wod-word b { display: block; font-family: var(--head); font-size: 22px; line-height: 1.15; letter-spacing: -0.015em; color: var(--sec-deep, #7a1634); overflow-wrap: anywhere; }
+.hm-wod-word > div > span { display: block; color: var(--hm-muted); font-size: 14px; margin-block-start: 2px; }
 
 /* ════ 4 · Мәдениет ════ */
-.hm-culture { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
-.hm-proverb { padding: 22px 24px; overflow: hidden; background: radial-gradient(70% 90% at 0% 100%, rgba(163, 36, 43, 0.06), transparent 70%), var(--pp-paper, #ffffff); }
-.hm-proverb blockquote { position: relative; margin: 12px 0 10px; font-family: var(--head); font-weight: 600; font-size: clamp(19px, 2vw, 24px); line-height: 1.3; letter-spacing: -0.01em; }
-.hm-proverb blockquote::before { content: "«"; color: var(--hm-red); margin-inline-end: 2px; }
-.hm-proverb blockquote::after { content: "»"; color: var(--hm-red); margin-inline-start: 2px; }
-.hm-proverb p { margin: 0; color: var(--pp-muted, #4a5160); font-size: 15px; line-height: 1.55; }
-.hm-trad { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 16px; align-items: center; }
-.hm-trad-art { display: grid; place-items: center; width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle at 50% 60%, var(--hm-gold-soft), var(--pp-felt, #f1eee8) 72%); box-shadow: inset 0 0 0 1px var(--hm-rim); overflow: hidden; }
+.hm-culture { grid-template-columns: minmax(0, 1fr); }
+.hm-proverb { padding: 14px 18px; overflow: hidden; }
+.hm-proverb blockquote { position: relative; margin: 6px 0 4px; font-family: var(--head); font-weight: 600; font-size: 17px; line-height: 1.3; letter-spacing: -0.01em; }
+.hm-proverb blockquote::before { content: "«"; color: var(--sec, #a3242b); margin-inline-end: 2px; }
+.hm-proverb blockquote::after { content: "»"; color: var(--sec, #a3242b); margin-inline-start: 2px; }
+.hm-proverb p { margin: 0; color: var(--hm-muted); font-size: 13.5px; line-height: 1.45; }
+.hm-trad { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 14px; }
+.hm-trad-art { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--pp-felt, #f1eee8); overflow: hidden; }
 .hm-trad-art > span { display: grid; place-items: center; }
-.hm-trad-art svg { max-width: 100px; height: auto; }
-.hm-trad h3 { margin: 8px 0 4px; font-family: var(--head); font-size: 18px; font-weight: 600; }
-.hm-trad p { margin: 0; color: var(--pp-muted, #4a5160); font-size: 14.5px; line-height: 1.5; }
+.hm-trad h3 { margin: 4px 0 2px; font-family: var(--head); font-size: 16px; font-weight: 600; }
+.hm-trad p { margin: 0; color: var(--hm-muted); font-size: 13.5px; line-height: 1.45; }
 
-/* ════ 5 · Жылдам өту — «Есіктер» ════
-   Төрт есік, төрт әлем: әр тақтайша өз бөлімінің реңінде (secVars: --sec / --sec-deep / --sec-soft).
-   Сурет киіз үй есігіндей доғал терезеде тұрады (back қабаты терезеге қиылады), басты кейіпкер
-   (front қабаты) терезеден асып шығады. Үстелде: үлкен Тарих + екі тік + бір кең тақтайша (бенто).
-   Тышқанмен — қабаттар сәл жылжиды (--px/--py, JS), сенсорда және reduced-motion кезінде — қозғалыссыз. */
-.hm-sec { display: flex; align-items: center; gap: 12px; margin: 4px 0 -8px; font-family: var(--head); font-size: var(--pp-h2, 19px); font-weight: 600; color: var(--pp-ink, #1f2430); }
+/* ════ 5 · Жылдам өту: қысқа тізім, әр сілтеме өз бөлімінің реңінде ════ */
+.hm-quick-w { display: grid; gap: 8px; margin-block-start: 4px; }
+.hm-sec { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--head); font-size: 16px; font-weight: 600; color: var(--hm-ink); }
 .hm-sec::after { content: ""; flex: 1; height: 0; border-top: 1px solid var(--pp-hair, rgba(60, 52, 48, 0.16)); }
-.hm-quick {
-  display: grid; gap: 16px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-areas: "qa qa qb qc" "qa qa qd qd";
-}
-.hm-qt:nth-child(1) { grid-area: qa; }
-.hm-qt:nth-child(2) { grid-area: qb; }
-.hm-qt:nth-child(3) { grid-area: qc; }
-.hm-qt:nth-child(4) { grid-area: qd; }
+.hm-quick { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.hm-quick li { display: grid; min-width: 0; }
 .hm-qt {
-  --wt: 16;              /* терезе сахнаның жоғарғы 16%-ынан басталады: үстіндегі бос орынға кейіпкер шығады */
-  --arch: 96px;          /* доғаның биіктігі */
-  --stage: 150px;
-  position: relative; display: grid; grid-template-rows: auto 1fr; gap: 12px; min-height: 44px;
-  padding: 10px 12px 16px; border-radius: var(--hm-r); overflow: hidden; isolation: isolate;
-  text-decoration: none; color: var(--pp-ink, #1f2430);
-  background: var(--pp-paper, #ffffff); box-shadow: var(--hm-card);
-  transition: transform var(--pp-t2, 0.25s) var(--hm-ease), box-shadow var(--pp-t2, 0.25s);
+  display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px;
+  border-radius: 16px; text-decoration: none; color: var(--hm-ink);
+  background: color-mix(in srgb, var(--sec-soft, #f1eee8) 50%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 22%, transparent);
+  transition: transform var(--pp-t2, 0.25s) var(--hm-ease), box-shadow var(--pp-t2, 0.25s), background-color var(--pp-t2, 0.25s);
 }
-/* бөлім реңіндегі жұмсақ жарық — тақтайшаның өз «ауасы» */
-.hm-qt::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--sec-soft, #f1eee8) 70%, transparent), transparent 70%);
-}
-.hm-qt-stage { position: relative; display: block; height: var(--stage); }
-.hm-qt-win {
-  position: absolute; inset: calc(var(--wt) * 1%) 0 0; overflow: hidden;
-  border-radius: 50% 50% var(--pp-r, 16px) var(--pp-r, 16px) / var(--arch) var(--arch) var(--pp-r, 16px) var(--pp-r, 16px);
-  background:
-    radial-gradient(70% 70% at 50% 18%, rgba(255, 253, 247, 0.9), transparent 70%),
-    linear-gradient(180deg, color-mix(in srgb, var(--sec-soft, #f1eee8) 55%, #fff), var(--sec-soft, #f1eee8));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 20%, transparent);
-}
-/* back қабаты терезе ішінде, бірақ бүкіл сахнаның өлшемінде — front-пен дәл беттеседі */
-.hm-qt-back, .hm-qt-front { position: absolute; inset-inline: 0; display: block; width: 100%; overflow: visible; }
-.hm-qt-back {
-  top: calc(-100% * var(--wt) / (100 - var(--wt)));
-  height: calc(100% * 100 / (100 - var(--wt)));
-  transform: translate3d(calc(var(--px, 0) * -5px), calc(var(--py, 0) * -3px), 0);
-  transition: transform 0.5s var(--hm-ease);
-}
-.hm-qt-front {
-  top: 0; height: 100%; z-index: 1; pointer-events: none;
-  transform: translate3d(calc(var(--px, 0) * 8px), calc(var(--py, 0) * 5px), 0);
-  transition: transform 0.5s var(--hm-ease), translate var(--pp-t3, 0.45s) var(--hm-ease);
-}
-.hm-qtxt { display: grid; align-content: start; gap: 4px; padding-inline: 6px 46px; min-width: 0; }
-.hm-qtxt b { display: flex; align-items: center; gap: 8px; font-family: var(--head); font-size: 15.5px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; overflow-wrap: anywhere; }
-.hm-qgl { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: var(--sec-soft); color: var(--sec-deep); }
-.hm-qtxt small { font-size: 13px; line-height: 1.4; color: var(--pp-muted, #4a5160); }
-.hm-qgo {
-  position: absolute; inset-inline-end: 14px; bottom: 14px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
-  background: var(--sec-soft); color: var(--sec-deep);
-  transition: background-color var(--pp-t2, 0.25s), color var(--pp-t2, 0.25s), transform var(--pp-t2, 0.25s) var(--hm-ease);
-}
+/* Белгі — шағын киіз үй есігі (доға) */
+.hm-qgl { flex: none; display: grid; place-items: center; width: 40px; height: 44px; border-radius: 20px 20px 10px 10px; background: var(--sec, #a3242b); color: #fff; }
+.hm-qtxt { display: grid; gap: 2px; min-width: 0; }
+.hm-qtxt b { font-family: var(--head); font-size: 14.5px; font-weight: 700; line-height: 1.2; color: var(--sec-deep, #741820); overflow-wrap: anywhere; }
+.hm-qtxt small { font-size: 12px; line-height: 1.3; color: var(--hm-muted); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.hm .hm-qt:focus-visible { outline-color: var(--sec-deep, #741820); }
 
-/* Басты (үлкен) тақтайша: сурет бүкіл биіктікті алады */
-.hm-qt-feat { --arch: 150px; grid-template-rows: minmax(0, 1fr) auto; padding: 28px 14px 20px; } /* үстіңгі орын — күмбез ұшы мен құстарға */
-.hm-qt-feat .hm-qt-stage { height: auto; min-height: 250px; }
-.hm-qt-feat .hm-qtxt { padding-inline: 8px 56px; }
-.hm-qt-feat .hm-qtxt b { font-size: 21px; gap: 10px; }
-.hm-qt-feat .hm-qtxt small { font-size: 14px; }
-.hm-qt-feat .hm-qgo { width: 44px; height: 44px; inset-inline-end: 18px; bottom: 18px; background: var(--sec); color: #fff; }
-
-/* Кең тақтайша: мәтін бір жақта, сурет есік жақта */
-.hm-qt-wide { --arch: 80px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-rows: none; align-items: center; gap: 14px; padding: 10px 12px; }
-.hm-qt-wide .hm-qt-stage { order: 2; height: 138px; }
-.hm-qt-wide .hm-qtxt { padding: 6px 6px 50px; }
-.hm-qt-wide .hm-qgo { inset-inline-end: auto; inset-inline-start: 18px; bottom: 16px; }
-
-/* Шексіз ұсақ қимылдар (экраннан тыс — AnimGate кідіртеді) */
-.hm-qt .qa-float { animation: qaFloat 3.6s ease-in-out infinite alternate; }
-.hm-qt .qa-d2 { animation-delay: -1.8s; }
-.hm-qt .qa-tw { animation: qaTw 2.4s ease-in-out infinite alternate; }
-.hm-qt .qa-pulse { transform-box: fill-box; transform-origin: center; animation: qaPulse 4s ease-in-out infinite alternate; }
-@keyframes qaFloat { to { transform: translateY(-4px); } }
-@keyframes qaTw { from { opacity: 0.35; } to { opacity: 1; } }
-@keyframes qaPulse { from { opacity: 0.7; transform: scale(0.94); } to { opacity: 1; transform: scale(1.04); } }
-
-/* Тінтуір/тачпад бар құрылғыда ғана: көтерілу, кейіпкер сәл жоғары шығады */
+/* Тінтуір/тачпад бар құрылғыда ғана: жеңіл көтерілу */
 @media (hover: hover) and (pointer: fine) {
-  .hm-qt:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 45%, transparent), var(--pp-sh-3); }
-  .hm-qt:hover .hm-qt-front { translate: 0 -6px; }
-  .hm-qt:hover .hm-qgo { background: var(--sec); color: #fff; transform: translateX(3px); }
-  [dir="rtl"] .hm-qt:hover .hm-qgo { transform: translateX(-3px); }
+  .hm-next:hover, .hm-qt:hover { transform: translateY(-2px); }
+  .hm-next:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #0b7a90) 45%, transparent), 0 12px 22px -16px rgba(45, 38, 36, 0.5); }
+  .hm-next:hover .hm-go { background: var(--sec, #0b7a90); color: #fff; }
+  .hm-qt:hover { background: var(--sec-soft, #f1eee8); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sec, #a3242b) 45%, transparent); }
 }
-.hm-qt:active { transform: scale(0.985); transition-duration: var(--pp-t1, 0.15s); }
-.hm .hm-qt:focus-visible { outline-color: var(--sec-deep); }
-@media (prefers-reduced-motion: reduce) {
-  .hm-qt-back, .hm-qt-front { transform: none !important; translate: none !important; }
-  .hm-qt:hover, .hm-qt:active { transform: none; }
-}
+.hm-next:active, .hm-qt:active { transform: scale(0.985); transition-duration: var(--pp-t1, 0.15s); }
 
 /* ════ Кіру қозғалысы ════ */
-.hm-in { animation: hmRise 0.7s var(--hm-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+.hm-in { animation: hmRise 0.5s var(--hm-ease) both; animation-delay: calc(var(--i, 0) * 50ms); }
 
-@keyframes hmRise { from { opacity: 0; transform: translateY(18px); } }
+@keyframes hmRise { from { opacity: 0; transform: translateY(10px); } }
 @keyframes hmFade { from { opacity: 0; } }
 @keyframes hmPop { from { opacity: 0; transform: scale(0.3); } }
-@keyframes hmFret { from { transform: scaleX(0); } }
 @keyframes hmGrow { from { transform: scaleX(0); } }
-@keyframes hmTip { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
 @keyframes hmPulse { from { opacity: 1; } to { opacity: 0.55; } }
-@keyframes hmBob { to { transform: translateY(-4px); } }
+@keyframes hmBob { to { transform: translateY(-3px); } }
 @keyframes hyCloud { from { transform: translateX(-70px); } to { transform: translateX(90px); } }
 @keyframes hyBeam { from { opacity: 0.65; } to { opacity: 1; } }
 @keyframes hyGlow { from { opacity: 0.8; transform: scale(0.97); } to { opacity: 1; transform: scale(1.03); } }
@@ -405,77 +340,50 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hm, .hm *, .hm *::before, .hm *::after { animation: none !important; transition: none !important; }
+  .hm-next:hover, .hm-qt:hover, .hm-next:active, .hm-qt:active { transform: none; }
 }
 
-/* ════ Жауапты орналасу ════ */
-@media (max-width: 1180px) {
+/* ════ Жауапты орналасу (телефон — негізгі; кеңірек экранда бағандар қосылады) ════ */
+@media (max-width: 400px) {
+  .hm-goal-l { display: none; }
+}
+@media (min-width: 641px) {
+  .hm { --hm-gap: 16px; }
+  .hm-bento { gap: 14px; }
+  .hm-hi h1 { font-size: 23px; }
   .hm-day { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .hm-stats { grid-column: 1 / -1; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-@media (max-width: 1100px) {
-  .hm-quick { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "qa qa" "qb qc" "qd qd"; }
-  /* басты тақтайша кең пішінге көшеді */
-  .hm-qt-feat { --arch: 84px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-rows: none; align-items: center; gap: 14px; padding: 16px 12px 10px; }
-  .hm-qt-feat .hm-qt-stage { order: 2; height: 170px; min-height: 0; }
-  .hm-qt-feat .hm-qtxt { padding: 6px 6px 62px; }
-  .hm-qt-feat .hm-qgo { inset-inline-end: auto; inset-inline-start: 18px; bottom: 16px; }
-}
-@media (max-width: 900px) {
-  .hm-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "greet" "scene" "lesson"; grid-template-rows: auto; padding: 20px 20px 0; }
-  .hm-scene { margin-inline: -8px; max-width: 640px; justify-self: center; width: calc(100% + 16px); }
-  .hm-lesson { padding-block-end: 22px; }
-  .hm-discover, .hm-culture { grid-template-columns: minmax(0, 1fr); }
+  .hm-stats { grid-column: 1 / -1; }
+  .hm-hearth { grid-template-columns: 64px minmax(0, 1fr); padding: 14px 16px 2px; }
+  .hm-hearth .hm-kicker { display: inline-flex; }
+  .hm-flame { width: 64px; height: 64px; }
+  .hm-discover { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .hm-culture { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .hm-lesson { padding: 18px 20px 20px; }
+  .hm-lesson h2 { font-size: 24px; }
+  .hm-l-art { width: 56px; height: 56px; }
+  .hm-cta.btn { width: auto; min-width: 240px; justify-self: start; }
+  .hm-guide-go { margin-inline-start: auto; }
 }
 @media (max-width: 640px) {
-  .hm { gap: 14px; }
-  .hm-bento { gap: 14px; }
-  .hm-hero { padding: 16px 14px 0; border-radius: var(--pp-r-lg, 24px); }
-  .hm-greet { gap: 10px; padding-block-end: 10px; }
-  .hm-greet h1 { font-size: 21px; }
-  .hm-greet p { font-size: 13.5px; }
-  .hm-scene { margin-inline: -6px; width: calc(100% + 12px); }
-  .hm-goal { padding: 6px 9px 7px; min-width: 0; border-radius: 11px; }
-  .hm-goal-n { font-size: 13.5px; }
-  .hm-goal-l { font-size: 10.5px; }
-  .hm-tip { font-size: 11.5px; padding: 7px 9px; max-width: 40%; border-radius: 12px 12px 3px 12px; line-height: 1.3; }
-  .hm-tip::after { width: 10px; height: 10px; bottom: -5px; }
-  .hm-lesson {
-    position: relative; z-index: 4; margin: -2px -8px 8px; padding: 16px; gap: 12px;
-    background: var(--surface, #ffffff); border-radius: 20px;
-    box-shadow: inset 0 0 0 1px var(--rim), 0 -10px 24px -16px rgba(45, 38, 36, 0.45);
+  /* Кеңес батырмасы телефонда — сөз бұлтының астында, толық енде */
+  .hm-guide-go { flex: 1 1 100%; }
+}
+@media (min-width: 900px) {
+  .hm-hero { grid-template-columns: minmax(0, 1fr) clamp(250px, 30vw, 330px); grid-template-areas: "top top" "lesson scene"; column-gap: 16px; }
+  .hm-top { grid-area: top; }
+  .hm-lesson { grid-area: lesson; align-content: center; }
+  .hm-scene {
+    grid-area: scene; display: block; position: relative; align-self: stretch; min-height: 170px;
+    border-radius: var(--pp-r-lg, 22px); overflow: hidden;
+    background: radial-gradient(110% 80% at 50% 110%, rgba(232, 178, 58, 0.22), transparent 65%), var(--pp-paper, #ffffff);
+    box-shadow: var(--hm-card);
   }
-  .hm-l-head { gap: 12px; }
-  .hm-l-art { width: 52px; height: 52px; }
-  .hm-lesson h2 { font-size: 24px; }
-  .hm-l-meta { font-size: 13.5px; }
-  .hm-cta.btn { width: 100%; min-width: 0; }
-  .hm-day { grid-template-columns: minmax(0, 1fr); }
-  .hm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hm-hearth { grid-template-columns: 92px minmax(0, 1fr); }
-  .hm-flame { width: 92px; height: 92px; }
-  .hm-h-num b { font-size: 40px; }
-  .hm-tile { padding: 16px; border-radius: var(--pp-r, 18px); }
-  .hm-next { padding: 0; grid-template-rows: 150px auto; }
-  .hm-next-body { padding: 14px 16px 16px; }
-  .hm-proverb { padding: 18px; }
-  .hm-trad { grid-template-columns: 84px minmax(0, 1fr); gap: 12px; }
-  .hm-trad-art { width: 84px; height: 84px; }
-  .hm-trad-art svg { max-width: 76px; }
-  .hm-wod-art { width: 76px; height: 76px; }
-  .hm-wod-art svg { width: 60px; height: auto; }
-  .hm-quick { gap: 12px; }
-  .hm-qt { --stage: 116px; --arch: 64px; padding: 8px 8px 12px; gap: 10px; border-radius: var(--pp-r, 18px); }
-  .hm-qtxt { padding-inline: 4px; }
-  .hm-qtxt b { font-size: 14px; gap: 6px; }
-  .hm-qgl { width: 24px; height: 24px; border-radius: 8px; }
-  .hm-qgl svg { width: 14px; height: 14px; }
-  .hm-qtxt small { font-size: 12.5px; padding-inline-end: 34px; }
-  .hm-qgo { width: 30px; height: 30px; inset-inline-end: 10px; bottom: 10px; }
-  .hm-qt-wide, .hm-qt-feat { --arch: 60px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 12px 8px 8px; }
-  .hm-qt-wide .hm-qt-stage, .hm-qt-feat .hm-qt-stage { height: 124px; }
-  .hm-qt-wide .hm-qtxt, .hm-qt-feat .hm-qtxt { padding: 4px 4px 46px; }
-  .hm-qt-wide .hm-qtxt small, .hm-qt-feat .hm-qtxt small { padding-inline-end: 0; font-size: 12.5px; }
-  .hm-qt-feat .hm-qtxt b { font-size: 17px; }
-  .hm-qt-wide .hm-qgo, .hm-qt-feat .hm-qgo { inset-inline-start: 12px; bottom: 12px; width: 34px; height: 34px; }
-  .hm-level b { font-size: 14px; }
+  .hm-scene .hm-yurt { position: absolute; inset: 8px 8px 0; width: calc(100% - 16px); height: calc(100% - 8px); }
+  .hm-quick { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .hm-day { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 0.62fr); }
+  .hm-stats { grid-column: auto; grid-template-columns: minmax(0, 1fr); align-content: stretch; }
+  .hm-stat { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "i b" "i l"; gap: 0 10px; padding: 8px 12px; }
+  .hm-stat-i { width: 32px; height: 32px; }
 }

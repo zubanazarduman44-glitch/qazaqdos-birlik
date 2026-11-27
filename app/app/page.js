@@ -7,7 +7,6 @@ import { useTor, TorLesson, TorHearth, TorQuests } from "../components/Tor";
 import { useEffect, useMemo, useState } from "react";
 import { DAILY_GOAL, dayKey, useApp } from "../components/Store";
 import { useClientDate, utcDayIndex, localDayIndexOf } from "../../lib/useClientDate";
-import Qyran from "../components/Qyran";
 import Icon from "../components/Icon";
 import Avatar from "../components/Avatar";
 import TopicArt from "../components/TopicArt";
@@ -21,33 +20,48 @@ import { REGIONS } from "../../lib/regions";
 import { tr } from "../../lib/wordTools";
 import { L } from "../../lib/i18n";
 import { lessonTitle } from "../../lib/courseIndex";
-import AqylGuide from "../components/AqylGuide";
+import { AqylSays } from "../components/Aqyl";
+import { useAqylL } from "../components/AqylL10n";
 import ShellGlyph from "../components/ShellGlyph";
-import QuickArt from "../components/QuickArt";
 import { SECTIONS, SECTION_HINT, pickL, secVars } from "../../lib/sections";
+
+// Басты бет — ықшам «Бүгін» (Duolingo / Babbel / Khan Academy үлгісі): жоғарыда жіңішке сәлем жолы
+// (мақсат + серия), бір басты әрекет (сабақты жалғастыру), одан кейін қысқа, тығыз карточкалар.
+// Бөлімдер мен олардың реті бұрынғыдай: Төр · Aqyl кеңесі · Күн · Жол мен сөз · Мәдениет · Жылдам өту.
 
 // Дәстүр карточкасының суреті (TRADITIONS ретімен): киіз үй, қонақжайлылық, Наурыз, домбыра, бүркітші, тұсау кесу, көкпар, шапан
 const TRAD_ART = [
   { nat: "yurt" }, { nat: "bowl" }, { topic: "tradition" }, { nat: "dombyra" },
-  { eagle: true }, { topic: "family" }, { nat: "kamshy" }, { topic: "clothes" },
+  { topic: "animals" }, { topic: "family" }, { nat: "kamshy" }, { topic: "clothes" },
 ];
 function TradArt({ i }) {
   const a = TRAD_ART[i] || { nat: "yurt" };
-  if (a.eagle) return <Qyran mood="wow" size={92} />;
-  if (a.topic) return <TopicArt topic={a.topic} size={92} />;
-  return <NatArt name={a.nat} size={120} />;
+  if (a.topic) return <TopicArt topic={a.topic} size={44} />;
+  return <NatArt name={a.nat} size={54} />;
 }
 
-// Жылдам өту: тышқан жүргенде сурет қабаттары сәл жылжиды (параллакс). Сенсорда және reduced-motion кезінде — жоқ.
-function qtMove(e) {
-  if (e.pointerType !== "mouse" || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-  const el = e.currentTarget, r = el.getBoundingClientRect();
-  el.style.setProperty("--px", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
-  el.style.setProperty("--py", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+// Киіз үй суреті тек кең экранда (≥ 900px) көрінеді: телефонда орын басты әрекетке беріледі.
+// Сервер мен гидрацияда false — сурет кейін қосылады, бірақ орны CSS-та алдын ала сақталған (ығыспайды).
+function useWide(q = "(min-width: 900px)") {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia?.(q);
+    if (!m) return;
+    const f = () => setOn(m.matches);
+    f();
+    m.addEventListener?.("change", f);
+    return () => m.removeEventListener?.("change", f);
+  }, [q]);
+  return on;
 }
-function qtLeave(e) {
-  e.currentTarget.style.removeProperty("--px");
-  e.currentTarget.style.removeProperty("--py");
+
+// Aqyl кеңесінің «әлсіз сөздері» (сабақтан кейін сақталады): 3 күннен ескі емес, кемі 2 сөз
+function readWeak() {
+  try {
+    const w = JSON.parse(localStorage.getItem("qd_aqyl_weak") || "null");
+    if (w && Array.isArray(w.words) && w.words.length >= 2 && Date.now() - (w.at || 0) < 3 * 86_400_000) return w.words;
+  } catch {}
+  return null;
 }
 
 // Мазмұн күн белгілі болғанша (SSR/гидрация) қаңқа сызықтары ретінде көрінеді: мәтін орнын ұстайды, бос карточка көрінбейді
@@ -59,9 +73,11 @@ const WORD0 = { t: "greet", kk: "Сәлеметсіз бе", ru: "Здравст
 export default function Home() {
   const { t, lang, explain, state, saveWord, award } = useApp();
   const tor = useTor();
+  const G = useAqylL(lang).guide;
   // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
-  const gHero = useAnimGate(), gDay = useAnimGate(), gDisc = useAnimGate(), gCult = useAnimGate(), gQuick = useAnimGate();
+  const gHero = useAnimGate(), gDay = useAnimGate(), gDisc = useAnimGate();
   const phase = useDayPhase();
+  const wide = useWide();
   const x0 = tx(lang);
   // Күнге тәуелді мазмұн: сервер мен гидрация рендерінде now = null → бейтарап (0-индекс, көрінбейді),
   // гидрациядан кейін нақты күн қойылады (бірдей өлшем, орын ығыспайды)
@@ -79,77 +95,99 @@ export default function Home() {
   // Сөз қоры (~110 KB) — тек «күн сөзі» үшін: гидрациядан кейін бөлек жүктеледі (бастапқы JS жеңіл).
   // Жүктелгенше карточка орнын бейтарап көрінбейтін сөз ұстап тұрады.
   const [WORDS, setWords] = useState(null);
+  const [weak, setWeak] = useState(null);
   useEffect(() => {
     let on = true;
     import("../../lib/words").then((m) => on && setWords(m.WORDS));
+    setWeak(readWeak());
     return () => { on = false; };
   }, []);
   const word = WORDS ? WORDS[dayIdx % WORDS.length] : WORD0;
   const wodHide = now && WORDS ? undefined : { visibility: "hidden" };
-  const tip = t.qyranTip[dayIdx % t.qyranTip.length];
   const savedToday = state.vocab?.some((v) => v.kk === word.kk);
   const wait = !now;
-  // Aqyl қалпы: мақсат орындалды → cheer, бастады → happy, кеш батып серия үзілгелі тұр → sleepy, әйтпесе idle
-  const mood = todayXp >= DAILY_GOAL ? "cheer" : todayXp > 0 ? "happy" : now && now.getHours() >= 19 && state.streak > 0 ? "sleepy" : "idle";
+  const goalPct = Math.min(1, todayXp / DAILY_GOAL);
   const goalTxt = t.todayGoalTxt ? t.todayGoalTxt(Math.min(todayXp, DAILY_GOAL), DAILY_GOAL) : `${Math.min(todayXp, DAILY_GOAL)} / ${DAILY_GOAL} XP`;
+  const streak = state.streak || 0;
+
+  // Aqyl кеңесі — келесі қадам (деңгей тесті → ошақ → қате сөздер → сабақ → мақсат → VR → чат).
+  // Кеңес басты әрекетпен бірдей сабаққа апарса, қайталанатын батырма көрсетілмейді — тек сөз қалады.
+  const lessonHref = tor.next ? `/app/course?l=${tor.next.id}` : "/app/sozdik";
+  const hour = now ? now.getHours() : 12;
+  let g;
+  if (!state.cefr) g = { mood: "wow", txt: G.level, href: "/app/level", icon: "chart" };
+  else if (today && streak > 0 && state.lastDay !== today && hour >= 17) g = { mood: "support", txt: G.streak(streak), href: tor.next ? lessonHref : "/app/course", icon: "flame" };
+  else if (weak && todayXp < DAILY_GOAL) g = { mood: "explaining", txt: G.weak(weak.length), href: "/app/sozdik?tab=review", icon: "refresh" };
+  else if (todayXp === 0 && tor.next) g = { mood: "talking", txt: G.start(lessonTitle(tor.next, lang)), href: lessonHref, icon: "book" };
+  else if (todayXp > 0 && todayXp < DAILY_GOAL) g = { mood: "happy", txt: G.more(DAILY_GOAL - todayXp), href: tor.next ? lessonHref : "/app/games", icon: "right" };
+  else if (todayXp >= DAILY_GOAL && !Object.keys(state.vr?.done || {}).length) g = { mood: "cheer", txt: G.vr, href: "/app/vr", icon: "globe" };
+  else g = { mood: todayXp >= DAILY_GOAL ? "cheer" : "idle", txt: G.chat, href: "/app/qyran", icon: "chat" };
+  const [say, cta] = g.txt;
+  const guideGo = !wait && g.href !== lessonHref;
 
   const quick = useMemo(
     () => [
-      // Тарих — үлкен басты тақтайша; VR Әлем — кең тақтайша (Түзел Aqyl чатына қосылғандықтан, оның орнына)
-      { k: "history", shape: "feat", t: t.nav.history },
-      { k: "games", shape: "tall", t: t.nav.games },
-      { k: "chat", shape: "tall", t: t.navLong.chat },
-      { k: "vr", shape: "wide", t: t.navLong.vr },
+      { k: "history", t: t.nav.history },
+      { k: "games", t: t.nav.games },
+      { k: "chat", t: t.navLong.chat },
+      { k: "vr", t: t.navLong.vr },
     ].map((q) => ({ ...q, href: SECTIONS[q.k].href, glyph: SECTIONS[q.k].glyph, hint: pickL(SECTION_HINT[q.k], lang) })),
     [t, lang]
   );
 
+  // Есеп: серия жоғарыда (сәлем жолы мен ошақта) тұр — мұнда қайталанбайды
   const stats = [
     { i: "star", v: state.xp || 0, l: t.statsXp, c: "gold" },
     { i: "coin", v: state.coins || 0, l: t.statsCoins, c: "gold" },
-    { i: "flame", v: state.streak || 0, l: t.statsStreak, c: "red" },
     { i: "stamp", v: `${stampCount}/${REGIONS.length}`, l: t.statsStamps, c: "blue" },
   ];
 
   return (
     <div className="hm">
-      {/* ── 1 · Төр: сәлем, бүгінгі сабақ және киіз үйдің іші ── */}
+      {/* ── 1 · Төр: сәлем + мақсат + серия, бүгінгі сабақ (басты әрекет), кең экранда — киіз үй ── */}
       <section ref={gHero} className="hm-hero hm-in" style={{ "--i": 0 }}>
-        <div className="hm-greet">
-          <Avatar value={state.profile.avatar} size={48} />
-          <div>
+        <div className="hm-top">
+          <Avatar value={state.profile.avatar} size={40} />
+          <div className="hm-hi">
             <h1>{t.hello(state.profile.name || "Дос")}</h1>
-            <p>{t.helloSub}</p>
+            <div
+              className={`hm-goal${goalPct >= 1 ? " is-done" : ""}`}
+              role="progressbar"
+              aria-label={t.todayGoal}
+              aria-valuemin={0}
+              aria-valuemax={DAILY_GOAL}
+              aria-valuenow={Math.min(todayXp, DAILY_GOAL)}
+              title={t.todayGoal}
+            >
+              <span className="hm-goal-bar" aria-hidden="true"><i style={{ transform: `scaleX(${goalPct})` }} /></span>
+              <span className="hm-goal-n">{goalTxt}</span>
+              <span className="hm-goal-l">{t.todayGoal}</span>
+            </div>
           </div>
-        </div>
-
-        <div className={`hm-scene ph-${phase}`}>
-          <HomeYurt phase={phase} xp={todayXp} goal={DAILY_GOAL} lit={tor.lit} streak={tor.streak} stamps={stampCount} stampTotal={REGIONS.length} />
-          <div className="hm-goal">
-            <span className="hm-goal-n">{goalTxt}</span>
-            <span className="hm-goal-l">{t.todayGoal}</span>
-            <span className="hm-goal-bar" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, todayXp / DAILY_GOAL)})` }} /></span>
-          </div>
-          <div className="hm-aqyl" aria-hidden="true"><Qyran mood={mood} size={120} /></div>
-          {!wait && <p className="hm-tip">{tip}</p>}
+          <span className={`hm-streak${tor.lit ? " is-lit" : ""}`} role="img" aria-label={`${t.statsStreak}: ${streak}`} title={t.statsStreak}>
+            <Icon name="flame" size={18} />
+            <b>{streak}</b>
+          </span>
         </div>
 
         <TorLesson tor={tor} />
+
+        <div className={`hm-scene ph-${phase}`} aria-hidden="true">
+          {wide && <HomeYurt phase={phase} xp={todayXp} goal={DAILY_GOAL} lit={tor.lit} streak={tor.streak} stamps={stampCount} stampTotal={REGIONS.length} />}
+        </div>
       </section>
 
-      {/* ── Aqyl кеңесі: келесі қадам (деңгей тесті, ошақ, қате сөздер, сабақ, VR) ── */}
-      <div className="hm-in" style={{ "--i": 1 }}>
-        <AqylGuide
-          state={state}
-          lang={lang}
-          today={today}
-          todayXp={todayXp}
-          goal={DAILY_GOAL}
-          next={tor.next}
-          nextTitle={tor.next ? lessonTitle(tor.next, lang) : ""}
-          hour={now ? now.getHours() : 12}
-        />
-      </div>
+      {/* ── Aqyl кеңесі: келесі қадам ── */}
+      <section className={`hm-guide hm-in${wait ? " is-wait" : ""}`} style={{ "--i": 1 }} aria-label={G.kicker} aria-busy={wait || undefined}>
+        <AqylSays mood={wait ? "idle" : g.mood} size={52} tone="paper">
+          <p className="hm-guide-say">{wait ? <><i className="aq-sk" /><i className="aq-sk aq-sk-2" /></> : say}</p>
+        </AqylSays>
+        {guideGo && (
+          <Link href={g.href} className="hm-guide-go">
+            <Icon name={g.icon} size={18} /> <span>{cta}</span> {g.icon !== "right" && <Icon name="right" size={16} className="hm-arrow" />}
+          </Link>
+        )}
+      </section>
 
       {/* ── 2 · Күн: ошақ, тапсырмалар, есеп ── */}
       <div ref={gDay} className="hm-bento hm-day">
@@ -158,7 +196,7 @@ export default function Home() {
         <ul className="hm-stats hm-in" style={{ "--i": 4 }}>
           {stats.map((s) => (
             <li key={s.l} className={`hm-stat c-${s.c}`}>
-              <span className="hm-stat-i"><Icon name={s.i} size={18} /></span>
+              <span className="hm-stat-i"><Icon name={s.i} size={16} /></span>
               <b>{s.v}</b>
               <small>{s.l}</small>
             </li>
@@ -169,64 +207,51 @@ export default function Home() {
       {/* ── 3 · Жол мен сөз ── */}
       <div ref={gDisc} className="hm-bento hm-discover">
         {next ? (
-          <Link href={`/app/travel?r=${next.id}`} className="hm-tile hm-next hm-in" style={{ "--i": 5 }}>
-            <span className="hm-next-art"><RegionScene region={next} /></span>
+          <Link href={`/app/travel?r=${next.id}`} className="hm-tile hm-next hm-in" style={{ ...secVars("travel"), "--i": 5 }}>
+            <span className="hm-next-art" aria-hidden="true"><RegionScene region={next} /></span>
             <span className="hm-next-body">
               <span className="hm-kicker">{t.nextStep}</span>
               <h2>{t.nextTravel(L(next.name, lang))}</h2>
               <span className="hm-next-sub">{t.nextTravelSub}</span>
-              <span className="btn gold hm-next-btn">
-                {t.start} <Icon name="right" size={18} />
-              </span>
             </span>
+            <span className="hm-go" aria-hidden="true"><Icon name="right" size={18} /></span>
           </Link>
         ) : (
-          <Link href="/app/games" className="hm-tile hm-next hm-next-all hm-in" style={{ "--i": 5 }}>
-            <span className="hm-next-trophy" aria-hidden="true"><Icon name="trophy" size={56} /></span>
-            <span className="hm-next-body">
-              <h2>{t.allStamps}</h2>
-              <span className="btn gold hm-next-btn">
-                {t.nav.games} <Icon name="right" size={18} />
-              </span>
-            </span>
+          <Link href="/app/games" className="hm-tile hm-next hm-next-all hm-in" style={{ ...secVars("games"), "--i": 5 }}>
+            <span className="hm-next-art hm-next-trophy" aria-hidden="true"><Icon name="trophy" size={32} /></span>
+            <span className="hm-next-body"><h2>{t.allStamps}</h2></span>
+            <span className="hm-go" aria-hidden="true"><Icon name="right" size={18} /></span>
           </Link>
         )}
 
-        <section className={`hm-tile hm-wod hm-in${wodHide ? " is-wait" : ""}`} style={{ "--i": 6 }} aria-label={t.wordOfDay}>
-          <span className="hm-kicker">{t.wordOfDay}</span>
+        <section className={`hm-tile hm-wod hm-in${wodHide ? " is-wait" : ""}`} style={{ ...secVars("sozdik"), "--i": 6 }} aria-label={t.wordOfDay}>
+          <div className="hm-wod-top">
+            <span className="hm-kicker">{t.wordOfDay}</span>
+            <button
+              type="button"
+              className={`hm-wod-save${savedToday ? " is-saved" : ""}`}
+              disabled={savedToday || !now || !WORDS}
+              style={wodHide}
+              onClick={() => {
+                saveWord({ kk: word.kk, tr: tr(word, explain), e: word.e, src: "day" });
+                award(2, 1);
+              }}
+            >
+              <Icon name={savedToday ? "check" : "plus"} size={16} /> {savedToday ? t.saved : t.saveWord}
+            </button>
+          </div>
           <div className="hm-wod-word">
-            <span className="hm-wod-art"><TopicArt topic={word.t} size={72} /></span>
+            <span className="hm-wod-art" aria-hidden="true"><TopicArt topic={word.t} size={40} /></span>
             <div>
               <b lang="kk"><Sk on={wodHide}>{word.kk}</Sk></b>
               <span><Sk on={wodHide}>{tr(word, explain)}</Sk></span>
             </div>
           </div>
-          <button
-            type="button"
-            className="btn ghost small hm-wod-save"
-            disabled={savedToday || !now || !WORDS}
-            style={wodHide}
-            onClick={() => {
-              saveWord({ kk: word.kk, tr: tr(word, explain), e: word.e, src: "day" });
-              award(2, 1);
-            }}
-          >
-            <Icon name={savedToday ? "check" : "plus"} size={16} /> {savedToday ? t.saved : t.saveWord}
-          </button>
-          {state.vocab?.length > 0 && (
-            <div className="hm-vocab">
-              {state.vocab.slice(0, 8).map((v) => (
-                <span key={v.kk} className="hm-vchip" title={v.tr} lang="kk">
-                  {v.kk}
-                </span>
-              ))}
-            </div>
-          )}
         </section>
       </div>
 
       {/* ── 4 · Мәдениет ── */}
-      <div ref={gCult} className="hm-bento hm-culture">
+      <div className="hm-bento hm-culture">
         <article className={`hm-tile hm-proverb hm-in${wait ? " is-wait" : ""}`} style={{ "--i": 7 }}>
           <span className="hm-kicker">{x0.proverb}</span>
           <blockquote lang="kk"><Sk on={wait}>{PROV.kk}</Sk></blockquote>
@@ -242,29 +267,22 @@ export default function Home() {
         </article>
       </div>
 
-      {/* ── 5 · Жылдам өту ── */}
-      <h3 className="hm-sec hm-in" style={{ "--i": 9 }}>{t.quick}</h3>
-      <nav ref={gQuick} className="hm-quick hm-in" style={{ "--i": 10 }} aria-label={t.quick}>
-        {quick.map((q, i) => (
-          <Link
-            key={q.href}
-            href={q.href}
-            className={`hm-qt hm-qt-${q.shape}`}
-            style={{ ...secVars(q.k), "--j": i }}
-            onPointerMove={qtMove}
-            onPointerLeave={qtLeave}
-          >
-            <span className="hm-qt-stage" aria-hidden="true">
-              <span className="hm-qt-win"><QuickArt name={q.k} layer="back" /></span>
-              <QuickArt name={q.k} layer="front" />
-            </span>
-            <span className="hm-qtxt">
-              <b><span className="hm-qgl" aria-hidden="true"><ShellGlyph name={q.glyph} size={16} /></span>{q.t}</b>
-              <small>{q.hint}</small>
-            </span>
-            <span className="hm-qgo" aria-hidden="true"><Icon name="right" size={16} /></span>
-          </Link>
-        ))}
+      {/* ── 5 · Жылдам өту: әр сілтеме өз бөлімінің реңінде ── */}
+      <nav className="hm-quick-w hm-in" style={{ "--i": 9 }} aria-labelledby="hm-quick-h">
+        <h3 id="hm-quick-h" className="hm-sec">{t.quick}</h3>
+        <ul className="hm-quick">
+          {quick.map((q) => (
+            <li key={q.href}>
+              <Link href={q.href} className="hm-qt" style={secVars(q.k)}>
+                <span className="hm-qgl" aria-hidden="true"><ShellGlyph name={q.glyph} size={22} /></span>
+                <span className="hm-qtxt">
+                  <b>{q.t}</b>
+                  <small>{q.hint}</small>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </nav>
     </div>
   );
