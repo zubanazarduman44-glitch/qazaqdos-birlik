@@ -128,13 +128,32 @@ export function LevelPicker({ level, setLevel }) {
   );
 }
 
+/* Тақырып таңдаудың шағын мәтіндері (11 тіл): жылдам бастау және «Тағы N тақырып» */
+const PICK = {
+  kk: { quick: "Сәлемдесу тақырыбымен ойнау", quickSub: "Бір басумен бастау", or: "Не тақырып пен деңгейді өзің таңда", more: (n) => `Тағы ${n} тақырып`, less: "Жасыру" },
+  ru: { quick: "Играть на тему «Приветствия»", quickSub: "Начать одним нажатием", or: "Или выберите тему и уровень сами", more: (n) => `Ещё ${n} ${n % 10 === 1 && n % 100 !== 11 ? "тема" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? "темы" : "тем"}`, less: "Свернуть" },
+  en: { quick: "Play with the Greetings topic", quickSub: "Start with one tap", or: "Or choose a topic and level yourself", more: (n) => `${n} more topics`, less: "Show less" },
+  zh: { quick: "用“问候”主题开始游戏", quickSub: "一键开始", or: "或自己选择主题和难度", more: (n) => `还有 ${n} 个主题`, less: "收起" },
+  es: { quick: "Jugar con el tema Saludos", quickSub: "Empieza con un toque", or: "O elige tú el tema y el nivel", more: (n) => `${n} temas más`, less: "Ver menos" },
+  de: { quick: "Mit dem Thema Begrüßungen spielen", quickSub: "Mit einem Tipp starten", or: "Oder wähle Thema und Stufe selbst", more: (n) => `${n} weitere Themen`, less: "Weniger" },
+  fr: { quick: "Jouer avec le thème Salutations", quickSub: "Commencer en un geste", or: "Ou choisis toi-même le thème et le niveau", more: (n) => `${n} thèmes de plus`, less: "Réduire" },
+  tr: { quick: "Selamlaşma konusuyla oyna", quickSub: "Tek dokunuşla başla", or: "Ya da konuyu ve seviyeyi kendin seç", more: (n) => `${n} konu daha`, less: "Daha az" },
+  ar: { quick: "العب بموضوع التحيات", quickSub: "ابدأ بلمسة واحدة", or: "أو اختر الموضوع والمستوى بنفسك", more: (n) => `${n} موضوعًا آخر`, less: "عرض أقل" },
+  ko: { quick: "인사 주제로 바로 놀기", quickSub: "한 번 눌러 시작", or: "또는 주제와 난이도를 직접 고르세요", more: (n) => `주제 ${n}개 더`, less: "접기" },
+  ja: { quick: "「あいさつ」のテーマで遊ぶ", quickSub: "ワンタップで開始", or: "またはテーマとレベルを自分で選ぶ", more: (n) => `ほか ${n} テーマ`, less: "閉じる" },
+};
+const pickL = (lang) => PICK[lang] || PICK.en;
+const QUICK_TOPIC = "greet";
+
 const FIRST = 8;
 export function TopicPicker({ topic, setTopic, disabled }) {
   const { t, lang } = useApp();
-  const tx = useTx();
+  const tx = pickL(lang);
   const [all, setAll] = useState(false);
   const entries = Object.entries(TOPICS);
   const shown = all ? entries : entries.filter(([k], i) => i < FIRST || k === topic);
+  // «Тағы N тақырып»: N — дәл қазір жасырулы тұрған тақырыптар саны
+  const hidden = entries.length - entries.filter(([k], i) => i < FIRST || k === topic).length;
   return (
     <div className="topic-row">
       <button className={`chip g-tchip ${topic === "all" ? "on" : ""}`} onClick={() => setTopic("all")} disabled={disabled} aria-pressed={topic === "all"}>
@@ -145,9 +164,9 @@ export function TopicPicker({ topic, setTopic, disabled }) {
           <TopicArt topic={k} size={24} /> {L(v, lang)}
         </button>
       ))}
-      {entries.length > FIRST && (
+      {(all || hidden > 0) && (
         <button className="chip g-tchip more" onClick={() => setAll((x) => !x)} aria-expanded={all}>
-          {all ? tx.less : tx.more(entries.length - FIRST)}
+          {all ? tx.less : tx.more(hidden)}
         </button>
       )}
     </div>
@@ -158,6 +177,20 @@ export function TopicPicker({ topic, setTopic, disabled }) {
 export function Ready({ game, topic, setTopic, onStart, level, setLevel, extra = null }) {
   const { t, lang } = useApp();
   const gArt = useAnimGate(); // экраннан тыс — анимация кідіреді
+  const px = pickL(lang);
+  // Жылдам бастау: тақырып «Сәлемдесу» болып қойылады да, ойын келесі рендерде (жаңа тақырыппен) бірден басталады
+  const [quick, setQuick] = useState(false);
+  useEffect(() => {
+    if (quick && topic === QUICK_TOPIC) {
+      setQuick(false);
+      onStart();
+    }
+  }, [quick, topic]); // eslint-disable-line
+  const playQuick = () => {
+    if (topic === QUICK_TOPIC) return onStart();
+    setTopic(QUICK_TOPIC);
+    setQuick(true);
+  };
   return (
     <section className="card g-ready" style={{ "--gc": game.color }}>
       <div ref={gArt} className="g-ready-art">
@@ -168,6 +201,19 @@ export function Ready({ game, topic, setTopic, onStart, level, setLevel, extra =
           <Muiz color={game.color} w={14} />
           <span>{L(game.desc, lang)}</span>
         </p>
+        {setTopic && (
+          <>
+            <button type="button" className="btn big g-quick" onClick={playQuick}>
+              <TopicArt topic={QUICK_TOPIC} size={32} />
+              <span className="g-quick-t">
+                <b>{px.quick}</b>
+                <small>{px.quickSub}</small>
+              </span>
+              <Icon name="right" size={18} />
+            </button>
+            <p className="g-quick-or">{px.or}</p>
+          </>
+        )}
         {setLevel && <LevelPicker level={level} setLevel={setLevel} />}
         {extra}
         {setTopic && (

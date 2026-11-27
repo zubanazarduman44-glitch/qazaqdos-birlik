@@ -208,6 +208,19 @@
 .lp-sum-score { margin: 0; display: grid; gap: 2px; color: var(--muted); font-size: 16px; }
 .lp-sum-score b { font-family: var(--head); font-weight: 800; font-size: clamp(44px, 12vw, 60px); line-height: 1.05; color: var(--kok); font-variant-numeric: tabular-nums; }
 .lp-sum-cap { margin: 8px 0 0; font-size: 16px; font-weight: 700; color: var(--muted); }
+/* «Ақылмен жаттығу» — сәтті сабақтан кейін чатқа дайын жаттығумен өту */
+.lp-practice { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px 12px; padding: 14px 16px; border-radius: var(--r); background: var(--surface); box-shadow: inset 0 0 0 1.5px #0e8fa3; }
+.lp-practice-av { display: block; width: 44px; }
+.lp-practice-t { display: grid; gap: 4px; min-width: 0; }
+.lp-practice-t p { margin: 0; font-size: 15px; color: var(--muted); }
+.lp-practice-say { font-weight: 700; color: var(--ink, #1f2430); font-size: 16px; }
+.lp-practice-btn { grid-column: 1 / -1; justify-self: stretch; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; background: #0b6e7e; color: #fff; text-decoration: none; }
+.lp-practice-btn:hover { background: #08515d; color: #fff; }
+.lp-practice-btn:focus-visible { outline: 3px solid #e8b23a; outline-offset: 3px; }
+@media (min-width: 640px) {
+  .lp-practice { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .lp-practice-btn { grid-column: auto; justify-self: end; }
+}
 .lp-sum-list { list-style: none; margin: 0; padding: 0; display: grid; border-radius: var(--r); background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim); }
 .lp-sum-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-height: 60px; padding: 10px 16px; }
 .lp-sum-list li + li { border-top: 1px solid var(--line); }

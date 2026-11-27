@@ -82,7 +82,6 @@
 
 .cx-topics { display: none; }
 .cx-stage-tools { position: absolute; top: 50%; inset-inline-end: 10px; transform: translateY(-50%); display: flex; gap: 6px; }
-.cx-side-cam { display: none; }
 .cx-clear {
   display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 14px;
   background: var(--cx-surf); color: var(--cx-ink); box-shadow: inset 0 0 0 1px var(--cx-rim); cursor: pointer;
@@ -219,12 +218,6 @@
 .cx .cx-start svg:first-child { border-radius: 12px; flex: none; }
 .cx .cx-start:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--cx-gold), 0 12px 22px -16px rgba(45, 38, 36, 0.5); }
 .cx .cx-start-t { min-width: 0; }
-.cx .cx-start-cam { grid-template-columns: auto minmax(0, 1fr) auto; background: var(--cx-blue); color: #fff; box-shadow: 0 3px 0 var(--cx-blue-2); font-family: var(--head); font-weight: 600; }
-.cx .cx-start-cam:hover { box-shadow: inset 0 0 0 2px var(--cx-gold), 0 4px 0 var(--cx-blue-2); }
-.cx .cx-start-go { transition: transform 0.25s var(--cx-spring); }
-.cx .cx-start-cam:hover .cx-start-go { transform: translateX(4px); }
-[dir="rtl"] .cx .cx-start-go { transform: scaleX(-1); }
-[dir="rtl"] .cx .cx-start-cam:hover .cx-start-go { transform: scaleX(-1) translateX(4px); }
 .cx .cx-prov-m { margin: 4px auto 0; padding: 0; }
 .cx .nat-empty { grid-auto-flow: column; justify-content: center; align-items: center; gap: 10px; padding: 8px 12px; text-align: start; }
 .cx .nat-empty small { font-size: 13.5px; color: var(--cx-muted); max-width: 300px; line-height: 1.4; }
@@ -273,6 +266,14 @@
 .cx .cx-tool:hover:not(:disabled) { background: var(--cx-sand); color: var(--cx-blue); }
 .cx .cx-tool.on { background: var(--cx-blue); color: #fff; }
 .cx .cx-tool:disabled { opacity: 0.5; cursor: default; }
+/* Суретпен сұрау — чаттағы жалғыз фото әрекеті (телефонда белгіше, кең экранда белгіше + жазу) */
+.cx .cx-photo { color: var(--cx-blue); }
+.cx .cx-photo-t { display: none; }
+@media (min-width: 1100px) {
+  .cx .cx-photo { display: inline-flex; align-items: center; gap: 6px; width: auto; padding: 0 14px 0 11px; border-radius: 22px; box-shadow: inset 0 0 0 1.5px var(--cx-rim); font: inherit; font-size: 14px; font-weight: 700; }
+  .cx .cx-photo-t { display: inline; }
+  .cx .cx-photo.on { box-shadow: none; }
+}
 .cx .cx-mic.on { background: #6e1e2e; color: #fff; }
 .cx .cx-mic.on::before, .cx .cx-mic.on::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid #6e1e2e; animation: cxRing 1.4s ease-out infinite; pointer-events: none; }
 .cx .cx-mic.on::after { animation-delay: 0.7s; }
@@ -489,13 +490,6 @@
   [dir="rtl"] .cx-topic:hover:not(:disabled) { transform: translateX(-3px); }
   .cx-topic:disabled { opacity: 0.55; cursor: default; }
   .cx-stage-tools { grid-row: 4; align-self: end; position: static; transform: none; display: flex; gap: 8px; }
-  .cx-side-cam {
-    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 14px;
-    border: 0; border-radius: 14px; background: var(--cx-blue); color: #fff; box-shadow: 0 3px 0 var(--cx-blue-2);
-    font: inherit; font-weight: 700; font-size: 14.5px; cursor: pointer;
-  }
-  .cx-side-cam:hover:not(:disabled) { background: var(--cx-blue-2); }
-  .cx-side-cam:disabled { opacity: 0.55; cursor: default; }
   .cx-clear { width: 48px; height: 48px; }
   .cx.is-empty .cx-topics { display: none; }
   .cx.is-empty .cx-stage { grid-template-rows: auto auto minmax(0, 1fr) auto; }
@@ -506,9 +500,8 @@
   .cx .vz-sheet { margin: 0 24px 16px; }
   .cx .vz-view { max-height: 52vh; }
   .cx .cx-starts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-inline-start: 82px; max-width: 660px; }
-  .cx .cx-start-cam { grid-column: 1 / -1; min-height: 72px; padding-inline-end: 20px; }
-  .cx .cx-start:not(.cx-start-cam) { grid-template-columns: minmax(0, 1fr); align-content: start; align-items: start; padding: 14px; min-height: 112px; }
-  .cx .cx-start:not(.cx-start-cam) svg { width: 48px; height: 48px; }
+  .cx .cx-start { grid-template-columns: minmax(0, 1fr); align-content: start; align-items: start; padding: 14px; min-height: 112px; }
+  .cx .cx-start svg { width: 48px; height: 48px; }
   .cx .msg-av { width: 48px; height: 48px; }
   .cx .msg-av .qyran { width: 46px; }
 }
