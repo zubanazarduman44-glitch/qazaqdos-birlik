@@ -5,13 +5,8 @@
 const CR = "#FAF6EE"; // киіз ақшылы
 const GD = "#E0A526"; // алтын
 const PG = "#F6E3B0"; // ақшыл алтын
-const RD = "#B8322A"; // анар
-const RDD = "#8A2018";
-const BR = "#7A4A22";
-const BRD = "#4F2E14";
-const GR = "#2F6B4F";
-const KK = "#0F5E7A";
-const IN = "#1F2430";
+// Тригонометрия серверде және браузерде соңғы цифрда өзгеше шығуы мүмкін: гидрация сәйкес болуы үшін дөңгелектейміз
+const rnd = (v) => Math.round(v * 100) / 100;
 
 // Мұқаба түстері: [фон, қою жиек]
 export const LIT_COVER = {
@@ -117,7 +112,7 @@ function Motif({ name, d }) {
           {qoshqar(d)}
           <circle cx="50" cy="40" r="6" fill={GD} />
           {[0, 60, 120, 180, 240, 300].map((a) => (
-            <circle key={a} cx={50 + 32.5 * Math.cos((a * Math.PI) / 180)} cy={52 + 32.5 * Math.sin((a * Math.PI) / 180)} r="2.2" fill={GD} />
+            <circle key={a} cx={rnd(50 + 32.5 * Math.cos((a * Math.PI) / 180))} cy={rnd(52 + 32.5 * Math.sin((a * Math.PI) / 180))} r="2.2" fill={GD} />
           ))}
         </g>
       );
@@ -174,7 +169,7 @@ function Motif({ name, d }) {
           <g stroke={GD} strokeWidth="4" strokeLinecap="round">
             {[-80, -60, -40, -20, 0, 20, 40, 60, 80].map((a) => {
               const r = (a * Math.PI) / 180;
-              return <path key={a} d={`M${50 + 30 * Math.sin(r)} ${66 - 30 * Math.cos(r)}L${50 + 42 * Math.sin(r)} ${66 - 42 * Math.cos(r)}`} />;
+              return <path key={a} d={`M${rnd(50 + 30 * Math.sin(r))} ${rnd(66 - 30 * Math.cos(r))}L${rnd(50 + 42 * Math.sin(r))} ${rnd(66 - 42 * Math.cos(r))}`} />;
             })}
           </g>
           <path d="M26 66a24 24 0 0 1 48 0Z" fill={CR} />
@@ -284,82 +279,3 @@ export function LitEmblem({ id, size = 84, className = "" }) {
   );
 }
 
-// Мұқаба бұрышындағы алтын ою (бір бұрыш; CSS арқылы айналады)
-export function LitCorner() {
-  return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
-      <path d="M3 21V9a6 6 0 0 1 6-6h12" fill="none" stroke={GD} strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M8 16c0-4 3-6 6-4 2 2 0 5-2 4" fill="none" stroke={GD} strokeWidth="1.6" strokeLinecap="round" />
-      <circle cx="3" cy="21" r="1.6" fill={GD} />
-      <circle cx="21" cy="3" r="1.6" fill={GD} />
-    </svg>
-  );
-}
-
-// Басты сурет: ашық кітап, домбыра, қауырсын, дала мен күн (Aqyl үстіне қонады)
-export function LitHeroArt() {
-  return (
-    <svg className="lit-hero-svg" viewBox="0 0 340 230" aria-hidden="true" focusable="false">
-      {/* киіз жамау-фон */}
-      <path d="M30 120c-8-52 34-96 98-100 40-3 64 12 100 6 50-8 92 20 96 70 4 46-20 86-74 96-46 8-74-6-118 0-62 8-96-20-102-72Z" fill="#F4ECDA" />
-      <path d="M44 120c-6-44 30-82 86-86" fill="none" stroke="#E6D9BC" strokeWidth="2" strokeDasharray="5 5" strokeLinecap="round" />
-      {/* күн */}
-      <g className="lit-hero-sun">
-        <circle cx="262" cy="62" r="24" fill={GD} />
-        <g stroke={GD} strokeWidth="4" strokeLinecap="round" opacity=".55">
-          <path d="M262 26v-10M262 108v-6M298 62h10M226 62h-8M287 37l7-7M237 87l-6 6M287 87l6 6M237 37l-6-6" />
-        </g>
-      </g>
-      {/* дала */}
-      <path d="M22 168c40-18 90-22 150-14s110 4 150-8v40H22Z" fill="#E7D3A5" />
-      <path d="M22 178c50-10 100-10 150-4s100 2 150-6v34c-50 14-260 14-300 0Z" fill={GR} opacity=".9" />
-      {/* домбыра (сол жақта, сүйеніп тұр) */}
-      <g transform="rotate(-24 70 140)">
-        <rect x="66" y="42" width="9" height="80" rx="3" fill={BRD} />
-        <path d="M64 44c0-12 13-12 13 0l1 9H63Z" fill={GD} />
-        <rect x="56" y="45" width="7" height="4.5" rx="2" fill={PG} />
-        <rect x="78" y="50" width="7" height="4.5" rx="2" fill={PG} />
-        <g stroke={GD} strokeWidth="1.8"><path d="M66 64h9M66 78h9M66 92h9M66 106h9" /></g>
-        <path d="M64 116c-14 9-24 22-24 36 0 15 14 22 30 22s30-7 30-22c0-14-10-27-24-36-3-3-9-3-12 0Z" fill={BR} />
-        <path d="M50 148c0-12 8-22 16-26" fill="none" stroke="#9A6235" strokeWidth="3" strokeLinecap="round" />
-        <circle cx="70" cy="146" r="8" fill={BRD} />
-        <circle cx="70" cy="146" r="8" fill="none" stroke={GD} strokeWidth="2.2" />
-        <path d="M58 162q12 8 24 0" fill="none" stroke={GD} strokeWidth="2.4" strokeLinecap="round" />
-        <path d="M68.6 50v116M72.4 50v116" stroke={PG} strokeWidth="1.1" />
-      </g>
-      {/* ашық кітап */}
-      <g>
-        <path d="M96 190c30-12 66-12 86-2 20-10 56-10 86 2v10c-30-10-66-10-86 2-20-12-56-12-86-2Z" fill={RDD} />
-        <path d="M100 118c30-10 62-8 82 6v66c-20-12-52-14-82-4Z" fill="#FFFDF7" />
-        <path d="M264 118c-30-10-62-8-82 6v66c20-12 52-14 82-4Z" fill="#FFF7E6" />
-        <path d="M182 124v66" stroke="#D9C79E" strokeWidth="2" />
-        <g stroke="#C9B48A" strokeWidth="2.4" strokeLinecap="round">
-          <path d="M114 134c18-4 38-3 56 4M114 148c18-4 38-3 56 4M114 162c18-4 38-3 56 4M114 176c14-3 28-2 40 2" />
-          <path d="M250 134c-18-4-38-3-56 4M250 148c-18-4-38-3-56 4M250 162c-18-4-38-3-56 4" />
-        </g>
-        {/* бас әріп */}
-        <rect x="112" y="128" width="12" height="14" rx="2" fill={RD} />
-        <path d="M100 186c30-10 62-8 82 6 20-14 52-16 82-6v6c-30-10-62-8-82 6-20-14-52-16-82-6Z" fill={RD} />
-        {/* бетбелгі */}
-        <path d="M232 112v34l6-6 6 6v-36Z" fill={GD} />
-      </g>
-      {/* сия сауыт пен қауырсын */}
-      <g>
-        <path d="M282 178h28l-3 22h-22Z" fill={KK} />
-        <rect x="280" y="172" width="32" height="8" rx="3" fill="#0A4256" />
-        <path d="M290 186h12" stroke={PG} strokeWidth="2" strokeLinecap="round" />
-        <g className="lit-hero-quill">
-          <path d="M330 92c-20 6-32 26-34 56 16-8 30-28 34-56Z" fill={CR} />
-          <path d="M330 92l-34 84" stroke={BR} strokeWidth="2.2" strokeLinecap="round" />
-          <g stroke="#D9C79E" strokeWidth="1.6" strokeLinecap="round"><path d="M320 110l6 3M314 124l7 3M308 138l6 2" /></g>
-        </g>
-      </g>
-      {/* ұшқын жұлдыздар */}
-      <g fill={GD}>
-        <path d="M150 44l3 6 6 3-6 3-3 6-3-6-6-3 6-3Z" className="lit-tw" />
-        <path d="M208 30l2 4 4 2-4 2-2 4-2-4-4-2 4-2Z" className="lit-tw lit-tw2" />
-      </g>
-      <path d="M22 206c80 10 220 10 300 0" stroke={IN} strokeOpacity=".08" strokeWidth="6" strokeLinecap="round" />
-    </svg>
-  );
-}
