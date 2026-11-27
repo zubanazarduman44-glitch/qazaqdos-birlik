@@ -4,8 +4,8 @@
    Тек /app/qyran бетінде жүктеледі. Барлық ереже .cx ішінде — басқа беттерге әсер етпейді.
    ════════════════════════════════════════════════════════════════════ */
 .cx {
-  --cx-red: var(--qyzyl);
-  --cx-red-2: var(--qyzyl-2);
+  --cx-red: var(--sec, var(--qyzyl)); /* бөлім түсі (чат — көк) */
+  --cx-red-2: var(--sec-deep, var(--qyzyl-2));
   --cx-cream: var(--bg);
   --cx-surf: #ffffff;
   --cx-sand: #f1eee8;
@@ -14,8 +14,8 @@
   --cx-muted: #4a5160;
   --cx-gold: var(--altyn);
   --cx-gold-soft: #f8e6b8;
-  --cx-blue: var(--kok);
-  --cx-blue-2: #0a4a61;
+  --cx-blue: var(--sec, var(--kok));
+  --cx-blue-2: var(--sec-deep, #0a4a61);
   --cx-rim: rgba(60, 52, 48, 0.22);
   --cx-card: inset 0 0 0 1px var(--cx-rim), 0 1px 2px rgba(45, 38, 36, 0.06), 0 10px 24px -18px rgba(45, 38, 36, 0.35);
   --cx-ease: cubic-bezier(0.2, 0.8, 0.2, 1);

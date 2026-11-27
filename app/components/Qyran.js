@@ -181,13 +181,17 @@ export function AqylFigure({ char, mood: moodIn = "idle", framing = "full", widt
 }
 
 const FULL_RATIO = FULL_VB[2] / FULL_VB[3];
+// Бұрынғы бүркіттің кадры (ені:бойы = 200:230). Ескі орындарда CSS енін береді (мысалы, width: 104px; height: auto) —
+// кейіпкер биік болғандықтан, кадрды екі жағынан кеңейтеміз: бойы бұрынғыдай қалады, макет бұзылмайды.
+const WIDE_VB = [-190, -40, 870, 1000];
 
-export default function Qyran({ mood = "idle", size = 160, className = "", title = "Aqyl", framing, char }) {
+export default function Qyran({ mood = "idle", size = 160, className = "", title = "Aqyl", framing, char, tight = false }) {
   const f = framing || (size < 100 ? "bust" : "full");
-  // Бұрынғы бүркіттің биіктігі ~ size × 1.15 болатын — макет бұзылмас үшін биіктікті сақтаймыз
-  const h = f === "bust" ? size : Math.round(size * 1.15);
-  const w = f === "bust" ? size : Math.round(h * FULL_RATIO);
-  return <AqylFigure char={char} mood={mood} framing={f} width={w} height={h} className={className} title={title} />;
+  if (f === "bust") return <AqylFigure char={char} mood={mood} framing="bust" width={size} height={size} className={className} title={title} />;
+  const h = Math.round(size * 1.15);
+  // tight — кейіпкердің өз ені (чат сахнасы сияқты арнайы орындар үшін)
+  const w = tight ? Math.round(h * FULL_RATIO) : size;
+  return <AqylFigure char={char} mood={mood} framing="full" viewBox={tight ? undefined : WIDE_VB} width={w} height={h} className={className} title={title} />;
 }
 
 /** Кішкентай статикалық портрет (мәзір, чат тақырыбы, таңдау батырмалары). */

@@ -208,8 +208,10 @@
 .pf-aq-side .aqp-opts { flex-wrap: wrap; gap: 8px; }
 .pf-aq-side .aqp-opt { width: 116px; padding: 8px 6px 10px; font-size: 13px; }
 @media (max-width: 420px) {
-  .pf-aq-row { grid-template-columns: 104px minmax(0, 1fr); gap: 12px; }
-  .pf-aq-side .aqp-opt { width: 100px; }
+  .pf-aq-row { grid-template-columns: 96px minmax(0, 1fr); gap: 10px; }
+  .pf-aq-side .aqp-opts { flex-wrap: nowrap; width: 100%; }
+  .pf-aq-side .aqp-opt { flex: 1 1 0; width: auto; min-width: 0; padding: 8px 4px; font-size: 12px; }
+  .pf-aq-side .aqp-opt .aq-avatar { width: 48px !important; height: 48px !important; }
 }
 
 /* Тіл: интерфейс (Қаз/Рус/Eng) тек осы жерде ауысады */

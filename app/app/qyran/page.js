@@ -489,7 +489,7 @@ export default function Chat() {
             <span className="cx-halo" aria-hidden="true" />
             <span className="cx-wow" aria-hidden="true"><i /><i /><i /></span>
             <Qyran mood={stageMood} size={64} framing="bust" className="cx-aq-bust" />
-            <Qyran mood={stageMood} size={200} framing="full" className="cx-aq-full" />
+            <Qyran mood={stageMood} size={200} framing="full" tight className="cx-aq-full" />
           </div>
         </div>
         <div className="cx-topics">
@@ -528,7 +528,7 @@ export default function Chat() {
           {empty ? (
             <div className="cx-welcome cx-welcome-big">
               <span className="cx-welcome-fig" aria-hidden="true">
-                <Qyran mood={busy ? "think" : "explain"} size={150} framing="full" />
+                <Qyran mood={busy ? "think" : "explain"} size={150} framing="full" tight />
               </span>
               <div className="cx-welcome-say">
                 <b className="cx-welcome-name">Aqyl</b>
