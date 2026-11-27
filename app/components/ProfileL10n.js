@@ -61,6 +61,15 @@ const D = {
     fr: "Une braise garde le foyer allumé si tu manques un jour", tr: "Bir gün kaçırırsan kor ocağı canlı tutar", ar: "الجمرة تُبقي الموقد مشتعلًا إن فاتك يوم",
     ko: "하루를 놓쳐도 불씨가 화덕을 지켜 줘요", ja: "1日休んでも、熾火がかまどの火を守ります",
   },
+  // XP-тен шығатын деңгей мен A0–B2 тест нәтижесі — екі бөлек ұғым
+  gameLvl: { kk: "Ойын деңгейі", ru: "Игровой уровень", en: "Game level", zh: "游戏等级", es: "Nivel de juego", de: "Spiellevel", fr: "Niveau de jeu", tr: "Oyun seviyesi", ar: "مستوى اللعب", ko: "게임 레벨", ja: "ゲームレベル" },
+  kzLvl: { kk: "Қазақ тілі деңгейі", ru: "Уровень казахского", en: "Kazakh level", zh: "哈萨克语水平", es: "Nivel de kazajo", de: "Kasachisch-Niveau", fr: "Niveau de kazakh", tr: "Kazakça seviyesi", ar: "مستوى الكازاخية", ko: "카자흐어 수준", ja: "カザフ語レベル" },
+  lvlTest: {
+    kk: "Деңгейді анықтау / қайта тапсыру", ru: "Определить / пересдать уровень", en: "Take / retake the level test", zh: "测定水平 / 重新测试",
+    es: "Determinar / repetir el nivel", de: "Niveau bestimmen / Test wiederholen", fr: "Évaluer / repasser le niveau", tr: "Seviyeni belirle / yeniden gir",
+    ar: "تحديد المستوى / إعادة الاختبار", ko: "레벨 측정 / 다시 응시", ja: "レベル判定 / 再受験",
+  },
+  colon: { kk: ": ", fr: " : ", zh: "：", ja: "：", en: ": " },
   langs: { kk: "Тіл", ru: "Язык", en: "Language", zh: "语言", es: "Idioma", de: "Sprache", fr: "Langue", tr: "Dil", ar: "اللغة", ko: "언어", ja: "言語" },
   dangerNote: {
     kk: "Қайтарылмайды: XP, тиын, мөр, сөздер — бәрі өшеді.", ru: "Необратимо: XP, монеты, штампы и слова будут удалены.", en: "Cannot be undone: XP, coins, stamps and words are erased.",

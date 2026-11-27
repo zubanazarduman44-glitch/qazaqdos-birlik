@@ -7,7 +7,7 @@ import { authed } from "../../../lib/auth";
 import { WORDS, tr } from "../../../lib/words";
 import { weekKey, prevWeekKey, weekEnd, prizeKind, COIN_PRIZES } from "../../../lib/week";
 import { tx } from "../../../lib/tx";
-import { SaiysHero, SaiysPrize, SaiysRankList, SaiysLast, SaiysSkeleton, SaiysEmpty, SaiysHead, SaiysLoginGate, SaiysRoomGate, SaiysRoomView, saiysStatus, sy } from "../../components/SaiysBoard";
+import { SaiysHero, SaiysPrize, SaiysRankList, SaiysLast, SaiysSkeleton, SaiysEmpty, SaiysHead, SaiysLoginGate, SaiysRoomGate, SaiysRoomView, SaiysSample, saiysStatus, sy } from "../../components/SaiysBoard";
 
 const QN = 10;
 const Q_MS = 12000;
@@ -53,6 +53,13 @@ export default function Saiys() {
   const wk = weekKey();
   const kind = prizeKind(wk);
   const lastKind = prizeKind(prevWeekKey());
+  // Қонақ үлгісі: күнге бір сұрақ, тек осы бетте — award, рейтинг, Supabase жоқ
+  const [demoSeed, setDemoSeed] = useState(null);
+  const [demoPick, setDemoPick] = useState(null);
+  useEffect(() => {
+    if (!user) setDemoSeed(Math.floor(Date.now() / 864e5));
+  }, [user]);
+  const demoQ = useMemo(() => (demoSeed == null ? null : buildQs(demoSeed, explain)[0]), [demoSeed, explain]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 30000);
@@ -113,6 +120,7 @@ export default function Saiys() {
       <div className="sy">
         {head}
         <SaiysLoginGate x={x} />
+        <SaiysSample x={x} lang={lang} q={demoQ} picked={demoPick} onChoose={(k) => !demoPick && setDemoPick(k)} optLabel={(o) => tr(o, explain)} />
       </div>
     );
 

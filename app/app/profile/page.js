@@ -154,9 +154,12 @@ export default function Profile() {
         <div className="pf-id-main">
           <h1 id="pf-name" dir="auto">{state.profile.name || t.guest}</h1>
           <div className="pf-id-tags">
-            <span className="pf-tag">{t.levelN(lvl.level)}</span>
+            <span className="pf-tag">{P("gameLvl")}{P("colon")}<b>{lvl.level}</b></span>
+            {cefr && (
+              <span className="pf-tag" title={cefrName || undefined}>{P("kzLvl")}{P("colon")}<b>{cefr}</b></span>
+            )}
             <Link href="/app/level" className={`pf-tag pf-tag-go ${cefr ? "" : "is-empty"}`}>
-              {cefr ? <><b>{cefr}</b>{cefrName ? ` · ${cefrName}` : ""}</> : P("cefrGo")}
+              {P("lvlTest")}
               <Icon name="right" size={14} stroke={2.4} className="pf-arrow" />
             </Link>
           </div>
@@ -173,7 +176,7 @@ export default function Profile() {
         <h2 id="pf-prog-h" className="pf-h"><span className="pf-h-ic"><Icon name="chart" size={18} /></span>{P("progT")}</h2>
         <div className="pf-meters">
           <div className="pf-meter">
-            <div className="pf-meter-top"><b>{t.levelN(lvl.level)}</b><span>{P("toNext")(Math.max(0, lvl.to - xp))}</span></div>
+            <div className="pf-meter-top"><b>{P("gameLvl")}{P("colon")}{lvl.level}</b><span>{P("toNext")(Math.max(0, lvl.to - xp))}</span></div>
             <div className="pf-xp-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={lvl.pct} aria-label={t.levelN(lvl.level)}>
               <i style={{ transform: `scaleX(${Math.max(0.02, lvl.pct / 100)})` }} />
             </div>

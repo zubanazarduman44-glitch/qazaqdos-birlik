@@ -28,8 +28,20 @@ const staticTr = (w, to, ep, lvl, lead) => {
   return !LIT_TR ? null : LIT_TR[w.id]?.[to === "ru" ? 0 : 1];
 };
 
-// «т.» — автордың туған жылы (шығарма жылы емес)
-const BORN = { kk: "т.", ru: "р.", en: "b." };
+// born — автордың туған жылы (шығарма жылы емес): «1841 жылы туған», 11 тіл. Шығарма жылы — бөлек work.year.
+const BORN = {
+  kk: (y) => `${y} жылы туған`, ru: (y) => `род. в ${y} г.`, en: (y) => `born ${y}`, zh: (y) => `生于${y}年`,
+  es: (y) => `nació en ${y}`, de: (y) => `geb. ${y}`, fr: (y) => `né en ${y}`, tr: (y) => `${y} doğumlu`,
+  ar: (y) => `وُلد عام ${y}`, ko: (y) => `${y}년 출생`, ja: (y) => `${y}年生まれ`,
+};
+const bornTxt = (y, lang) => (BORN[lang] || BORN.en)(y);
+const TR_FAIL = {
+  kk: "Аударма қазір қолжетімсіз. Сәлден соң қайталап көр.", ru: "Перевод сейчас недоступен. Попробуйте чуть позже.",
+  en: "Translation is unavailable right now. Please try again shortly.", zh: "暂时无法翻译，请稍后再试。",
+  es: "La traducción no está disponible ahora. Inténtalo de nuevo en un momento.", de: "Die Übersetzung ist gerade nicht verfügbar. Versuch es gleich noch einmal.",
+  fr: "La traduction est indisponible pour le moment. Réessaie dans un instant.", tr: "Çeviri şu anda kullanılamıyor. Birazdan yeniden dene.",
+  ar: "الترجمة غير متاحة الآن. حاول مرة أخرى بعد قليل.", ko: "지금은 번역을 사용할 수 없어요. 잠시 후 다시 시도해 주세요.", ja: "今は翻訳を利用できません。少し後でもう一度お試しください。",
+};
 const SPEEDS = [0.75, 1, 1.25];
 const LS_LVL = "qd_lit_lvl"; // {шығарма id: деңгей}
 const LS_SPEED = "qd_lit_speed";
@@ -85,6 +97,7 @@ export default function Literature() {
   const [qres, setQres] = useState(null);
   const [loadingTts, setLoadingTts] = useState(false);
   const [trans, setTrans] = useState(null); // null | "loading" | text
+  const [trErr, setTrErr] = useState(null); // аудару сәтсіз болған мәтіннің кілті (trKey)
   const [chatOn, setChatOn] = useState(false);
   const [pick, setPick] = useState(null); // оқу басталатын таңдалған сөйлем
   const audioRef = useRef(null);
@@ -352,6 +365,7 @@ export default function Literature() {
   }, [id, explain, reading, lvl, !!ep]);
   async function translate() {
     if (trans) return setTrans(null);
+    setTrErr(null);
     await loadLitTr(explain);
     const st = staticTr(work, explain, reading, lvl);
     if (st) return setTrans(st);
@@ -362,8 +376,9 @@ export default function Literature() {
     v = await (v || fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: srcText, to: explain }) }).then((r) => r.json()).then((d) => d.text).catch(() => null));
     if (v) setTrans(v);
     else {
+      // Аударма сервисі жауап бермесе — батырма «өлі» болып қалмауы үшін мәтін астында түсінікті хабар
       setTrans(null);
-      setErr("Translate error");
+      setTrErr(key);
     }
   }
 
@@ -448,12 +463,13 @@ export default function Literature() {
         <span className="lit-cover">
           <span className="lit-cover-top">
             <span className="lit-lvl">{w.levels.join(" · ")}</span>
-            {w.born && <span className="lit-year">{BORN[lang] || BORN.en} {w.born}</span>}
+            {w.year && <span className="lit-year">{w.year}</span>}
           </span>
           <span className="lit-art"><LitEmblem id={w.art} size={84} /></span>
           <span className="lit-cover-txt">
             <b lang="kk" dir="ltr">{w.work}</b>
             <small lang="kk" dir="ltr">{w.author}</small>
+            {w.born && <small className="lit-born" lang={lang}>{bornTxt(w.born, lang)}</small>}
           </span>
         </span>
         <em className="lit-kind">{L(w.kind, lang)}</em>
@@ -525,11 +541,13 @@ export default function Literature() {
       ))}
     </div>
   );
-  const transBox = trans && (
+  const transBox = trans ? (
     <p className={`lit-trans ${trans === "loading" ? "is-loading" : ""}`} lang={trans === "loading" ? undefined : explain} dir="auto" data-notap="">
       {trans === "loading" ? x.tapLoading : trans}
     </p>
-  );
+  ) : trErr === trKey ? (
+    <p className="lit-note lit-warn" role="status">{L(TR_FAIL, lang)}</p>
+  ) : null;
 
   return (
     <div className="literature lit-read" style={coverStyle(work)}>
@@ -552,11 +570,11 @@ export default function Literature() {
               <LitEmblem id={work.art} size={104} />
             </div>
             <div className="lit-verso-txt">
-              <span className="lit-badge">{L(work.kind, lang)} · {work.lvl}</span>
+              <span className="lit-badge">{L(work.kind, lang)} · {work.lvl}{work.year ? ` · ${work.year}` : ""}</span>
               <h2 lang="kk" dir="ltr">{work.work}</h2>
               <p className="lit-by" lang="kk" dir="ltr">
                 {work.author}
-                {work.born && <span className="lit-by-y"> · {BORN[lang] || BORN.en} {work.born}</span>}
+                {work.born && <span className="lit-by-y" lang={lang}> · {bornTxt(work.born, lang)}</span>}
               </p>
             </div>
             <div className="lit-gist">

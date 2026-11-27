@@ -144,6 +144,12 @@
 .sy-skel i:nth-child(2) { animation-delay: 0.15s; } .sy-skel i:nth-child(3) { animation-delay: 0.3s; } .sy-skel i:nth-child(4) { animation-delay: 0.45s; } .sy-skel i:nth-child(5) { animation-delay: 0.6s; }
 .sy-gate { display: grid; justify-items: center; gap: 12px; padding: 28px 20px; text-align: center; }
 .sy-gate p { margin: 0; max-width: 36ch; font-family: var(--head); font-size: 17px; font-weight: 700; line-height: 1.35; }
+.sy-sample { display: grid; gap: 10px; margin-top: 16px; }
+.sy-sample .sy-hint { margin: 0; }
+.sy-sample-res { display: grid; justify-items: start; gap: 8px; }
+.sy-sample-res p { margin: 0; font-size: 14.5px; font-weight: 600; line-height: 1.45; color: var(--sy-muted); }
+.sy-sample-res p.is-ok { color: var(--sy-ok); font-weight: 800; }
+.sy-sample-res p.is-bad { color: var(--sy-wine); font-weight: 800; }
 
 /* ── Бөлме ── */
 .sy-join { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }

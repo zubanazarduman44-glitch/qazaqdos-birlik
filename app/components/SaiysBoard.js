@@ -186,6 +186,56 @@ export function SaiysLoginGate({ x }) {
   );
 }
 
+/* Қонаққа арналған «Сайыс үлгісі»: бір сұрақ. Нәтиже еш жерге жазылмайды (рейтинг те, Supabase та емес). */
+const SAMPLE = {
+  kk: { title: "Сайыс үлгісі", note: "Бір сұраққа жауап беріп көр. Бұл нәтиже рейтингке жазылмайды.", ok: "Дұрыс!", bad: (a) => `Қате. Дұрысы: ${a}`, real: "Нағыз сайыста 10 сұрақ болады. Қатысу үшін аккаунтқа кір." },
+  ru: { title: "Пример состязания", note: "Ответьте на один вопрос. Результат не попадает в рейтинг.", ok: "Верно!", bad: (a) => `Неверно. Правильно: ${a}`, real: "В настоящем состязании 10 вопросов. Войдите, чтобы участвовать." },
+  en: { title: "Contest sample", note: "Answer one question. This result is not added to the ranking.", ok: "Correct!", bad: (a) => `Not quite. The answer is: ${a}`, real: "A real contest has 10 questions. Sign in to take part." },
+  zh: { title: "比赛示例", note: "回答一道题试试。结果不会计入排行榜。", ok: "答对了！", bad: (a) => `不对。正确答案：${a}`, real: "正式比赛有 10 道题，登录即可参加。" },
+  es: { title: "Muestra del concurso", note: "Responde una pregunta. Este resultado no entra en la clasificación.", ok: "¡Correcto!", bad: (a) => `No exactamente. La respuesta es: ${a}`, real: "Un concurso real tiene 10 preguntas. Inicia sesión para participar." },
+  de: { title: "Wettbewerb-Beispiel", note: "Beantworte eine Frage. Das Ergebnis zählt nicht für die Rangliste.", ok: "Richtig!", bad: (a) => `Leider falsch. Richtig ist: ${a}`, real: "Ein echter Wettbewerb hat 10 Fragen. Melde dich an, um mitzumachen." },
+  fr: { title: "Exemple de concours", note: "Réponds à une question. Ce résultat n’entre pas dans le classement.", ok: "Bonne réponse !", bad: (a) => `Pas tout à fait. La réponse : ${a}`, real: "Un vrai concours compte 10 questions. Connecte-toi pour participer." },
+  tr: { title: "Yarışma örneği", note: "Bir soruyu yanıtla. Bu sonuç sıralamaya yazılmaz.", ok: "Doğru!", bad: (a) => `Yanlış. Doğrusu: ${a}`, real: "Gerçek yarışmada 10 soru var. Katılmak için giriş yap." },
+  ar: { title: "نموذج المسابقة", note: "أجب عن سؤال واحد. لا تُسجَّل هذه النتيجة في الترتيب.", ok: "إجابة صحيحة!", bad: (a) => `ليست صحيحة. الإجابة: ${a}`, real: "في المسابقة الحقيقية 10 أسئلة. سجّل الدخول للمشاركة." },
+  ko: { title: "대회 맛보기", note: "한 문제에 답해 보세요. 이 결과는 순위에 기록되지 않아요.", ok: "정답이에요!", bad: (a) => `아쉬워요. 정답: ${a}`, real: "실제 대회는 10문제예요. 로그인하고 참가하세요." },
+  ja: { title: "コンテストのお試し", note: "1問に答えてみよう。この結果はランキングに記録されません。", ok: "正解！", bad: (a) => `残念。正解は：${a}`, real: "本番のコンテストは10問です。ログインして参加しよう。" },
+};
+export function SaiysSample({ x, lang, q, picked, onChoose, optLabel }) {
+  const s = SAMPLE[lang] || SAMPLE.en;
+  if (!q) return null;
+  const ok = picked && picked === q.w.kk;
+  return (
+    <section className="sy-card sy-sample" aria-labelledby="sy-sample-h">
+      <SaiysHead id="sy-sample-h" icon={<Icon name="target" size={18} />} title={s.title} />
+      <p className="sy-hint">{s.note}</p>
+      <div className="sy-q">
+        <p className="sy-q-hint">{x.sTrans}</p>
+        <h3 className="sy-q-word" lang="kk">{q.w.kk}</h3>
+        <div className="sy-opts">
+          {q.options.map((o) => {
+            const right = picked && o.kk === q.w.kk;
+            const bad = picked === o.kk && o.kk !== q.w.kk;
+            return (
+              <button key={o.kk} type="button" disabled={Boolean(picked)} className={`sy-opt ${right ? "is-right" : ""} ${bad ? "is-bad" : ""}`} onClick={() => onChoose(o.kk)}>
+                <span>{optLabel(o)}</span>
+                {right && <Icon name="check" size={18} stroke={3} />}
+                {bad && <Icon name="x" size={18} stroke={3} />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      {picked && (
+        <div className="sy-sample-res" role="status">
+          <p className={ok ? "is-ok" : "is-bad"}>{ok ? s.ok : s.bad(optLabel(q.w))}</p>
+          <p>{s.real}</p>
+          <Link href="/login" className="btn primary">{x.sLoginBtn}</Link>
+        </div>
+      )}
+    </section>
+  );
+}
+
 /* Бөлме: ашу не кодпен қосылу */
 export function SaiysRoomGate({ x, t, input, setInput, err, onCreate, onJoin }) {
   return (
