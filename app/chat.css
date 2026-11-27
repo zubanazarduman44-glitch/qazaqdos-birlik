@@ -701,3 +701,81 @@
   .cx .cx-spark i { transform: rotate(45deg) scale(1); }
   .cx .cx-scan { transform: translateY(50%); }
 }
+
+/* ══════════ Aqyl бейнесі: тақырыптағы портрет, бос чаттағы толық бейне, таңдау ══════════ */
+.cx-stage { z-index: 3; }
+.cx-aq .cx-aq-bust { width: 100%; height: 100%; margin: 0; }
+.cx-aq .cx-aq-full { display: none; }
+.cx-aq-bust { border-radius: 30%; }
+@media (max-width: 1099px) {
+  .cx-stage { padding-inline-end: 112px; }
+  .cx-aq { border-radius: 30%; overflow: hidden; }
+}
+@media (min-width: 1100px) {
+  .cx-aq { width: 196px; height: 262px; place-items: end center; }
+  .cx-aq .cx-aq-bust { display: none; }
+  .cx-aq .cx-aq-full { display: block; width: auto; height: 100%; margin: 0; }
+  .cx-aq .cx-disc { inset: auto 6px 0; width: auto; height: 184px; }
+  .cx-halo { inset: auto -2px -9px; height: 202px; }
+  .cx-wow { inset: 0 0 40px; }
+}
+
+/* «Ақылдың бейнесі» батырмасы */
+.aqp { position: relative; }
+.aqp-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-width: 44px; height: 44px; padding: 0 9px; border: 0; border-radius: 14px;
+  background: var(--cx-surf); color: var(--cx-ink); box-shadow: inset 0 0 0 1px var(--cx-rim);
+  font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+}
+.aqp-btn:hover, .aqp-btn[aria-expanded="true"] { box-shadow: inset 0 0 0 1.5px var(--sec, var(--cx-red)); }
+.aqp-btn .aq-avatar { border-radius: 9px; }
+.aqp-btn-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.aqp-pop {
+  position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: 30;
+  width: max-content; max-width: min(320px, calc(100vw - 24px));
+  padding: 14px; border-radius: 18px; background: #fff;
+  box-shadow: 0 12px 34px rgba(31, 36, 48, 0.18), 0 0 0 1px rgba(31, 36, 48, 0.06);
+  animation: aqpIn 0.18s ease both;
+}
+.aqp-title { display: block; margin: 0 2px 10px; font-family: var(--head); font-size: 15px; color: var(--cx-ink); }
+@keyframes aqpIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (min-width: 1100px) {
+  .cx-look { flex: none; }
+  .cx-look .aqp-btn { height: 48px; }
+  .cx-look .aqp-btn-t { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+  .cx-look .aqp-pop { top: auto; bottom: calc(100% + 8px); inset-inline-end: auto; inset-inline-start: 0; }
+  .cx-stage-tools { flex-wrap: wrap; }
+}
+
+/* Таңдау нұсқалары (чатта да, профильде де) */
+.aqp-opts { display: flex; gap: 10px; }
+.aqp-opt {
+  position: relative; display: grid; justify-items: center; gap: 8px; width: 132px; min-height: 44px; padding: 10px 8px 12px;
+  border: 0; border-radius: 16px; background: #faf6ee; color: #1f2430; box-shadow: inset 0 0 0 1.5px rgba(31, 36, 48, 0.08);
+  font: inherit; font-size: 13.5px; font-weight: 700; line-height: 1.25; text-align: center; cursor: pointer;
+  transition: box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.aqp-opt:hover { background: #f5eedf; }
+.aqp-opt.on { background: #fff; box-shadow: inset 0 0 0 2.5px var(--sec, #a3242b); }
+.aqp-opt:focus-visible { outline: 3px solid var(--sec, #a3242b); outline-offset: 2px; }
+.aqp-pic { position: relative; display: block; }
+.aqp-check {
+  position: absolute; top: -6px; inset-inline-end: -6px; display: grid; place-items: center; width: 24px; height: 24px;
+  border-radius: 50%; background: var(--sec, #a3242b); color: #fff; box-shadow: 0 0 0 2.5px #fff;
+  opacity: 0; transform: scale(0.6); transition: opacity 0.15s ease, transform 0.2s ease;
+}
+.aqp-opt.on .aqp-check { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .aqp-pop { animation: none; } .aqp-check { transition: none; } }
+
+/* Бос чат: Aqyl бойымен + сәлемдесу; бірінші хабардан кейін бұл орын әңгімеге беріледі */
+.cx-welcome-big { display: flex; align-items: flex-end; gap: 12px; max-width: 640px; }
+.cx-welcome-fig { flex: none; display: block; width: 92px; }
+.cx-welcome-fig .qyran { display: block; width: 100%; height: auto; }
+.cx-welcome-say { position: relative; flex: 1; min-width: 0; margin-bottom: 22px; padding: 12px 16px; border-radius: 18px; border-end-start-radius: 6px; background: #f8f1e1; font-size: 15.5px; line-height: 1.5; }
+.cx-welcome-say p { margin: 2px 0 0; }
+.cx-welcome-name { font-family: var(--head); font-size: 14px; color: var(--cx-red-2, #741820); }
+@media (min-width: 1100px) {
+  .cx-welcome-fig { display: none; }
+  .cx-welcome-say { margin-bottom: 0; }
+}

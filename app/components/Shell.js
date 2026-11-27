@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useApp, DAILY_GOAL, dayKey } from "./Store";
 import Icon from "./Icon";
-import Qyran from "./Qyran";
+import { AqylAvatar } from "./Qyran";
 import QyzylMark from "./QyzylMark";
 import ShellGlyph from "./ShellGlyph";
 import WordTap from "./WordTap";
@@ -166,7 +166,7 @@ export default function Shell({ children }) {
     const on = active(n.href);
     return (
       <Link key={n.href} href={n.href} className={`side-link ${on ? "on" : ""}`} aria-current={on ? "page" : undefined} title={hint(n.key)} style={secVars(n.key, "it")}>
-        <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={n.key === "home" ? 22 : 18} /></span>
+        {n.key === "chat" ? <span className="sx-gl sx-gl-aq"><AqylAvatar size={30} /></span> : <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={n.key === "home" ? 22 : 18} /></span>}
         <span className="sx-lbl">
           <b>{label(n.key)}</b>
           <small>{hint(n.key)}</small>
@@ -176,7 +176,7 @@ export default function Shell({ children }) {
   };
   const sheetLink = (href, key, text) => (
     <Link key={href} href={href} className={`sheet-link ${active(href) ? "on" : ""}`} aria-current={active(href) ? "page" : undefined} style={secVars(key, "it")}>
-      <span className="sx-gl"><ShellGlyph name={SECTIONS[key].glyph} size={20} /></span>
+      {key === "chat" ? <span className="sx-gl sx-gl-aq"><AqylAvatar size={34} /></span> : <span className="sx-gl"><ShellGlyph name={SECTIONS[key].glyph} size={20} /></span>}
       <span className="sx-lbl">
         <b>{text}</b>
         <small>{hint(key)}</small>
@@ -244,7 +244,7 @@ export default function Shell({ children }) {
       <nav className="bottom-nav">
         {NAV.filter(showNav).filter((n) => MOBILE.includes(n.key)).map((n) => (
           <Link key={n.href} href={n.href} className={active(n.href) ? "on" : ""} aria-current={active(n.href) ? "page" : undefined} style={secVars(n.key, "it")}>
-            <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={20} /></span>
+            {n.key === "chat" ? <span className="sx-gl sx-gl-aq"><AqylAvatar size={28} /></span> : <span className="sx-gl"><ShellGlyph name={SECTIONS[n.key].glyph} size={20} /></span>}
             <span>{n.key === "home" ? label("home") : t.nav[n.key]}</span>
           </Link>
         ))}

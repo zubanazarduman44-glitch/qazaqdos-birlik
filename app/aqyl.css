@@ -222,3 +222,58 @@
   .aq-says.aq-explain .aq-says-b { border-radius: 18px; border-start-start-radius: 6px; }
   .aq-says.aq-explain .aq-says-b::before { display: none; }
 }
+
+/* ══════════ Aqyl — адам бейнесі (Qyran.js: AqylFigure, AqylAvatar) ══════════ */
+.aq2 { overflow: visible; }
+.aq2.aq2-bust { overflow: hidden; }
+.aq2 image { pointer-events: none; }
+.aq2-react, .aq2-fig { transform-box: fill-box; transform-origin: 50% 100%; }
+.aq2-fig { animation: aq2Breath 4.2s ease-in-out infinite; }
+.aq2-arm { transform-box: fill-box; }
+/* Қол: әдетте төмен; кеңес/түсіндіру кезінде иықтан көтеріледі */
+.aq2-up { opacity: 0; transform: rotate(-34deg); transition: opacity 0.18s ease, transform 0.42s cubic-bezier(0.34, 1.45, 0.55, 1); }
+.aq2-down { transition: opacity 0.18s ease 0.06s, transform 0.32s ease; }
+.aq2.arm-up .aq2-up { opacity: 1; transform: none; }
+.aq2.arm-up .aq2-down { opacity: 0; transform: rotate(26deg); transition: opacity 0.14s ease, transform 0.3s ease; }
+.aq2.arm-up.m-talk .aq2-up, .aq2.arm-up.m-explain .aq2-up, .aq2.arm-up.m-support .aq2-up { animation: aq2Gesture 1.6s ease-in-out 0.45s infinite alternate; }
+.aq2.arm-up.m-cheer .aq2-up { animation: aq2Wave 0.42s ease-in-out 0.4s infinite alternate; }
+/* Көз жұму, сөйлеу */
+.aq2-lids { opacity: 0; animation: aq2Blink 5.4s linear var(--bd, 0s) infinite; }
+.aq2.eyes-shut .aq2-lids { opacity: 1; animation: none; }
+.aq2-mouth.is-talk { animation: aq2Talk 0.32s steps(1, end) infinite; }
+/* Бір реттік реакциялар */
+.aq2.m-happy .aq2-react, .aq2.m-cheer .aq2-react { animation: aq2Hop 0.62s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+.aq2.m-wow .aq2-react, .aq2.m-proud .aq2-react { animation: aq2Pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+.aq2.m-oops .aq2-react { transform: rotate(-2.5deg); transition: transform 0.3s ease; }
+.aq2.m-think .aq2-react { transform: rotate(1.6deg); transition: transform 0.3s ease; }
+.aq2.m-sleep .aq2-fig { animation-duration: 6.5s; }
+.aq2-fx { animation: aq2FxIn 0.4s ease both; }
+.aq2-spark path, .aq2-idea path { transform-box: fill-box; transform-origin: 50% 50%; animation: aq2Twinkle 1.8s ease-in-out infinite; }
+.aq2-spark path:nth-child(2), .aq2-idea path:nth-child(2) { animation-delay: 0.5s; }
+.aq2-zzz path { animation: aq2Float 2.4s ease-in-out infinite; }
+.aq2-zzz path:nth-child(2) { animation-delay: 0.4s; }
+.aq2-zzz path:nth-child(3) { animation-delay: 0.8s; }
+@keyframes aq2Breath { 0%, 100% { transform: none; } 50% { transform: scale(1.006, 1.012); } }
+@keyframes aq2Blink { 0%, 93% { opacity: 0; } 94%, 97% { opacity: 1; } 98%, 100% { opacity: 0; } }
+@keyframes aq2Talk { 0% { opacity: 0; } 50% { opacity: 1; } }
+@keyframes aq2Gesture { from { transform: rotate(0deg); } to { transform: rotate(5deg); } }
+@keyframes aq2Wave { from { transform: rotate(-2deg); } to { transform: rotate(9deg); } }
+@keyframes aq2Hop { 0% { transform: translateY(0); } 40% { transform: translateY(-26px); } 100% { transform: translateY(0); } }
+@keyframes aq2Pop { 0% { transform: scale(0.96); } 55% { transform: scale(1.035); } 100% { transform: scale(1); } }
+@keyframes aq2FxIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes aq2Twinkle { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.7); opacity: 0.6; } }
+@keyframes aq2Float { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-8px); opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) {
+  .aq2 *, .aq2 { animation: none !important; transition: none !important; }
+  .aq2-lids { opacity: 0; }
+  .aq2.eyes-shut .aq2-lids { opacity: 1; }
+}
+
+/* Портрет-аватар */
+.aq-avatar { display: inline-block; flex: none; overflow: hidden; border-radius: 32%; background: #f3e6cf; box-shadow: inset 0 0 0 1.5px rgba(31, 36, 48, 0.07); vertical-align: middle; }
+.aq-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* Мәзірдегі чат батырмасы: таңдалған Aqyl-дың портреті */
+.sx-gl.sx-gl-aq { background: transparent !important; box-shadow: none !important; overflow: visible; }
+.sx-gl-aq .aq-avatar { width: 100% !important; height: 100% !important; border-radius: 30%; }
+.bottom-nav .sx-gl-aq .aq-avatar { width: 28px !important; height: 28px !important; }
+.on > .sx-gl-aq .aq-avatar, .on .sx-gl-aq .aq-avatar { box-shadow: 0 0 0 2px var(--it, #a3242b); }

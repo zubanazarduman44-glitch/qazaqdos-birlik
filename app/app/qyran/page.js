@@ -8,6 +8,7 @@ import TopicArt from "../../components/TopicArt";
 import { ChatCamArt, ChatDisc } from "../../components/ChatArt";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
+import { AqylLookButton } from "../../components/AqylPicker";
 import { AqylSays, aqylMood } from "../../components/Aqyl";
 import { aqylL, useAqylL } from "../../components/AqylL10n";
 import Icon from "../../components/Icon";
@@ -460,6 +461,7 @@ export default function Chat() {
   }
 
   const empty = msgs.length === 0;
+  const stageMood = aqylMood(aqState === "listening" ? "support" : aqState === "looking" ? "wow" : aqState === "oops" ? "support" : aqState);
   const prompts = [...(t.chatSuggest || []), ...AL.chat.more];
   const status = AL.chat[aqState] || AL.chat.idle;
   const lastBot = (() => { for (let k = msgs.length - 1; k >= 0; k--) if (msgs[k].role === "assistant") return k; return -1; })();
@@ -486,7 +488,8 @@ export default function Chat() {
             <ChatDisc />
             <span className="cx-halo" aria-hidden="true" />
             <span className="cx-wow" aria-hidden="true"><i /><i /><i /></span>
-            <Qyran mood={aqylMood(aqState === "listening" ? "support" : aqState === "looking" ? "wow" : aqState === "oops" ? "support" : aqState)} size={180} />
+            <Qyran mood={stageMood} size={64} framing="bust" className="cx-aq-bust" />
+            <Qyran mood={stageMood} size={200} framing="full" className="cx-aq-full" />
           </div>
         </div>
         <div className="cx-topics">
@@ -501,6 +504,7 @@ export default function Chat() {
           </div>
         </div>
         <div className="cx-stage-tools">
+          <AqylLookButton className="cx-look" />
           {camBtn("cx-side-cam", true)}
           {msgs.length > 0 && (
             <button type="button" className="cx-clear" title={t.chatClear} aria-label={t.chatClear} onClick={() => update((s) => ({ ...s, chat: [] }))}>
@@ -521,11 +525,23 @@ export default function Chat() {
           ))}
         </div>
         <div className="chat-list" ref={listRef}>
-          <div className="cx-welcome">
-            <AqylSays mood={empty ? "talking" : "happy"} size={72} title="Aqyl">
-              <p key={mode}>{mode === "write" ? t.writingSub : mode === "speak" ? x.spSub : t.chatHi}</p>
-            </AqylSays>
-          </div>
+          {empty ? (
+            <div className="cx-welcome cx-welcome-big">
+              <span className="cx-welcome-fig" aria-hidden="true">
+                <Qyran mood={busy ? "think" : "explain"} size={150} framing="full" />
+              </span>
+              <div className="cx-welcome-say">
+                <b className="cx-welcome-name">Aqyl</b>
+                <p key={mode}>{mode === "write" ? t.writingSub : mode === "speak" ? x.spSub : t.chatHi}</p>
+              </div>
+            </div>
+          ) : mode !== "chat" ? (
+            <div className="cx-welcome">
+              <AqylSays mood="happy" size={44} title="Aqyl">
+                <p key={mode}>{mode === "write" ? t.writingSub : x.spSub}</p>
+              </AqylSays>
+            </div>
+          ) : null}
           {empty && !cam && mode === "chat" && (
             <div className="cx-starts">
               <button type="button" className="cx-start cx-start-cam" onClick={openCam}>

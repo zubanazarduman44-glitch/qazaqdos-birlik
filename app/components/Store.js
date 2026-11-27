@@ -7,6 +7,7 @@ import { tx, setTxOverride } from "../../lib/tx";
 import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut, upsertWeekly } from "../../lib/auth";
 import { weekKey } from "../../lib/week";
 import { mergeReview } from "../../lib/review";
+import { setAqylChoice } from "../../lib/aqylChoice";
 import Qyran from "./Qyran";
 
 const KEY = "qd_state_v1";
@@ -28,7 +29,7 @@ const RTL = ["ar"];
 export const DAILY_GOAL = 50;
 
 export const EMPTY = {
-  profile: { name: "", avatar: "🌱", skin: "eagle", goal: "travel", explain: "ru", ui: "kk", theme: null, onboarded: false, role: "student" },
+  profile: { name: "", avatar: "🌱", skin: "eagle", aqyl: "qyz", goal: "travel", explain: "ru", ui: "kk", theme: null, onboarded: false, role: "student" },
   xp: 0,
   coins: 0,
   streak: 0,
@@ -174,10 +175,11 @@ export function AppProvider({ children }) {
   useEffect(() => {
     document.documentElement.dataset.theme = "light";
     try { localStorage.removeItem("qd_theme"); } catch {}
+    setAqylChoice(state.profile.aqyl);
     const ui = state.profile.ui || "kk";
     document.documentElement.lang = ui === "zh" ? "zh-Hans" : ui;
     document.documentElement.dir = RTL.includes(ui) ? "rtl" : "ltr";
-  }, [state.profile.ui]);
+  }, [state.profile.ui, state.profile.aqyl]);
 
   const tRef = useRef(T.kk); // award() үшін ағымдағы тіл мәтіндері
   const update = useCallback((fn) => {

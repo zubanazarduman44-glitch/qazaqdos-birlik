@@ -1,77 +1,20 @@
-// Кию үлгісі: кейіпкер (алдынан қарап тұрған бүркіт не жануар) + ұлттық киімдер SVG қабаттары.
-// Барлығы бір координат жүйесінде (200×248): бас орталығы (100,100), дене (100,176), табан y≈242 (кілемге тиеді).
-import { useId } from "react";
+// Кию үлгісі: таңдалған Aqyl (әңгімеші қыз не жігіт, AqylFigure) + ұлттық киімдер.
+// Киімдер кейіпкердің өз нүктелеріне (lib/aqyl.js → AQYL_GEOM[id].A) қарай сызылады; координат — кенеп (490×950).
+// Қабаттар: behind (арқадағы аспап) → дене суреті → body (шапан, белдік, алқа, оң жең) → қолдар (өз жеңдерімен) → бас киім.
+// Киіз стилі: тегіс түс + қою жиек + ақшыл тігіс сызығы.
+import { AqylFigure } from "./Qyran";
+import { useAqylChoice } from "../../lib/aqylChoice";
+import { AQYL_GEOM, aqylId } from "../../lib/aqyl";
 import { Dombyra, Kobyz, Kamshy } from "./NatArt";
 
 const GOLD = "#e8a400", GOLD2 = "#ffd35a", RED = "#a8231c", TEAL = "#0a7f99", EM = "#12665a", CREAM = "#fff3d4", INK = "#2a1708";
 
-/* ───────── Алдынан қараған бүркіт ───────── */
-function EagleFront({ uid }) {
-  const B = `ef${uid}b`, H = `ef${uid}h`, Cc = `ef${uid}c`, K = `ef${uid}k`;
-  return (
-    <g>
-      <defs>
-        <linearGradient id={B} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#8a5326" /><stop offset="1" stopColor="#3a220d" /></linearGradient>
-        <radialGradient id={H} cx="45%" cy="30%" r="80%"><stop offset="0" stopColor="#ecb94f" /><stop offset=".65" stopColor="#bb7b2a" /><stop offset="1" stopColor="#7a4a18" /></radialGradient>
-        <linearGradient id={Cc} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e2bd80" /><stop offset="1" stopColor="#a8732f" /></linearGradient>
-        <linearGradient id={K} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f3c43a" /><stop offset=".4" stopColor="#d9a21c" /><stop offset=".7" stopColor="#4a4540" /><stop offset="1" stopColor="#1c1a18" /></linearGradient>
-      </defs>
-      {/* Құйрық ұштары */}
-      <path d="M84 206 L78 232 L92 224Z M116 206 L122 232 L108 224Z M100 210 L100 234 L94 226 L106 226Z" fill="#2c1a09" />
-      {/* Қанаттар */}
-      <path d="M58 124 C34 146 34 200 62 226 C72 204 70 160 66 130Z" fill="#4a2c12" stroke="#1f1206" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M142 124 C166 146 166 200 138 226 C128 204 130 160 134 130Z" fill="#4a2c12" stroke="#1f1206" strokeWidth="1.4" strokeLinejoin="round" />
-      <g stroke="#d8b684" strokeWidth="1.6" strokeLinecap="round" fill="none" opacity=".4"><path d="M52 150 C50 176 54 200 62 218 M60 144 C60 170 62 190 66 206 M148 150 C150 176 146 200 138 218 M140 144 C140 170 138 190 134 206" /></g>
-      {/* Дене */}
-      <ellipse cx="100" cy="176" rx="46" ry="52" fill={`url(#${B})`} />
-      <ellipse cx="100" cy="184" rx="31" ry="42" fill={`url(#${Cc})`} />
-      <g fill="none" stroke="#5a3314" strokeWidth="1.6" strokeLinecap="round" opacity=".7">
-        {[150, 162, 174, 186, 198].map((y, i) => (<path key={y} d={`M${76 + (i % 2) * 6} ${y} q6 7 12 0 q6 7 12 0 q6 7 12 0 ${i % 2 ? "" : "q6 7 12 0"}`} />))}
-      </g>
-      {/* Бұтталы қауырсындар мен аяқ */}
-      <ellipse cx="80" cy="212" rx="15" ry="13" fill={`url(#${Cc})`} stroke="#5a3314" strokeWidth="1.2" />
-      <ellipse cx="120" cy="212" rx="15" ry="13" fill={`url(#${Cc})`} stroke="#5a3314" strokeWidth="1.2" />
-      <g stroke="#d9a21c" strokeWidth="4.6" strokeLinecap="round" fill="none"><path d="M68 224 l-3 6 M78 226 v7 M90 224 l3 6 M110 224 l-3 6 M122 226 v7 M132 224 l3 6" /></g>
-      <g stroke="#1c1a18" strokeWidth="2.6" strokeLinecap="round" fill="none"><path d="M65 230 l-2 3 M78 233 v2 M93 230 l2 3 M107 230 l-2 3 M122 233 v2 M135 230 l2 3" /></g>
-      {/* Мойын жалы */}
-      <ellipse cx="100" cy="140" rx="40" ry="16" fill={`url(#${H})`} />
-      <g fill="#e6b04a" stroke="#a86b1c" strokeWidth="1">
-        {[62, 74, 86, 100, 114, 126, 138].map((x, i) => (<path key={x} d="M0 0 C-4 5 -4 12 0 18 C4 12 4 5 0 0Z" transform={`translate(${x} ${134 + (i % 2) * 2}) rotate(${(x - 100) * 0.5})`} />))}
-      </g>
-      {/* Бас */}
-      <ellipse cx="100" cy="98" rx="41" ry="43" fill={`url(#${H})`} />
-      <path d="M72 66 C84 56 116 56 128 66" stroke="#f5d68a" strokeWidth="3" strokeLinecap="round" fill="none" opacity=".5" />
-      <g stroke="#a86b1c" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity=".7"><path d="M66 100 l-6 4 M64 112 l-7 4 M134 100 l6 4 M136 112 l7 4 M80 64 l2 6 M120 64 l-2 6 M100 58 v6" /></g>
-      {/* Ауыр қас */}
-      <path d="M62 82 C72 72 90 74 99 86 L97 90 C88 82 74 82 66 90Z" fill="#3a200a" />
-      <path d="M138 82 C128 72 110 74 101 86 L103 90 C112 82 126 82 134 90Z" fill="#3a200a" />
-      {/* Көз */}
-      <g className="bk-eyes" style={{ transformOrigin: "100px 92px" }}>
-        {[78, 122].map((x) => (
-          <g key={x}>
-            <circle cx={x} cy="94" r="9.6" fill="#2a1708" />
-            <circle cx={x} cy="94" r="8" fill="#e9a21c" />
-            <circle cx={x} cy="94" r="8" fill="none" stroke="#a85f06" strokeWidth="1.6" />
-            <circle cx={x} cy="95" r="4.2" fill="#0d0805" />
-            <circle cx={x + 2.4} cy="91" r="2.2" fill="#fff" />
-          </g>
-        ))}
-      </g>
-      {/* Тұмсық (алдынан) */}
-      <path d="M86 98 C86 88 114 88 114 98 C114 114 108 128 100 138 C92 128 86 114 86 98Z" fill={`url(#${K})`} stroke="#1c1a18" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M86 98 C86 88 114 88 114 98 C114 106 111 112 108 116 C103 108 97 108 92 116 C89 112 86 106 86 98Z" fill="#f2c13a" stroke="#c78b00" strokeWidth="1" />
-      <ellipse cx="95" cy="100" rx="2" ry="3" fill="#3a2a00" /><ellipse cx="105" cy="100" rx="2" ry="3" fill="#3a2a00" />
-      <path d="M100 112 V134" stroke="#0f0d0b" strokeWidth="1.4" opacity=".6" />
-    </g>
-  );
-}
-
-/* ───────── Киімдер (қабаттар) ───────── */
 function Gold({ d, w = 2.2 }) { return <path d={d} fill="none" stroke={GOLD2} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" />; }
 function Curls({ xs, y, s = 1, c = GOLD2 }) {
   return <g fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round">{xs.map((x) => <path key={x} transform={`translate(${x} ${y}) scale(${s})`} d="M0 5 c0 -6 -7 -8 -8 -3 c-1 4 5 5 6 1 M0 5 c0 -6 7 -8 8 -3 c1 4 -5 5 -6 1" />)}</g>;
 }
 
+/* ───────── Бас киімдер (200 өлшемді жүйеде сызылған; басқа қарай масштабталады, түбі (100,80)) ───────── */
 const HEAD = {
   takiya: () => (
     <g>
@@ -147,163 +90,260 @@ const HEAD = {
   ),
 };
 
-const BODY = {
-  kamzol: () => (
-    <g>
-      <path d="M58 148 C72 138 90 138 99 150 L96 204 C80 208 64 204 54 196Z" fill={TEAL} stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M142 148 C128 138 110 138 101 150 L104 204 C120 208 136 204 146 196Z" fill={TEAL} stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
-      <Gold d="M58 148 C72 138 90 138 99 150 L96 204 M142 148 C128 138 110 138 101 150 L104 204" w={2.4} />
-      <Curls xs={[70, 130]} y={176} s={0.8} /><Curls xs={[74, 126]} y={194} s={0.6} />
-      <g fill={GOLD2}><circle cx="92" cy="164" r="2" /><circle cx="108" cy="164" r="2" /><circle cx="92" cy="180" r="2" /><circle cx="108" cy="180" r="2" /></g>
-    </g>
-  ),
-  shapan: () => (
-    <g>
-      <ellipse cx="42" cy="178" rx="15" ry="34" fill={EM} stroke={INK} strokeWidth="1.8" transform="rotate(10 42 178)" />
-      <ellipse cx="158" cy="178" rx="15" ry="34" fill={EM} stroke={INK} strokeWidth="1.8" transform="rotate(-10 158 178)" />
-      <path d="M36 200 q6 8 16 4 M164 200 q-6 8 -16 4" stroke={GOLD2} strokeWidth="4" fill="none" strokeLinecap="round" />
-      <path d="M52 146 C74 134 126 134 148 146 L160 214 C128 228 72 228 40 214Z" fill={EM} stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M78 140 L100 172 L122 140 L112 138 L100 154 L88 138Z" fill={CREAM} stroke={INK} strokeWidth="1.2" />
-      <Gold d="M100 150 V224 M52 146 C74 134 126 134 148 146 M40 214 C72 228 128 228 160 214" w={3} />
-      <Gold d="M46 206 C74 220 126 220 154 206" w={1.6} />
-      <Curls xs={[60, 74, 126, 140]} y={206} s={0.7} /><Curls xs={[72, 128]} y={176} s={0.9} />
-    </g>
-  ),
-  koilek: () => (
-    <g>
-      <ellipse cx="46" cy="170" rx="13" ry="28" fill="#c23a4b" stroke={INK} strokeWidth="1.8" transform="rotate(12 46 170)" />
-      <ellipse cx="154" cy="170" rx="13" ry="28" fill="#c23a4b" stroke={INK} strokeWidth="1.8" transform="rotate(-12 154 170)" />
-      <path d="M34 190 q5 7 14 4 M166 190 q-5 7 -14 4" stroke={GOLD2} strokeWidth="3.4" fill="none" strokeLinecap="round" />
-      <path d="M64 144 C84 136 116 136 136 144 C142 172 160 202 172 226 C130 238 70 238 28 226 C40 202 58 172 64 144Z" fill="#c23a4b" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M64 146 C84 154 116 154 136 146 L137 160 C116 168 84 168 63 160Z" fill={GOLD} stroke={INK} strokeWidth="1.4" />
-      <Curls xs={[78, 100, 122]} y={152} s={0.6} c="#7a1b18" />
-      <path d="M30 226 C70 238 130 238 170 226 L168 218 C130 230 70 230 32 218Z" fill={CREAM} stroke={INK} strokeWidth="1.2" />
-      <Gold d="M40 214 C74 226 126 226 160 214" w={1.6} />
-      <g fill={GOLD2}>{[90, 110, 80, 120, 100].map((x, i) => <path key={i} d={`M${x} ${186 + i * 6} l3 -4 3 4 -3 4z`} />)}</g>
-    </g>
-  ),
-  beshpent: () => (
-    <g>
-      <ellipse cx="42" cy="178" rx="14" ry="33" fill="#26407a" stroke={INK} strokeWidth="1.8" transform="rotate(10 42 178)" />
-      <ellipse cx="158" cy="178" rx="14" ry="33" fill="#26407a" stroke={INK} strokeWidth="1.8" transform="rotate(-10 158 178)" />
-      <path d="M34 202 q6 8 16 4 M166 202 q-6 8 -16 4" stroke={GOLD2} strokeWidth="4" fill="none" strokeLinecap="round" />
-      <path d="M54 146 C76 134 124 134 146 146 L156 214 C126 226 74 226 44 214Z" fill="#26407a" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-      <path d="M80 138 L100 150 L120 138 L124 150 L100 164 L76 150Z" fill={GOLD} stroke={INK} strokeWidth="1.2" />
-      <path d="M100 160 V222" stroke={INK} strokeWidth="1.6" />
-      <g fill={GOLD2} stroke={INK} strokeWidth="1.1">{[166, 180, 194, 208].map((y) => <circle key={y} cx="93" cy={y} r="3.4" />)}</g>
-      <Gold d="M46 212 C74 224 126 224 154 212" w={2.2} />
-      <Curls xs={[68, 132]} y={186} s={0.8} c={GOLD2} />
-    </g>
-  ),
-  ishik: () => (
-    <g>
-      <ellipse cx="40" cy="178" rx="15" ry="34" fill="#7a4a22" stroke={INK} strokeWidth="1.8" transform="rotate(10 40 178)" />
-      <ellipse cx="160" cy="178" rx="15" ry="34" fill="#7a4a22" stroke={INK} strokeWidth="1.8" transform="rotate(-10 160 178)" />
-      <path d="M26 198 q8 10 20 6 l4 10 q-14 6 -26 -2z M174 198 q-8 10 -20 6 l-4 10 q14 6 26 -2z" fill="#fffaf0" stroke={INK} strokeWidth="1.4" />
-      <path d="M52 146 C74 134 126 134 148 146 L160 216 C128 230 72 230 40 216Z" fill="#7a4a22" stroke={INK} strokeWidth="2" strokeLinejoin="round" />
-      <g stroke="#b58250" strokeWidth="2" strokeLinecap="round" opacity=".85">{[62, 78, 94, 110, 126, 142].map((x, i) => <path key={x} d={`M${x} ${170 + (i % 2) * 10} l-2 12 M${x + 6} ${196 - (i % 2) * 8} l-2 12`} />)}</g>
-      <path d="M56 142 C76 160 124 160 144 142 L140 128 C120 136 80 136 60 128Z" fill="#fffaf0" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="M40 214 C74 234 126 234 160 214 L162 226 C128 244 72 244 38 226Z" fill="#fffaf0" stroke={INK} strokeWidth="1.6" strokeLinejoin="round" />
-      <circle cx="100" cy="170" r="4" fill={GOLD} stroke={INK} strokeWidth="1.2" /><circle cx="100" cy="190" r="4" fill={GOLD} stroke={INK} strokeWidth="1.2" />
-    </g>
-  ),
+
+/* ───────── Адамға арналған киімдер ───────── */
+const SW = 4; // жиек қалыңдығы
+const STITCH = { fill: "none", strokeWidth: 3.2, strokeDasharray: "11 9", strokeLinecap: "round" };
+const shade = (hex, k = 0.72) => {
+  const n = parseInt(hex.slice(1), 16);
+  const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => Math.round(v * k));
+  return `rgb(${c.join(",")})`;
 };
-
-function Belt({ x1, x2, y }) {
+// Киіз бөлшегі: түс, қою жиек, ішкі тігіс (сәл кішірейтілген контур)
+function Felt({ d, color, stitch = CREAM }) {
   return (
     <g>
-      <path d={`M${x1} ${y} C${x1 + 26} ${y + 10} ${x2 - 26} ${y + 10} ${x2} ${y} L${x2} ${y + 12} C${x2 - 26} ${y + 22} ${x1 + 26} ${y + 22} ${x1} ${y + 12}Z`} fill={RED} stroke={INK} strokeWidth="1.6" />
-      <Gold d={`M${x1 + 4} ${y + 5} C${x1 + 28} ${y + 14} ${x2 - 28} ${y + 14} ${x2 - 4} ${y + 5}`} w={1.6} />
-      <rect x="90" y={y + 3} width="20" height="16" rx="4" fill={GOLD} stroke={INK} strokeWidth="1.4" />
-      <circle cx="100" cy={y + 11} r="4" fill={TEAL} stroke={INK} strokeWidth="1" />
+      <path d={d} fill={color} stroke={shade(color)} strokeWidth={SW} strokeLinejoin="round" />
+      {stitch && <path d={d} {...STITCH} stroke={stitch} opacity=".75" style={{ transform: "scale(.93)", transformBox: "fill-box", transformOrigin: "50% 50%" }} />}
     </g>
   );
 }
-function Necklace() {
-  const pts = Array.from({ length: 9 }, (_, i) => { const t = i / 8; const x = (1 - t) ** 3 * 68 + 3 * (1 - t) ** 2 * t * 72 + 3 * (1 - t) * t ** 2 * 128 + t ** 3 * 132; const y = (1 - t) ** 3 * 142 + 3 * (1 - t) ** 2 * t * 172 + 3 * (1 - t) * t ** 2 * 172 + t ** 3 * 142; return [x, y]; });
+// Жең: қолдың сүйегі бойымен жуан сызық (қол бұрылғанда жеңі де бірге бұрылады)
+function Sleeve({ pts, color, w, cuff = GOLD }) {
+  const d = "M" + pts.map((p) => p.join(" ")).join(" L");
+  const a = pts[pts.length - 2], b = pts[pts.length - 1];
+  const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+  const ux = (b[0] - a[0]) / len, uy = (b[1] - a[1]) / len;
+  const c0 = [b[0] - ux * 20, b[1] - uy * 20];
   return (
-    <g>
-      <path d="M68 142 C72 172 128 172 132 142" fill="none" stroke="#7a4a1f" strokeWidth="1.4" />
-      {pts.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="4.4" fill={i % 2 ? TEAL : "#e0574a"} stroke={INK} strokeWidth="1" />)}
-      <path d="M100 160 l-8 10 8 14 8 -14z" fill={GOLD} stroke={INK} strokeWidth="1.4" /><circle cx="100" cy="170" r="4" fill={TEAL} stroke={INK} strokeWidth="1" />
+    <g fill="none" strokeLinejoin="round" strokeLinecap="butt">
+      <path d={d} stroke={shade(color)} strokeWidth={w + SW * 2} />
+      <path d={d} stroke={color} strokeWidth={w} />
+      {cuff && <path d={`M${c0[0]} ${c0[1]} L${b[0]} ${b[1]}`} stroke={cuff} strokeWidth={w} />}
     </g>
   );
-}
-function Boots({ eagle, c = "#6b3a16", band = RED }) {
-  const y = eagle ? 0 : 6;
-  return (
-    <g>
-      {[1, -1].map((f) => { const x = 66; return (
-        <g key={f} transform={f === -1 ? "translate(200 0) scale(-1 1)" : ""}>
-          <path d={`M${x} ${202 + y} H${x + 26} V${224 + y} C${x + 36} ${225 + y} ${x + 38} ${236 + y} ${x + 26} ${236 + y} H${x - 2} C${x - 8} ${236 + y} ${x - 8} ${227 + y} ${x} ${224 + y}Z`} fill={c} stroke={INK} strokeWidth="1.8" strokeLinejoin="round" />
-          <rect x={x - 1} y={200 + y} width="28" height="7" rx="2" fill={band} stroke={INK} strokeWidth="1.2" />
-          <Curls xs={[x + 13]} y={214 + y} s={0.7} />
-          <path d={`M${x - 6} ${234 + y} H${x + 32}`} stroke={INK} strokeWidth="3" strokeLinecap="round" />
-        </g>
-      ); })}
-    </g>
-  );
-}
-function Ring({ eagle }) {
-  const [x, y] = eagle ? [128, 228] : [154, 192];
-  return <g><circle cx={x} cy={y} r="6" fill="none" stroke={GOLD} strokeWidth="3.2" /><circle cx={x} cy={y - 6} r="3.2" fill={TEAL} stroke={INK} strokeWidth="1" /></g>;
 }
 
-function Earrings({ eagle }) {
-  const xs = eagle ? [61, 139] : [46, 154];
-  const y = eagle ? 108 : 106;
+// Ұзын сырт киім пішіні (шапан, бешпент, ішік): иықтан етекке дейін, оң қолдың алақаны ашық қалады
+function coatPath(A, { hem, flare = 1 }) {
+  const [L, R] = A.sh;
+  const top = A.shY - 6;
+  const handY = A.handR[1] + 30;
+  const wl = L - 10, wr = R + 10;
+  const bl = A.cx - (A.cx - A.hemX[0]) * 0.62 * flare, br = A.cx + (A.hemX[1] - A.cx) * 0.62 * flare;
+  return `M${A.cx - 40} ${A.collarY - 18} Q${A.cx} ${A.collarY + 24} ${A.cx + 40} ${A.collarY - 18}
+    L${wr} ${top} C${wr + 8} ${A.waistY} ${R + 4} ${handY - 40} ${R - 2} ${handY} C${br - 12} ${hem - 60} ${br} ${hem - 20} ${br} ${hem}
+    Q${A.cx} ${hem + 18} ${bl} ${hem} C${bl} ${hem - 80} ${wl - 30} ${A.waistY + 60} ${wl} ${top} Z`;
+}
+
+const BODY = {
+  kamzol: (A) => {
+    const [L, R] = A.sh;
+    const yb = A.hipY + 26;
+    const left = `M${L + 10} ${A.shY} Q${A.cx - 40} ${A.collarY - 8} ${A.cx - 22} ${A.collarY + 10} L${A.cx - 12} ${yb} Q${(L + A.cx) / 2} ${yb + 14} ${L + 4} ${yb - 6} Z`;
+    const right = `M${R - 12} ${A.shY} Q${A.cx + 40} ${A.collarY - 8} ${A.cx + 22} ${A.collarY + 10} L${A.cx + 12} ${yb} Q${(R + A.cx) / 2} ${yb + 14} ${R - 8} ${yb - 6} Z`;
+    return (
+      <g>
+        <Felt d={left} color={TEAL} stitch={GOLD2} />
+        <Felt d={right} color={TEAL} stitch={GOLD2} />
+        <Curls xs={[(L + A.cx) / 2 + 4, (R + A.cx) / 2 - 4]} y={A.waistY + 10} s={3} />
+      </g>
+    );
+  },
+  shapan: (A) => {
+    const hem = A.hipY + (A.hemY - A.hipY) * 0.72;
+    return (
+      <g>
+        <Felt d={coatPath(A, { hem, flare: 1.05 })} color={EM} stitch={GOLD2} />
+        <path d={`M${A.cx - 40} ${A.collarY - 18} Q${A.cx} ${A.collarY + 24} ${A.cx + 40} ${A.collarY - 18}`} fill="none" stroke={GOLD} strokeWidth="9" strokeLinecap="round" />
+        <path d={`M${A.cx} ${A.collarY + 22} V${hem + 8}`} stroke={GOLD} strokeWidth="6" />
+        <Curls xs={[A.cx - 55, A.cx + 55]} y={A.hipY + 120} s={3.2} />
+      </g>
+    );
+  },
+  beshpent: (A) => {
+    const hem = A.hipY + (A.hemY - A.hipY) * 0.45;
+    return (
+      <g>
+        <Felt d={coatPath(A, { hem, flare: 0.86 })} color="#26407a" stitch={GOLD2} />
+        <path d={`M${A.cx} ${A.collarY + 20} V${hem + 8}`} stroke="#14244a" strokeWidth="4" />
+        <g fill={GOLD2} stroke="#14244a" strokeWidth="2">{[0, 1, 2, 3].map((i) => <circle key={i} cx={A.cx - 16} cy={A.collarY + 60 + i * 44} r="8" />)}</g>
+        <path d={`M${A.cx - 44} ${A.collarY - 16} L${A.cx} ${A.collarY + 22} L${A.cx + 44} ${A.collarY - 16}`} fill="none" stroke={GOLD} strokeWidth="8" strokeLinejoin="round" />
+      </g>
+    );
+  },
+  ishik: (A) => {
+    const hem = A.hipY + (A.hemY - A.hipY) * 0.55;
+    return (
+      <g>
+        <Felt d={coatPath(A, { hem, flare: 1 })} color="#7a4a22" stitch="#c79a64" />
+        <path d={`M${A.cx - 52} ${A.collarY - 22} Q${A.cx} ${A.collarY + 40} ${A.cx + 52} ${A.collarY - 22}`} fill="none" stroke="#fffaf0" strokeWidth="26" strokeLinecap="round" />
+        <path d={`M${A.cx} ${A.collarY + 30} V${hem}`} stroke="#fffaf0" strokeWidth="18" />
+        <path d={`M${A.cx - (A.cx - A.hemX[0]) * 0.62} ${hem} Q${A.cx} ${hem + 18} ${A.cx + (A.hemX[1] - A.cx) * 0.62} ${hem}`} fill="none" stroke="#fffaf0" strokeWidth="22" strokeLinecap="round" />
+        <g fill={GOLD} stroke={INK} strokeWidth="2"><circle cx={A.cx + 22} cy={A.collarY + 80} r="9" /><circle cx={A.cx + 22} cy={A.collarY + 140} r="9" /></g>
+      </g>
+    );
+  },
+  koilek: (A) => {
+    const [L, R] = A.sh;
+    const hy = A.hemY - 24;
+    const d = `M${L - 4} ${A.shY - 4} Q${A.cx} ${A.collarY - 10} ${R + 4} ${A.shY - 4} L${R - 6} ${A.waistY}
+      C${R + 2} ${A.handR[1] + 20} ${A.hemX[1] - 6} ${hy - 160} ${A.hemX[1] + 12} ${hy}
+      Q${A.cx} ${hy + 26} ${A.hemX[0] - 12} ${hy} C${A.hemX[0] + 6} ${hy - 160} ${L - 2} ${A.handR[1] + 20} ${L + 6} ${A.waistY} Z`;
+    return (
+      <g>
+        <Felt d={d} color="#c23a4b" stitch={GOLD2} />
+        <path d={`M${A.cx - 42} ${A.collarY - 14} Q${A.cx} ${A.collarY + 26} ${A.cx + 42} ${A.collarY - 14}`} fill="none" stroke={GOLD} strokeWidth="10" strokeLinecap="round" />
+        <path d={`M${A.hemX[0] - 8} ${hy - 6} Q${A.cx} ${hy + 18} ${A.hemX[1] + 8} ${hy - 6}`} fill="none" stroke={CREAM} strokeWidth="18" strokeLinecap="round" />
+        <Curls xs={[A.cx - 70, A.cx, A.cx + 70]} y={hy - 70} s={3} />
+      </g>
+    );
+  },
+};
+// Сырт киімнің жеңдері: [түсі, жеңнің ұшы]
+const SLEEVES = { shapan: [EM, GOLD], beshpent: ["#26407a", GOLD], ishik: ["#7a4a22", "#fffaf0"], koilek: ["#c23a4b", GOLD] };
+
+function Belt({ A }) {
+  const [x1, x2] = A.waistX;
+  const y = A.waistY;
   return (
-    <g>{xs.map((x) => (
+    <g>
+      <path d={`M${x1 - 4} ${y - 16} Q${A.cx} ${y - 6} ${x2 + 4} ${y - 16} L${x2 + 4} ${y + 16} Q${A.cx} ${y + 26} ${x1 - 4} ${y + 16} Z`} fill={RED} stroke="#6a120c" strokeWidth={SW} />
+      <path d={`M${x1 + 6} ${y} Q${A.cx} ${y + 10} ${x2 - 6} ${y}`} {...STITCH} stroke={GOLD2} />
+      <rect x={A.buckle[0] - 26} y={y - 20} width="52" height="42" rx="10" fill={GOLD} stroke={INK} strokeWidth="3" />
+      <circle cx={A.buckle[0]} cy={y + 1} r="10" fill={TEAL} stroke={INK} strokeWidth="2.4" />
+    </g>
+  );
+}
+function Necklace({ A }) {
+  const [nx] = A.neck;
+  const y0 = A.collarY - 4;
+  const pts = Array.from({ length: 9 }, (_, i) => {
+    const t = i / 8;
+    const x = (1 - t) ** 3 * (nx - 56) + 3 * (1 - t) ** 2 * t * (nx - 50) + 3 * (1 - t) * t ** 2 * (nx + 50) + t ** 3 * (nx + 56);
+    const y = (1 - t) ** 3 * y0 + 3 * (1 - t) ** 2 * t * (y0 + 70) + 3 * (1 - t) * t ** 2 * (y0 + 70) + t ** 3 * y0;
+    return [Math.round(x * 10) / 10, Math.round(y * 10) / 10];
+  });
+  return (
+    <g>
+      <path d={`M${nx - 56} ${y0} C${nx - 50} ${y0 + 70} ${nx + 50} ${y0 + 70} ${nx + 56} ${y0}`} fill="none" stroke="#7a4a1f" strokeWidth="3" />
+      {pts.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="9" fill={i % 2 ? TEAL : "#e0574a"} stroke={INK} strokeWidth="2" />)}
+      <path d={`M${nx} ${y0 + 46} l-16 20 16 28 16 -28z`} fill={GOLD} stroke={INK} strokeWidth="3" />
+      <circle cx={nx} cy={y0 + 66} r="7" fill={TEAL} stroke={INK} strokeWidth="2" />
+    </g>
+  );
+}
+function Earrings({ A }) {
+  return (
+    <g>{A.ears.map(([x, y]) => (
       <g key={x}>
-        <circle cx={x} cy={y} r="3.6" fill="none" stroke={GOLD} strokeWidth="2.2" />
-        <path d={`M${x} ${y + 3} l-5 9 5 12 5 -12z`} fill={GOLD2} stroke={INK} strokeWidth="1.2" strokeLinejoin="round" />
-        <circle cx={x} cy={y + 13} r="3.4" fill={TEAL} stroke={INK} strokeWidth="1" />
+        <circle cx={x} cy={y} r="6" fill="none" stroke={GOLD} strokeWidth="4" />
+        <path d={`M${x} ${y + 5} l-9 16 9 22 9 -22z`} fill={GOLD2} stroke={INK} strokeWidth="2.4" strokeLinejoin="round" />
+        <circle cx={x} cy={y + 24} r="6" fill={TEAL} stroke={INK} strokeWidth="2" />
       </g>
     ))}</g>
   );
 }
-function Bangles({ eagle }) {
-  const pts = eagle ? [[48, 196, 10], [152, 196, 10]] : [[41, 190, 11], [159, 190, 11]];
+function Bangle({ at, tilt = 0 }) {
+  const [x, y] = at;
   return (
-    <g>{pts.map(([x, y, r], i) => (
-      <g key={i} transform={`rotate(${i ? -12 : 12} ${x} ${y})`}>
-        <ellipse cx={x} cy={y} rx={r} ry="3.8" fill="none" stroke={INK} strokeWidth="5.4" />
-        <ellipse cx={x} cy={y} rx={r} ry="3.8" fill="none" stroke={GOLD2} strokeWidth="3.4" />
-        <circle cx={x} cy={y + 3.6} r="2.2" fill="#e0574a" stroke={INK} strokeWidth=".8" />
-      </g>
-    ))}</g>
+    <g transform={`rotate(${tilt} ${x} ${y})`}>
+      <ellipse cx={x} cy={y} rx="30" ry="10" fill="none" stroke={INK} strokeWidth="12" />
+      <ellipse cx={x} cy={y} rx="30" ry="10" fill="none" stroke={GOLD2} strokeWidth="7" />
+      <circle cx={x} cy={y + 10} r="5" fill="#e0574a" stroke={INK} strokeWidth="1.6" />
+    </g>
+  );
+}
+function Ring({ A }) {
+  const [x, y] = A.handR;
+  return <g><circle cx={x} cy={y} r="9" fill="none" stroke={GOLD} strokeWidth="6" /><circle cx={x} cy={y - 10} r="6" fill={TEAL} stroke={INK} strokeWidth="2" /></g>;
+}
+function Boots({ A, c = "#6b3a16", band = RED, low = false }) {
+  return (
+    <g>
+      {A.feet.map(([x, y], i) => {
+        const f = i === 0 ? -1 : 1; // сыртқа қараған ұшы
+        const w = A.footW * 1.12;
+        const top = low ? y - 30 : y - 130;
+        const xl = x - w / 2, xr = x + w / 2;
+        const d = f > 0
+          ? `M${xl} ${top} H${xr} V${y - 8} C${xr + 26} ${y - 6} ${xr + 30} ${y + 22} ${xr + 14} ${y + 22} H${xl} C${xl - 4} ${y + 22} ${xl} ${y - 6} ${xl} ${y - 8} Z`
+          : `M${xr} ${top} H${xl} V${y - 8} C${xl - 26} ${y - 6} ${xl - 30} ${y + 22} ${xl - 14} ${y + 22} H${xr} C${xr + 4} ${y + 22} ${xr} ${y - 6} ${xr} ${y - 8} Z`;
+        return (
+          <g key={i}>
+            <path d={d} fill={c} stroke={shade(c, 0.6)} strokeWidth={SW} strokeLinejoin="round" />
+            {!low && <rect x={xl - 2} y={top - 2} width={w + 4} height="18" rx="5" fill={band} stroke={shade(band, 0.6)} strokeWidth="3" />}
+            {!low && <Curls xs={[x]} y={top + 52} s={2.6} />}
+            <path d={`M${xl - (f < 0 ? 18 : 2)} ${y + 22} H${xr + (f > 0 ? 18 : 2)}`} stroke={INK} strokeWidth="7" strokeLinecap="round" />
+          </g>
+        );
+      })}
+    </g>
   );
 }
 
-export default function DressUp({ wear = {}, size = 220, mood = "idle" }) {
-  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
-  const eagle = true; // бір ғана кейіпкер — Aqyl
+const HAT_FIT = { kimeshek: 1.02, saukele: 0.9, kalpak: 0.96, oramal: 1.04, tumak: 1.05, borik: 1.04, takiya: 1 };
+
+export function dressSlots(wear, id) {
+  const A = AQYL_GEOM[id].A;
   const head = HEAD[wear.head];
-  // Бас киім өлшемі: жануарлардың басы бүркіттікінен кеңірек — киім соған қарай үлкейеді
-  const hs = eagle ? 1 : wear.head === "kimeshek" ? 1.08 : wear.head === "saukele" || wear.head === "kalpak" ? 1.12 : 1.2;
-  const hdy = eagle ? 0 : wear.head === "kimeshek" ? 0 : -3;
   const body = BODY[wear.body];
-  const beltOn = wear.acc === "beldik";
-  const koi = wear.body === "koilek";
-  return (
-    <svg className={`qyran dress-svg bk-${mood}`} viewBox="-4 -12 208 260" width={size} height={(size * 260) / 208} role="img" aria-label="Aqyl">
-      <ellipse className="bk-shadow" cx="100" cy={eagle ? 236 : 241} rx="66" ry="6" fill="#2a1708" opacity=".2" />
-      <g className="bk-float">
-        <EagleFront uid={uid} />
-        {body && body()}
-        {beltOn && (koi ? <Belt x1={64} x2={136} y={160} /> : <Belt x1={50} x2={150} y={184} />)}
-        {wear.acc === "algha" && <Necklace />}
-        {wear.foot === "etik" && <Boots eagle={eagle} />}
-        {wear.foot === "masy" && <Boots eagle={eagle} c="#d4ad72" band="#e8a400" />}
-        {wear.foot === "kebis" && <Boots eagle={eagle} c="#241c18" band="#e8a400" />}
-        {wear.acc === "sirga" && <Earrings eagle={eagle} />}
-        {wear.acc === "bilezik" && <Bangles eagle={eagle} />}
-        {wear.acc === "zhuzik" && <Ring eagle={eagle} />}
-        {head && <g transform={`translate(100 ${84 + hdy}) scale(${hs}) translate(-100 -84)`}>{head()}</g>}
-        {wear.acc === "kobyz" && <g transform="translate(100 178) rotate(30) scale(.62) translate(-100 -92)"><Kobyz /></g>}
-        {wear.acc === "kamshy" && <g transform="translate(150 176) rotate(14) scale(.55) translate(-96 -92)"><Kamshy /></g>}
-        {wear.acc === "dombyra" && <g transform="translate(100 178) rotate(30) scale(.66) translate(-100 -92)"><Dombyra /></g>}
+  const sl = SLEEVES[wear.body];
+  const k = (A.headW / 84) * (HAT_FIT[wear.head] || 1);
+  const hatT = `translate(${A.headCx} ${A.hairline + 4}) rotate(${A.hatRot || 0}) scale(${k.toFixed(3)}) translate(-100 -80)`;
+  const sw = id === "qyz" ? 118 : 96;
+  const inst = wear.acc === "dombyra" ? Dombyra : wear.acc === "kobyz" ? Kobyz : null;
+  return {
+    body: (
+      <g>
+        {body && body(A)}
+        {sl && <Sleeve pts={A.armR} color={sl[0]} cuff={sl[1]} w={sw} />}
+        {wear.acc === "beldik" && <Belt A={A} />}
+        {wear.acc === "algha" && <Necklace A={A} />}
+        {inst && <g transform={`translate(${A.cx + 14} ${A.waistY - 10}) rotate(34) scale(2) translate(-100 -100)`}>{inst()}</g>}
+        {wear.foot === "etik" && <Boots A={A} />}
+        {wear.foot === "masy" && <Boots A={A} c="#d4ad72" band="#e8a400" />}
+        {wear.foot === "kebis" && <Boots A={A} c="#241c18" band="#e8a400" low />}
+        {wear.acc === "bilezik" && <Bangle at={A.wristR} tilt={-10} />}
+        {wear.acc === "zhuzik" && <Ring A={A} />}
+        {wear.acc === "kamshy" && <g transform={`translate(${A.handR[0] - 4} ${A.handR[1] - 26}) rotate(-6) scale(1.5) translate(-93 -30)`}><Kamshy /></g>}
       </g>
-    </svg>
-  );
+    ),
+    armDown: (
+      <g>
+        {sl && <Sleeve pts={A.armDown} color={sl[0]} cuff={sl[1]} w={sw} />}
+        {wear.acc === "bilezik" && <Bangle at={A.wristDown} tilt={12} />}
+      </g>
+    ),
+    armUp: (
+      <g>
+        {sl && <Sleeve pts={A.armUp} color={sl[0]} cuff={sl[1]} w={sw} />}
+        {wear.acc === "bilezik" && <Bangle at={A.wristUp} tilt={-70} />}
+      </g>
+    ),
+    front: (
+      <g>
+        {wear.acc === "sirga" && !["kimeshek", "oramal", "tumak"].includes(wear.head) && <Earrings A={A} />}
+        {head && <g transform={hatT}>{head()}</g>}
+      </g>
+    ),
+  };
+}
+
+// size — бұрынғыдай; биіктік бойға қарай. size < 100 → бас пен иық (бас киім мен алқа көрінеді).
+const DRESS_VB = [-40, -130, 570, 1100];
+export default function DressUp({ wear = {}, size = 220, mood = "idle", char }) {
+  const chosen = useAqylChoice();
+  const id = aqylId(char || chosen);
+  const slots = dressSlots(wear, id);
+  if (size < 100) {
+    const G = AQYL_GEOM[id];
+    // бас киім биік болса кадрды жоғары кеңейтеміз
+    const up = wear.head === "saukele" ? 150 : wear.head ? 60 : 0;
+    const vb = [G.face[0] - up / 2, G.face[1] - up, G.face[2] + up, G.face[2] + up];
+    return <AqylFigure char={id} mood={mood} framing="bust" viewBox={vb} width={size} height={size} slots={slots} className="dress-svg" title="Aqyl" />;
+  }
+  const h = Math.round(size * 1.25);
+  const w = Math.round((h * DRESS_VB[2]) / DRESS_VB[3]);
+  return <AqylFigure char={id} mood={mood} framing="full" viewBox={DRESS_VB} width={w} height={h} slots={slots} className="dress-svg" title="Aqyl" />;
 }

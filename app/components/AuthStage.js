@@ -39,7 +39,7 @@ export default function AuthStage({ mood = "happy", bubble, steps, step = 0, per
         <div className="au-scene">
           <div className="au-disc">
             <Horn className="au-horn" />
-            <Qyran mood={mood} size={176} className="au-aqyl" />
+            <Qyran mood={mood} size={196} framing="bust" className="au-aqyl" />
           </div>
           {bubble && <p className="au-bubble" key={bubble}>{bubble}</p>}
         </div>
