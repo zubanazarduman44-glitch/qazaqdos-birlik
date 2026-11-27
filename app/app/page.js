@@ -24,6 +24,8 @@ import { AqylSays } from "../components/Aqyl";
 import { useAqylL } from "../components/AqylL10n";
 import ShellGlyph from "../components/ShellGlyph";
 import { SECTIONS, SECTION_HINT, pickL, secVars } from "../../lib/sections";
+import { levelL } from "../components/LevelL10n";
+import { FIRST_LESSON, lessonHref as lessonLink } from "../../lib/progress";
 
 // Басты бет — ықшам «Бүгін» (Duolingo / Babbel / Khan Academy үлгісі): жоғарыда жіңішке сәлем жолы
 // (мақсат + серия), бір басты әрекет (сабақты жалғастыру), одан кейін қысқа, тығыз карточкалар.
@@ -63,6 +65,12 @@ function readWeak() {
   } catch {}
   return null;
 }
+
+// Деңгей атаулары профильмен бірдей (ProfileL10n: gameLvl / kzLvl / lvlTest): «Атау: мән»
+const HOME_LVL = {
+  kzLvl: { kk: "Қазақ тілі деңгейі", ru: "Уровень казахского", en: "Kazakh level", zh: "哈萨克语水平", es: "Nivel de kazajo", de: "Kasachisch-Niveau", fr: "Niveau de kazakh", tr: "Kazakça seviyesi", ar: "مستوى الكازاخية", ko: "카자흐어 레벨", ja: "カザフ語レベル" },
+  lvlTest: { kk: "Деңгейді анықтау / қайта тапсыру", ru: "Определить / пересдать уровень", en: "Take / retake the level test", zh: "测试 / 重新测试水平", es: "Hacer / repetir la prueba de nivel", de: "Einstufungstest machen / wiederholen", fr: "Passer / repasser le test de niveau", tr: "Seviye testine gir / yeniden gir", ar: "أداء / إعادة اختبار المستوى", ko: "레벨 테스트 보기 / 다시 보기", ja: "レベルテストを受ける / 受け直す" },
+};
 
 // Мазмұн күн белгілі болғанша (SSR/гидрация) қаңқа сызықтары ретінде көрінеді: мәтін орнын ұстайды, бос карточка көрінбейді
 const Sk = ({ on, children }) => <span className={on ? "hm-skl" : undefined}>{children}</span>;
@@ -115,7 +123,11 @@ export default function Home() {
   const lessonHref = tor.next ? `/app/course?l=${tor.next.id}` : "/app/sozdik";
   const hour = now ? now.getHours() : 12;
   let g;
-  if (!state.cefr) g = { mood: "wow", txt: G.level, href: "/app/level", icon: "chart" };
+  // Деңгей анықтау ұсынылса — екі анық таңдау: «Нөлден бастаймын» (A1 · 1-сабақ) және «Деңгейімді анықтаймын» (тест).
+  // Тестті өткізіп жібергенге немесе сабақ өткенге бұл ұсыныс қайталанбайды (тест профильден де ашылады).
+  const lx = levelL(lang);
+  const offerLevel = !state.cefr && !state.levelTest?.skipped && !Object.keys(state.course?.done || {}).length;
+  if (offerLevel) g = { mood: "wow", txt: [lx.choose, lx.find], href: "/app/level", icon: "chart", zero: true };
   else if (today && streak > 0 && state.lastDay !== today && hour >= 17) g = { mood: "support", txt: G.streak(streak), href: tor.next ? lessonHref : "/app/course", icon: "flame" };
   else if (weak && todayXp < DAILY_GOAL) g = { mood: "explaining", txt: G.weak(weak.length), href: "/app/sozdik?tab=review", icon: "refresh" };
   else if (todayXp === 0 && tor.next) g = { mood: "talking", txt: G.start(lessonTitle(tor.next, lang)), href: lessonHref, icon: "book" };
@@ -163,6 +175,11 @@ export default function Home() {
               <span className="hm-goal-n">{goalTxt}</span>
               <span className="hm-goal-l">{t.todayGoal}</span>
             </div>
+            {state.cefr && (
+              <Link href="/app/level" className="hm-kzlvl" title={pickL(HOME_LVL.lvlTest, lang)}>
+                {pickL(HOME_LVL.kzLvl, lang)}: <b>{state.cefr}</b>
+              </Link>
+            )}
           </div>
           <span className={`hm-streak${tor.lit ? " is-lit" : ""}`} role="img" aria-label={`${t.statsStreak}: ${streak}`} title={t.statsStreak}>
             <Icon name="flame" size={18} />
@@ -182,6 +199,11 @@ export default function Home() {
         <AqylSays mood={wait ? "idle" : g.mood} size={52} tone="paper">
           <p className="hm-guide-say">{wait ? <><i className="aq-sk" /><i className="aq-sk aq-sk-2" /></> : say}</p>
         </AqylSays>
+        {guideGo && g.zero && (
+          <Link href={lessonLink(FIRST_LESSON)} className="hm-guide-go">
+            <ShellGlyph name="trail" size={18} /> <span>{lx.zero}</span> <Icon name="right" size={16} className="hm-arrow" />
+          </Link>
+        )}
         {guideGo && (
           <Link href={g.href} className="hm-guide-go">
             <Icon name={g.icon} size={18} /> <span>{cta}</span> {g.icon !== "right" && <Icon name="right" size={16} className="hm-arrow" />}

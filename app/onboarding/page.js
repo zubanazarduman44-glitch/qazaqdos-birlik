@@ -34,7 +34,8 @@ export default function Onboarding() {
 
   function finish() {
     const first = !state.profile.onboarded;
-    setProfile({ explain, name: name.trim() || "Дос", goal, avatar, onboarded: true, ...(first ? { levelPending: true } : {}) });
+    // Алғашқы кіруден кейін — таңдау беті: «Нөлден бастаймын» немесе «Деңгейімді анықтаймын» (тест міндетті емес)
+    setProfile({ explain, name: name.trim() || "Дос", goal, avatar, onboarded: true, levelPending: false });
     if (first) award(10, 5);
     router.push(first ? "/app/level?first=1" : "/app");
   }

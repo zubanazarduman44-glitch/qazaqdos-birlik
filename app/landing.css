@@ -84,11 +84,11 @@
 .ld-arch .sa { position: absolute; inset: 0; }
 .ld-arch-sun { position: absolute; left: 50%; top: 18%; width: 34%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 236, 170, 0.55), transparent); pointer-events: none; }
 
-.ld-aqyl { position: absolute; z-index: 4; left: -72px; bottom: calc(-6px - 50px * var(--ribS) + 42px * var(--ribS)); width: 230px; animation: ldPerch 0.8s 1.05s var(--spring) both; filter: drop-shadow(0 14px 14px rgba(60, 20, 10, 0.28)); }
+.ld-aqyl { position: absolute; z-index: 4; left: -78px; bottom: calc(-6px - 50px * var(--ribS) + 42px * var(--ribS)); width: 252px; animation: ldPerch 0.8s 1.05s var(--spring) both; filter: drop-shadow(0 14px 14px rgba(60, 20, 10, 0.28)); }
 .ld-aqyl svg { display: block; width: 100%; height: auto; }
 
 .ld-bubble {
-  position: absolute; z-index: 5; left: 150px; bottom: 200px; max-width: 270px;
+  position: absolute; z-index: 5; left: 150px; bottom: 212px; max-width: 270px;
   padding: 14px 18px; border-radius: 22px; background: var(--cream); color: var(--ink);
   font-weight: 700; font-size: 16px; line-height: 1.4;
   box-shadow: 0 0 0 2px var(--ink), 0 6px 0 var(--ink);
@@ -117,7 +117,7 @@
 .ld-chip-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: #fff; }
 .ld-chip.c1 { --d: 1.6s; top: 34px; left: 40px; }
 .ld-chip.c1 .ld-chip-ic { background: var(--blue); }
-.ld-chip.c2 { --d: 1.75s; top: 44%; right: -14px; animation-duration: 0.45s, 7s; }
+.ld-chip.c2 { --d: 1.75s; top: 24%; right: -14px; animation-duration: 0.45s, 7s; }
 .ld-chip.c2 .ld-chip-ic { background: #b07c10; }
 .ld-chip.c3 { --d: 1.9s; bottom: 110px; right: 28px; animation-duration: 0.45s, 6.5s; }
 .ld-chip.c3 .ld-chip-ic { background: var(--red); }
@@ -158,6 +158,16 @@
 .ld-world-txt h3 { margin: 0 0 8px; font-family: var(--head); font-weight: 600; font-size: clamp(20px, 2.1vw, 29px); line-height: 1.2; color: var(--ink); }
 .ld-world-txt p { margin: 0; font-size: 18px; line-height: 1.6; color: var(--mut); max-width: 440px; }
 .ld-world:nth-child(even) .ld-world-txt p { margin-left: auto; }
+
+/* VR Әлем карточкасы: «Нан сатып алу» жағдаятына тікелей жол */
+.ld-vr { display: flex; align-items: center; gap: clamp(16px, 3vw, 32px); max-width: 860px; margin: clamp(32px, 5vw, 56px) auto 0; padding: clamp(18px, 3vw, 28px); border-radius: 28px; background: var(--cream); box-shadow: 0 0 0 1.5px rgba(31, 36, 48, 0.12), 0 16px 34px -22px rgba(60, 30, 10, 0.45); }
+.ld-vr-art { flex: none; display: grid; place-items: center; width: 120px; height: 120px; border-radius: 50% 50% 18px 18px / 60px 60px 18px 18px; background: #e2f0f2; }
+.ld-vr-txt { min-width: 0; display: grid; gap: 6px; justify-items: start; }
+.ld-vr-k { font-size: 13px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #0b6e7e; }
+.ld-vr-txt h3 { margin: 0; font-family: var(--head); font-weight: 600; font-size: clamp(20px, 2.1vw, 27px); line-height: 1.2; color: var(--ink); }
+.ld-vr-txt p { margin: 0 0 6px; font-size: 17px; line-height: 1.55; color: var(--mut); }
+.ld .btn.ld-vr-go { min-height: 48px; gap: 8px; white-space: normal; text-align: start; }
+[dir="rtl"] .ld-vr-go svg { transform: scaleX(-1); }
 
 .ld-world-aqyl { position: absolute; left: 4%; bottom: -6px; width: 34%; max-width: 150px; }
 .ld-world-aqyl svg { display: block; width: 100%; height: auto; }
@@ -273,8 +283,8 @@
 
 /* ═════════ Бейімделу ═════════ */
 @media (max-width: 1100px) {
-  .ld-aqyl { left: -60px; width: 200px; }
-  .ld-bubble { left: 120px; bottom: 176px; max-width: 220px; font-size: 15px; }
+  .ld-aqyl { left: -64px; width: 218px; }
+  .ld-bubble { left: 122px; bottom: 188px; max-width: 220px; font-size: 15px; }
   .ld-chip.c2 { top: 26%; }
 }
 @media (max-width: 960px) {
@@ -283,8 +293,8 @@
   .ld-copy { padding-bottom: 0; }
   .ld-stage { height: 440px; }
   .ld-arch { left: 0; border-radius: 50% 50% 24px 24px / 200px 200px 24px 24px; }
-  .ld-aqyl { left: max(-8px, calc(50% - 230px)); width: 190px; }
-  .ld-bubble { left: calc(max(-8px, calc(50% - 230px)) + 170px); bottom: 160px; }
+  .ld-aqyl { left: max(-8px, calc(50% - 230px)); width: 208px; }
+  .ld-bubble { left: calc(max(-8px, calc(50% - 230px)) + 170px); bottom: 176px; }
   .ld-chip.c1 { left: 12px; }
   .ld-chip.c2 { right: 12px; top: 34%; }
   /* төрт әлем: жіп сол жақта */
@@ -318,13 +328,13 @@
   .ld-checks { gap: 8px 14px; font-size: 14.5px; }
   .ld-stage { height: 360px; margin-top: 6px; }
   .ld-arch { border-width: 8px; border-radius: 50% 50% 20px 20px / 150px 150px 20px 20px; }
-  .ld-aqyl { left: -14px; width: 150px; }
-  .ld-bubble { left: 124px; right: 0; bottom: 118px; max-width: none; padding: 11px 14px; font-size: 14.5px; border-radius: 18px; }
+  .ld-aqyl { left: -14px; width: 168px; }
+  .ld-bubble { left: 128px; right: 0; bottom: 140px; max-width: none; padding: 11px 14px; font-size: 14.5px; border-radius: 18px; }
   .ld-chip { font-size: 13.5px; padding: 5px 12px 5px 5px; gap: 6px; }
   .ld-chip-ic { width: 26px; height: 26px; }
-  .ld-chip.c1 { top: 52px; left: 4px; }
-  .ld-chip.c2 { top: 92px; right: 4px; }
-  .ld-chip.c3 { top: 132px; bottom: auto; left: 18px; right: auto; }
+  .ld-chip.c1 { top: 40px; left: 4px; }
+  .ld-chip.c2 { top: 78px; right: 4px; }
+  .ld-chip.c3 { top: 116px; bottom: auto; left: 18px; right: auto; }
   .ld-world-txt p { font-size: 16px; }
   .ld-cards { grid-auto-columns: 62%; gap: 16px; }
   .ld-step { padding: 18px 20px 20px; }
@@ -338,6 +348,9 @@
   .ld-final { flex-direction: column; text-align: center; border-radius: 28px; }
   .ld-final-aqyl { width: 120px; }
   .ld-final .btn { width: 100%; }
+  .ld-vr { flex-direction: column; align-items: stretch; text-align: start; border-radius: 22px; }
+  .ld-vr-art { width: 96px; height: 96px; }
+  .ld .btn.ld-vr-go { width: 100%; justify-content: center; }
 }
 @media (max-width: 374px) {
   .ld-head .logo-word { display: none; }

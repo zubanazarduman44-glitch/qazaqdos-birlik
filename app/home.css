@@ -64,6 +64,9 @@
 .hm-top { display: flex; align-items: center; gap: 12px; min-height: 44px; }
 .hm-top .avatar { flex: none; }
 .hm-hi { flex: 1; min-width: 0; display: grid; gap: 5px; }
+.hm-kzlvl { justify-self: start; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin: -10px 0; font-size: 13px; font-weight: 600; color: #0b6e7e; text-decoration: none; }
+.hm-kzlvl:hover { text-decoration: underline; }
+.hm-kzlvl b { font-weight: 800; }
 .hm-hi h1 {
   margin: 0; font-family: var(--head); font-size: 20px; line-height: 1.15; letter-spacing: -0.015em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;

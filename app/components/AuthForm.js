@@ -6,6 +6,7 @@ import { useApp } from "./Store";
 import Icon from "./Icon";
 import AuthStage from "./AuthStage";
 import { authL } from "./AuthL10n";
+import { startL } from "./StartL10n";
 import { getAuthConfig, resetPassword, signIn, signInWithGoogle, signUp } from "../../lib/auth";
 
 export default function AuthForm({ mode }) {
@@ -162,7 +163,7 @@ export default function AuthForm({ mode }) {
         <div className="au-links">
           <Link href={reg ? "/login" : "/register"}>{reg ? t.haveAccount : t.noAccount}</Link>
           <Link href="/onboarding" className="au-try">
-            {t.tryIt} <Icon name="right" size={16} />
+            {startL(lang).guest} <Icon name="right" size={16} />
           </Link>
         </div>
       </form>

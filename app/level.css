@@ -61,6 +61,22 @@
 .lvx-next small { color: var(--lv-muted); font-size: 13px; }
 .lvx-intro .btn.blue { gap: 8px; }
 
+/* Екі таңдау: «Нөлден бастаймын» / «Деңгейімді анықтаймын» */
+.lvx-choose { margin: 8px 0 0; font-size: 18px; color: var(--lv-ink); }
+.lvx-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 620px; }
+.lvx-choice { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 14px 16px; border: 0; border-radius: 18px; font: inherit; text-align: start; cursor: pointer; background: #fff; color: var(--lv-ink); box-shadow: inset 0 0 0 1.5px var(--lv-rim), 0 3px 0 rgba(60, 52, 48, 0.14); transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.25, 1), box-shadow 0.15s; }
+.lvx-choice:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 2px #0b6e7e, 0 4px 0 rgba(11, 110, 126, 0.22); }
+.lvx-choice:focus-visible { outline: 3px solid #0b6e7e; outline-offset: 2px; }
+.lvx-choice-gl { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: #fbf0d6; color: var(--lv-deep); --gl2: var(--altyn); }
+.lvx-choice.is-find .lvx-choice-gl { background: #e2f0f2; color: #0b6e7e; }
+.lvx-choice-t { flex: 1 1 auto; min-width: 0; display: grid; gap: 3px; }
+.lvx-choice-t b { font-family: var(--head); font-weight: 600; font-size: 16.5px; }
+.lvx-choice-t small { color: var(--lv-muted); font-size: 13.5px; line-height: 1.4; }
+.lvx-choice-go { flex: none; color: var(--lv-muted); }
+[dir="rtl"] .lvx-choice-go { transform: scaleX(-1); }
+.lvx-skip { justify-self: center; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 999px; font: inherit; font-weight: 700; font-size: 14.5px; cursor: pointer; background: transparent; color: #0b6e7e; text-decoration: underline; text-underline-offset: 3px; }
+.lvx-skip:disabled { opacity: 0.5; cursor: default; }
+
 @keyframes lvxIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes lvxPop { from { opacity: 0; transform: scale(0.5) rotate(-6deg); } to { opacity: 1; transform: none; } }
 @keyframes lvxBurst { 0% { opacity: 0; transform: rotate(var(--a)) translateY(-40px) scale(0.6); } 30% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-150px) scale(1); } }
@@ -74,8 +90,10 @@
   .lvx-ask { gap: 10px; }
   .lvx-dont { gap: 4px 12px; }
   .lvx .lv-actions .btn { flex: 1 1 100%; justify-content: center; }
+  .lvx-choices { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
+  .lvx-choice { transition: none; }
   .lvx-ask, .lvx .lv-opt, .lvx-badge { animation: none; }
   .lvx-burst { display: none; }
   .lvx-bar i, .lvx-stop, .lvx .lv-opt { transition: none; }

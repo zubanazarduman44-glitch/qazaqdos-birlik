@@ -1,7 +1,7 @@
 "use client";
 import "../../level.css";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
@@ -12,54 +12,100 @@ import { levelL } from "../../components/LevelL10n";
 import { QUESTIONS, LEVELS, PASS, grade } from "../../../lib/levelTest";
 import { tx } from "../../../lib/tx";
 import { shuffle } from "../../../lib/wordTools";
+import { FIRST_LESSON, lessonHref, saveLevelResult, skipLevelTest, startLessonFor } from "../../../lib/progress";
 
 const pick = (v, lang) => (typeof v === "string" ? v : v[lang] || v.en || v.ru || v.kk);
 
+// Деңгей тесті. Бұрынғы «1/20 қайта көрінетін» қате: тест аяқталғанда levelPending өшіп, Shell басқа орауышқа
+// ауысатын → бет қайта монтталып, ?first=1 тестті автоматты түрде қайта бастайтын (нәтиже профильде сақталып қойған).
+// Енді: (1) Shell тұрақты; (2) автоматты бастау жоқ — пайдаланушы өзі таңдайды; (3) нәтиже state.levelTest-те сақталады,
+// сондықтан жаңарту/артқа қайту нәтиже экранын көрсетеді; (4) бір «run» бір рет қана жазылады және марапатталады.
+const RUN_KEY = "qd_level_run";
+const readRun = () => {
+  try {
+    const r = JSON.parse(sessionStorage.getItem(RUN_KEY) || "null");
+    if (r && r.run && Array.isArray(r.order) && Array.isArray(r.answers) && r.order.length === QUESTIONS.length) return r;
+  } catch {}
+  return null;
+};
+const saveRun = (r) => { try { sessionStorage.setItem(RUN_KEY, JSON.stringify(r)); } catch {} };
+const clearRun = () => { try { sessionStorage.removeItem(RUN_KEY); } catch {} };
+
 function Level() {
-  const { lang, state, update, award } = useApp();
+  const { lang, state, update, award, ready } = useApp();
   const router = useRouter();
-  // Тіркелгеннен кейінгі бірінші тест: кіріспесіз бірден басталады, өткізіп жіберу жоқ
+  // Онбордингтен кейінгі алғашқы кіру: таңдау мен «тестті өткізу» батырмасы көрінеді, бірақ тест өздігінен басталмайды
   const first = useSearchParams().get("first") === "1" || Boolean(state.profile.levelPending);
   const x = tx(lang);
   const lx = levelL(lang);
-  const [phase, setPhase] = useState("intro");
-  const [i, setI] = useState(0);
-  const [order, setOrder] = useState([]);
-  const [answers, setAnswers] = useState([]);
+  const [quiz, setQuiz] = useState(null); // { run, order, answers } — жүріп жатқан тест
   const [picked, setPicked] = useState(null);
-  const [res, setRes] = useState(null);
+  const lock = useRef(false);
+  const timer = useRef(null);
+  const finished = useRef(new Set());
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  function finish(q) {
+    if (finished.current.has(q.run)) return;
+    finished.current.add(q.run);
+    clearRun();
+    const g = grade(q.answers);
+    const prev = stateRef.current.levelTest;
+    update((s) => saveLevelResult(s, q.run, g));
+    // Марапат тек алғашқы аяқталған тест үшін және тек бір рет (қайта тапсыру XP жинау тәсілі болмайды)
+    if (!prev?.done) award(20 + g.total * 2, 10);
+    setQuiz(null);
+    setPicked(null);
+    lock.current = false;
+  }
+
+  // Жаңартудан кейін: жүріп жатқан тест сол сұрақтан жалғасады; 20 жауап берілген болса — бірден нәтиже
   useEffect(() => {
-    if (first && phase === "intro") start();
+    if (!ready) return;
+    const r = readRun();
+    if (!r) return;
+    if (r.answers.length >= QUESTIONS.length) finish(r);
+    else setQuiz(r);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [first]);
+  }, [ready]);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
   function start() {
-    setOrder(QUESTIONS.map((q) => shuffle(q.o.map((_, k) => k))));
-    setAnswers([]);
-    setI(0);
+    const q = { run: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`, order: QUESTIONS.map((qq) => shuffle(qq.o.map((_, k) => k))), answers: [] };
+    saveRun(q);
+    lock.current = false;
     setPicked(null);
-    setPhase("quiz");
+    setQuiz(q);
+  }
+  // «Нөлден бастаймын» / «Тестті өткізу»: нәтиже ретінде есептелмейді, бірден A1-дің алғашқы сабағы
+  function fromZero() {
+    clearTimeout(timer.current);
+    clearRun();
+    setQuiz(null);
+    update((s) => skipLevelTest(s));
+    router.push(lessonHref(FIRST_LESSON));
   }
   function answer(k) {
-    if (picked !== null) return;
+    if (!quiz || picked !== null || lock.current) return;
+    lock.current = true;
     setPicked(k);
-    const next = [...answers, k === -1 ? -1 : k];
-    setAnswers(next);
-    setTimeout(() => {
-      if (i + 1 < QUESTIONS.length) {
-        setI(i + 1);
+    const next = { ...quiz, answers: [...quiz.answers, k] };
+    saveRun(next);
+    timer.current = setTimeout(() => {
+      if (next.answers.length < QUESTIONS.length) {
+        setQuiz(next);
         setPicked(null);
-      } else {
-        const g = grade(next);
-        setRes(g);
-        update((s) => ({ ...s, cefr: g.cefr, profile: { ...s.profile, levelPending: false } }));
-        award(20 + g.total * 2, 10);
-        setPhase("result");
-      }
+        lock.current = false;
+      } else finish(next);
     }, 650);
   }
 
   const lvls = ["A0", ...LEVELS];
+  // localStorage жүктелгенше ештеңе көрсетпейміз (кіріспе бір сәтке жыпылықтамасын)
+  if (!ready) return <div className="level lvx" aria-busy="true" />;
+  const saved = state.levelTest?.done && state.levelTest.per ? state.levelTest : null;
+  const phase = quiz ? "quiz" : saved ? "result" : "intro";
   if (phase === "intro")
     return (
       <div className="level lvx">
@@ -73,14 +119,20 @@ function Level() {
               {x.lvlResult}: {state.cefr} · {x.lvlNames[state.cefr]}
             </p>
           )}
-          <div className="lv-actions">
-            <button className="btn blue big" onClick={start}>
-              {x.lvlStart} <Icon name="right" size={18} />
+          <h2 className="lvx-choose">{lx.choose}</h2>
+          <div className="lvx-choices">
+            <button type="button" className="lvx-choice is-zero" onClick={fromZero}>
+              <span className="lvx-choice-gl" aria-hidden="true"><ShellGlyph name="trail" size={24} /></span>
+              <span className="lvx-choice-t"><b>{lx.zero}</b><small>{lx.zeroSub}</small></span>
+              <Icon name="right" size={18} className="lvx-choice-go" />
             </button>
-            <Link href="/app" className="btn ghost">
-              {x.lvlSkip}
-            </Link>
+            <button type="button" className="lvx-choice is-find" onClick={start}>
+              <span className="lvx-choice-gl" aria-hidden="true"><Icon name="chart" size={22} /></span>
+              <span className="lvx-choice-t"><b>{lx.find}</b><small>{lx.findSub}</small></span>
+              <Icon name="right" size={18} className="lvx-choice-go" />
+            </button>
           </div>
+          <p className="muted small">{lx.later}</p>
         </section>
         <section className="card lv-how rise">
           <h2>{x.lvlHow}</h2>
@@ -95,6 +147,8 @@ function Level() {
     );
 
   if (phase === "quiz") {
+    const i = quiz.answers.length;
+    const order = quiz.order;
     const q = QUESTIONS[i];
     const pct = ((i + (picked !== null ? 1 : 0)) / QUESTIONS.length) * 100;
     const mood = picked === null ? "think" : picked === q.a ? "happy" : "support";
@@ -135,12 +189,19 @@ function Level() {
             </button>
             <small>{lx.tip}</small>
           </div>
+          {first && (
+            <button type="button" className="lvx-skip" onClick={fromZero} disabled={picked !== null}>
+              {lx.skip} <Icon name="right" size={16} />
+            </button>
+          )}
         </section>
       </div>
     );
   }
 
+  const res = saved;
   const cur = res.cefr;
+  const startId = startLessonFor(cur, state.course?.done || {});
   const ci = lvls.indexOf(cur);
   return (
     <div className="level lvx">
@@ -163,8 +224,8 @@ function Level() {
         </ol>
         <div className="lvx-per" aria-label={lx.per}>
           {LEVELS.map((l) => (
-            <span key={l} className={res.per[l].ok >= PASS[l] ? "ok" : ""}>
-              <b>{l}</b> {res.per[l].ok}/{res.per[l].n}
+            <span key={l} className={(res.per[l]?.ok || 0) >= PASS[l] ? "ok" : ""}>
+              <b>{l}</b> {res.per[l]?.ok || 0}/{res.per[l]?.n || 0}
             </span>
           ))}
         </div>
@@ -178,9 +239,12 @@ function Level() {
           </div>
         </div>
         <div className="lv-actions">
-          <button className="btn blue big" onClick={() => router.replace("/app")}>
-            {x.lvlGo} <Icon name="right" size={18} />
-          </button>
+          <Link href={startId ? lessonHref(startId) : "/app/course"} className="btn blue big">
+            {lx.lesson} <Icon name="right" size={18} />
+          </Link>
+          <Link href="/app" className="btn ghost">
+            {lx.home}
+          </Link>
           <button className="btn ghost" onClick={start}>
             <Icon name="refresh" size={16} /> {x.lvlRetake}
           </button>

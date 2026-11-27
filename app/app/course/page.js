@@ -106,7 +106,7 @@ function Player({ lesson, onClose, onNext, hasNext }) {
 }
 
 export default function Course() {
-  const { lang, state, t } = useApp();
+  const { lang, state, t, update, ready } = useApp();
   const li = lang === "kk" ? 0 : lang === "ru" ? 1 : 2;
   // Пайдаланушының мақсаты (Профильде өзгертіледі) → сол мақсатқа керек тақырыптарды белгілейміз
   const mine = goalTopics(state.profile?.goal);
@@ -116,6 +116,11 @@ export default function Course() {
   const done = state.course?.done || {};
   const [lv, setLv] = useState(state.cefr && LEVELS.some((l) => l.id === state.cefr) ? state.cefr : "A1");
   const [open, setOpen] = useState(null);
+  // Соңғы ашылған сабақ: «Жалғастыру» аяқталмаған сабаққа қайтарады (lib/progress.js continueLesson)
+  useEffect(() => {
+    if (!open || !ready) return;
+    update((s) => (s.course?.last?.id === open ? s : { ...s, course: { ...(s.course || {}), last: { id: open, at: Date.now() } } }));
+  }, [open, ready, update]);
   useEffect(() => whenIdle(() => Promise.all([loadPlayer(), loadCourse()])), []);
   useEffect(() => {
     try {
