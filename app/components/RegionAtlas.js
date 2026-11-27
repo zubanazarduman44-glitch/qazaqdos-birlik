@@ -8,6 +8,7 @@ import { SIGHTS, REGION_ABOUT } from "../../lib/sights";
 import { L } from "../../lib/i18n";
 import { useTravelL10n } from "../../lib/l10nTravel";
 import { tx } from "../../lib/tx";
+import { tq } from "../../lib/travelQuiz";
 import SightArt, { kindOf } from "./SightArt";
 
 const LBL = {
@@ -123,7 +124,7 @@ function AtlasMap({ region, lang, x }) {
       </svg>
       <div className="ra-legend">
         <span><i className="ra-lg-r" /> {shortName(region, lang)}</span>
-        <span><i className="ra-lg-c" /> {x.atCenter}: {L(region.center, lang)}</span>
+        {!region.city && <span><i className="ra-lg-c" /> {x.atCenter}: {L(region.center, lang)}</span>}
       </div>
     </figure>
   );
@@ -163,8 +164,9 @@ export default function RegionAtlas({ region, lang }) {
           {about && <p className="ra-lead">{about}</p>}
           <dl className="ra-facts">
             <div>
-              <dt>{x.atCenter}</dt>
-              <dd>{L(region.center, lang)}</dd>
+              {/* Республикалық маңызы бар қаланың «орталығы» жоқ — оның орнына мәртебесі */}
+              <dt>{region.city ? tq("status", lang) : x.atCenter}</dt>
+              <dd>{region.city ? `${region.id === "astana" ? `${tq("capital", lang)} · ` : ""}${tq("cityStatus", lang)}` : L(region.center, lang)}</dd>
             </div>
             <div>
               <dt>{L(LBL.count, lang)}</dt>
