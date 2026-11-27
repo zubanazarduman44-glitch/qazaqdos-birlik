@@ -13,7 +13,8 @@ import { sayKk } from "../../../lib/speak";
 import Quiz from "../../components/Quiz";
 import { shuffle } from "../../../lib/words";
 import { useMounted } from "../../../lib/useClientDate";
-import { pickForGoal, goalTopics, goalTx } from "../../../lib/goals";
+import { goalTopics, goalTx } from "../../../lib/goals";
+import { pickDaily, needsRepick, seeded } from "../../../lib/wordsDaily";
 import { reviewTx, dueWords, grade, addMistakes } from "../../../lib/review";
 import { localDayIndex } from "../../components/Store";
 
@@ -31,11 +32,6 @@ function mkTest(words, explain) {
 
 const OFF = 5 * 3600_000;
 const dayKey = () => new Date(Date.now() + OFF).toISOString().slice(0, 10);
-function seeded(seed) {
-  let h = 2166136261;
-  for (const c of seed) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
-  return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)), ((h >>> 0) % 100000) / 100000);
-}
 const uniq = WORDS.filter((w, i, a) => a.findIndex((z) => z.kk === w.kk) === i);
 const topicOf = (kk) => uniq.find((w) => w.kk === kk)?.t || "other";
 
@@ -132,19 +128,22 @@ export default function Sozdik() {
   }, [mounted]); // eslint-disable-line react-hooks/exhaustive-deps
   function startReview() { setRround((n) => n + 1); setRdone(false); setRtest(mkTest(due.slice(0, 10), explain)); }
 
-  // Бүгінгі 10 сөзді бір рет таңдап сақтаймыз (үйренген сөздер қайталанбайды)
+  // Бүгінгі 10 сөзді бір рет таңдап сақтаймыз: алдымен деңгейге сай пул (state.cefr), сосын мақсат
+  // (lib/wordsDaily.js — ереже сонда жазылған). Тізім sozdik.days[күн] ішінде, сондықтан жаңартқанда өзгермейді.
+  // v: 2 — тізім деңгей бойынша таңдалған. Ескі нұсқаның бүгінгі тізімінде деңгейден жоғары сөз болса
+  // (және бірде-бір сөзі белгіленбесе) — бір рет қана қайта таңдаймыз.
+  const todayList = sz.days?.[today];
   useEffect(() => {
-    if (!today || sz.days?.[today]) return;
+    if (!today || (todayList && sz.v >= 2)) return;
     update((s) => {
       const cur = s.sozdik || { days: {}, learned: {}, done: {} };
-      if (cur.days?.[today]) return s;
-      const rnd = seeded(today);
-      const fresh = uniq.filter((w) => !cur.learned?.[w.kk]);
-      const pool = (fresh.length >= 10 ? fresh : uniq).map((w) => [rnd(), w]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
-      // Сөздердің көбі пайдаланушының мақсатына сай (саяхат, жұмыс, оқу, күнделікті өмір)
-      return { ...s, sozdik: { ...cur, days: { ...cur.days, [today]: pickForGoal(pool, s.profile?.goal).map((w) => w.kk) } } };
+      const have = cur.days?.[today];
+      if (have && cur.v >= 2) return s;
+      if (have && !needsRepick(have, uniq, s.cefr, cur.learned)) return { ...s, sozdik: { ...cur, v: 2 } };
+      const list = pickDaily({ words: uniq, learned: cur.learned || {}, cefr: s.cefr, goal: s.profile?.goal, rnd: seeded(today) });
+      return { ...s, sozdik: { ...cur, v: 2, days: { ...cur.days, [today]: list.map((w) => w.kk) } } };
     });
-  }, [today, sz.days, update]);
+  }, [today, todayList, sz.v, update]);
 
   const words = useMemo(() => (sz.days?.[today] || []).map((k) => uniq.find((w) => w.kk === k)).filter(Boolean), [sz.days, today]);
   const known = words.filter((w) => sz.learned?.[w.kk]).length;
@@ -176,9 +175,8 @@ export default function Sozdik() {
     update((s) => {
       const cur = s.sozdik || { days: {}, learned: {}, done: {} };
       const old = new Set(cur.days?.[today] || []);
-      const fresh = uniq.filter((w) => !cur.learned?.[w.kk] && !old.has(w.kk));
-      const base = fresh.length >= 10 ? fresh : uniq.filter((w) => !old.has(w.kk));
-      return { ...s, sozdik: { ...cur, days: { ...cur.days, [today]: pickForGoal(shuffle(base), s.profile?.goal).map((w) => w.kk) } } };
+      const list = pickDaily({ words: uniq, learned: cur.learned || {}, cefr: s.cefr, goal: s.profile?.goal, exclude: old });
+      return { ...s, sozdik: { ...cur, v: 2, days: { ...cur.days, [today]: list.map((w) => w.kk) } } };
     });
     setFlip({}); setTest(null); setTres(null);
   }

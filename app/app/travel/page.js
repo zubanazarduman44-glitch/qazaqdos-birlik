@@ -18,6 +18,7 @@ import { L } from "../../../lib/i18n";
 import { useTravelL10n } from "../../../lib/l10nTravel";
 import { shuffle, tr } from "../../../lib/wordTools";
 import { useReveal, useTilt, reducedMotion } from "./fx";
+import { buildRegionQuiz, stampOutcome, tq, PASS } from "../../../lib/travelQuiz";
 
 // Өңір атласы (көрікті жерлер мәтіндерімен) тек өңір таңдалғанда керек: бөлек чанк, бет ашылған соң алдын ала жүктеледі
 const loadAtlas = () => import("../../components/RegionAtlas");
@@ -35,26 +36,8 @@ const teaser = (t) => {
   return first.length > 150 ? first.slice(0, 150).replace(/\s+\S*$/, "") + "…" : first;
 };
 
-function buildQuiz(r, t, lang, explain) {
-  const centers = shuffle(REGIONS.filter((x) => x.id !== r.id).map((x) => L(x.center, lang))).slice(0, 3);
-  const qs = [
-    {
-      prompt: t.quizCenter(L(r.name, lang)),
-      options: shuffle([L(r.center, lang), ...centers]).map((c) => ({ key: c, label: c })),
-      answer: L(r.center, lang),
-    },
-  ];
-  const pool = REGIONS.flatMap((x) => x.words);
-  for (const w of r.words) {
-    const others = shuffle(pool.filter((p) => trW(p, explain) !== trW(w, explain))).slice(0, 3);
-    qs.push({
-      prompt: t.quizWord(w.kk),
-      options: shuffle([w, ...others]).map((o) => ({ key: o.kk + trW(o, explain), label: trW(o, explain), e: o.e })),
-      answer: w.kk + trW(w, explain),
-    });
-  }
-  return qs;
-}
+// Тест сұрақтары — lib/travelQuiz.js: қала мен облыстың үлгісі бөлек, әр сұрақтың бір ғана дұрыс жауабы бар
+const buildQuiz = (r, t, lang, explain) => buildRegionQuiz(r, { lang, explain, quizWord: t.quizWord, trFn: trW, shuffle });
 
 const shortName = (r, lang) => {
   const n = L(r.name, lang).replace(/ қаласы$|^город |^г\. | city$| city/gi, "").replace(/ облысы$/, " обл.").replace(/ область$/, " обл.").replace(/ region$/i, "");
@@ -239,15 +222,26 @@ function Travel() {
     ? REGIONS.filter((r) => `${r.name.kk} ${r.name.ru} ${r.name.en} ${r.center.kk} ${r.center.ru} ${r.center.en}`.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 6)
     : [];
 
+  // Мөр мен марапат — әр өңірге бір-ақ рет: қайта ашып, қайта тапсырғанда XP/тиын қосылмайды.
+  // stampedRef — сол сессиядағы қос басуға қарсы (state жаңарғанша), stamps — сақталған паспорт.
+  const stampedRef = useRef(new Set());
+  // Әр тапсыру — жаңа Quiz (key): әйтпесе «Қайта тапсыру» ескі нәтиже экранында қалып қояды
+  const [qround, setQround] = useState(0);
+  function startQuiz() {
+    setQround((n) => n + 1);
+    setResult(null);
+    setQuiz(buildQuiz(region, t, lang, explain));
+  }
   function finishQuiz(right, total) {
-    const ok = right >= 4;
-    setResult({ right, total, ok });
-    if (ok && !stamps[region.id]) {
-      if (!reducedMotion()) setFresh(region.id);
-      update((s) => ({ ...s, stamps: { ...s.stamps, [region.id]: Date.now() } }));
-      award(30, 15, `${t.stampGot} +30 XP`);
-    } else if (ok) award(5, 2);
-    else award(2, 0);
+    const id = region.id;
+    const o = stampOutcome(stamps, id, right);
+    const had = o.had || stampedRef.current.has(id);
+    setResult({ right, total, ok: o.ok, had });
+    if (!o.ok || had) return;
+    stampedRef.current.add(id);
+    if (!reducedMotion()) setFresh(id);
+    update((s) => (s.stamps?.[id] ? s : { ...s, stamps: { ...s.stamps, [id]: Date.now() } }));
+    award(30, 15, `${t.stampGot} +30 XP`);
   }
 
   const order = ORDER;
@@ -403,7 +397,9 @@ function Travel() {
             <div className="region-title">
               <h2>{L(region.name, lang)}</h2>
               <span>
-                {t.regionCenter}: <b>{L(region.center, lang)}</b>
+                {region.city
+                  ? <>{tq("status", lang)}: <b>{region.id === "astana" ? `${tq("capital", lang)} · ` : ""}{tq("cityStatus", lang)}</b></>
+                  : <>{t.regionCenter}: <b>{L(region.center, lang)}</b></>}
               </span>
               {about?.[region.id] && <p className="region-tease">{teaser(L(about[region.id], lang))}</p>}
             </div>
@@ -453,7 +449,7 @@ function Travel() {
           <div className="region-quiz">
             {quiz ? (
               <>
-                <Quiz questions={quiz} onDone={finishQuiz} pass={4} />
+                <Quiz key={qround} questions={quiz} onDone={finishQuiz} pass={PASS} />
                 {result && (
                   <div className={`alert ${result.ok ? "ok tp-win" : ""} rise`}>
                     {result.ok && (
@@ -462,15 +458,15 @@ function Travel() {
                         <span className="stamp-e"><SightArt kind={kindOf(region.sights[0])} mini /></span>
                       </span>
                     )}
-                    {result.ok ? t.stampGot : t.stampMiss}
-                    <button className="btn ghost small" onClick={() => { setQuiz(buildQuiz(region, t, lang, explain)); setResult(null); }}>
+                    {result.ok ? (result.had ? tq("again", lang) : t.stampGot) : t.stampMiss}
+                    <button className="btn ghost small" onClick={startQuiz}>
                       <Icon name="refresh" size={15} /> {t.retry}
                     </button>
                   </div>
                 )}
               </>
             ) : (
-              <button className="btn gold big" onClick={() => setQuiz(buildQuiz(region, t, lang, explain))}>
+              <button className="btn gold big" onClick={startQuiz}>
                 <Icon name="stamp" size={20} /> {t.takeQuiz}
               </button>
             )}
