@@ -709,7 +709,10 @@
 .cx-aq-bust { border-radius: 30%; }
 @media (max-width: 1099px) {
   .cx-stage { padding-inline-end: 112px; }
+  .cx.is-empty .cx-stage { padding-inline-end: 62px; }
   .cx-aq { border-radius: 30%; overflow: hidden; }
+  .cx-kicker { display: flex; min-width: 0; white-space: nowrap; }
+  .cx-kicker { overflow: hidden; text-overflow: ellipsis; }
 }
 @media (min-width: 1100px) {
   .cx-aq { width: 196px; height: 262px; place-items: end center; }
