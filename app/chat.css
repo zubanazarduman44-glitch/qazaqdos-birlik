@@ -720,26 +720,6 @@
   .cx-wow { inset: 0 0 40px; }
 }
 
-/* «Ақылдың бейнесі» батырмасы */
-.aqp { position: relative; }
-.aqp-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-width: 44px; height: 44px; padding: 0 9px; border: 0; border-radius: 14px;
-  background: var(--cx-surf); color: var(--cx-ink); box-shadow: inset 0 0 0 1px var(--cx-rim);
-  font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
-}
-.aqp-btn:hover, .aqp-btn[aria-expanded="true"] { box-shadow: inset 0 0 0 1.5px var(--sec, var(--cx-red)); }
-.aqp-btn .aq-avatar { border-radius: 9px; }
-.aqp-btn-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.aqp-pop {
-  position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: 30;
-  width: max-content; max-width: min(320px, calc(100vw - 24px));
-  padding: 14px; border-radius: 18px; background: #fff;
-  box-shadow: 0 12px 34px rgba(31, 36, 48, 0.18), 0 0 0 1px rgba(31, 36, 48, 0.06);
-  animation: aqpIn 0.18s ease both;
-}
-.aqp-title { display: block; margin: 0 2px 10px; font-family: var(--head); font-size: 15px; color: var(--cx-ink); }
-@keyframes aqpIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 @media (min-width: 1100px) {
   .cx-look { flex: none; }
   .cx-look .aqp-btn { height: 48px; }
@@ -748,25 +728,6 @@
   .cx-stage-tools { flex-wrap: wrap; }
 }
 
-/* Таңдау нұсқалары (чатта да, профильде де) */
-.aqp-opts { display: flex; gap: 10px; }
-.aqp-opt {
-  position: relative; display: grid; justify-items: center; gap: 8px; width: 132px; min-height: 44px; padding: 10px 8px 12px;
-  border: 0; border-radius: 16px; background: #faf6ee; color: #1f2430; box-shadow: inset 0 0 0 1.5px rgba(31, 36, 48, 0.08);
-  font: inherit; font-size: 13.5px; font-weight: 700; line-height: 1.25; text-align: center; cursor: pointer;
-  transition: box-shadow 0.15s ease, background-color 0.15s ease;
-}
-.aqp-opt:hover { background: #f5eedf; }
-.aqp-opt.on { background: #fff; box-shadow: inset 0 0 0 2.5px var(--sec, #a3242b); }
-.aqp-opt:focus-visible { outline: 3px solid var(--sec, #a3242b); outline-offset: 2px; }
-.aqp-pic { position: relative; display: block; }
-.aqp-check {
-  position: absolute; top: -6px; inset-inline-end: -6px; display: grid; place-items: center; width: 24px; height: 24px;
-  border-radius: 50%; background: var(--sec, #a3242b); color: #fff; box-shadow: 0 0 0 2.5px #fff;
-  opacity: 0; transform: scale(0.6); transition: opacity 0.15s ease, transform 0.2s ease;
-}
-.aqp-opt.on .aqp-check { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .aqp-pop { animation: none; } .aqp-check { transition: none; } }
 
 /* Бос чат: Aqyl бойымен + сәлемдесу; бірінші хабардан кейін бұл орын әңгімеге беріледі */
 .cx-welcome-big { display: flex; align-items: flex-end; gap: 12px; max-width: 640px; }

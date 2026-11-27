@@ -1,14 +1,22 @@
-// «Шежіре» (профиль) бетінің жергілікті мәтіндері — 11 тілде.
-// kk / ru / en жолдары бұрынғы беттегі мәтінмен бірдей; қалған тілдер соның аудармасы.
+// Профиль бетінің жергілікті мәтіндері — 11 тілде.
 const D = {
-  kick: { kk: "Жеке бет", ru: "Личный кабинет", en: "My space", zh: "我的空间", es: "Mi espacio", de: "Mein Bereich", fr: "Mon espace", tr: "Kişisel sayfam", ar: "صفحتي", ko: "내 공간", ja: "マイページ" },
-  sub: {
-    kk: "Аватарың, ойын жетістіктерің және баптауларың осында.", ru: "Ваш аватар, достижения и настройки в одном месте.", en: "Your avatar, achievements and settings in one place.",
-    zh: "头像、成就和设置都在这里。", es: "Tu avatar, tus logros y tus ajustes en un solo lugar.", de: "Dein Avatar, deine Erfolge und Einstellungen an einem Ort.",
-    fr: "Ton avatar, tes réussites et tes réglages au même endroit.", tr: "Avatarın, başarıların ve ayarların tek yerde.", ar: "صورتك الرمزية وإنجازاتك وإعداداتك في مكان واحد.",
-    ko: "아바타, 성과, 설정을 한곳에서.", ja: "アバター、実績、設定をひとつの場所で。",
+  progT: { kk: "Оқу барысы", ru: "Мой прогресс", en: "My progress", zh: "我的进度", es: "Mi progreso", de: "Mein Fortschritt", fr: "Ma progression", tr: "İlerlemem", ar: "تقدّمي", ko: "나의 진도", ja: "学習の進み具合" },
+  aboutT: { kk: "Мен туралы", ru: "Обо мне", en: "About me", zh: "关于我", es: "Sobre mí", de: "Über mich", fr: "À propos de moi", tr: "Hakkımda", ar: "عنّي", ko: "내 정보", ja: "わたしについて" },
+  aqylT: { kk: "Менің Ақылым", ru: "Мой Aqyl", en: "My Aqyl", zh: "我的 Aqyl", es: "Mi Aqyl", de: "Mein Aqyl", fr: "Mon Aqyl", tr: "Aqyl’ım", ar: "Aqyl الخاص بي", ko: "나의 Aqyl", ja: "わたしのAqyl" },
+  aqylS: {
+    kk: "Жинаған тиыныңа Ақылға ұлттық киім ал.", ru: "Наряжайте Aqyl в национальную одежду за монеты.", en: "Dress Aqyl in traditional clothes for the coins you earn.",
+    zh: "用赚到的金币给 Aqyl 换上民族服饰。", es: "Viste a Aqyl con trajes tradicionales usando tus monedas.", de: "Kleide Aqyl mit deinen Münzen in traditionelle Tracht.",
+    fr: "Habille Aqyl en tenue traditionnelle avec tes pièces.", tr: "Kazandığın jetonlarla Aqyl’a geleneksel kıyafet al.", ar: "ألبِس Aqyl أزياءً تقليدية بالعملات التي تجمعها.",
+    ko: "모은 코인으로 Aqyl에게 전통 의상을 입혀 보세요.", ja: "貯めたコインでAqylに民族衣装を着せよう。",
   },
-  heroCap: { kk: "Менің шежірем", ru: "Моя летопись", en: "My chronicle", zh: "我的成长谱", es: "Mi crónica", de: "Meine Chronik", fr: "Ma chronique", tr: "Şecerem", ar: "سجلّي", ko: "나의 연대기", ja: "わたしの年代記" },
+  aqShop: { kk: "Дүкенде киіндіру", ru: "Одеть в магазине", en: "Dress up in the shop", zh: "去商店换装", es: "Vestir en la tienda", de: "Im Laden einkleiden", fr: "Habiller à la boutique", tr: "Mağazada giydir", ar: "ألبِسه في المتجر", ko: "상점에서 옷 입히기", ja: "ショップで着せ替え" },
+  cefrGo: { kk: "Деңгейді анықтау", ru: "Узнать уровень", en: "Find your level", zh: "测一测水平", es: "Conoce tu nivel", de: "Niveau ermitteln", fr: "Trouver mon niveau", tr: "Seviyeni öğren", ar: "اعرف مستواك", ko: "레벨 알아보기", ja: "レベルを調べる" },
+  explainNote: {
+    kk: "Интерфейс те осы тілге ауысады.", ru: "Интерфейс тоже переключится на этот язык.", en: "The interface switches to this language too.",
+    zh: "界面也会切换为该语言。", es: "La interfaz también cambia a este idioma.", de: "Die Oberfläche wechselt ebenfalls in diese Sprache.",
+    fr: "L’interface passe aussi dans cette langue.", tr: "Arayüz de bu dile geçer.", ar: "ستتحوّل الواجهة أيضًا إلى هذه اللغة.",
+    ko: "화면 언어도 이 언어로 바뀌어요.", ja: "画面の表示もこの言語に切り替わります。",
+  },
   toNext: {
     kk: (n) => `Келесі деңгейге ${n} XP`, ru: (n) => `До следующего уровня ${n} XP`, en: (n) => `${n} XP to the next level`, zh: (n) => `距下一级还差 ${n} XP`,
     es: (n) => `${n} XP para el siguiente nivel`, de: (n) => `Noch ${n} XP bis zum nächsten Level`, fr: (n) => `${n} XP avant le niveau suivant`, tr: (n) => `Sonraki seviyeye ${n} XP`,
@@ -33,37 +41,13 @@ const D = {
     kk: "Сыныпқа қосылу (код бойынша)", ru: "Вступить в класс по коду", en: "Join a class with a code", zh: "用代码加入班级", es: "Unirme a una clase con código",
     de: "Klasse per Code beitreten", fr: "Rejoindre une classe avec un code", tr: "Kodla sınıfa katıl", ar: "انضمّ إلى صف برمز", ko: "코드로 반 참여하기", ja: "コードでクラスに参加",
   },
-  treeT: { kk: "Бәйтерегің", ru: "Ваш Байтерек", en: "Your Baiterek", zh: "你的生命树", es: "Tu Baiterek", de: "Dein Baiterek", fr: "Ton Baïterek", tr: "Bayterek’in", ar: "شجرة بايتيرك", ko: "나의 바이테렉", ja: "あなたのバイテレク" },
-  treeS: {
-    kk: "Әр бұтақ — бір дағды. Оқыған сайын жапырақ жаяды.", ru: "Каждая ветвь — навык. Чем больше учитесь, тем больше листьев.", en: "Each branch is a skill. The more you learn, the more leaves it grows.",
-    zh: "每根树枝代表一项技能，学得越多，叶子越茂盛。", es: "Cada rama es una habilidad. Cuanto más aprendes, más hojas brotan.", de: "Jeder Ast ist eine Fähigkeit. Je mehr du lernst, desto mehr Blätter wachsen.",
-    fr: "Chaque branche est une compétence. Plus tu apprends, plus elle se couvre de feuilles.", tr: "Her dal bir beceri. Öğrendikçe yaprak açar.", ar: "كل غصن مهارة. كلما تعلّمت أكثر نمت أوراقه.",
-    ko: "가지 하나가 기술 하나예요. 배울수록 잎이 자라요.", ja: "枝ひとつがスキルひとつ。学ぶほど葉が茂ります。",
-  },
   uLessons: { kk: "сабақ", ru: "уроков", en: "lessons", zh: "课", es: "lecciones", de: "Lektionen", fr: "leçons", tr: "ders", ar: "دروس", ko: "레슨", ja: "レッスン" },
   uWords: { kk: "сөз", ru: "слов", en: "words", zh: "词", es: "palabras", de: "Wörter", fr: "mots", tr: "kelime", ar: "كلمات", ko: "단어", ja: "語" },
   uWins: { kk: "жеңіс", ru: "побед", en: "wins", zh: "胜", es: "victorias", de: "Siege", fr: "victoires", tr: "galibiyet", ar: "انتصارات", ko: "승", ja: "勝" },
   uStamps: { kk: "мөр", ru: "штампов", en: "stamps", zh: "印章", es: "sellos", de: "Stempel", fr: "tampons", tr: "damga", ar: "أختام", ko: "스탬프", ja: "スタンプ" },
   uPlaces: { kk: "орын", ru: "мест", en: "places", zh: "处古迹", es: "lugares", de: "Orte", fr: "lieux", tr: "yer", ar: "أماكن", ko: "유적", ja: "か所" },
   uWorks: { kk: "шығарма", ru: "произведений", en: "works", zh: "篇作品", es: "obras", de: "Werke", fr: "œuvres", tr: "eser", ar: "أعمال", ko: "작품", ja: "作品" },
-  savedWords: {
-    kk: "Сақталған сөз", ru: "Сохранённые слова", en: "Saved words", zh: "已保存的词", es: "Palabras guardadas", de: "Gespeicherte Wörter",
-    fr: "Mots enregistrés", tr: "Kaydedilen kelimeler", ar: "كلمات محفوظة", ko: "저장한 단어", ja: "保存した単語",
-  },
   daysT: { kk: "Күн іздері", ru: "Следы дней", en: "Day traces", zh: "每日足迹", es: "Huellas de los días", de: "Spuren der Tage", fr: "Traces des jours", tr: "Gün izleri", ar: "آثار الأيام", ko: "하루의 발자취", ja: "日々の足あと" },
-  daysS: {
-    kk: "Соңғы 8 апта. Белгіленеді: өткен сабақ, оқылған шығарма, сақталған сөз, Sozdik күні.",
-    ru: "Последние 8 недель. Отмечаются: пройденный урок, прочитанное произведение, сохранённое слово, день в Sozdik.",
-    en: "Last 8 weeks. Marked: a finished lesson, a work you read, a saved word, a Sozdik day.",
-    zh: "最近 8 周。记录：完成的课程、读过的作品、保存的单词、Sozdik 学习日。",
-    es: "Últimas 8 semanas. Se marcan: lección terminada, obra leída, palabra guardada, día de Sozdik.",
-    de: "Die letzten 8 Wochen. Markiert werden: abgeschlossene Lektion, gelesenes Werk, gespeichertes Wort, Sozdik-Tag.",
-    fr: "8 dernières semaines. Sont marqués : leçon terminée, œuvre lue, mot enregistré, jour Sozdik.",
-    tr: "Son 8 hafta. İşaretlenir: biten ders, okunan eser, kaydedilen kelime, Sozdik günü.",
-    ar: "آخر 8 أسابيع. يُسجَّل: درس مكتمل، عمل مقروء، كلمة محفوظة، يوم Sozdik.",
-    ko: "최근 8주. 표시: 끝낸 레슨, 읽은 작품, 저장한 단어, Sozdik 학습일.",
-    ja: "直近8週間。記録対象：修了したレッスン、読んだ作品、保存した単語、Sozdikの日。",
-  },
   activeDays: {
     kk: (n) => `Белсенді күн: ${n}`, ru: (n) => `Активных дней: ${n}`, en: (n) => `Active days: ${n}`, zh: (n) => `活跃天数：${n}`, es: (n) => `Días activos: ${n}`,
     de: (n) => `Aktive Tage: ${n}`, fr: (n) => `Jours actifs : ${n}`, tr: (n) => `Etkin gün: ${n}`, ar: (n) => `الأيام النشطة: ${n}`, ko: (n) => `활동한 날: ${n}`, ja: (n) => `アクティブな日：${n}`,
@@ -77,7 +61,6 @@ const D = {
     fr: "Une braise garde le foyer allumé si tu manques un jour", tr: "Bir gün kaçırırsan kor ocağı canlı tutar", ar: "الجمرة تُبقي الموقد مشتعلًا إن فاتك يوم",
     ko: "하루를 놓쳐도 불씨가 화덕을 지켜 줘요", ja: "1日休んでも、熾火がかまどの火を守ります",
   },
-  look: { kk: "Келбет", ru: "Облик", en: "Look", zh: "形象", es: "Aspecto", de: "Aussehen", fr: "Apparence", tr: "Görünüm", ar: "المظهر", ko: "모습", ja: "見た目" },
   langs: { kk: "Тіл", ru: "Язык", en: "Language", zh: "语言", es: "Idioma", de: "Sprache", fr: "Langue", tr: "Dil", ar: "اللغة", ko: "언어", ja: "言語" },
   dangerNote: {
     kk: "Қайтарылмайды: XP, тиын, мөр, сөздер — бәрі өшеді.", ru: "Необратимо: XP, монеты, штампы и слова будут удалены.", en: "Cannot be undone: XP, coins, stamps and words are erased.",
