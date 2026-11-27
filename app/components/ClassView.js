@@ -1,14 +1,13 @@
 "use client";
-// «Менің сыныбым» көрінісі — Әдебиет/«қағаз» стиліндегі тыныш, анық бет.
-// Құрылымы: бет тақырыбы → (сынып ауыстырғыш) → сынып картасы (атауы, көрсеткіштер, код) →
-// мұғалімге «Тапсырмалар | Оқушылар» қойындылары, оқушыға «Менің тапсырмаларым» → тағы сынып құру/қосылу.
-// Барлық күй мен Supabase шақырулары app/app/class/page.js ішінде; бұл файл тек сызады.
+// «Менің сыныбым» көрінісі — Сөздік үлгісі: бет тақырыбы → (сынып ауыстырғыш) → қою қызыл панель
+// (атауы, көрсеткіштер, код) → мұғалімге «Тапсырмалар | Оқушылар» табы, оқушыға «Менің тапсырмаларым» →
+// ықшам ақ қатарлар → тағы сынып құру/қосылу. Барлық күй мен Supabase шақырулары app/app/class/page.js ішінде.
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Avatar from "./Avatar";
 import Icon from "./Icon";
 import ClassConfirm from "./ClassConfirm";
-import { ClassScene, ClassEmblem, ClassKindTile, ClassKindGlyph, ClassRank, ClassThreadRing, ClassHourglass, KIND_TONE } from "./ClassArt";
+import { ClassScene, ClassKindTile, ClassKindGlyph, ClassRank, ClassThreadRing, ClassHourglass, KIND_TONE } from "./ClassArt";
 import { GAMES } from "../../lib/games";
 import { ALL_LESSONS, lessonTitle } from "../../lib/courseIndex";
 import { L } from "../../lib/i18n";
@@ -25,25 +24,24 @@ const KINDS = ["lesson", "game", "custom"];
 const kindKey = { lesson: "kLesson", game: "kGame", custom: "kCustom" };
 const CONFIRM = { class: ["delClass", "cfClass", "del"], leave: ["leave", "cfLeave", "leave"], member: ["remove", "cfMember", "remove"], task: ["del", "cfTask", "del"] };
 
-/* ── Бөлім тақырыбы: белгі-шаршы + тақырып + сан (Әдебиеттің сөре тақырыбы сияқты) ── */
-function Head({ id, icon, title, count, children }) {
+/* ── Бөлім тақырыбы: белгі тақтайша + атау + сан (Сөздіктің топ тақырыбы сияқты) ── */
+function Head({ id, icon, title, count }) {
   return (
     <div className="cl-h">
       <span className="cl-h-ic" aria-hidden="true">{icon}</span>
       <h2 id={id}>{title}</h2>
-      {count != null && <span className="cl-count">{count}</span>}
-      {children && <div className="cl-h-tools">{children}</div>}
+      {count != null && <em>{count}</em>}
     </div>
   );
 }
 
-/* ── Бос күй картасы ── */
-function Empty({ kind, title, text, children, small }) {
+/* ── Үлкен бос күй: сурет + мәтін (кіру, баптау, сынып жоқ) ── */
+function Empty({ kind, title, text, children }) {
   return (
-    <div className={`cl-empty ${small ? "is-small" : ""}`}>
+    <div className="cl-empty">
       <ClassScene kind={kind} className="cl-empty-art" />
       <div className="cl-empty-body">
-        {title && <h3 className="cl-empty-t">{title}</h3>}
+        {title && <h2 className="cl-empty-t">{title}</h2>}
         {text && <p className="cl-empty-p">{text}</p>}
         {children}
       </div>
@@ -51,24 +49,40 @@ function Empty({ kind, title, text, children, small }) {
   );
 }
 
-/* ── Сынып коды (мұғалім) ── */
+/* ── Шағын бос күй: тізімнің орнындағы бір жол ── */
+function Note({ icon, title, text, children }) {
+  return (
+    <div className="cl-note">
+      <span className="cl-h-ic" aria-hidden="true">{icon}</span>
+      <div className="cl-note-b">
+        <b>{title}</b>
+        {text && <p>{text}</p>}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ── Сынып коды (мұғалім): панельдің ішінде ── */
 function CodeBox({ code, T, copied, onCopy }) {
   return (
     <div className={`cl-code ${copied ? "is-copied" : ""}`}>
       <span className="cl-code-cap" id="cl-code-cap">{T("code")}</span>
-      <b className="cl-code-val" translate="no" aria-labelledby="cl-code-cap">
-        {String(code || "").split("").map((c, i) => <span key={i}>{c}</span>)}
-      </b>
-      <button type="button" className={`btn small ${copied ? "cl-ok" : "ghost"} cl-copy`} onClick={onCopy}>
-        <Icon name={copied ? "check" : "stamp"} size={18} />
-        <span aria-live="polite">{copied ? T("copied") : T("copy")}</span>
-      </button>
+      <div className="cl-code-row">
+        <b className="cl-code-val" translate="no" aria-labelledby="cl-code-cap">
+          {String(code || "").split("").map((c, i) => <span key={i}>{c}</span>)}
+        </b>
+        <button type="button" className={`cl-copy ${copied ? "is-ok" : ""}`} onClick={onCopy}>
+          <Icon name={copied ? "check" : "stamp"} size={17} />
+          <span aria-live="polite">{copied ? T("copied") : T("copy")}</span>
+        </button>
+      </div>
       <small className="cl-code-hint">{T("shareCode")}</small>
     </div>
   );
 }
 
-/* ── Код енгізу ── */
+/* ── Код енгізу / сынып құру ── */
 function JoinForm({ code, setCode, T, id, onEnter, busy }) {
   return (
     <form className="cl-form" onSubmit={(e) => { e.preventDefault(); onEnter(); }}>
@@ -101,12 +115,12 @@ function Actions({ T, teacher, name, setName, code, setCode, busy, onMake, onEnt
   return (
     <div className={`cl-actions ${teacher ? "is-two" : ""}`}>
       {teacher && (
-        <section className="card cl-act" aria-labelledby="cl-act-new">
+        <section className="cl-card cl-act" aria-labelledby="cl-act-new">
           <Head id="cl-act-new" icon={<Icon name="plus" size={18} />} title={T("newClass")} />
           <CreateForm T={T} name={name} setName={setName} busy={busy} onMake={onMake} id="cl-new" />
         </section>
       )}
-      <section className="card cl-act" aria-labelledby="cl-act-join">
+      <section className="cl-card cl-act" aria-labelledby="cl-act-join">
         <Head id="cl-act-join" icon={<Icon name="right" size={18} className="cl-flip" />} title={T("join")} />
         <JoinForm code={code} setCode={setCode} T={T} id="cl-code" onEnter={onEnter} busy={busy} />
       </section>
@@ -124,9 +138,9 @@ function Leaders({ members, T, ago, doneBy, total, onRemove, maxXp }) {
         const d = doneBy(m.user_id);
         return (
           <li key={m.user_id} className={`cl-row ${i < 3 && xp > 0 ? "is-top" : ""}`}>
-            <span className="cl-row-rank"><ClassRank rank={i + 1} /></span>
+            <span className="cl-row-rank"><ClassRank rank={i + 1} size={30} /></span>
             <span className="cl-row-av">
-              <Avatar value={m.avatar} size={44} />
+              <Avatar value={m.avatar} size={40} />
               <i className={`cl-dot ${fresh ? "on" : ""}`} aria-hidden="true" />
             </span>
             <div className="cl-row-who">
@@ -134,7 +148,7 @@ function Leaders({ members, T, ago, doneBy, total, onRemove, maxXp }) {
               <small>{T("last")}: {ago(m.last_active)}</small>
             </div>
             <div className="cl-row-xp" title={T("weekXp")}>
-              <span className="cl-bar" aria-hidden="true"><i style={{ width: `${maxXp ? Math.max(4, (xp / maxXp) * 100) : 0}%` }} /></span>
+              <span className="cl-bar" aria-hidden="true"><i style={{ "--p": maxXp ? Math.max(0.04, xp / maxXp) : 0 }} /></span>
               <b>{xp}<small> XP</small></b>
             </div>
             <ul className="cl-row-stats">
@@ -150,7 +164,7 @@ function Leaders({ members, T, ago, doneBy, total, onRemove, maxXp }) {
   );
 }
 
-/* ── Тапсырма ── */
+/* ── Тапсырма: түр белгісі → атауы мен мерзімі → әрекет ── */
 function Task({ t, T, lang, isOwner, sub, doneN, members, onMark, onDelete }) {
   const lesson = t.kind === "lesson" ? ALL_LESSONS.find((l) => l.id === t.ref) : null;
   const game = t.kind === "game" ? GAMES.find((g) => g.id === t.ref) : null;
@@ -162,7 +176,7 @@ function Task({ t, T, lang, isOwner, sub, doneN, members, onMark, onDelete }) {
   const tone = (KIND_TONE[t.kind] || KIND_TONE.custom)[0];
   return (
     <li className={`cl-task ${done ? "is-done" : ""} ${late ? "is-late" : ""}`} style={{ "--k": tone }}>
-      <ClassKindTile kind={t.kind} done={done} className="cl-task-ic" />
+      <ClassKindTile kind={t.kind} done={done} size={44} className="cl-task-ic" />
       <div className="cl-task-body">
         <span className="cl-task-kind">{T(kindKey[t.kind] || "kCustom")}</span>
         <b className="cl-task-title" dir="auto">{t.title}</b>
@@ -177,7 +191,7 @@ function Task({ t, T, lang, isOwner, sub, doneN, members, onMark, onDelete }) {
         {isOwner ? (
           <div className="cl-task-count">
             <span><b>{doneN}</b>/{members} {T("done")}</span>
-            <span className="cl-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></span>
+            <span className="cl-bar" aria-hidden="true"><i style={{ "--p": pct / 100 }} /></span>
           </div>
         ) : done ? (
           <span className="cl-done-chip"><Icon name="check" size={16} stroke={3} />{T("done")}</span>
@@ -197,7 +211,8 @@ function Task({ t, T, lang, isOwner, sub, doneN, members, onMark, onDelete }) {
 /* ── Тапсырма беру формасы ── */
 function Composer({ T, lang, tf, setTf, onAdd, onClose }) {
   return (
-    <form className="card cl-compose" onSubmit={(e) => { e.preventDefault(); onAdd(); }}>
+    <form className="cl-card cl-compose" onSubmit={(e) => { e.preventDefault(); onAdd(); }}>
+      <Head id="cl-compose-h" icon={<Icon name="plus" size={18} />} title={T("newTask")} />
       <fieldset className="cl-kinds">
         <legend className="cl-label">{T("taskType")}</legend>
         <div className="cl-kinds-row">
@@ -205,7 +220,7 @@ function Composer({ T, lang, tf, setTf, onAdd, onClose }) {
             <label key={k} className={`cl-kind ${tf.kind === k ? "is-on" : ""}`} style={{ "--k": KIND_TONE[k][0], "--ks": KIND_TONE[k][1] }}>
               <input type="radio" name="cl-kind" value={k} checked={tf.kind === k}
                 onChange={(e) => setTf({ ...tf, kind: e.target.value, ref: e.target.value === "lesson" ? ALL_LESSONS[0].id : e.target.value === "game" ? GAMES[0]?.id || "" : "" })} />
-              <ClassKindGlyph kind={k} size={24} />
+              <ClassKindGlyph kind={k} size={22} />
               <span>{T(kindKey[k])}</span>
             </label>
           ))}
@@ -256,6 +271,7 @@ export default function ClassView(p) {
   const addTask = async () => { await onAddTask(); };
   const cf = pending ? CONFIRM[pending.kind] : null;
   const formProps = { T, teacher, name, setName, code, setCode, busy, onMake, onEnter };
+  const allDone = tasks.length > 0 && myDone >= tasks.length;
 
   const taskList = (
     <ul className="cl-tasks">
@@ -265,10 +281,11 @@ export default function ClassView(p) {
       ))}
     </ul>
   );
+  const TABS = [["tasks", "scroll", T("tasks"), tasks.length], ["people", "trophy", T("students"), members.length]];
 
   return (
-    <div className="class-page cl">
-      <header className="page-head cl-head">
+    <div className="cl">
+      <header className="page-head">
         <div>
           <span className="kicker">{T("kicker")}</span>
           <h1>{T("title")}</h1>
@@ -277,19 +294,19 @@ export default function ClassView(p) {
       </header>
 
       {!user ? (
-        <section className="card cl-solo">
+        <section className="cl-card cl-solo">
           <Empty kind="login" title={T("loginT")} text={authReady ? T("login") : "…"}>
             <Link href="/login" className="btn primary big"><Icon name="user" size={20} />{T("signin")}</Link>
           </Empty>
         </section>
       ) : setup ? (
-        <section className="card cl-solo">
+        <section className="cl-card cl-solo">
           <Empty kind="setup" title={T("setupT")} text={T("setup")} />
         </section>
       ) : loading ? (
         <div className="cl-skel" aria-busy="true" aria-live="polite">
-          <div className="card cl-skel-hero"><i /><i /><i /></div>
-          <div className="card cl-skel-list"><i /><i /><i /></div>
+          <div className="cl-skel-hero"><i /><i /></div>
+          <div className="cl-skel-rows"><i /><i /><i /></div>
         </div>
       ) : (
         <>
@@ -298,7 +315,7 @@ export default function ClassView(p) {
           {classes.length > 1 && (
             <nav className="cl-switch" aria-label={T("myClasses")}>
               {classes.map((c) => (
-                <button key={c.id} type="button" className={`cl-switch-b ${cur?.id === c.id ? "is-on" : ""}`} aria-pressed={cur?.id === c.id} onClick={() => setCur(c)}>
+                <button key={c.id} type="button" className={cur?.id === c.id ? "on" : ""} aria-pressed={cur?.id === c.id} onClick={() => setCur(c)}>
                   <Icon name={c.owner === user.id ? "star" : "home"} size={16} /><span dir="auto">{c.name}</span>
                 </button>
               ))}
@@ -307,54 +324,45 @@ export default function ClassView(p) {
 
           {cur ? (
             <div className="cl-stack">
-              {/* ── Сынып картасы ── */}
-              <section className={`card cl-hero ${isOwner ? "is-owner" : "is-student"}`} aria-labelledby="cl-name">
+              {/* ── Сынып панелі: атауы, көрсеткіштер, код ── */}
+              <section className={`cl-hero ${isOwner ? "is-owner" : "is-student"}`} aria-labelledby="cl-name">
                 <div className="cl-hero-main">
-                  <div className="cl-hero-id">
-                    <ClassEmblem size={56} />
-                    <div>
-                      <span className={`cl-role ${isOwner ? "is-t" : ""}`}>{isOwner ? T("teacher") : T("student")}</span>
-                      <h2 id="cl-name" className="cl-name" dir="auto">{cur.name}</h2>
-                    </div>
-                  </div>
+                  <span className="cl-eyebrow">{isOwner ? T("teacher") : T("student")}</span>
+                  <h2 id="cl-name" className="cl-name" dir="auto">{cur.name}</h2>
                   {isOwner ? (
                     <ul className="cl-facts">
-                      <li><Icon name="user" size={18} /><b>{members.length}</b><span>{T("students")}</span></li>
-                      <li><Icon name="scroll" size={18} /><b>{tasks.length}</b><span>{T("tasks")}</span></li>
-                      <li><Icon name="star" size={18} /><b>{xpSum}</b><span>{T("weekXp")}</span></li>
-                      <li><Icon name="sun" size={18} /><b>{activeToday}</b><span>{T("activeToday")}</span></li>
+                      <li><Icon name="user" size={16} /><b>{members.length}</b><span>{T("students")}</span></li>
+                      <li><Icon name="scroll" size={16} /><b>{tasks.length}</b><span>{T("tasks")}</span></li>
+                      <li><Icon name="star" size={16} /><b>{xpSum}</b><span>{T("weekXp")}</span></li>
+                      <li><Icon name="sun" size={16} /><b>{activeToday}</b><span>{T("activeToday")}</span></li>
                     </ul>
                   ) : (
-                    <div className="cl-mine">
-                      <ClassThreadRing done={myDone} total={tasks.length} size={84} label={`${myDone} / ${tasks.length} ${T("done")}`}>
-                        <Avatar value={p.myAvatar} size={58} />
-                      </ClassThreadRing>
-                      <div>
-                        <small>{T("progress")}</small>
-                        <b>{myDone}<span>/{tasks.length}</span></b>
-                        <span>{tasks.length > 0 && myDone >= tasks.length ? T("allDone") : T("done")}</span>
-                      </div>
-                    </div>
+                    <p className="cl-mine">
+                      <b>{myDone}<span> / {tasks.length}</span></b>
+                      <span>{allDone ? T("allDone") : T("done")}</span>
+                    </p>
                   )}
                 </div>
-                {isOwner && <CodeBox code={cur.code} T={T} copied={copied} onCopy={onCopy} />}
-                <div className="cl-hero-foot">
-                  <button type="button" className="cl-danger-link" onClick={onDropClass}>
-                    <Icon name={isOwner ? "x" : "logout"} size={16} className={isOwner ? "" : "cl-flip"} />{isOwner ? T("delClass") : T("leave")}
-                  </button>
-                </div>
+                {isOwner ? (
+                  <CodeBox code={cur.code} T={T} copied={copied} onCopy={onCopy} />
+                ) : (
+                  <span className="cl-hero-av">
+                    <ClassThreadRing done={myDone} total={tasks.length} size={84} label={`${myDone} / ${tasks.length} ${T("done")}`}>
+                      <Avatar value={p.myAvatar} size={60} />
+                    </ClassThreadRing>
+                  </span>
+                )}
               </section>
 
               {isOwner ? (
                 <>
                   {/* ── Қойындылар: Тапсырмалар | Оқушылар ── */}
                   <div className="cl-tabs" role="tablist" aria-label={cur.name}>
-                    <button type="button" role="tab" id="cl-tab-tasks" aria-controls="cl-panel-tasks" aria-selected={tab === "tasks"} className={tab === "tasks" ? "is-on" : ""} onClick={() => setTab("tasks")}>
-                      <Icon name="scroll" size={18} />{T("tasks")}<span className="cl-count">{tasks.length}</span>
-                    </button>
-                    <button type="button" role="tab" id="cl-tab-people" aria-controls="cl-panel-people" aria-selected={tab === "people"} className={tab === "people" ? "is-on" : ""} onClick={() => setTab("people")}>
-                      <Icon name="trophy" size={18} />{T("students")}<span className="cl-count">{members.length}</span>
-                    </button>
+                    {TABS.map(([id, ic, label, n]) => (
+                      <button key={id} type="button" role="tab" id={`cl-tab-${id}`} aria-controls={`cl-panel-${id}`} aria-selected={tab === id} className={tab === id ? "on" : ""} onClick={() => setTab(id)}>
+                        <Icon name={ic} size={17} /><span>{label}</span><em>{n}</em>
+                      </button>
+                    ))}
                   </div>
 
                   {tab === "tasks" ? (
@@ -368,20 +376,18 @@ export default function ClassView(p) {
                         </button>
                       )}
                       {tasks.length === 0 ? (
-                        <div className="card"><Empty kind="tasks" title={T("noTasks")} text={T("noTasksO")} small /></div>
+                        <Note icon={<Icon name="scroll" size={18} />} title={T("noTasks")} text={T("noTasksO")} />
                       ) : taskList}
                     </section>
                   ) : (
                     <section className="cl-panel" role="tabpanel" id="cl-panel-people" aria-labelledby="cl-tab-people">
                       {members.length === 0 ? (
-                        <div className="card">
-                          <Empty kind="desks" title={T("noStudentsT")} text={T("noStudents")} small>
-                            <span className="cl-mini-code" translate="no">{cur.code}</span>
-                          </Empty>
-                        </div>
+                        <Note icon={<Icon name="user" size={18} />} title={T("noStudentsT")} text={T("noStudents")}>
+                          <span className="cl-mini-code" translate="no">{cur.code}</span>
+                        </Note>
                       ) : (
-                        <div className="card cl-board-card">
-                          <Head id="cl-lead-h" icon={<Icon name="trophy" size={18} />} title={T("leaders")} />
+                        <div className="cl-card cl-board-card">
+                          <Head id="cl-lead-h" icon={<Icon name="trophy" size={18} />} title={T("leaders")} count={members.length} />
                           <p className="cl-hint">{T("leadersHint")}</p>
                           <Leaders members={ranked} T={T} ago={ago} doneBy={doneBy} total={tasks.length} onRemove={onRemoveMember} maxXp={maxXp} />
                         </div>
@@ -393,10 +399,16 @@ export default function ClassView(p) {
                 <section className="cl-panel" aria-labelledby="cl-my-h">
                   <Head id="cl-my-h" icon={<Icon name="scroll" size={18} />} title={T("myTasks")} count={tasks.length || null} />
                   {tasks.length === 0 ? (
-                    <div className="card"><Empty kind="tasks" title={T("noTasks")} text={T("noTasksT")} small /></div>
+                    <Note icon={<Icon name="sparkle" size={18} />} title={T("noTasks")} text={T("noTasksT")} />
                   ) : taskList}
                 </section>
               )}
+
+              <div className="cl-foot">
+                <button type="button" className="cl-danger-link" onClick={onDropClass}>
+                  <Icon name={isOwner ? "x" : "logout"} size={16} className={isOwner ? "" : "cl-flip"} />{isOwner ? T("delClass") : T("leave")}
+                </button>
+              </div>
 
               {/* ── Тағы сынып / қосылу ── */}
               <section className="cl-more" aria-labelledby="cl-more-h">
@@ -408,7 +420,7 @@ export default function ClassView(p) {
           ) : (
             /* ── Сынып жоқ ── */
             <div className="cl-stack">
-              <section className="card cl-solo">
+              <section className="cl-card cl-solo">
                 <Empty kind={teacher ? "teacher" : "student"} title={T("noClassT")} text={teacher ? T("noClassTeacher") : T("noClassStudent")} />
               </section>
               <Actions {...formProps} />

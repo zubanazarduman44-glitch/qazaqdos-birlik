@@ -1,17 +1,13 @@
 "use client";
 import "../../saiys.css";
-import Avatar from "../../components/Avatar";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
-import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import { authed } from "../../../lib/auth";
 import { WORDS, tr } from "../../../lib/words";
 import { weekKey, prevWeekKey, weekEnd, prizeKind, COIN_PRIZES } from "../../../lib/week";
 import { tx } from "../../../lib/tx";
-import { SaiysHero, SaiysPrize, SaiysPodium, SaiysRace, SaiysRankList, SaiysLast, SaiysSkeleton, saiysStatus, sy } from "../../components/SaiysBoard";
-import { SaiysMedal } from "../../components/SaiysArt";
+import { SaiysHero, SaiysPrize, SaiysRankList, SaiysLast, SaiysSkeleton, SaiysEmpty, SaiysHead, SaiysLoginGate, SaiysRoomGate, SaiysRoomView, saiysStatus, sy } from "../../components/SaiysBoard";
 
 const QN = 10;
 const Q_MS = 12000;
@@ -43,11 +39,6 @@ function buildQs(seed, lang) {
     return { w, options: seeded([w, ...others], r) };
   });
 }
-const left = (ms) => {
-  const s = Math.max(0, Math.floor(ms / 1000));
-  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
-  return `${d}d ${h}h ${m}m`;
-};
 
 export default function Saiys() {
   const { lang, explain, user, state, update, award, toast } = useApp();
@@ -85,7 +76,7 @@ export default function Saiys() {
     loadWeek();
   }, [loadWeek]);
 
-  // Орын көтерілсе — хабаршы қуанады (соңғы көрген орын осы құрылғыда сақталады)
+  // Орын көтерілсе — Aqyl қуанады (соңғы көрген орын осы құрылғыда сақталады)
   const myIdx = rows ? rows.findIndex((r) => r.user_id === user?.id) : -1;
   useEffect(() => {
     if (!rows || myIdx < 0) return;
@@ -104,75 +95,75 @@ export default function Saiys() {
     const prize = COIN_PRIZES[myPrev];
     if (!prize || claimed) return;
     update((s) => ({ ...s, coins: (s.coins || 0) + prize, saiys: { claimed: { ...(s.saiys?.claimed || {}), [prevWeekKey()]: true } } }));
-    toast(`🪙 +${prize}`, "cheer");
+    toast(t.coins(prize), "cheer");
   }
+
+  const head = (
+    <header className="page-head">
+      <div>
+        <span className="kicker">{x.sKicker}</span>
+        <h1>{x.sTitle}</h1>
+        <p>{x.sSub}</p>
+      </div>
+    </header>
+  );
 
   if (!user)
     return (
-      <div className="saiys sy">
-        <SaiysHero x={x} t={t} mood="support" />
-        <section className="card sy-gate-card">
-          <SaiysPodium ghost x={x} t={t} />
-          <div className="sy-gate-text">
-            <Icon name="lock" size={22} />
-            <p>{x.sLogin}</p>
-            <Link href="/login" className="btn gold big">{x.sLoginBtn}</Link>
-          </div>
-        </section>
+      <div className="sy">
+        {head}
+        <SaiysLoginGate x={x} />
       </div>
     );
 
-  const status = tab === "week" ? saiysStatus(rows, user.id, x, t, up) : null;
+  const status = saiysStatus(rows, user.id, x, t, up);
+  const TABS = [["week", "trophy", x.sWeekly, rows?.length || null], ["room", "target", x.sRoom, null]];
   return (
-    <div className="saiys sy">
-      <SaiysHero x={x} t={t} status={status} up={up} mood={rows === null ? "think" : "idle"} />
-      <div className="sy-tabs" role="tablist">
-        <button role="tab" aria-selected={tab === "week"} className={tab === "week" ? "on" : ""} onClick={() => setTab("week")}><Icon name="trophy" size={18} /> {x.sWeekly}</button>
-        <button role="tab" aria-selected={tab === "room"} className={tab === "room" ? "on" : ""} onClick={() => setTab("room")}><Icon name="target" size={18} /> {x.sRoom}</button>
+    <div className="sy">
+      {head}
+      <div className="sy-tabs" role="tablist" aria-label={x.sTitle}>
+        {TABS.map(([id, ic, label, n]) => (
+          <button key={id} type="button" role="tab" id={`sy-tab-${id}`} aria-controls={`sy-panel-${id}`} aria-selected={tab === id} className={tab === id ? "on" : ""} onClick={() => setTab(id)}>
+            <Icon name={ic} size={17} /> <span>{label}</span>
+            {n ? <em>{n}</em> : null}
+          </button>
+        ))}
       </div>
       {setup && <p className="alert sy-note"><Icon name="lock" size={18} /> <span>{x.sSetup}</span></p>}
 
       {tab === "week" && (
-        <div className="sy-week">
+        <div className="sy-week" role="tabpanel" id="sy-panel-week" aria-labelledby="sy-tab-week">
+          <SaiysHero x={x} t={t} status={status} up={up} loading={rows === null} ms={weekEnd() - now} />
           <div className="sy-wk">
-            <div className="sy-side">
-              <SaiysPrize x={x} t={t} kind={kind} ms={weekEnd() - now} label={left(weekEnd() - now)} />
-
+            <SaiysPrize x={x} kind={kind}>
               {last.length > 0 && myPrev === 0 && lastKind === "gift" && <p className="alert ok sy-note"><Icon name="trophy" size={20} /> <span>{x.sWonGift}</span></p>}
               {last.length > 0 && myPrev >= 0 && lastKind === "coins" && !claimed && (
-                <button className="btn gold big sy-claim" onClick={claim}><Icon name="coin" size={20} /> {x.sClaim}: {COIN_PRIZES[myPrev]}</button>
+                <button type="button" className="btn primary sy-claim" onClick={claim}><Icon name="coin" size={20} /> {x.sClaim}: {COIN_PRIZES[myPrev]}</button>
               )}
+            </SaiysPrize>
 
-              {rows?.length > 0 && <SaiysRace rows={rows} userId={user.id} x={x} t={t} meAvatar={state.profile.avatar} />}
-            </div>
-
-            <section className="card sy-board">
+            <section className="sy-card sy-board" aria-labelledby="sy-board-h">
+              <SaiysHead id="sy-board-h" icon={<Icon name="trophy" size={18} />} title={x.sPlayers} count={rows?.length || null} />
               {rows === null && <SaiysSkeleton />}
-              {rows?.length === 0 && (
-                <div className="sy-empty">
-                  <SaiysPodium ghost x={x} t={t} />
-                  <p>{x.sEmpty}</p>
-                </div>
-              )}
-              {rows?.length > 0 && (
-                <>
-                  <SaiysPodium rows={rows} userId={user.id} x={x} t={t} />
-                  <SaiysRankList rows={rows} userId={user.id} x={x} />
-                </>
-              )}
+              {rows?.length === 0 && <SaiysEmpty text={x.sEmpty} />}
+              {rows?.length > 0 && <SaiysRankList rows={rows} userId={user.id} x={x} />}
             </section>
 
-            {last.length > 0 && <SaiysLast x={x} last={last} kind={lastKind} />}
+            {last.length > 0 && <SaiysLast x={x} last={last} />}
           </div>
         </div>
       )}
 
-      {tab === "room" && <Room x={x} user={user} state={state} explain={explain} award={award} />}
+      {tab === "room" && (
+        <div role="tabpanel" id="sy-panel-room" aria-labelledby="sy-tab-room">
+          <Room x={x} t={t} user={user} state={state} explain={explain} award={award} />
+        </div>
+      )}
     </div>
   );
 }
 
-function Room({ x, user, state, explain, award }) {
+function Room({ x, t, user, state, explain, award }) {
   const [code, setCode] = useState(null);
   const [room, setRoom] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -184,7 +175,7 @@ function Room({ x, user, state, explain, award }) {
   const [done, setDone] = useState(false);
   const t0 = useRef(0);
   const paid = useRef(false);
-  const me = { name: state.profile.name || user.name || "Дос", avatar: state.profile.avatar || "🌱" };
+  const me = { name: state.profile.name || user.name || "Дос", avatar: state.profile.avatar || "" };
 
   const poll = useCallback(async () => {
     if (!code) return;
@@ -250,7 +241,7 @@ function Room({ x, user, state, explain, award }) {
     reset();
   }
 
-  const qs = useMemo(() => (room ? buildQs(room.seed, explain) : []), [room?.seed, explain]);
+  const qs = useMemo(() => (room ? buildQs(room.seed, explain) : []), [room?.seed, explain]); // eslint-disable-line react-hooks/exhaustive-deps
   const playing = room?.status === "play" && !done;
   useEffect(() => {
     if (playing) t0.current = Date.now();
@@ -284,83 +275,15 @@ function Room({ x, user, state, explain, award }) {
       paid.current = true;
       award(15 + Math.max(0, 4 - rank) * 5, rank === 0 ? 10 : 2);
     }
-  }, [done, allDone]);
+  }, [done, allDone]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!code)
-    return (
-      <section className="sy-join rise">
-        <div className="card sy-gate">
-          <span className="sy-gate-ic"><Icon name="plus" size={26} /></span>
-          <h3>{x.sCreate}</h3>
-          <button className="btn gold big" onClick={create}><Icon name="plus" size={18} /> {x.sCreate}</button>
-        </div>
-        <div className="card sy-gate">
-          <span className="sy-gate-ic blue"><Icon name="target" size={26} /></span>
-          <h3><label htmlFor="sy-code">{x.sCode}</label></h3>
-          <div className="sy-join-row">
-            <input id="sy-code" className="input sy-code-in" value={input} onChange={(e) => setInput(e.target.value.toUpperCase())} placeholder={x.sCodePh} maxLength={6} autoComplete="off" />
-            <button className="btn blue" onClick={join}>{x.sJoin}</button>
-          </div>
-        </div>
-        {err && <p className="alert sy-note"><Icon name="x" size={18} /> <span>{err}</span></p>}
-      </section>
-    );
+  if (!code) return <SaiysRoomGate x={x} t={t} input={input} setInput={setInput} err={err} onCreate={create} onJoin={join} />;
 
-  const isHost = room?.host === user.id;
   return (
-    <section className="card sy-room rise">
-      <div className="sy-room-top">
-        <div>
-          <small className="muted">{x.sShare}</small>
-          <div className="sy-code" aria-label={code}>{code.split("").map((c, i) => <span key={i} aria-hidden="true">{c}</span>)}</div>
-        </div>
-        <button className="btn ghost small" onClick={leave}><Icon name="logout" size={16} /> {x.sLeave}</button>
-      </div>
-
-      <h3 className="sy-h">{x.sPlayers} <span className="sy-count">{players.length}/8</span></h3>
-      <ul className="sy-players">
-        {players.map((p, i) => (
-          <li key={p.user_id} className={`${p.user_id === user.id ? "me" : ""} ${p.done ? "done" : ""}`}>
-            <span className="sy-rk">{room?.status === "play" ? (i < 3 ? <SaiysMedal place={i} size={22} /> : i + 1) : <Icon name="user" size={14} />}</span>
-            <Avatar value={p.avatar} size={36} />
-            <span className="sy-pl-name"><span>{p.name}</span>{p.done ? <Icon name="check" size={16} className="sy-done" /> : ""}</span>
-            <span className="sy-rk-score"><b>{p.score}</b> <small>{x.sPoints}</small></span>
-          </li>
-        ))}
-      </ul>
-
-      {room?.status === "lobby" && (isHost ? (
-        <button className="btn gold big" disabled={players.length < 2} onClick={start}><Icon name="flame" size={18} /> {x.sStart}</button>
-      ) : (
-        <p className="sy-wait"><Qyran mood="think" size={54} /> <span>{x.sWaitHost}</span></p>
-      ))}
-
-      {playing && qs[qi] && (
-        <div className="sy-q">
-          <div className="sy-q-top">
-            <span className="chip">{x.sQ(qi + 1, QN)}</span>
-            <span className="sy-q-steps" aria-hidden="true">{qs.map((_, k) => <i key={k} className={k < qi ? "on" : k === qi ? "cur" : ""} />)}</span>
-          </div>
-          <p className="muted small">{x.sTrans}</p>
-          <h2 className="lv-q sy-q-word" key={qi}>{qs[qi].w.e} {qs[qi].w.kk}</h2>
-          <div className="lv-opts sy-opts">
-            {qs[qi].options.map((o) => (
-              <button key={o.kk} disabled={Boolean(picked)} className={`lv-opt ${picked && o.kk === qs[qi].w.kk ? "right" : ""} ${picked === o.kk && o.kk !== qs[qi].w.kk ? "bad" : ""}`} onClick={() => choose(o.kk)}>
-                <span>{tr(o, explain)}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {done && !allDone && <p className="sy-wait"><Qyran mood="think" size={54} /> <span>{x.sWaitOthers}</span></p>}
-      {done && allDone && (
-        <div className="sy-end">
-          <Qyran mood={rank === 0 ? "cheer" : "happy"} size={110} />
-          <h3>{x.sResults}: {rank >= 0 && rank < 3 ? <SaiysMedal place={rank} size={34} /> : `#${rank + 1}`}</h3>
-          <button className="btn gold" onClick={leave}><Icon name="refresh" size={18} /> {x.sAgain}</button>
-        </div>
-      )}
-    </section>
+    <SaiysRoomView
+      x={x} code={code} room={room} players={players} userId={user.id} isHost={room?.host === user.id}
+      qs={qs} qi={qi} qn={QN} picked={picked} score={score} done={done} allDone={allDone} rank={rank}
+      onStart={start} onLeave={leave} onChoose={choose} optLabel={(o) => tr(o, explain)}
+    />
   );
 }

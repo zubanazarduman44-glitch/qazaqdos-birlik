@@ -1,10 +1,9 @@
 // «Менің сыныбым» суреттері — тегіс иллюстрация (тек inline SVG, градиентсіз, id жоқ — қақтығыс болмасын).
 // Әдебиет/«қағаз бен киіз» стиліне сай: кілегей фон, ағаш, алтын, бір-екі екпін түсі. Тыныш, бірақ «жанды».
 // ClassScene       — бос күй суреттері: тақта + парта + кітап; kind: login | setup | teacher | student | desks | tasks | done
-// ClassEmblem      — сынып белгісі (қызыл киіз тақта, алтын қошқар мүйіз)
 // ClassKindTile    — тапсырма түрінің түсті тақтайшасы (сабақ/ойын/өз тапсырмам)
 // ClassKindGlyph   — сол белгілердің сызықтық нұсқасы. ClassRank — 1–3 орын медальдары.
-// ClassThreadRing  — алтын жіп сақина-прогресс. ClassHourglass — мерзім белгісі. ClassHorn — қошқар мүйіз.
+// ClassThreadRing  — алтын жіп сақина-прогресс. ClassHourglass — мерзім белгісі.
 
 const GOLD = "#F2C14E", GOLD_D = "#E0A526", CREAM = "#FFF6DC", RED = "#B8322A", RED_D = "#8A2018";
 const PAPER = "#FFFDF7", FELT = "#F4ECDA", FELT2 = "#E6D9BC", WOOD = "#7A4A22", WOOD_D = "#4F2E14", WOOD_L = "#A8703C";
@@ -12,28 +11,6 @@ const BOARD = "#1F4E5A", BOARD_D = "#163A43", INK = "#1F2430", BLUE = "#0F5E7A",
 
 /* Қошқар мүйіз: бағаны (20,23)-те, екі иірім жоғарыда. 40×24 аумақ. */
 export const HORN = "M20 23V13C20 7.5 15 4.5 11 6.2C7.6 7.7 8.2 12.4 11.6 12.4C13.6 12.4 14.2 10 12.6 9.3M20 13C20 7.5 25 4.5 29 6.2C32.4 7.7 31.8 12.4 28.4 12.4C26.4 12.4 25.8 10 27.4 9.3M15 23H25";
-
-export function ClassHorn({ size = 40, className = "" }) {
-  return (
-    <svg className={`cl-horn ${className}`} width={size} height={(size * 26) / 40} viewBox="0 0 40 26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" focusable="false">
-      <path d={HORN} />
-    </svg>
-  );
-}
-
-/* Сынып белгісі: 56×56 — қызыл киіз, алтын тігіс, ортада қошқар мүйіз. */
-export function ClassEmblem({ size = 56, className = "" }) {
-  return (
-    <svg className={`cl-emblem ${className}`} width={size} height={size} viewBox="0 0 56 56" aria-hidden="true" focusable="false">
-      <rect x="2" y="4" width="52" height="50" rx="14" fill={RED_D} />
-      <rect x="2" y="2" width="52" height="50" rx="14" fill={RED} />
-      <rect x="7" y="7" width="42" height="40" rx="10" fill="none" stroke={GOLD} strokeWidth="1.3" strokeDasharray="3 2.4" strokeOpacity="0.85" />
-      <g transform="translate(10 12) scale(0.9)"><path d={HORN} fill="none" stroke={GOLD} strokeWidth="2.6" strokeLinecap="round" /></g>
-      <path d="M24 39h8l-4 4z" fill={GOLD_D} />
-      <path d="M10 9.5c3-2.4 6.5-3.4 10-3.4" fill="none" stroke="#fff" strokeOpacity="0.3" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 /* Түр белгілері 40×40 кеңістікте (ортасы 20,20). */
 function KindPath({ kind }) {
