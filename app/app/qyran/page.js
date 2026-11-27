@@ -60,7 +60,7 @@ function VisionCard({ v, t, saved, onSave }) {
           <b className="vz-kk" lang="kk">{v.kk}</b>
           {v.translit && <span className="vz-tl">[{v.translit}]</span>}
         </div>
-        <button type="button" className="vz-say" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={20} /></button>
+        <button type="button" className="vz-say" onClick={() => sayKk(v.kk)} aria-label={t.a11y.listen}><Icon name="volume" size={20} /></button>
       </div>
       <div className="cx-vbody">
         <div className="vz-tr">{v.translation}</div>
@@ -675,7 +675,7 @@ export default function Chat() {
           >
             <div className="cx-tools">
               {camBtn(`cx-tool ${cam ? "on" : ""}`, false)}
-              <button type="button" className={`cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label="mic" aria-pressed={rec === "rec"}>
+              <button type="button" className={`cx-tool cx-mic ${rec === "rec" ? "on" : ""}`} onClick={mic} disabled={busy || rec === "busy"} aria-label={t.a11y.mic} aria-pressed={rec === "rec"}>
                 <Icon name={rec === "rec" ? "stop" : "mic"} size={20} />
               </button>
             </div>

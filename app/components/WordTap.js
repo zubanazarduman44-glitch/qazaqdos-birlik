@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./Store";
 import { whenIdle } from "../../lib/idle";
 import { tx } from "../../lib/tx";
+import { a11y } from "../../lib/i18n";
 import { sayKk } from "../../lib/speak";
 import Icon from "./Icon";
 
@@ -109,7 +110,7 @@ export default function WordTap() {
     <div ref={popRef} className={`wt-pop ${below ? "dn" : "up"}`} style={style} role="dialog" aria-label={pop.w}>
       <div className="wt-head">
         <b>{pop.w}</b>
-        <button className="wt-x" onClick={() => setPop(null)} aria-label="close">×</button>
+        <button className="wt-x" onClick={() => setPop(null)} aria-label={a11y(lang, "close")}><span aria-hidden="true">×</span></button>
       </div>
       {pop.loading && <p className="wt-load"><i /><i /><i /> {x.tapLoading}</p>}
       {pop.err && <p className="wt-err">{x.tapErr}</p>}
@@ -123,7 +124,7 @@ export default function WordTap() {
           {d.form && <p className="wt-form">{d.form}</p>}
           <div className="wt-row">
             <button className="btn small ghost" onClick={() => say(d.kk)}><Icon name="volume" size={16} /> {x.listen}</button>
-            <button className="btn small ghost" onClick={() => sayKk(d.kk, { slow: true })} title="slow" aria-label="slow"><Icon name="slow" size={18} /></button>
+            <button className="btn small ghost" onClick={() => sayKk(d.kk, { slow: true })} title={a11y(lang, "slow")} aria-label={a11y(lang, "slow")}><Icon name="slow" size={18} /></button>
           <button className={`btn small ${saved ? "ghost" : "gold"}`} disabled={saved} onClick={() => saveWord({ kk: d.kk, tr, e: d.e || "💬", src: "tap" })}>
             <Icon name={saved ? "check" : "plus"} size={15} stroke={2.6} /> {saved ? x.tapSaved : x.tapSave}
           </button>

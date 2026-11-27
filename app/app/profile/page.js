@@ -3,7 +3,7 @@ import "../../profile.css";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { tx } from "../../../lib/tx";
-import { L, AVATARS, EXPLAIN_LANGS, UI_LANGS, UI_LABELS } from "../../../lib/i18n";
+import { L, avatarName, AVATARS, EXPLAIN_LANGS, UI_LANGS, UI_LABELS } from "../../../lib/i18n";
 import { useApp, DAILY_GOAL, dayKey } from "../../components/Store";
 import Avatar from "../../components/Avatar";
 import DressUp from "../../components/Dress";
@@ -248,7 +248,7 @@ export default function Profile() {
               <legend>{t.avatar}</legend>
               <div className="pf-avs">
                 {AVATARS.map((a) => (
-                  <button key={a} type="button" className={`pf-av ${state.profile.avatar === a ? "on" : ""}`} onClick={() => setProfile({ avatar: a })} aria-label={a.replace("av:", "")} aria-pressed={state.profile.avatar === a}>
+                  <button key={a} type="button" className={`pf-av ${state.profile.avatar === a ? "on" : ""}`} onClick={() => setProfile({ avatar: a })} aria-label={avatarName(a, lang)} aria-pressed={state.profile.avatar === a}>
                     <Avatar value={a} size={52} />
                     {state.profile.avatar === a && <span className="pf-tick"><Icon name="check" size={12} stroke={3} /></span>}
                   </button>

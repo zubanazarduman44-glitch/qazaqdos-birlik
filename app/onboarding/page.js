@@ -8,7 +8,7 @@ import Icon from "../components/Icon";
 import AuthStage from "../components/AuthStage";
 import ShellGlyph from "../components/ShellGlyph";
 import { authL } from "../components/AuthL10n";
-import { AVATARS, EXPLAIN_LANGS } from "../../lib/i18n";
+import { AVATARS, EXPLAIN_LANGS, avatarName } from "../../lib/i18n";
 import { secVars } from "../../lib/sections";
 
 // Тіл тақтайшасындағы қысқа белгі (жалау эмодзиінің орнына)
@@ -128,7 +128,7 @@ export default function Onboarding() {
               </div>
               <div className="obx-avs" role="radiogroup" aria-label={t.avatar}>
                 {AVATARS.map((v) => (
-                  <button type="button" key={v} role="radio" aria-checked={avatar === v} className={`obx-av ${avatar === v ? "on" : ""}`} onClick={() => setAvatar(v)} aria-label={v.slice(3)}>
+                  <button type="button" key={v} role="radio" aria-checked={avatar === v} className={`obx-av ${avatar === v ? "on" : ""}`} onClick={() => setAvatar(v)} aria-label={avatarName(v, lang)}>
                     <Avatar value={v} size={60} />
                     <span className="obx-ok" aria-hidden="true"><Icon name="check" size={13} stroke={3} /></span>
                   </button>

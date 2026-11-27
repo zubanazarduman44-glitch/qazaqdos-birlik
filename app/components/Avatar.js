@@ -180,7 +180,7 @@ export default function Avatar({ value, size = 44, className = "" }) {
   const id = ART[raw] ? raw : "zhigit";
   const [a, b] = BG[id] || ["#fff", "#ccc"];
   return (
-    <svg className={`avatar ${className}`} viewBox="0 0 100 100" width={size} height={size} role="img" aria-label={id}>
+    <svg className={`avatar ${className}`} viewBox="0 0 100 100" width={size} height={size} aria-hidden="true" focusable="false">
       <defs>
         <radialGradient id={`avbg-${id}`} cx=".35" cy=".25" r="1"><stop offset="0" stopColor={a} /><stop offset="1" stopColor={b} /></radialGradient>
         <linearGradient id="avg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff0a8" /><stop offset="1" stopColor="#c47e00" /></linearGradient>

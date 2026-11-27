@@ -146,7 +146,7 @@ export default function Shell({ children }) {
   // Ағымдағы бөлім қолтаңбасы: реңі мен белгісі қабықтың барлық жерінде бірдей
   const secKey = sectionOf(path);
   const sec = SECTIONS[secKey];
-  const secName = secKey === "profile" ? t.nav.profile : secKey === "admin" ? "Әкімші" : label(secKey);
+  const secName = secKey === "profile" ? t.nav.profile : secKey === "admin" ? t.nav.admin : label(secKey);
   const secCap = cap(groupOf(secKey)) || "Qyzyl til";
   const inBar = MOBILE.includes(secKey);
 
@@ -198,7 +198,7 @@ export default function Shell({ children }) {
           {admin && (
             <Link href="/app/admin" className={`side-link ${active("/app/admin") ? "on" : ""}`} style={secVars("admin", "it")}>
               <span className="sx-gl"><ShellGlyph name="bars" size={18} /></span>
-              <span className="sx-lbl">Әкімші</span>
+              <span className="sx-lbl">{t.nav.admin}</span>
             </Link>
           )}
         </nav>
@@ -262,7 +262,7 @@ export default function Shell({ children }) {
                 <div className="sx-sheet-grid">
                   {g.keys.map((k) => NAV.find((n) => n.key === k)).filter(showNav).map((n) => sheetLink(n.href, n.key, label(n.key)))}
                   {g.id === "top" && sheetLink("/app/profile", "profile", t.nav.profile)}
-                  {g.id === "top" && admin && sheetLink("/app/admin", "admin", "Әкімші")}
+                  {g.id === "top" && admin && sheetLink("/app/admin", "admin", t.nav.admin)}
                 </div>
               </div>
             ))}

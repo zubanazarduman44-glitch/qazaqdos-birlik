@@ -8,6 +8,7 @@ import TopicArt, { TOPIC_TINT } from "../../components/TopicArt";
 import Qyran from "../../components/Qyran";
 import { WORDS, WTR, TOPICS, setWordTr, tr } from "../../../lib/words";
 import { tx } from "../../../lib/tx";
+import { a11y } from "../../../lib/i18n";
 import { sayKk } from "../../../lib/speak";
 import Quiz from "../../components/Quiz";
 import { shuffle } from "../../../lib/words";
@@ -67,7 +68,7 @@ function DayCard({ w, i, lang, explain, flipped, back, known, knownLabel, onFlip
             <b lang="kk">{w.kk}</b>
             {known && <span className="szk-seal" aria-hidden="true"><Icon name="check" size={18} stroke={3} /></span>}
             <span className="szk-foot">
-              <button type="button" className="szk-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={17} /></button>
+              <button type="button" className="szk-say" onClick={stop(() => sayKk(w.kk))} aria-label={a11y(lang, "listen")}><Icon name="volume" size={17} /></button>
               {known
                 ? <span className="szk-hint ok"><Icon name="check" size={13} stroke={3} /> {knownLabel}</span>
                 : <span className="szk-hint"><Icon name="refresh" size={13} /> {HINT[lang] || HINT.en}</span>}
@@ -77,7 +78,7 @@ function DayCard({ w, i, lang, explain, flipped, back, known, knownLabel, onFlip
             <span className="szk-backtop" lang="kk">{w.kk}</span>
             <b>{tr(w, explain)}</b>
             <span className="szk-acts">
-              <button type="button" className="szk-say" onClick={stop(() => sayKk(w.kk))} aria-label="listen"><Icon name="volume" size={17} /></button>
+              <button type="button" className="szk-say" onClick={stop(() => sayKk(w.kk))} aria-label={a11y(lang, "listen")}><Icon name="volume" size={17} /></button>
               <button type="button" className={`szk-know ${known ? "on" : ""}`} onClick={stop(onKnow)} aria-pressed={known}>
                 <Icon name="check" size={15} stroke={2.6} /> {tx(lang).szKnow}
               </button>
@@ -379,7 +380,7 @@ export default function Sozdik() {
                   {list.map((v) => (
                     <li key={v.kk}>
                       <span className="szk-w"><b lang="kk">{v.kk}</b><small>{tr(v, explain)}</small></span>
-                      <button type="button" className="szk-say" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={17} /></button>
+                      <button type="button" className="szk-say" onClick={() => sayKk(v.kk)} aria-label={a11y(lang, "listen")}><Icon name="volume" size={17} /></button>
                       <button type="button" className="szk-del" title={x.szDel} aria-label={x.szDel} onClick={() => update((s) => ({ ...s, vocab: s.vocab.filter((z) => z.kk !== v.kk) }))}><Icon name="x" size={15} /></button>
                     </li>
                   ))}
