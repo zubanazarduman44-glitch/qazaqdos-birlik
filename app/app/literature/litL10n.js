@@ -38,39 +38,44 @@ const T = {
     ko: "단어를 누르면 번역이 나옵니다. 문장을 고르고 전체 듣기를 누르면 거기서부터 읽어 줍니다.",
     ja: "単語をタップすると訳が出ます。文を選んで「全部聞く」を押すと、そこから読み上げます。",
   },
-  listen: {
-    kk: "Сөйлемді тыңдау", ru: "Прослушать предложение", en: "Listen to the sentence", zh: "收听句子", es: "Escuchar la frase", de: "Satz anhören",
-    fr: "Écouter la phrase", tr: "Cümleyi dinle", ar: "استمع إلى الجملة", ko: "문장 듣기", ja: "文を聞く",
-  },
-  trOne: {
-    kk: "Сөйлем аудармасы", ru: "Перевод предложения", en: "Translate sentence", zh: "翻译句子", es: "Traducir la frase", de: "Satz übersetzen",
-    fr: "Traduire la phrase", tr: "Cümleyi çevir", ar: "ترجمة الجملة", ko: "문장 번역", ja: "文を訳す",
-  },
   readAll: {
     kk: "Бәрін тыңдау", ru: "Слушать всё", en: "Listen to all", zh: "全部收听", es: "Escuchar todo", de: "Alles anhören",
     fr: "Tout écouter", tr: "Hepsini dinle", ar: "استمع إلى الكل", ko: "전체 듣기", ja: "全部聞く",
-  },
-  episode: {
-    kk: "Эпизод", ru: "Эпизод", en: "Episode", zh: "片段", es: "Episodio", de: "Episode",
-    fr: "Épisode", tr: "Bölüm", ar: "مقطع", ko: "에피소드", ja: "場面",
   },
   // Деңгей ауыстырғыш (бір оқиға — бірнеше деңгейде)
   level: {
     kk: "Мәтін деңгейі", ru: "Уровень текста", en: "Text level", zh: "文本难度", es: "Nivel del texto", de: "Textniveau",
     fr: "Niveau du texte", tr: "Metin seviyesi", ar: "مستوى النص", ko: "텍스트 수준", ja: "文章のレベル",
   },
-  levelHint: {
-    kk: "Оқиға бірдей — деңгей жоғарылаған сайын тілі күрделене түседі.",
-    ru: "История та же — чем выше уровень, тем сложнее язык.",
-    en: "Same story — the higher the level, the richer the language.",
-    zh: "故事相同——级别越高，语言越丰富。",
-    es: "La misma historia: cuanto más alto el nivel, más rico el lenguaje.",
-    de: "Dieselbe Geschichte – je höher das Niveau, desto reicher die Sprache.",
-    fr: "Même histoire : plus le niveau est élevé, plus la langue est riche.",
-    tr: "Hikâye aynı; seviye yükseldikçe dil zenginleşir.",
-    ar: "القصة نفسها، وكلما ارتفع المستوى ازدادت اللغة ثراءً.",
-    ko: "이야기는 같고, 수준이 높을수록 표현이 풍부해집니다.",
-    ja: "物語は同じで、レベルが上がるほど表現が豊かになります。",
+  // Мәтіндегі сөз белгілері (сызықша түсі): апта сөзі · үйреніп жатырсың · меңгерілді
+  legend: {
+    kk: "Сөз белгілері", ru: "Обозначения слов", en: "Word marks", zh: "词汇标记", es: "Marcas de palabras", de: "Wortmarkierungen",
+    fr: "Repères des mots", tr: "Kelime işaretleri", ar: "علامات الكلمات", ko: "단어 표시", ja: "単語の印",
+  },
+  week: {
+    kk: "Апта сөзі", ru: "Слово недели", en: "Word of the week", zh: "本周词汇", es: "Palabra de la semana", de: "Wort der Woche",
+    fr: "Mot de la semaine", tr: "Haftanın kelimesi", ar: "كلمة الأسبوع", ko: "이번 주 단어", ja: "今週の単語",
+  },
+  learning: {
+    kk: "Үйреніп жатырсың", ru: "Изучаете", en: "Learning", zh: "正在学习", es: "Aprendiendo", de: "Am Lernen",
+    fr: "En cours d’apprentissage", tr: "Öğreniyorsun", ar: "قيد التعلّم", ko: "학습 중", ja: "学習中",
+  },
+  mastered: {
+    kk: "Меңгерілді", ru: "Выучено", en: "Mastered", zh: "已掌握", es: "Dominada", de: "Beherrscht",
+    fr: "Maîtrisé", tr: "Öğrenildi", ar: "تمّ إتقانها", ko: "익힘", ja: "習得済み",
+  },
+  savedN: {
+    kk: (n) => `${n} сақталған сөз осы мәтінде`,
+    ru: (n) => `Сохранённых слов в этом тексте: ${n}`,
+    en: (n) => `${n} saved ${n === 1 ? "word" : "words"} in this text`,
+    zh: (n) => `本文中有 ${n} 个已保存的词`,
+    es: (n) => `${n} ${n === 1 ? "palabra guardada" : "palabras guardadas"} en este texto`,
+    de: (n) => `${n} ${n === 1 ? "gespeichertes Wort" : "gespeicherte Wörter"} in diesem Text`,
+    fr: (n) => `${n} ${n > 1 ? "mots enregistrés" : "mot enregistré"} dans ce texte`,
+    tr: (n) => `Bu metinde ${n} kayıtlı kelime`,
+    ar: (n) => `الكلمات المحفوظة في هذا النص: ${n}`,
+    ko: (n) => `이 글에 저장한 단어 ${n}개`,
+    ja: (n) => `この文章に保存した単語：${n}語`,
   },
   // Дауыстап оқу жылдамдығы
   speed: {

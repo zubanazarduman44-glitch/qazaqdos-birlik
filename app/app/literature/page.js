@@ -2,17 +2,17 @@
 import "../../literature.css";
 import { NatEmpty } from "../../components/NatArt";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useAnimGate } from "../../components/AnimGate";
 import { useApp } from "../../components/Store";
 import Qyran from "../../components/Qyran";
 import Icon from "../../components/Icon";
 import Quiz from "../../components/Quiz";
-import { LitEmblem, LitCorner, LitHeroArt, LIT_COVER } from "../../components/LitArt";
+import { LitEmblem, LIT_COVER } from "../../components/LitArt";
 import { getKkVoice, fetchTtsUrl } from "../../../lib/speak";
 import { shuffle } from "../../../lib/wordTools";
 import { whenIdle } from "../../../lib/idle";
 import { WORKS, LEVELS, loadEpisodes, splitSent } from "../../../lib/literature";
 import { LT } from "./litL10n";
+import { buildMarks, markParts } from "./litMarks";
 import { tx } from "../../../lib/tx";
 import { L } from "../../../lib/i18n";
 
@@ -61,6 +61,8 @@ const coverStyle = (w) => {
   const [c, d] = LIT_COVER[w.art] || ["#8A2018", "#5E140F"];
   return { "--lc": c, "--ld": d };
 };
+// Белгіленген сөздер: сөз тұтас бір <span> ішінде қалады — WordTap аудармасы бұрынғыдай жұмыс істейді
+const showParts = (ps) => ps.map((p, i) => (typeof p === "string" ? p : <span key={i} className={`lw lw-${p.st}`}>{p.w}</span>));
 
 export default function Literature() {
   const { lang, explain, state, update, award } = useApp();
@@ -90,8 +92,8 @@ export default function Literature() {
   const run = useRef(0);
   const timer = useRef(null);
   const listRef = useRef(null);
-  // Экраннан тыс суреттердің анимациясы кідіреді (AnimGate)
-  const gHero = useAnimGate();
+  const flowRef = useRef(null); // мәтіннің ішкі айналым қорабы (компьютерде)
+  const [dictMod, setDictMod] = useState(null); // жергілікті сөздік (етістікті тану үшін), WordTap-пен ортақ чанк
   const work = WORKS.find((w) => w.id === id);
   const lit = state.lit || {};
   const epAll = work && eps ? eps[work.id] : null;
@@ -108,6 +110,38 @@ export default function Literature() {
     const ps = ep.paras.map(splitSent);
     return { sentences: ps.flat(), paraOf: ps.flatMap((p, k) => p.map(() => k)), paraSent: ps };
   }, [work?.id, reading, lvl, eps]);
+  // Сөз белгілері: апта сөзі / үйреніп жатырсың / меңгерілді (litMarks.js)
+  useEffect(() => {
+    if (!reading || dictMod) return;
+    return whenIdle(() => import("../../../lib/dict").then(setDictMod));
+  }, [reading, dictMod]);
+  const marks = useMemo(
+    () => (reading ? buildMarks(state, dictMod ? (k) => dictMod.lookupLocal(k) : null) : null),
+    [reading, state.vocab, state.review, state.sozdik, dictMod] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const lead = ep?.lead || "";
+  const marked = useMemo(() => {
+    if (!marks) return null;
+    const found = new Set();
+    const lp = markParts(lead, marks, found);
+    const sp = sentences.map((s) => markParts(s, marks, found));
+    let saved = 0;
+    for (const k of found) if (marks.saved.has(k)) saved++;
+    return { lead: lp, sents: sp, saved };
+  }, [marks, sentences, lead]);
+  // Дауыстап оқығанда ағымдағы сөйлем ішкі қорапта көрініп тұрады (бет өзі айналмайды)
+  useEffect(() => {
+    const box = flowRef.current;
+    if (!playing || cur < 0 || !box || box.scrollHeight <= box.clientHeight + 4) return;
+    const el = box.querySelector(".snt.now");
+    if (!el) return;
+    const h = box.clientHeight;
+    const top = el.offsetTop;
+    if (top < box.scrollTop + h * 0.12 || top + el.offsetHeight > box.scrollTop + h * 0.85) {
+      const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      box.scrollTo({ top: Math.max(0, top - h * 0.3), behavior: calm ? "auto" : "smooth" });
+    }
+  }, [cur, playing]);
   const srcText = work ? (reading ? ep.paras.join(" ") : work.text) : "";
   const trKey = work ? `qd_lt_${work.id}${reading ? `_ep_${lvl}` : ""}_${explain}` : "";
 
@@ -166,6 +200,7 @@ export default function Literature() {
     setCur(-1);
     setPick(null);
     setTrans(null);
+    flowRef.current?.scrollTo?.({ top: 0 });
     lsSet(LS_LVL, { ...(lsGet(LS_LVL, {}) || {}), [work.id]: l });
   }
 
@@ -407,16 +442,10 @@ export default function Literature() {
 
   // Бұрын оқылған, бірақ қазір тізімде жоқ шығармалар (мысалы, алынып тасталған өлеңдер) санға кірмейді
   const readN = WORKS.filter((w) => lit[w.id]).length;
-  const corners = (
-    <span className="lit-corners" aria-hidden="true">
-      <i><LitCorner /></i><i><LitCorner /></i><i><LitCorner /></i><i><LitCorner /></i>
-    </span>
-  );
   const book = (w, i) => (
     <li key={w.id} className="lit-slot" style={{ "--i": i }}>
       <button className={`lit-book ${lit[w.id] ? "is-read" : ""}`} onClick={() => open(w)} style={coverStyle(w)}>
         <span className="lit-cover">
-          {corners}
           <span className="lit-cover-top">
             <span className="lit-lvl">{w.levels.join(" · ")}</span>
             {w.born && <span className="lit-year">{BORN[lang] || BORN.en} {w.born}</span>}
@@ -442,22 +471,18 @@ export default function Literature() {
     let n = 0;
     return (
       <div className="literature lit-lib">
-        <header ref={gHero} className="lit-hero">
-          <div className="lit-hero-txt">
+        <header className="page-head lit-head">
+          <div className="lit-head-txt">
             <span className="kicker">{x.litKicker}</span>
             <h1>{x.litTitle}</h1>
-            <p className="lit-epi" lang="kk" dir="ltr">«Өнер алды — қызыл тіл»</p>
-            <p className="lit-sub">{lt.sub}</p>
-            <div className="head-tools">
-              <span className="chip gold lit-count"><Icon name="book" size={16} /> {readN}/{WORKS.length}</span>
-            </div>
-            <div className="lit-spines" aria-hidden="true">
-              {WORKS.map((w) => <i key={w.id} className={lit[w.id] ? "on" : ""} style={coverStyle(w)} />)}
-            </div>
+            <p>{lt.sub}</p>
           </div>
-          <div className="lit-hero-art">
-            <LitHeroArt />
-            <span className="lit-hero-aqyl"><Qyran mood={readN ? "happy" : "idle"} size={92} /></span>
+          <div className="head-tools lit-head-tools">
+            <span className="lit-count" title={x.litDoneMark}>
+              <Icon name="book" size={16} /> <b>{readN}/{WORKS.length}</b> <span className="lit-count-t">{x.litDoneMark}</span>
+              <i className="lit-count-bar" aria-hidden="true"><i style={{ transform: `scaleX(${readN / WORKS.length})` }} /></i>
+            </span>
+            <span className="lit-head-aqyl" aria-hidden="true"><Qyran mood={readN ? "happy" : "idle"} size={64} /></span>
           </div>
         </header>
 
@@ -512,14 +537,18 @@ export default function Literature() {
         <button className="btn ghost small" onClick={() => { stop(); setId(null); }}>
           <Icon name="left" size={16} /> {x.litBack}
         </button>
-        <span className="lit-crumb">{x.litKicker}</span>
+        {inRead && (
+          <>
+            <button className="lit-ep-back" onClick={backToInfo}><Icon name="book" size={15} /> {lt.about}</button>
+            {levelSwitch}
+          </>
+        )}
       </nav>
 
       {!inRead ? (
         <article className="lit-spread rise">
           <header className="lit-verso">
             <div className="lit-mini-cover">
-              {corners}
               <LitEmblem id={work.art} size={104} />
             </div>
             <div className="lit-verso-txt">
@@ -541,9 +570,7 @@ export default function Literature() {
 
           <section className="lit-recto lit-info">
             <h3 className="lit-sec-h"><Icon name="book" size={16} /> {lt.about}</h3>
-            <p className={`reader-text lit-text lit-intro ${/^[«"“(]/.test(sentences[0] || "") ? "no-cap" : ""}`} lang="kk" dir="ltr">
-              {sentences.map((sn, i) => <span key={i} className="snt">{sn}{" "}</span>)}
-            </p>
+            <p className="lit-text lit-intro" lang="kk" dir="ltr">{work.text}</p>
             {transBox}
             <div className="lit-start">
               <span className="lit-adapt"><Icon name="scroll" size={14} /> {lt.adapted}</span>
@@ -563,63 +590,78 @@ export default function Literature() {
           </section>
         </article>
       ) : (
-        <article className="lit-card rise" id="lit-episode">
-          <div className="lit-thread" aria-hidden="true"><i style={{ transform: `scaleX(${prog})` }} /></div>
-          <div className="lit-card-bar">
-            <button className="lit-ep-back" onClick={backToInfo}><Icon name="left" size={14} /> {lt.about}</button>
-            {levelSwitch}
-          </div>
+        <article className="lit-reader rise" id="lit-episode">
           {!ep ? (
-            epErr ? (
-              <div className="lit-note lit-warn">
-                <span>{lt.loadErr}</span>
-                <button className="btn ghost small" onClick={getEps}><Icon name="refresh" size={15} /> {x.spTryAgain}</button>
-              </div>
-            ) : (
-              <p className="lit-note lit-wait-t" role="status">{x.tapLoading}</p>
-            )
+            <div className="lit-sheet lit-sheet-wait">
+              {epErr ? (
+                <div className="lit-note lit-warn">
+                  <span>{lt.loadErr}</span>
+                  <button className="btn ghost small" onClick={getEps}><Icon name="refresh" size={15} /> {x.spTryAgain}</button>
+                </div>
+              ) : (
+                <p className="lit-note lit-wait-t" role="status">{x.tapLoading}</p>
+              )}
+            </div>
           ) : (
             <>
               <header className="lit-card-head">
-                <p className="lit-label">
-                  <b>{lvl}</b> · {lt.adapted} · {L(work.kind, lang)}
-                </p>
+                <div className="lit-label">
+                  <span className="lit-label-lv">{lvl}</span>
+                  <span className="lit-label-ad"><Icon name="scroll" size={13} /> {lt.adapted}</span>
+                  <span className="lit-label-kind">{L(work.kind, lang)}</span>
+                </div>
                 <h2 lang="kk" dir="ltr">{ep.title.kk}</h2>
                 {epTitleTr && <p className="lit-ep-ttr" dir="auto">{epTitleTr}</p>}
                 <p className="lit-card-by" lang="kk" dir="ltr">«{work.work}» · {work.author}</p>
-                <p className="lit-lead" lang="kk" dir="ltr">{ep.lead}</p>
-                {leadTr && <p className="lit-tr lit-lead-tr" lang={explain} dir="auto" data-notap="">{leadTr}</p>}
               </header>
-              {/* Абзацтар: сөйлемді басса — сол жерден оқиды; оқылып жатқан абзац ақырын белгіленеді */}
-              <div className="lit-flow" lang="kk" dir="ltr">
-                {paraSent.map((ps, g) => {
-                  const base = paraOf.indexOf(g);
-                  return (
-                    <div key={g} className={`lit-para ${playing && g === curPara ? "is-now" : ""}`}>
-                      <p className="reader-text lit-text">
-                        {ps.map((sn, j) => {
-                          const k = base + j;
-                          return (
-                            <span
-                              key={k}
-                              className={`snt ${k === cur ? "now" : ""}`}
-                              onClick={() => { if (!playing) { setPick(k); setCur(k); } }}
-                            >
-                              {sn}{" "}
-                            </span>
-                          );
-                        })}
-                      </p>
-                      {parallel && <p className="lit-tr lit-para-tr" lang={explain} dir="auto" data-notap="">{ps.map((_, j) => tr[base + j]).join(" ")}</p>}
-                    </div>
-                  );
-                })}
-              </div>
+
+              <section className="lit-sheet">
+                <div className="lit-thread" aria-hidden="true"><i style={{ transform: `scaleX(${prog})` }} /></div>
+                {/* Белгілер: апта сөзі · үйреніп жатырсың · меңгерілді + осы мәтіндегі сақталған сөздер саны */}
+                <div className="lit-legend" data-notap="">
+                  <ul className="lit-keys" role="list" aria-label={lt.legend}>
+                    <li><i className="lit-key lit-key-week" aria-hidden="true" />{lt.week}</li>
+                    <li><i className="lit-key lit-key-learn" aria-hidden="true" />{lt.learning}</li>
+                    <li><i className="lit-key lit-key-ok" aria-hidden="true" />{lt.mastered}</li>
+                  </ul>
+                  <span className="lit-saved" role="status">
+                    <Icon name="book" size={14} /> {lt.savedN(marked?.saved || 0)}
+                  </span>
+                </div>
+                {/* Абзацтар: сөйлемді басса — сол жерден оқиды; сөзді басса — аудармасы (WordTap) */}
+                <div className="lit-flow" ref={flowRef} lang="kk" dir="ltr" tabIndex={0} role="region" aria-label={ep.title.kk}>
+                  <p className="lit-lead">{marked ? showParts(marked.lead) : ep.lead}</p>
+                  {leadTr && <p className="lit-tr lit-lead-tr" lang={explain} dir="auto" data-notap="">{leadTr}</p>}
+                  {paraSent.map((ps, g) => {
+                    const base = paraOf.indexOf(g);
+                    return (
+                      <div key={g} className={`lit-para ${playing && g === curPara ? "is-now" : ""}`}>
+                        <p className="lit-text">
+                          {ps.map((sn, j) => {
+                            const k = base + j;
+                            return (
+                              <span
+                                key={k}
+                                className={`snt ${k === cur ? "now" : ""}`}
+                                onClick={() => { if (!playing) { setPick(k); setCur(k); } }}
+                              >
+                                {marked?.sents[k] ? showParts(marked.sents[k]) : sn}{" "}
+                              </span>
+                            );
+                          })}
+                        </p>
+                        {parallel && <p className="lit-tr lit-para-tr" lang={explain} dir="auto" data-notap="">{ps.map((_, j) => tr[base + j]).join(" ")}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
               {!parallel && transBox}
-              <p className="lit-note"><Icon name="sparkle" size={15} /> {lt.levelHint}</p>
-              <p className="lit-note"><Icon name="search" size={15} /> {lt.hint}</p>
-              <p className="lit-note lit-adapt-note"><Icon name="scroll" size={15} /> {lt.adaptedNote}</p>
               {noVoice && <p className="lit-note lit-warn">{x.litNoVoice}{err ? ` (${err})` : ""}</p>}
+              <div className="lit-foot">
+                <p className="lit-note"><Icon name="search" size={15} /> {lt.hint}</p>
+                <p className="lit-note lit-adapt-note"><Icon name="scroll" size={15} /> {lt.adaptedNote}</p>
+              </div>
             </>
           )}
         </article>
@@ -627,7 +669,6 @@ export default function Literature() {
 
       {reading && (
         <div className="lit-dock">
-          <span className={`lit-dock-aqyl ${playing ? "is-on" : ""}`} aria-hidden="true"><Qyran mood={mood} size={40} /></span>
           <button className={`btn lit-play ${playing ? "is-on" : ""}`} onClick={() => { const f = !playing ? pick : null; setPick(null); play(f != null ? f : undefined); }}>
             <Icon name={playing ? "stop" : "volume"} size={18} /> {loadingTts ? x.tapLoading : playing ? x.litPause : lt.readAll}
           </button>
