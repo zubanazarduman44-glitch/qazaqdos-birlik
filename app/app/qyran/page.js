@@ -60,7 +60,7 @@ function VisionCard({ v, t, saved, onSave }) {
           <b className="vz-kk" lang="kk">{v.kk}</b>
           {v.translit && <span className="vz-tl">[{v.translit}]</span>}
         </div>
-        <button type="button" className="vz-say" onClick={() => sayKk(v.kk)} aria-label="listen"><Icon name="volume" size={20} /></button>
+        <button type="button" className="vz-say" onClick={() => sayKk(v.kk)} aria-label={t.a11y.listen}><Icon name="volume" size={20} /></button>
       </div>
       <div className="cx-vbody">
         <div className="vz-tr">{v.translation}</div>

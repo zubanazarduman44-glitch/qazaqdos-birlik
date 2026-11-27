@@ -14,7 +14,7 @@ import { WORKS, LEVELS, loadEpisodes, splitSent } from "../../../lib/literature"
 import { LT } from "./litL10n";
 import { buildMarks, markParts } from "./litMarks";
 import { tx } from "../../../lib/tx";
-import { L } from "../../../lib/i18n";
+import { L, a11y } from "../../../lib/i18n";
 
 // Дайын орысша/ағылшынша аудармалар (lib/litTr.js) бетпен бірге емес, керек кезде жүктеледі
 let LIT_TR = null;
@@ -756,7 +756,7 @@ export default function Literature() {
           </div>
           <form className="composer" onSubmit={(e) => { e.preventDefault(); ask(); }}>
             <input className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder={x.litAsk} maxLength={600} />
-            <button className="btn blue" disabled={busy || !text.trim()} aria-label="send"><Icon name="send" size={18} /></button>
+            <button className="btn blue" disabled={busy || !text.trim()} aria-label={a11y(lang, "send")}><Icon name="send" size={18} /></button>
           </form>
         </section>
       )}
