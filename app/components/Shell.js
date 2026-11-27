@@ -39,7 +39,6 @@ const GROUPS = [
   { id: "community", name: { kk: "Қауым", ru: "Сообщество", en: "Community", zh: "社区", es: "Comunidad", de: "Gemeinschaft", fr: "Communauté", tr: "Topluluk", ar: "المجتمع", ko: "커뮤니티", ja: "コミュニティ" }, keys: ["class", "shop"] },
 ];
 const groupOf = (key) => GROUPS.find((g) => g.keys.includes(key));
-const PROVERB = "Өнер алды — қызыл тіл";
 
 export function Logo({ small }) {
   return (
@@ -120,14 +119,11 @@ export default function Shell({ children }) {
     return whenIdle(() => authed("/rest/v1/rpc/admin_overview", { method: "POST", body: "{}" }).then(() => setAdmin(true)).catch(() => setAdmin(false)));
   }, [user?.id]); // eslint-disable-line
 
+  // Танысу (онбординг) тек «Басты» тақтаға алғаш кіргенде ұсынылады. Сабаққа, ойынға, тарихқа, чатқа т.б.
+  // тікелей сілтеме сол бөлімді бірден ашады: деңгей тесті ешкімді мәжбүрлеп бұрмайды (бұрынғы levelPending тосқауылы алынды).
   useEffect(() => {
-    if (ready && authReady && !state.profile.onboarded) router.replace("/onboarding");
-  }, [ready, authReady, state.profile.onboarded, router]);
-  // Жаңа тіркелген қолданушы алдымен деңгей тестін тапсырады, сосын ғана сайтқа өтеді
-  const levelPending = Boolean(state.profile.levelPending) && state.profile.onboarded;
-  useEffect(() => {
-    if (ready && levelPending && path !== "/app/level") router.replace("/app/level?first=1");
-  }, [ready, levelPending, path, router]);
+    if (ready && authReady && !state.profile.onboarded && path === "/app") router.replace("/onboarding");
+  }, [ready, authReady, state.profile.onboarded, path, router]);
   useEffect(() => { setMore(false); try { window.speechSynthesis?.cancel(); } catch {} }, [path]);
   // «Тағы» парағы Esc пернесімен жабылады
   useEffect(() => {
@@ -150,17 +146,8 @@ export default function Shell({ children }) {
   const secCap = cap(groupOf(secKey)) || "Qyzyl til";
   const inBar = MOBILE.includes(secKey);
 
-  if (levelPending) {
-    return (
-      <div className="shell-focus sx-focus" data-section="home" style={secVars("home")}>
-        <header className="focus-head">
-          <Logo />
-          <span className="focus-prov" lang="kk">{PROVERB}</span>
-        </header>
-        <main className="focus-main" data-section="home">{children}</main>
-      </div>
-    );
-  }
+  // Ескерту: бұрын levelPending кезінде қабық басқа ағашқа («фокус» орауышы) ауысатын. Тест аяқталып,
+  // levelPending өшкен сәтте бет компоненті қайта монтталып, тест 1/20-дан қайта басталатын — енді қабық бір қалыпты.
 
   const sideLink = (n) => {
     const on = active(n.href);

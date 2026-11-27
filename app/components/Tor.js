@@ -8,6 +8,7 @@ import Icon from "./Icon";
 import TopicArt from "./TopicArt";
 import { HomeFlame, HomeChest } from "./HomeArt";
 import { ALL_LESSONS, LEVELS, UNITS, TOPICS, lessonTitle } from "../../lib/courseIndex";
+import { continueLesson, hasRealProgress } from "../../lib/progress";
 
 const X = {
   today: ["Бүгінгі сабақ", "Сегодняшний урок", "Today's lesson"],
@@ -38,7 +39,10 @@ export function useTor() {
   const T = (k) => X[k][li];
   const done = state.course?.done || {};
   const doneCount = ALL_LESSONS.filter((l) => done[l.id]).length;
-  const next = ALL_LESSONS.find((l) => !done[l.id]);
+  // «Жалғастыру» ережесі басты бетпен (лендинг) бірдей: соңғы аяқталмаған сабақ немесе келесі қолжетімдісі
+  const nextId = continueLesson(state);
+  const next = nextId ? ALL_LESSONS.find((l) => l.id === nextId) : null;
+  const progress = hasRealProgress(state);
   const lev = next && LEVELS.find((v) => v.units.includes(next.topic));
   const unit = next && UNITS[next.topic];
   const unitDone = unit ? unit.lessons.filter((l) => done[l.id]).length : 0;
@@ -65,12 +69,12 @@ export function useTor() {
   const buyEmber = () => update((s) => ((s.coins || 0) >= 20 && (s.embers || 0) < 2 ? { ...s, coins: s.coins - 20, embers: (s.embers || 0) + 1 } : s));
   const claim = () => { update((s) => ({ ...s, coins: (s.coins || 0) + 15, quests: { date: today, claimed: true } })); toast("+15 🪙"); };
 
-  return { lang, T, done, doneCount, next, lev, unit, unitDone, lit, embers, coins, streak: state.streak || 0, quests, allDone, claimed, buyEmber, claim };
+  return { lang, T, done, doneCount, progress, next, lev, unit, unitDone, lit, embers, coins, streak: state.streak || 0, quests, allDone, claimed, buyEmber, claim };
 }
 
 // 1 — Бүгінгі сабақ: беттің басты әрекеті
 export function TorLesson({ tor }) {
-  const { lang, T, done, doneCount, next, lev, unit, unitDone } = tor;
+  const { lang, T, done, doneCount, progress, next, lev, unit, unitDone } = tor;
   return (
     <div className="hm-lesson">
       <span className="hm-kicker">{T("today")}</span>
@@ -89,7 +93,7 @@ export function TorLesson({ tor }) {
             {unit.lessons.map((l, i) => <i key={l.id} style={{ "--i": i }} className={done[l.id] ? "on" : l.id === next.id ? "cur" : ""} />)}
           </div>
           <Link href={`/app/course?l=${next.id}`} className="btn primary big hm-cta">
-            {doneCount ? T("cont") : T("start")} <Icon name="right" size={20} />
+            {progress ? T("cont") : T("start")} <Icon name="right" size={20} />
           </Link>
         </>
       ) : (

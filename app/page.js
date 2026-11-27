@@ -18,6 +18,13 @@ import { REGIONS } from "../lib/regions";
 import { L } from "../lib/i18n";
 import { useClientDate } from "../lib/useClientDate";
 import { useAnimGate } from "./components/AnimGate";
+import { startL } from "./components/StartL10n";
+import { FIRST_LESSON, VR_BREAD, continueLesson, hasRealProgress, lessonHref } from "../lib/progress";
+import { catalogCounts } from "../lib/catalog";
+// VR дүкен ғимараты (VrArt) — бөлек чанк, тек VR карточкасына
+const VrBuilding = dynamic(() => import("./components/VrArt").then((m) => m.VrBuilding));
+// Санақтар нақты каталогтардан: ойын/квест, өңір, түсіндірме тілдері (онбордингтегі тізіммен бірдей)
+const COUNTS = catalogCounts();
 
 // «Қызыл тіл» лентасындағы сөздер — өңірлер сөздігінен (lib/regions.js)
 const RIBBON_KK = ["сөз", "тау", "көл", "дала", "жылқы", "алма", "өлең", "жол", "керуен", "теңіз", "қызғалдақ", "киіз үй", "ақын", "су", "қар", "бал", "жайлау", "шың", "құм", "түйе", "кітап", "жел", "өзен"];
@@ -37,7 +44,14 @@ function FootYear() {
 
 export default function Landing() {
   const { t, lang, user, state } = useApp();
-  const startHref = user || state.profile.onboarded ? "/app" : "/register";
+  const s = startL(lang);
+  // Басты әрекет: жаңа адамға — бір басумен A1 · «Сәлемдесу · 1»; нақты оқу прогресі барға — «Жалғастыру»
+  // (бастапқы XP сыйлығы, тақтаға жай кіру немесе бос профиль прогреске жатпайды — lib/progress.js)
+  const progress = hasRealProgress(state);
+  const mainHref = progress ? lessonHref(continueLesson(state)) : lessonHref(FIRST_LESSON);
+  const mainLabel = progress ? s.cont : s.first;
+  const faq = t.faq.map((f, i) => (i === 0 ? { ...f, a: s.faqGuest(s.guest) } : f));
+  const checks = [t.heroChecks[0], t.heroChecks[1], s.explainN(COUNTS.explain)];
   const shown = REGIONS.filter((r) => r.photo);
   const root = useRef(null);
   useLandingFx(root);
@@ -64,9 +78,9 @@ export default function Landing() {
         <Logo />
         <div className="ld-head-r">
           <LangSeg />
-          {user || state.profile.onboarded ? (
-            <Link href="/app" className="btn gold small ld-primary">
-              {t.cont} <Icon name="right" size={16} />
+          {progress || user ? (
+            <Link href={mainHref} className="btn gold small ld-primary">
+              {progress ? s.cont : s.start} <Icon name="right" size={16} />
             </Link>
           ) : (
             <>
@@ -105,15 +119,22 @@ export default function Landing() {
             </h1>
             <p className="ld-lead">{t.heroText}</p>
             <div className="ld-cta">
-              <Link href={startHref} className="btn gold big ld-primary">
-                {t.heroCta} <Icon name="right" size={20} />
+              <Link href={mainHref} className="btn gold big ld-primary">
+                {mainLabel} <Icon name="right" size={20} />
               </Link>
-              <Link href="/onboarding" className="btn ghost big ld-second">
-                {t.heroTry}
-              </Link>
+              {!user && !progress && (
+                <Link href="/onboarding" className="btn ghost big ld-second">
+                  {s.guest}
+                </Link>
+              )}
+              {!user && progress && (
+                <Link href="/register" className="btn ghost big ld-second">
+                  {t.register}
+                </Link>
+              )}
             </div>
             <ul className="ld-checks">
-              {t.heroChecks.map((c) => (
+              {checks.map((c) => (
                 <li key={c}>
                   <span className="ld-tick">
                     <Icon name="check" size={14} stroke={3} />
@@ -133,19 +154,19 @@ export default function Landing() {
               <span className="ld-chip-ic">
                 <Icon name="map" size={16} />
               </span>
-              20 · {t.nav.travel}
+              {s.regions(COUNTS.regions)}
             </span>
             <span className="ld-chip c2">
               <span className="ld-chip-ic">
                 <Icon name="target" size={16} />
               </span>
-              6 · {t.nav.games}
+              {s.games(COUNTS.games, COUNTS.quests)}
             </span>
             <span className="ld-chip c3">
               <span className="ld-chip-ic">
                 <Icon name="chat" size={16} />
               </span>
-              AI · {t.nav.chat}
+              {s.aqyl}
             </span>
             <div className="ld-bubble">
               <LandingTyped text={t.heroBubble} />
@@ -189,6 +210,20 @@ export default function Landing() {
             </li>
           ))}
         </ol>
+        {/* VR Әлем: «Нан сатып алу» жағдаятына тікелей жол (басты сабақ батырмасынан кіші) */}
+        <div className="ld-vr" data-reveal>
+          <span className="ld-vr-art" aria-hidden="true">
+            <VrBuilding kind="shop" size={92} />
+          </span>
+          <div className="ld-vr-txt">
+            <span className="ld-vr-k">{s.vrKicker}</span>
+            <h3>{s.vrTitle}</h3>
+            <p>{s.vrDesc}</p>
+            <Link href={VR_BREAD} className="btn ghost ld-second ld-vr-go">
+              {s.vrGo} <Icon name="right" size={18} />
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* ═════ Саяхат: паспорт мөрі түріндегі ашықхаттар ═════ */}
@@ -242,7 +277,7 @@ export default function Landing() {
           {t.faqTitle}
         </h2>
         <div className="ld-dialog">
-          {t.faq.map((f, i) => (
+          {faq.map((f, i) => (
             <details key={f.q} className="ld-qa" data-reveal open={i === 0 || undefined}>
               <summary>
                 <span className="ld-q">{f.q}</span>
@@ -269,8 +304,8 @@ export default function Landing() {
           </div>
           <div className="ld-final-txt">
             <h2>{t.footer}</h2>
-            <Link href={startHref} className="btn gold big ld-onred">
-              {t.heroCta} <Icon name="right" size={20} />
+            <Link href={mainHref} className="btn gold big ld-onred">
+              {mainLabel} <Icon name="right" size={20} />
             </Link>
           </div>
         </div>

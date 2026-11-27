@@ -7,6 +7,7 @@ import { tx, setTxOverride } from "../../lib/tx";
 import { consumeRedirect, getSession, getUser, loadCloud, saveCloud, signOut, upsertWeekly } from "../../lib/auth";
 import { weekKey } from "../../lib/week";
 import { mergeReview } from "../../lib/review";
+import { mergeLevelTest } from "../../lib/levelState";
 import { setAqylChoice } from "../../lib/aqylChoice";
 import Qyran from "./Qyran";
 
@@ -107,6 +108,11 @@ function merge(a, b) {
     course: { ...(newer.course || {}), done: { ...(b.course?.done || {}), ...(a.course?.done || {}) } },
     vr: { ...(newer.vr || {}), done: { ...(b.vr?.done || {}), ...(a.vr?.done || {}) } },
     review: mergeReview(a.review, b.review),
+    // Деңгей тесті: аяқталған нәтиже жоғалмайды (қонақ → аккаунт көшкенде де)
+    ...(() => {
+      const lt = mergeLevelTest(a.levelTest, b.levelTest);
+      return { levelTest: lt, cefr: lt?.done ? lt.cefr : newer.cefr || a.cefr || b.cefr || null };
+    })(),
     games,
     vocab: byKk(a.vocab, b.vocab),
     vision: byKk(a.vision, b.vision),
