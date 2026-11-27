@@ -44,17 +44,15 @@
 }
 .gl-card:hover { transform: translateY(-4px); box-shadow: inset 0 0 0 1.5px var(--gc), var(--shadow-lg); }
 .gl-card:active { transform: translateY(-1px) scale(0.985); }
-.gl-card:focus-visible { outline: 3px solid var(--kok); outline-offset: 3px; border-radius: var(--r); }
+.gl-card:focus-visible { outline: 3px solid var(--sec-deep, var(--kok)); outline-offset: 3px; border-radius: var(--r); }
 @keyframes glIn { from { opacity: 0; transform: translateY(14px); } }
 .gl-art { position: relative; display: block; aspect-ratio: 240 / 140; background: var(--surface-2); border-bottom: 4px solid var(--gc); }
 .gl-art .g-scene { display: block; width: 100%; height: 100%; }
-.gl-n { position: absolute; left: 12px; top: 12px; padding: 2px 9px; border-radius: 10px; font-family: var(--head); font-weight: 700; font-size: 13px; color: var(--ink); background: var(--surface); box-shadow: inset 0 0 0 1px var(--rim); }
 .gl-body { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; flex: 1; }
 .gl-title { display: flex; align-items: center; gap: 8px; }
 .gl-title .muiz { width: 24px; height: 24px; flex: none; }
 .gl-title b { font-family: var(--head); font-weight: 600; font-size: 19px; line-height: 1.2; }
-.gl-desc { font-size: 14.5px; line-height: 1.45; }
-.gl-how { font-size: 13px; line-height: 1.4; color: var(--muted); padding-left: 10px; border-left: 3px solid color-mix(in srgb, var(--gc) 60%, transparent); }
+.gl-desc { font-size: 14.5px; line-height: 1.45; color: #4a5160; }
 .gl-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 6px; }
 .gl-wins { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
 .gl-wins b { color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -409,6 +407,10 @@
   .g-ready-art { padding: 12px; border-right: 0; border-bottom: 4px solid var(--gc); }
   .g-ready-art .g-scene { max-width: 420px; }
   .g-ready-body { padding: 16px 14px 18px; }
+}
+@media (max-width: 640px) {
+  /* Телефонда тақырыптағы Aqyl жеке жолға түсіп, ойындарды төмен итереді — жасырамыз */
+  .games-head .head-tools { display: none; }
 }
 @media (max-width: 560px) {
   .gl-grid { gap: 14px; }

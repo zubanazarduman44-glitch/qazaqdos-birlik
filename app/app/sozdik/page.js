@@ -231,7 +231,6 @@ export default function Sozdik() {
           <h1>{x.szTitle}</h1>
           <p>{x.szSub}</p>
         </div>
-        <div className="head-tools"><span className="chip gold"><Icon name="book" size={15} /> {vocab.length}</span></div>
       </header>
 
       <div className="szk-tabs">
@@ -266,7 +265,7 @@ export default function Sozdik() {
           {words.filter((w) => goalTopics(state.profile?.goal).has(w.t)).length >= 5 && (
             <p className="szk-tap szk-goal"><Icon name="target" size={14} /> {goalTx(lang).daily}</p>
           )}
-          <p className="szk-tap"><Icon name="refresh" size={14} /> {x.szTap}</p>
+          {/* «Аудару үшін бас» — әр картаның өзінде жазылған, бөлек жол қажет емес */}
           <ul className="szk-deck">
             {words.map((w, i) => (
               <DayCard key={w.kk} i={i} w={w} lang={lang} explain={explain} knownLabel={x.szKnown}

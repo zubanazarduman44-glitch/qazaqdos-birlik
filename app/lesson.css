@@ -267,3 +267,36 @@
   background: #fff8e6; box-shadow: inset 0 0 0 1.5px rgba(232, 178, 58, 0.55); font-weight: 700; line-height: 1.4;
 }
 .lp-sum-praise::before { content: ""; position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; background: #fff8e6; transform: rotate(45deg); box-shadow: -1.5px -1.5px 0 rgba(232, 178, 58, 0.55); }
+
+/* ════════ Жаттығу беті мен сабақ: бөлім реңі (--sec, Shell береді) ════════
+   Көш жолы бұрын мезгіл түсімен боялатын (B1 — бренд қызылы, B2 — көк). Енді жол, түйме, ағымдағы аялдама —
+   бөлімнің жасыл реңінде; мезгіл түсі тек деңгей шаршысында (A1/A2/B1/B2) қалады. Дұрыс/қате түстері өзгермейді. */
+.course .kosh, .course .kosh.s1, .course .kosh.s2, .course .kosh.s3 { --tone: var(--sec, #2c7a48); }
+.course .kosh .aul.here .aul-cta, .course .kosh .stop.cur { background: var(--sec, #2c7a48); }
+.course .kosh .aul.here .aul-cta { box-shadow: 0 3px 0 var(--sec-deep, #1d5532); }
+.course .kosh .stop.cur { box-shadow: 0 0 0 4px color-mix(in srgb, var(--sec, #2c7a48) 25%, transparent); }
+.course .kosh.s3::before { border-left-color: color-mix(in srgb, var(--sec, #2c7a48) 38%, transparent); }
+/* Деңгей қойындысы: таңдалғаны — бөлім реңі, шаршыдағы әріп — мезгіл түсі */
+.course .kosh-lv.on, .course .kosh-lv.s3.on { background: var(--sec, #2c7a48); color: #fff; box-shadow: 0 3px 0 var(--sec-deep, #1d5532); }
+.course .kosh-lv.s3.on .kosh-lv-id { color: var(--tone); }
+.course .kosh-lv:not(.on):hover { box-shadow: inset 0 0 0 1.5px var(--sec, #2c7a48); }
+/* Мақсат белгілері: бөлек көк түс емес — бөлімнің ашық реңі */
+.course .crs-goal, .course .aul-goal { color: var(--sec-deep, #1d5532); background: var(--sec-soft, #e1f1e6); }
+.course .crs-goal { font-weight: 500; }
+.course .aul-goal { padding: 2px 9px; font-size: 12px; }
+/* Сабақ ойнатқышы: прогресс пернелері, белгі, қорытынды ұпайы — бөлім реңі (дыбыс түймелері көк қалады) */
+main[data-section] .lp-frets i.on { background: var(--sec); }
+main[data-section] .lp-kicker { color: var(--sec-deep); }
+main[data-section] .lp-sum-score b { color: var(--sec-deep); }
+/* Телефон: төрт деңгей бірінің астына бірі тізілмесін — 2×2 ықшам тор */
+@media (max-width: 760px) {
+  .course .kosh-levels { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 18px; }
+  .course .kosh-lv { gap: 2px 8px; padding: 10px 10px 14px; }
+  .course .kosh-lv-id { width: 38px; height: 38px; border-radius: 11px; font-size: 14px; }
+  .course .kosh-lv-t b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .course .kosh-lv-t small { display: none; }
+  .course .kosh-lv-n { font-size: 12px; }
+  /* Жаңа бастаған оқушыға түсіндірме: телефонда тақырып пен үш тезис жеткілікті */
+  .course .sec-intro-body p { display: none; }
+  .course .crs-goal { padding: 8px 12px; font-size: 13.5px; }
+}
