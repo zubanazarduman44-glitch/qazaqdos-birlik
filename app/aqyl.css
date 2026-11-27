@@ -319,3 +319,14 @@
 .aqp-opt.on .aqp-check { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .aqp-pop { animation: none; } .aqp-check { transition: none; } }
 
+
+/* ══════════ Киім жинағы (Dress.js): бір 600×1120 контейнер, барлық қабат бірдей масштабта ══════════ */
+.wd { position: relative; display: inline-block; flex: none; vertical-align: bottom; }
+.wd-bust { overflow: hidden; border-radius: 30%; background: #f3e6cf; }
+.wd-doll { position: absolute; inset: 0; display: block; transform-origin: 50% 100%; animation: wdBreath 4.2s ease-in-out infinite; }
+.wd-bust .wd-doll { inset: auto; }
+.wd-doll img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.wd-doll.m-happy { animation: wdHop 0.62s cubic-bezier(0.3, 1.5, 0.5, 1) both, wdBreath 4.2s ease-in-out 0.62s infinite; }
+@keyframes wdBreath { 0%, 100% { transform: none; } 50% { transform: scale(1.006, 1.012); } }
+@keyframes wdHop { 0% { transform: translateY(0); } 40% { transform: translateY(-6%); } 100% { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .wd-doll { animation: none !important; } }

@@ -3,6 +3,7 @@ import "../../shop.css";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../components/Store";
 import DressUp from "../../components/Dress";
+import { AqylLookButton } from "../../components/AqylPicker";
 import ItemArt from "../../components/ItemArt";
 import Icon from "../../components/Icon";
 import { ShopCoin, ShopPurse, ShopCrown, ShopRug } from "../../components/ShopArt";
@@ -144,6 +145,7 @@ export default function Shop() {
         <aside className="sh-stage" ref={stageRef} aria-label={t("mirror")}>
           <div className={`sh-mirror ${sewn ? "sewn" : ""} ${tryIt ? "trying" : ""}`} ref={mirrorRef}>
             <ShopCrown />
+            <AqylLookButton className="sh-look" />
             <div className="sh-glass">
               <span className="sh-glass-label">{tryIt ? t("tryOn") : x.shYou}</span>
               <span className="sh-tassel s1" aria-hidden="true" /><span className="sh-tassel s2" aria-hidden="true" />

@@ -82,7 +82,7 @@
 .sh-model { position: relative; display: grid; justify-items: center; width: 100%; }
 .sh-rug { position: absolute; bottom: -4px; left: 50%; width: 252px; height: auto; transform: translateX(-50%); }
 .sh-model-fig { position: relative; z-index: 1; margin-bottom: 20px; }
-.sh-model-fig .dress-svg { display: block; overflow: visible; }
+.sh-model-fig .wd { display: block; }
 .sh-stitch { position: absolute; z-index: 0; left: 50%; top: 46%; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; border: 3px dashed var(--sh-gold); opacity: 0; pointer-events: none; }
 .sh-mirror.sewn .sh-stitch { animation: shStitch 1.2s 0.5s var(--ease) both; }
 .sh-spark { position: absolute; z-index: 2; width: 14px; height: 14px; background: var(--sh-gold); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); opacity: 0; pointer-events: none; }
@@ -293,7 +293,7 @@
   .sh-crown { width: 140px; }
   .sh-glass { min-height: 262px; border-width: 10px; padding-top: 30px; }
   .sh-tassel { top: 48px; height: 34px; }
-  .sh-model-fig svg { width: 160px; height: auto; }
+  .sh-model-fig .wd { height: 300px !important; width: 161px !important; }
   .sh-model-fig { margin-bottom: 15px; }
   .sh-rug { width: 200px; }
   .sh-slot { min-height: 50px; }
@@ -330,3 +330,6 @@
   .sh *, .sh *::before, .sh *::after { animation: none !important; transition: none !important; }
   .sh-fly { display: none; }
 }
+/* Кейіпкерді ауыстыру (айнаның бұрышында) */
+.sh-look { position: absolute; top: 64px; inset-inline-end: 26px; z-index: 40; }
+.sh-look .aqp-pop { inset-inline-end: 0; }

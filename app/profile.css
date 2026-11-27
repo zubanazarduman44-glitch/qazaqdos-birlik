@@ -201,7 +201,7 @@
   border-radius: 66px 66px 16px 16px; background: linear-gradient(180deg, #fff 0%, var(--pf-acc-s) 100%);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pf-acc) 18%, transparent);
 }
-.pf-aq-fig > svg { display: block; width: auto; height: 100%; max-width: 100%; }
+.pf-aq-fig > .wd { display: block; width: auto !important; height: 100% !important; aspect-ratio: 600 / 1120; max-width: 100%; }
 .pf-aq-side { display: grid; gap: 12px; justify-items: start; }
 .pf-aq-shop { gap: 8px; }
 .pf-aq-look { font-size: 13.5px; color: var(--pf-muted); }
