@@ -269,6 +269,19 @@ function ArtModal({ index, onClose, onNav, lang, t, gl }) {
   );
 }
 
+// Тек 3D көрермен (галерея торынсыз): тарихи орын карточкасындағы «3D-де қарау» батырмасы ашады.
+// onClose тұрақты (useCallback) болуы керек; жабылғанда фокусты қайтару — шақырушының ісі.
+export function ArtifactViewer({ id, onClose }) {
+  const { lang } = useApp();
+  const t = agL(lang);
+  const [index, setIndex] = useState(() => Math.max(0, ARTIFACTS.findIndex((a) => a.id === id)));
+  const [gl, setGl] = useState(null);
+  useEffect(() => { setGl(hasWebGL()); }, []);
+  const onNav = useCallback((d) => setIndex((i) => (i + d + ARTIFACTS.length) % ARTIFACTS.length), []);
+  if (gl === null) return null;
+  return <ArtModal index={index} onClose={onClose} onNav={onNav} lang={lang} t={t} gl={gl} />;
+}
+
 export default function ArtifactGallery({ id = "artifacts", className = "" }) {
   const { lang } = useApp();
   const t = agL(lang);
