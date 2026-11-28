@@ -17,9 +17,11 @@ import { Golos_Text, Montserrat } from "next/font/google";
 // Қаріптер сайттың өз доменінен беріледі (next/font): Google-ге бөлек қосылу жоқ, алдын ала жүктеледі,
 // ал қаріп келгенше көрсетілетін жүйелік қаріп өлшемі сәйкестендірілген — мәтін «секірмейді».
 // cyrillic-ext — қазақтың ә, ғ, қ, ң, ө, ұ, ү, һ, і әріптері үшін.
-const golos = Golos_Text({ subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"], weight: ["400", "500", "600", "700"], display: "swap", variable: "--font-golos" });
+// Айнымалы (variable) қаріптер: бір файл барлық салмақты (400–800) қамтиды — бұрын әр салмаққа бөлек файл жүктелетін (≈240 kB).
+// subsets — алдын ала жүктелетіндері; latin-ext (түрік, неміс әріптері) алдын ала жүктелмейді — қажет болса ғана unicode-range арқылы келеді (~87 kB үнем).
+const golos = Golos_Text({ subsets: ["latin", "cyrillic", "cyrillic-ext"], weight: ["400", "500", "600", "700"], display: "swap", variable: "--font-golos" });
 // Тақырып қаріпі — Montserrat: бұрынғы Unbounded-та ә, ғ, қ, ң, ө, ұ, ү, һ әріптері жоқ еді (басқа қаріппен шығып, ерекшеленіп тұратын)
-const montserrat = Montserrat({ subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"], weight: ["600", "700", "800"], display: "swap", variable: "--font-head" });
+const montserrat = Montserrat({ subsets: ["latin", "cyrillic", "cyrillic-ext"], weight: ["600", "700", "800"], display: "swap", variable: "--font-head" });
 
 export const metadata = {
   title: "Qyzyl til — қазақ тілін Aqyl-мен бірге үйрен",
@@ -41,7 +43,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="kk" data-theme="light" className={`${golos.variable} ${montserrat.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://images.unsplash.com" />
       </head>
       <body>
         <AppProvider>{children}</AppProvider>
